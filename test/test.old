@@ -1,5 +1,4 @@
 const inquirer = require('inquirer');
-const Git = require('nodegit');
 const { init } = require('../src/cli');
 const {
   resetAllBranches,
