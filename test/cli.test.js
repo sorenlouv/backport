@@ -90,4 +90,29 @@ describe('select commit that originated from pull request', () => {
       'sqren'
     );
   });
+
+  it('createPullRequest should be called with correct args', () => {
+    expect(github.createPullRequest).toHaveBeenCalledWith(
+      'elastic',
+      'backport-cli-test',
+      {
+        base: '6.2',
+        body: 'Backports pull request #myPullRequest to 6.2',
+        head: 'sqren:backport/6.2/pr-myPullRequest',
+        title: '[6.2] myCommitMessage'
+      }
+    );
+  });
+
+  it('prompt calls should match snapshot', () => {
+    expect(inquirer.prompt.mock.calls).toMatchSnapshot();
+  });
+
+  it('exec should be called with correct args', () => {
+    expect(utils.exec.mock.calls).toMatchSnapshot();
+  });
+
+  it('writeFile should be called with correct args', () => {
+    expect(utils.writeFile.mock.calls).toMatchSnapshot();
+  });
 });
