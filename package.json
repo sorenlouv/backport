@@ -8,8 +8,7 @@
   "license": "MIT",
   "scripts": {
     "test": "jest",
-    "coverage":
-      "jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+    "cover": "jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -27,7 +26,6 @@
   },
   "devDependencies": {
     "babel-eslint": "^8.0.1",
-    "coveralls": "^3.0.0",
     "eslint": "^4.6.1",
     "eslint-config-prettier": "^2.4.0",
     "eslint-plugin-import": "^2.7.0",
