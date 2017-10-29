@@ -115,3 +115,108 @@ describe('select commit that originated from pull request', () => {
     expect(utils.writeFile.mock.calls).toMatchSnapshot();
   });
 });
+
+function setup2() {
+  const owner = 'elastic';
+  const repoName = 'backport-cli-test';
+  const fullRepoName = `${owner}/${repoName}`;
+  const host = 'http://localhost';
+  axios.defaults.host = host;
+  axios.defaults.adapter = httpAdapter;
+
+  mockBackportDirPath();
+  utils.exec = jest.fn().mockReturnValue(Promise.resolve());
+  utils.writeFile = jest.fn().mockReturnValue(Promise.resolve());
+  github.getCommits = jest.fn(github.getCommits);
+  github.createPullRequest = jest.fn(github.createPullRequest);
+
+  inquirer.prompt = jest
+    .fn()
+    .mockReturnValueOnce(Promise.resolve({ fullRepoName }))
+    .mockReturnValueOnce(
+      Promise.resolve({
+        commit: {
+          message: 'myCommitMessage',
+          sha: 'mySha'
+        }
+      })
+    )
+    .mockReturnValueOnce(
+      Promise.resolve({
+        versions: ['6.2']
+      })
+    );
+
+  nock('https://api.github.com')
+    .get(`/repos/${owner}/${repoName}/commits`)
+    .query({ per_page: '20', access_token: 'myAccessToken' })
+    .reply(200, commitsMock);
+
+  nock('https://api.github.com')
+    .get(`/search/issues`)
+    .query({
+      q: 'repo:elastic/backport-cli-test mySha',
+      access_token: 'myAccessToken'
+    })
+    .reply(200, {
+      items: []
+    });
+
+  nock('https://api.github.com')
+    .post(`/repos/${owner}/${repoName}/pulls`)
+    .query({ access_token: 'myAccessToken' })
+    .reply(200, {
+      html_url: 'myHtmlUrl'
+    });
+
+  return init(
+    {
+      username: 'sqren',
+      accessToken: 'myAccessToken',
+      repositories: [
+        {
+          name: fullRepoName,
+          versions: ['6.x', '6.0', '5.6', '5.5', '5.4']
+        }
+      ]
+    },
+    { cwd: '/my/path', own: false, multiple: true }
+  );
+}
+
+describe('select commit that originated from commit', () => {
+  beforeEach(setup2);
+
+  it('getCommit should be called with correct args', () => {
+    expect(github.getCommits).toHaveBeenCalledWith(
+      'elastic',
+      'backport-cli-test',
+      null
+    );
+  });
+
+  it('createPullRequest should be called with correct args', () => {
+    expect(github.createPullRequest).toHaveBeenCalledWith(
+      'elastic',
+      'backport-cli-test',
+      {
+        base: '6.2',
+        body: 'Backports commit mySha to 6.2',
+        head: 'sqren:backport/6.2/commit-mySha',
+        title: '[6.2] myCommitMessage'
+      }
+    );
+  });
+
+  it('prompt calls should match snapshot', () => {
+    expect(inquirer.prompt.mock.calls).toMatchSnapshot();
+  });
+
+  it('exec should be called with correct args', () => {
+    expect(utils.exec.mock.calls).toMatchSnapshot();
+  });
+
+  it('writeFile should be called with correct args', () => {
+    expect(utils.writeFile.mock.calls).toMatchSnapshot();
+  });
+});
