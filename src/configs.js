@@ -16,7 +16,8 @@ function ensureConfigAndFoldersExists() {
     .then(configTemplate => {
       return utils
         .writeFile(CONFIG_FILE_PATH, configTemplate, {
-          flag: 'wx' // create and write file. Error if it already exists
+          flag: 'wx', // create and write file. Error if it already exists
+          mode: 0o600 // give the owner read-write privleges, no access for others
         })
         .catch(e => {
           const FILE_ALREADY_EXISTS = 'EEXIST';
