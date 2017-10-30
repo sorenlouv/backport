@@ -3,7 +3,16 @@
 const yargs = require('yargs');
 const { init } = require('./cli');
 const { getConfig } = require('./configs');
-const config = getConfig();
+
+let config;
+try {
+  config = getConfig();
+} catch (error) {
+  if (error.code === 'permissions') {
+    console.log(error.message);
+    process.exit(1);
+  }
+}
 
 const isBool = value => typeof value === 'boolean';
 const args = yargs
