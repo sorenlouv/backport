@@ -65,7 +65,7 @@ function getConfig() {
           '\n' +
           `  chmod 600 "${CONFIG_FILE_PATH}"\n`
       );
-      error.code = 'permissions';
+      error.code = constants.CONFIG_FILE_PERMISSION_ERROR;
       throw error;
     }
     const res = fs.readFileSync(CONFIG_FILE_PATH, 'utf8');
