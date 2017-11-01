@@ -27,11 +27,11 @@ npm install -g backport
 
 | Option | Description | Accepts |
 | --- | --- | --- |
-| --multiple     | Backport to multiple versions |         [boolean] [default: true] |
-| --own          | Only show own commits |                 [boolean] [default: true] |
-| --config       | Show configuration file |                               [boolean] |
-| --help         | Show help |                                             [boolean] |
-| -v, --version  | Show version number |                                   [boolean] |
+| --multiple     | Backport to multiple versions   | boolean (defaults to true) |
+| --own          | Only show own commits           | boolean (defaults to true) |
+| --config       | Show configuration file         |                            |
+| --help         | Show help                       |                            |
+| -v, --version  | Show version number             |                            |
 
 ### Configuration
 
