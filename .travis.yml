@@ -3,6 +3,15 @@ node_js:
   - "6"
   - "8"
 cache: yarn
+env:
+  global:
+    - CC_TEST_REPORTER_ID=a210c63c31a84145bf0963e718a5d49e5b3d5df16c37f2bfe993acd11c4151cc
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
 script:
   - npm run lint
-  - npm test
+  - npm run testWithCoverage
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
