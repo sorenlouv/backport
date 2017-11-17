@@ -11,7 +11,8 @@ const {
   createAndCheckoutBranch,
   push,
   repoExists,
-  setupRepo
+  setupRepo,
+  isIndexDirty
 } = require('../lib/git');
 
 function doBackportVersions({
@@ -59,7 +60,7 @@ function doBackportVersion({
   )
     .then(() =>
       sequentially(commits, commit =>
-        cherrypickAndPrompt(owner, repoName, commit.sha)
+        cherrypickAndConfirm(owner, repoName, commit.sha)
       )
     )
     .then(() =>
@@ -196,7 +197,7 @@ function isCherrypickConflict(e) {
   return e.cmd.includes('git cherry-pick');
 }
 
-function cherrypickAndPrompt(owner, repoName, sha) {
+function cherrypickAndConfirm(owner, repoName, sha) {
   return withSpinner(
     cherrypick(owner, repoName, sha),
     'Cherry-picking commit',
@@ -209,13 +210,17 @@ function cherrypickAndPrompt(owner, repoName, sha) {
       throw e;
     }
 
-    return prompts.confirmConflictResolved().then(isConflictResolved => {
-      if (!isConflictResolved) {
-        e.code = constants.CHERRYPICK_CONFLICT_NOT_HANDLED;
-        throw e;
-      }
-    });
+    return confirmResolvedRecursive(owner, repoName);
   });
+}
+
+function confirmResolvedRecursive(owner, repoName) {
+  return prompts
+    .confirmConflictResolved()
+    .then(() => isIndexDirty(owner, repoName))
+    .then(
+      isDirty => (isDirty ? confirmResolvedRecursive(owner, repoName) : null)
+    );
 }
 
 function getCurrentFullRepoName(fullRepoNames, cwd) {
