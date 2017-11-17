@@ -152,10 +152,6 @@ function handleErrors(e) {
       console.error(JSON.stringify(e.response, null, 4));
       break;
 
-    case constants.CHERRYPICK_CONFLICT_NOT_HANDLED:
-      console.error('Merge conflict was not resolved', e.message);
-      break;
-
     default:
       console.error(e);
   }
