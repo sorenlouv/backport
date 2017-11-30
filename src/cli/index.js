@@ -43,6 +43,7 @@ if (args.config) {
 
 const options = Object.assign(
   {},
+  config,
   args,
   {
     multipleVersions: isBool(args.multiple)
@@ -55,4 +56,4 @@ const options = Object.assign(
   { cwd: process.cwd() }
 );
 
-initSteps(config, options);
+initSteps(options);
