@@ -6,7 +6,7 @@ const {
 } = require('../lib/configs');
 const {
   promptRepoInfo,
-  promptCommit,
+  getCommits,
   promptVersions,
   doBackportVersions,
   handleErrors,
@@ -25,14 +25,7 @@ function initSteps(options) {
       repoName = _repoName;
       repoConfig = getRepoConfig(owner, repoName, options.repositories);
     })
-    .then(() =>
-      promptCommit(
-        owner,
-        repoName,
-        options.own ? options.username : null,
-        options.multipleCommits
-      )
-    )
+    .then(() => getCommits(owner, repoName, options))
     .then(c => (commits = c))
     .then(() => promptVersions(repoConfig.versions, options.multipleVersions))
     .then(v => (versions = v))

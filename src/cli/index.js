@@ -23,6 +23,10 @@ const args = yargs
     description: 'Backport to multiple version',
     type: 'boolean'
   })
+  .option('sha', {
+    description: 'Supply a commit sha to backport',
+    type: 'string'
+  })
   .option('own', {
     default: isBool(config.own) ? config.own : true,
     description: 'Only show own commits',
