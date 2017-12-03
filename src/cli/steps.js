@@ -2,7 +2,7 @@ const github = require('../lib/github');
 const {
   promptCommits,
   getCommitBySha,
-  promptVersions,
+  promptBranches,
   doBackportVersions,
   handleErrors,
   maybeSetupRepo,
@@ -11,7 +11,7 @@ const {
 
 function initSteps(options) {
   const { owner, repoName } = parseUpstream(options.upstream);
-  let commits, versions;
+  let commits, branches;
   github.setAccessToken(options.accessToken);
 
   const promise = options.sha
@@ -27,9 +27,9 @@ function initSteps(options) {
     .then(c => {
       commits = c;
     })
-    .then(() => promptVersions(options.versions, options.multipleVersions))
+    .then(() => promptBranches(options.branches, options.multipleBranches))
     .then(v => {
-      versions = v;
+      branches = v;
     })
     .then(() => maybeSetupRepo(owner, repoName, options.username))
     .then(() =>
@@ -37,7 +37,7 @@ function initSteps(options) {
         owner,
         repoName,
         commits,
-        versions,
+        branches,
         username: options.username,
         labels: options.labels
       })

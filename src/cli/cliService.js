@@ -20,18 +20,18 @@ function doBackportVersions({
   owner,
   repoName,
   commits,
-  versions,
+  branches,
   username,
   labels
 }) {
-  return sequentially(versions, version => {
+  return sequentially(branches, branch => {
     return withPullRequest(owner, repoName, commits)
       .then(commitsWithPullRequest => {
         return doBackportVersion({
           owner,
           repoName,
           commits: commitsWithPullRequest,
-          version,
+          branch,
           username,
           labels
         });
@@ -45,17 +45,17 @@ function doBackportVersion({
   owner,
   repoName,
   commits,
-  version,
+  branch,
   username,
   labels = []
 }) {
-  const backportBranchName = getBackportBranchName(version, commits);
+  const backportBranchName = getBackportBranchName(branch, commits);
   const refValues = commits.map(commit => getReferenceLong(commit)).join(', ');
-  console.log(`Backporting ${refValues} to ${version}`);
+  console.log(`Backporting ${refValues} to ${branch}`);
 
   return withSpinner(
     resetAndPullMaster(owner, repoName).then(() =>
-      createAndCheckoutBranch(owner, repoName, version, backportBranchName)
+      createAndCheckoutBranch(owner, repoName, branch, backportBranchName)
     ),
     'Pulling latest changes'
   )
@@ -71,7 +71,7 @@ function doBackportVersion({
       )
     )
     .then(() => {
-      const payload = getPullRequestPayload(version, commits, username);
+      const payload = getPullRequestPayload(branch, commits, username);
       const promise = github
         .createPullRequest(owner, repoName, payload)
         .then(res => {
@@ -89,12 +89,14 @@ function doBackportVersion({
 
 // Add pull request info to commit if it exists
 function withPullRequest(owner, repoName, commits) {
-  return Promise.all(
-    commits.map(commit => {
-      return github
-        .getPullRequestByCommit(owner, repoName, commit.sha)
-        .then(pullRequest => Object.assign({}, commit, { pullRequest }));
-    })
+  return withSpinner(
+    Promise.all(
+      commits.map(commit => {
+        return github
+          .getPullRequestByCommit(owner, repoName, commit.sha)
+          .then(pullRequest => Object.assign({}, commit, { pullRequest }));
+      })
+    )
   );
 }
 
@@ -147,8 +149,8 @@ function promptCommits({ owner, repoName, author, multipleCommits }) {
     });
 }
 
-function promptVersions(versions, multipleChoice = false) {
-  return prompts.listVersions(versions, multipleChoice);
+function promptBranches(branches, multipleChoice = false) {
+  return prompts.listBranches(branches, multipleChoice);
 }
 
 function handleErrors(e) {
@@ -171,12 +173,12 @@ function sequentially(items, handler) {
   );
 }
 
-function getBackportBranchName(version, commits) {
+function getBackportBranchName(branch, commits) {
   const refValues = commits
     .map(commit => getReferenceShort(commit))
     .join('_')
     .slice(0, 200);
-  return `backport/${version}/${refValues}`;
+  return `backport/${branch}/${refValues}`;
 }
 
 function getReference(commit, { short }) {
@@ -226,8 +228,8 @@ function confirmResolvedRecursive(owner, repoName) {
     );
 }
 
-function getPullRequestPayload(version, commits, username) {
-  const backportBranchName = getBackportBranchName(version, commits);
+function getPullRequestPayload(branch, commits, username) {
+  const backportBranchName = getBackportBranchName(branch, commits);
   const commitRefs = commits
     .map(commit => {
       const ref = getReferenceLong(commit);
@@ -241,10 +243,10 @@ function getPullRequestPayload(version, commits, username) {
     .slice(0, 200);
 
   return {
-    title: `[${version}] ${commitMessages}`,
-    body: `Backports the following commits to ${version}:\n${commitRefs}`,
+    title: `[${branch}] ${commitMessages}`,
+    body: `Backports the following commits to ${branch}:\n${commitRefs}`,
     head: `${username}:${backportBranchName}`,
-    base: `${version}`
+    base: `${branch}`
   };
 }
 
@@ -252,7 +254,11 @@ function withSpinner(promise, text, errorText) {
   const spinner = ora(text).start();
   return promise
     .then(res => {
-      spinner.succeed();
+      if (text) {
+        spinner.succeed();
+      } else {
+        spinner.stop();
+      }
       return res;
     })
     .catch(e => {
@@ -273,6 +279,6 @@ module.exports = {
   maybeSetupRepo,
   parseUpstream,
   promptCommits,
-  promptVersions,
+  promptBranches,
   withPullRequest
 };

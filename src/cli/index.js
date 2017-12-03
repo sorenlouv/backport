@@ -5,55 +5,64 @@ const initSteps = require('./steps');
 const { getCombinedConfig } = require('../lib/configs');
 const { INVALID_CONFIG } = require('../lib/constants');
 
+const args = yargs
+  .usage('$0 [args]')
+  .option('multiple', {
+    default: undefined,
+    description: 'Select multiple branches and/or commits',
+    type: 'boolean'
+  })
+  .option('multiple-commits', {
+    default: undefined,
+    description: 'Backport multiple commits',
+    type: 'boolean'
+  })
+  .option('multiple-branches', {
+    default: undefined,
+    description: 'Backport to multiple branches',
+    type: 'boolean'
+  })
+  .option('own', {
+    default: undefined,
+    description: 'Only show own commits',
+    type: 'boolean'
+  })
+  .option('sha', {
+    description: 'Supply a commit sha to backport',
+    type: 'string'
+  })
+  .alias('v', 'version')
+  .version()
+  .help().argv;
+
 getCombinedConfig()
   .catch(e => {
     console.error(e.code === INVALID_CONFIG ? e.message : e);
     process.exit(1);
   })
   .then(config => {
-    const isBool = value => typeof value === 'boolean';
-    const args = yargs
-      .usage('$0 [args]')
-      .option('multiple', {
-        default: undefined,
-        description: 'Select multiple versions and/or commits',
-        type: 'boolean'
+    const options = Object.assign(
+      {
+        multipleBranches: true,
+        multipleCommits: false,
+        own: true
+      },
+      config,
+      removeUndefined(args),
+      removeUndefined({
+        multipleBranches: args.multiple,
+        multipleCommits: args.multiple
       })
-      .option('multiple-commits', {
-        default: isBool(config.multipleCommits)
-          ? config.multipleCommits
-          : false,
-        description: 'Backport multiple commits',
-        type: 'boolean'
-      })
-      .option('multiple-versions', {
-        default: isBool(config.multipleVersions)
-          ? config.multipleVersions
-          : true,
-        description: 'Backport to multiple version',
-        type: 'boolean'
-      })
-      .option('sha', {
-        description: 'Supply a commit sha to backport',
-        type: 'string'
-      })
-      .option('own', {
-        default: isBool(config.own) ? config.own : true,
-        description: 'Only show own commits',
-        type: 'boolean'
-      })
-      .alias('v', 'version')
-      .version()
-      .help().argv;
+    );
 
-    const options = Object.assign({}, config, args, {
-      multipleVersions: isBool(args.multiple)
-        ? args.multiple
-        : args.multipleVersions,
-      multipleCommits: isBool(args.multiple)
-        ? args.multiple
-        : args.multipleCommits
-    });
-
-    initSteps(options);
+    return initSteps(options);
   });
+
+function removeUndefined(obj = {}) {
+  return Object.keys(obj).reduce((acc, k) => {
+    if (obj[k] !== undefined) {
+      acc[k] = obj[k];
+    }
+    return acc;
+  }, {});
+}

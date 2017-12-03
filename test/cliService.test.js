@@ -53,7 +53,7 @@ describe('doBackportVersion', () => {
             pullRequest: 'myOtherPullRequest'
           }
         ],
-        version: '6.x',
+        branch: '6.x',
         username: 'sqren',
         labels: ['backport']
       })
@@ -90,7 +90,7 @@ describe('doBackportVersion', () => {
             message: 'myCommitMessage'
           }
         ],
-        version: '6.x',
+        branch: '6.x',
         username: 'sqren'
       })
       .then(res => {

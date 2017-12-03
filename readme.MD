@@ -26,9 +26,9 @@ npm install -g backport
 
 | Option              | Description                               | Accepts                     |
 | ------------------- | ----------------------------------------- | --------------------------- |
-| --multiple          | Backport multiple commits and/or versions | boolean                     |
+| --multiple          | Backport multiple commits and/or branches | boolean                     |
 | --multiple-commits  | Backport multiple commits                 | boolean (defaults to false) |
-| --multiple-versions | Backport to multiple versions             | boolean (defaults to true)  |
+| --multiple-branches | Backport to multiple branches             | boolean (defaults to true)  |
 | --sha               | Supply a commit sha to backport           | string                      |
 | --own               | Only show own commits                     | boolean (defaults to true)  |
 | --config            | Show configuration file                   |                             |
@@ -58,13 +58,13 @@ your Github username and a Github Access Token (can be created
   "projects": [
     {
       "upstream": "elastic/elasticsearch",
-      "versions": ["6.x", "6.1", "6.0"],
+      "branches": ["6.x", "6.1", "6.0"],
     },
     {
       "upstream": "elastic/kibana",
 
-      // You can pre-select versions you use often
-      "versions": [
+      // You can pre-select branches you use often
+      "branches": [
         { "name": "6.x", "checked": true },
         { "name": "6.1", "checked": true },
         "6.0"
@@ -76,8 +76,8 @@ your Github username and a Github Access Token (can be created
       // Backport multiple commits
       "multipleCommits": false,
 
-      // Backport to multiple versions
-      "multipleVersions": true,
+      // Backport to multiple branches
+      "multipleBranches": true,
 
       // Labels will be added to the PR
       "labels": ["backport"]

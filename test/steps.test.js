@@ -73,7 +73,7 @@ describe('run through steps', () => {
       username: 'sqren',
       accessToken: 'myAccessToken',
       upstream,
-      versions: ['6.x', '6.0', '5.6', '5.5', '5.4'],
+      branches: ['6.x', '6.0', '5.6', '5.5', '5.4'],
       own: true
     });
   });

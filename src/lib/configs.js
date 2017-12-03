@@ -91,9 +91,9 @@ function validateProjectConfig(config, filepath) {
 }
 
 function validateCombinedConfig(config) {
-  const { versions } = config;
-  if (isEmpty(versions)) {
-    throw new InvalidConfigError(`"versions" array in config cannot be empty`);
+  const { branches } = config;
+  if (isEmpty(branches)) {
+    throw new InvalidConfigError(`"branches" array in config cannot be empty`);
   }
   return config;
 }

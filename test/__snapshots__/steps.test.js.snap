@@ -89,7 +89,7 @@ Array [
           "5.5",
           "5.4",
         ],
-        "message": "Select version to backport to",
+        "message": "Select branch to backport to",
         "name": "promptResult",
         "type": "list",
       },

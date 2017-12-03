@@ -1,6 +1,6 @@
 {
   "name": "backport",
-  "version": "2.1.1",
+  "version": "2.1.1-beta",
   "main": "./src/cli/index.js",
   "bin": {
     "backport": "./src/cli/index.js"
@@ -15,10 +15,7 @@
     "precommit": "lint-staged"
   },
   "lint-staged": {
-    "*.js": [
-      "prettier --write",
-      "git add"
-    ]
+    "*.js": ["prettier --write", "git add"]
   },
   "repository": {
     "type": "git",

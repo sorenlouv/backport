@@ -37,18 +37,18 @@ function listCommits(commits, multipleChoice) {
     );
 }
 
-function listVersions(versions, multipleChoice) {
+function listBranches(branches, multipleChoice) {
   return prompt({
     type: multipleChoice ? 'checkbox' : 'list',
-    message: 'Select version to backport to',
-    choices: versions
+    message: 'Select branch to backport to',
+    choices: branches
   })
-    .then(version => (multipleChoice ? version : [version]))
+    .then(res => (multipleChoice ? res : [res]))
     .then(
-      selectedVersions =>
-        selectedVersions.length === 0
-          ? listCommits(versions, multipleChoice)
-          : selectedVersions
+      selectedBranches =>
+        selectedBranches.length === 0
+          ? listBranches(branches, multipleChoice)
+          : selectedBranches
     );
 }
 
@@ -63,5 +63,5 @@ module.exports = {
   confirmConflictResolved,
   listCommits,
   listProjects,
-  listVersions
+  listBranches
 };

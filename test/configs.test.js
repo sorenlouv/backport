@@ -33,7 +33,7 @@ describe('mergeConfigs', () => {
       projects: [
         {
           upstream: 'elastic/kibana',
-          versions: ['6.1', '6.0']
+          branches: ['6.1', '6.0']
         }
       ]
     };
@@ -43,7 +43,7 @@ describe('mergeConfigs', () => {
         accessToken: 'myAccessToken',
         username: 'sqren',
         upstream: 'elastic/kibana',
-        versions: ['6.1', '6.0']
+        branches: ['6.1', '6.0']
       }
     );
   });
@@ -51,7 +51,7 @@ describe('mergeConfigs', () => {
   it('should use projectConfig', () => {
     const projectConfig = {
       upstream: 'elastic/kibana',
-      versions: ['6.2', '6.0']
+      branches: ['6.2', '6.0']
     };
     const globalConfig = {
       accessToken: 'myAccessToken',
@@ -64,7 +64,7 @@ describe('mergeConfigs', () => {
         accessToken: 'myAccessToken',
         username: 'sqren',
         upstream: 'elastic/kibana',
-        versions: ['6.2', '6.0']
+        branches: ['6.2', '6.0']
       }
     );
   });
@@ -72,7 +72,7 @@ describe('mergeConfigs', () => {
   it('should override projectConfig with globalConfig', () => {
     const projectConfig = {
       upstream: 'elastic/kibana',
-      versions: ['6.2', '6.0']
+      branches: ['6.2', '6.0']
     };
     const globalConfig = {
       accessToken: 'myAccessToken',
@@ -80,7 +80,7 @@ describe('mergeConfigs', () => {
       projects: [
         {
           upstream: 'elastic/kibana',
-          versions: ['6.1', '6.0']
+          branches: ['6.1', '6.0']
         }
       ]
     };
@@ -90,7 +90,7 @@ describe('mergeConfigs', () => {
         accessToken: 'myAccessToken',
         username: 'sqren',
         upstream: 'elastic/kibana',
-        versions: ['6.1', '6.0']
+        branches: ['6.1', '6.0']
       }
     );
   });
