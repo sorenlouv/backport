@@ -1,4 +1,28 @@
 const configs = require('../src/lib/configs');
+const rpc = require('../src/lib/rpc');
+const os = require('os');
+
+describe('maybeCreateConfig', () => {
+  it('should create config and succeed', () => {
+    os.homedir = jest.fn(() => '/myHomeDir');
+    rpc.writeFile = jest.fn(() => Promise.resolve());
+
+    return configs.maybeCreateConfig().then(() => {
+      expect(rpc.writeFile).toHaveBeenCalledWith(
+        '/myHomeDir/.backport/config.json',
+        expect.stringContaining('"accessToken": ""'),
+        { flag: 'wx', mode: 384 }
+      );
+    });
+  });
+
+  it('should not fail if config already exists', () => {
+    const err = new Error();
+    err.code = 'EEXIST';
+    rpc.writeFile = jest.fn(() => Promise.reject(err));
+    return configs.maybeCreateConfig();
+  });
+});
 
 describe('mergeConfigs', () => {
   it('should use globalConfig if projectConfig is missing', () => {

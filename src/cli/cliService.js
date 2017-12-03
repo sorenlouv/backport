@@ -262,11 +262,12 @@ function withSpinner(promise, text, errorText) {
 module.exports = {
   doBackportVersion,
   doBackportVersions,
-  promptCommits,
   getCommitBySha,
+  getReferenceLong,
   handleErrors,
   maybeSetupRepo,
   parseUpstream,
+  promptCommits,
   promptVersions,
   withPullRequest
 };

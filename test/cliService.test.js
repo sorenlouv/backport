@@ -102,7 +102,7 @@ describe('doBackportVersion', () => {
   });
 });
 
-fdescribe('getCommitBySha', () => {
+describe('getCommitBySha', () => {
   beforeEach(() => {
     nock('https://api.github.com')
       .get(`/repos/elastic/kibana/commits/mySha`)
@@ -125,6 +125,20 @@ fdescribe('getCommitBySha', () => {
         sha: 'f3430595978a6123c65f7501e61386de62b80b6e'
       }
     ]);
+  });
+});
+
+describe('getReferenceLong', () => {
+  it('should return a sha', () => {
+    expect(cliService.getReferenceLong({ sha: 'mySha1234567' })).toEqual(
+      'mySha12'
+    );
+  });
+
+  it('should return a pr', () => {
+    expect(
+      cliService.getReferenceLong({ pullRequest: '1337', sha: 'mySha1234567' })
+    ).toEqual('#1337');
   });
 });
 

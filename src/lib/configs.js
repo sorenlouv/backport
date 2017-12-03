@@ -8,17 +8,14 @@ const env = require('./env');
 const rpc = require('./rpc');
 const prompts = require('./prompts');
 
-function maybeCreateConfig() {
-  return createGlobalFolders().then(createGlobalConfig);
-}
-
-function createGlobalFolders() {
+function maybeCreateConfigAndFolder() {
   const REPOS_PATH = env.getReposPath();
-  return rpc.mkdirp(REPOS_PATH);
+  return rpc.mkdirp(REPOS_PATH).then(maybeCreateConfig);
 }
 
-function createGlobalConfig() {
+function maybeCreateConfig() {
   const GLOBAL_CONFIG_PATH = env.getGlobalConfigPath();
+
   return getConfigTemplate().then(configTemplate => {
     return rpc
       .writeFile(GLOBAL_CONFIG_PATH, configTemplate, {
@@ -89,7 +86,7 @@ function hasRestrictedPermissions(GLOBAL_CONFIG_PATH) {
 
 function getGlobalConfig() {
   const GLOBAL_CONFIG_PATH = env.getGlobalConfigPath();
-  return maybeCreateConfig()
+  return maybeCreateConfigAndFolder()
     .then(() => rpc.readFile(GLOBAL_CONFIG_PATH, 'utf8'))
     .then(fileContents => {
       const globalConfig = JSON.parse(stripJsonComments(fileContents));
@@ -145,6 +142,7 @@ function mergeConfigs(projectConfig, globalConfig, upstream) {
 }
 
 module.exports = {
+  maybeCreateConfig,
   getCombinedConfig,
   mergeConfigs
 };
