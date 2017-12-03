@@ -1,5 +1,6 @@
 const axios = require('axios');
 const querystring = require('querystring');
+const get = require('lodash.get');
 const constants = require('./constants');
 
 let accessToken;
@@ -77,7 +78,7 @@ function getPullRequestByCommit(owner, repoName, commitSha) {
     }&access_token=${accessToken}`
   )
     .catch(handleError)
-    .then(res => res.data.items[0] && res.data.items[0].number);
+    .then(res => get(res.data.items[0], 'number'));
 }
 
 function setAccessToken(_accessToken) {
@@ -94,7 +95,7 @@ class GithubError extends Error {
 }
 
 function handleError(e) {
-  if (e.response && e.response.data) {
+  if (get(e.response, 'data')) {
     console.error(JSON.stringify(e.response.data, null, 4));
     throw new GithubError(e.response.data);
   }

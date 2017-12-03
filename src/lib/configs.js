@@ -153,7 +153,7 @@ function getCombinedConfig() {
 
 function mergeConfigs(projectConfig, globalConfig, upstream) {
   const globalProjectConfig =
-    globalConfig.projects &&
+    !isEmpty(globalConfig.projects) &&
     globalConfig.projects.find(project => project.upstream === upstream);
 
   return Object.assign(
