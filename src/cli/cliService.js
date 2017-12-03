@@ -104,13 +104,14 @@ function parseUpstream(upstream) {
 
 function maybeSetupRepo(owner, repoName, username) {
   return repoExists(owner, repoName).then(exists => {
-    if (!exists) {
-      return withSpinner(
-        setupRepo(owner, repoName, username),
-        'Cloning repository (may take a few minutes the first time)'
-      );
+    if (exists) {
+      return null;
     }
-    return false;
+
+    return withSpinner(
+      setupRepo(owner, repoName, username),
+      'Cloning repository (may take a few minutes the first time)'
+    );
   });
 }
 

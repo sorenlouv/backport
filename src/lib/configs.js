@@ -8,12 +8,12 @@ const env = require('./env');
 const rpc = require('./rpc');
 const prompts = require('./prompts');
 
-function maybeCreateConfigAndFolder() {
+function maybeCreateGlobalConfigAndFolder() {
   const REPOS_PATH = env.getReposPath();
-  return rpc.mkdirp(REPOS_PATH).then(maybeCreateConfig);
+  return rpc.mkdirp(REPOS_PATH).then(maybeCreateGlobalConfig);
 }
 
-function maybeCreateConfig() {
+function maybeCreateGlobalConfig() {
   const GLOBAL_CONFIG_PATH = env.getGlobalConfigPath();
 
   return getConfigTemplate().then(configTemplate => {
@@ -43,7 +43,8 @@ class InvalidConfigError extends Error {
   }
 }
 
-function validateGlobalConfig({ username, accessToken }) {
+function validateGlobalConfig(config) {
+  const { username, accessToken } = config;
   const GLOBAL_CONFIG_PATH = env.getGlobalConfigPath();
 
   if (!username && !accessToken) {
@@ -75,6 +76,26 @@ function validateGlobalConfig({ username, accessToken }) {
         chmod 600 "${GLOBAL_CONFIG_PATH}"\n`
     );
   }
+
+  return config;
+}
+
+function validateProjectConfig(config, filepath) {
+  const { upstream } = config;
+  if (!upstream) {
+    throw new InvalidConfigError(
+      `Your config must contain "upstream" property: ${filepath}`
+    );
+  }
+  return config;
+}
+
+function validateCombinedConfig(config) {
+  const { versions } = config;
+  if (isEmpty(versions)) {
+    throw new InvalidConfigError(`"versions" array in config cannot be empty`);
+  }
+  return config;
 }
 
 function hasRestrictedPermissions(GLOBAL_CONFIG_PATH) {
@@ -84,26 +105,29 @@ function hasRestrictedPermissions(GLOBAL_CONFIG_PATH) {
   return !hasGroupRead && !hasOthersRead;
 }
 
+function readConfigFile(filepath) {
+  return rpc
+    .readFile(filepath, 'utf8')
+    .then(fileContents => JSON.parse(stripJsonComments(fileContents)));
+}
+
 function getGlobalConfig() {
   const GLOBAL_CONFIG_PATH = env.getGlobalConfigPath();
-  return maybeCreateConfigAndFolder()
-    .then(() => rpc.readFile(GLOBAL_CONFIG_PATH, 'utf8'))
-    .then(fileContents => {
-      const globalConfig = JSON.parse(stripJsonComments(fileContents));
-      validateGlobalConfig(globalConfig);
-      return globalConfig;
-    });
+  return maybeCreateGlobalConfigAndFolder()
+    .then(() => readConfigFile(GLOBAL_CONFIG_PATH))
+    .then(validateGlobalConfig);
 }
 
 function getProjectConfig() {
-  return findUp('.backportrc.json')
-    .then(filepath => {
-      if (!filepath) {
-        return null;
-      }
-      return rpc.readFile(filepath, 'utf8');
-    })
-    .then(fileContents => JSON.parse(stripJsonComments(fileContents)));
+  return findUp('.backportrc.json').then(filepath => {
+    if (!filepath) {
+      return null;
+    }
+
+    return readConfigFile(filepath).then(config =>
+      validateProjectConfig(config, filepath)
+    );
+  });
 }
 
 function getCombinedConfig() {
@@ -120,7 +144,9 @@ function getCombinedConfig() {
             mergeConfigs(projectConfig, globalConfig, upstream)
           );
       }
-      return mergeConfigs(projectConfig, globalConfig, projectConfig.upstream);
+      return validateCombinedConfig(
+        mergeConfigs(projectConfig, globalConfig, projectConfig.upstream)
+      );
     }
   );
 }
@@ -142,7 +168,7 @@ function mergeConfigs(projectConfig, globalConfig, upstream) {
 }
 
 module.exports = {
-  maybeCreateConfig,
+  maybeCreateGlobalConfig,
   getCombinedConfig,
   mergeConfigs
 };

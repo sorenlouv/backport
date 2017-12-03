@@ -2,12 +2,12 @@ const configs = require('../src/lib/configs');
 const rpc = require('../src/lib/rpc');
 const os = require('os');
 
-describe('maybeCreateConfig', () => {
+describe('maybeCreateGlobalConfig', () => {
   it('should create config and succeed', () => {
     os.homedir = jest.fn(() => '/myHomeDir');
     rpc.writeFile = jest.fn(() => Promise.resolve());
 
-    return configs.maybeCreateConfig().then(() => {
+    return configs.maybeCreateGlobalConfig().then(() => {
       expect(rpc.writeFile).toHaveBeenCalledWith(
         '/myHomeDir/.backport/config.json',
         expect.stringContaining('"accessToken": ""'),
@@ -20,7 +20,7 @@ describe('maybeCreateConfig', () => {
     const err = new Error();
     err.code = 'EEXIST';
     rpc.writeFile = jest.fn(() => Promise.reject(err));
-    return configs.maybeCreateConfig();
+    return configs.maybeCreateGlobalConfig();
   });
 });
 
