@@ -6,10 +6,10 @@ function prompt(options) {
     .then(({ promptResult }) => promptResult);
 }
 
-function listFullRepoName(repoNames) {
+function listProjects(repoNames) {
   return prompt({
     type: 'list',
-    message: 'Select repository',
+    message: 'Select project',
     choices: repoNames
   });
 }
@@ -62,6 +62,6 @@ function confirmConflictResolved() {
 module.exports = {
   confirmConflictResolved,
   listCommits,
-  listFullRepoName,
+  listProjects,
   listVersions
 };

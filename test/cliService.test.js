@@ -1,11 +1,11 @@
 const axios = require('axios');
-const inquirer = require('inquirer');
 const nock = require('nock');
 const os = require('os');
 const httpAdapter = require('axios/lib/adapters/http');
 
-const cliService = require('../cliService');
-const rpc = require('../../lib/rpc');
+const cliService = require('../src/cli/cliService');
+const rpc = require('../src/lib/rpc');
+const commitMock = require('./mocks/commit.json');
 
 axios.defaults.host = 'http://localhost';
 axios.defaults.adapter = httpAdapter;
@@ -102,6 +102,32 @@ describe('doBackportVersion', () => {
   });
 });
 
+fdescribe('getCommitBySha', () => {
+  beforeEach(() => {
+    nock('https://api.github.com')
+      .get(`/repos/elastic/kibana/commits/mySha`)
+      .query(true)
+      .reply(200, commitMock);
+
+    return cliService
+      .getCommitBySha({
+        owner: 'elastic',
+        repoName: 'kibana',
+        sha: 'mySha'
+      })
+      .then(commits => (this.commits = commits));
+  });
+
+  it('should return a single commit in an array', () => {
+    expect(this.commits).toEqual([
+      {
+        message: '[Chrome] Bootstrap Angular into document.body (#15158)',
+        sha: 'f3430595978a6123c65f7501e61386de62b80b6e'
+      }
+    ]);
+  });
+});
+
 describe('withPullRequest', () => {
   function mockGithubIssuesResponse(res) {
     return nock('https://api.github.com')
@@ -140,59 +166,5 @@ describe('withPullRequest', () => {
           }
         ])
       );
-  });
-});
-
-describe('promptRepoInfo', () => {
-  function mockPrompt() {
-    inquirer.prompt = jest
-      .fn()
-      .mockReturnValueOnce(Promise.resolve({ promptResult: 'elastic/kibana' }));
-  }
-
-  describe('without matching cwd', () => {
-    beforeEach(() => {
-      mockPrompt();
-
-      return cliService
-        .promptRepoInfo(
-          [{ name: 'elastic/kibana' }, { name: 'elastic/elasticsearch' }],
-          '/foo/bar'
-        )
-        .then(res => (this.res = res));
-    });
-
-    it('should call prompt with available repositories', () => {
-      expect(inquirer.prompt).toHaveBeenCalledWith([
-        expect.objectContaining({
-          choices: ['elastic/kibana', 'elastic/elasticsearch']
-        })
-      ]);
-    });
-
-    it('should return selected repository', () => {
-      expect(this.res).toEqual({ owner: 'elastic', repoName: 'kibana' });
-    });
-  });
-
-  describe('with matching cwd', () => {
-    beforeEach(() => {
-      mockPrompt();
-
-      return cliService
-        .promptRepoInfo(
-          [{ name: 'elastic/kibana' }, { name: 'elastic/elasticsearch' }],
-          '/foo/elasticsearch'
-        )
-        .then(res => (this.res = res));
-    });
-
-    it('should not call prompt', () => {
-      expect(inquirer.prompt).not.toHaveBeenCalled();
-    });
-
-    it('should return selected repository', () => {
-      expect(this.res).toEqual({ owner: 'elastic', repoName: 'elasticsearch' });
-    });
   });
 });

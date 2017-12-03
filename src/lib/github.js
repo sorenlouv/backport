@@ -29,8 +29,7 @@ function getCommits(owner, repoName, author) {
         const message = getCommitMessage(commit.commit.message);
         return {
           message,
-          sha: commit.sha,
-          date: commit.commit.author.date
+          sha: commit.sha
         };
       })
     );
@@ -45,8 +44,7 @@ function getCommit(owner, repoName, sha) {
     .catch(handleError)
     .then(res => ({
       message: res.data.commit.message,
-      sha: res.data.sha,
-      date: res.data.commit.author.date
+      sha: res.data.sha
     }));
 }
 
@@ -97,6 +95,7 @@ class GithubError extends Error {
 
 function handleError(e) {
   if (e.response && e.response.data) {
+    console.error(JSON.stringify(e.response.data, null, 4));
     throw new GithubError(e.response.data);
   }
 

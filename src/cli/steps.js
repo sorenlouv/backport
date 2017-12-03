@@ -1,33 +1,31 @@
 const github = require('../lib/github');
 const {
-  ensureConfigAndFoldersExists,
-  validateConfig,
-  getRepoConfig
-} = require('../lib/configs');
-const {
-  promptRepoInfo,
-  getCommits,
+  promptCommits,
+  getCommitBySha,
   promptVersions,
   doBackportVersions,
   handleErrors,
-  maybeSetupRepo
+  maybeSetupRepo,
+  parseUpstream
 } = require('./cliService');
 
 function initSteps(options) {
-  let commits, versions, owner, repoName, repoConfig;
+  const { owner, repoName } = parseUpstream(options.upstream);
+  let commits, versions;
+  github.setAccessToken(options.accessToken);
 
-  return ensureConfigAndFoldersExists()
-    .then(() => validateConfig(options))
-    .then(() => github.setAccessToken(options.accessToken))
-    .then(() => promptRepoInfo(options.repositories, options.cwd))
-    .then(({ owner: _owner, repoName: _repoName }) => {
-      owner = _owner;
-      repoName = _repoName;
-      repoConfig = getRepoConfig(owner, repoName, options.repositories);
-    })
-    .then(() => getCommits(owner, repoName, options))
+  const promise = options.sha
+    ? getCommitBySha({ owner, repoName, sha: options.sha })
+    : promptCommits({
+        owner,
+        repoName,
+        author: options.own ? options.username : null,
+        multipleCommits: options.multipleCommits
+      });
+
+  return promise
     .then(c => (commits = c))
-    .then(() => promptVersions(repoConfig.versions, options.multipleVersions))
+    .then(() => promptVersions(options.versions, options.multipleVersions))
     .then(v => (versions = v))
     .then(() => maybeSetupRepo(owner, repoName, options.username))
     .then(() =>
@@ -37,7 +35,7 @@ function initSteps(options) {
         commits,
         versions,
         username: options.username,
-        labels: repoConfig.labels
+        labels: options.labels
       })
     )
     .catch(handleErrors);

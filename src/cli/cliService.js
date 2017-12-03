@@ -1,5 +1,4 @@
 const ora = require('ora');
-const path = require('path');
 const prompts = require('../lib/prompts');
 const github = require('../lib/github');
 const constants = require('../lib/constants');
@@ -97,21 +96,9 @@ function withPullRequest(owner, repoName, commits) {
   );
 }
 
-function promptRepoInfo(repositories, cwd) {
-  return Promise.resolve()
-    .then(() => {
-      const fullRepoNames = repositories.map(repo => repo.name);
-      const currentFullRepoName = getCurrentFullRepoName(fullRepoNames, cwd);
-      if (currentFullRepoName) {
-        console.log(`Repository: ${currentFullRepoName}`);
-        return currentFullRepoName;
-      }
-      return prompts.listFullRepoName(fullRepoNames);
-    })
-    .then(fullRepoName => {
-      const [owner, repoName] = fullRepoName.split('/');
-      return { owner, repoName };
-    });
+function parseUpstream(upstream) {
+  const [owner, repoName] = upstream.split('/');
+  return { owner, repoName };
 }
 
 function maybeSetupRepo(owner, repoName, username) {
@@ -125,43 +112,34 @@ function maybeSetupRepo(owner, repoName, username) {
   });
 }
 
-function getCommits(owner, repoName, options) {
-  if (options.sha) {
-    const spinner = ora().start();
-    return github
-      .getCommit(owner, repoName, options.sha)
-      .catch(err => {
-        spinner.stop();
-        throw err;
-      })
-      .then(commit => {
-        spinner.stopAndPersist({
-          symbol: chalk.green('?'),
-          text: `${chalk.bold('Select commit')} ${chalk.cyan(commit.message)}`
-        });
-        return [commit];
+function getCommitBySha({ owner, repoName, sha }) {
+  const spinner = ora().start();
+  return github
+    .getCommit(owner, repoName, sha)
+    .catch(e => {
+      spinner.stop();
+      throw e;
+    })
+    .then(commit => {
+      spinner.stopAndPersist({
+        symbol: chalk.green('?'),
+        text: `${chalk.bold('Select commit')} ${chalk.cyan(commit.message)}`
       });
-  }
-
-  return promptCommit(
-    owner,
-    repoName,
-    options.own ? options.username : null,
-    options.multipleCommits
-  );
+      return [commit];
+    });
 }
 
-function promptCommit(owner, repoName, username, multipleChoice) {
+function promptCommits({ owner, repoName, author, multipleCommits }) {
   const spinner = ora('Loading commits...').start();
   return github
-    .getCommits(owner, repoName, username)
+    .getCommits(owner, repoName, author)
     .catch(e => {
       spinner.fail();
       throw e;
     })
     .then(commits => {
       spinner.stop();
-      return prompts.listCommits(commits, multipleChoice);
+      return prompts.listCommits(commits, multipleCommits);
     });
 }
 
@@ -171,14 +149,11 @@ function promptVersions(versions, multipleChoice = false) {
 
 function handleErrors(e) {
   switch (e.code) {
-    case constants.INVALID_CONFIG:
-      console.log(e.message);
-      break;
-
+    // Handled exceptions
     case constants.GITHUB_ERROR:
-      console.error(JSON.stringify(e.response, null, 4));
       break;
 
+    // Unhandled exceptions
     default:
       console.error(e);
   }
@@ -246,11 +221,6 @@ function confirmResolvedRecursive(owner, repoName) {
     );
 }
 
-function getCurrentFullRepoName(fullRepoNames, cwd) {
-  const currentDir = path.basename(cwd);
-  return fullRepoNames.find(name => name.endsWith(`/${currentDir}`));
-}
-
 function getPullRequestPayload(version, commits, username) {
   const backportBranchName = getBackportBranchName(version, commits);
   const commitRefs = commits
@@ -290,12 +260,13 @@ function withSpinner(promise, text, errorText) {
 }
 
 module.exports = {
-  doBackportVersions,
-  handleErrors,
   doBackportVersion,
-  promptRepoInfo,
+  doBackportVersions,
+  promptCommits,
+  getCommitBySha,
+  handleErrors,
   maybeSetupRepo,
-  getCommits,
+  parseUpstream,
   promptVersions,
   withPullRequest
 };

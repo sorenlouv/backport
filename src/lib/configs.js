@@ -1,34 +1,37 @@
 const path = require('path');
 const fs = require('fs');
+const isEmpty = require('lodash.isempty');
 const stripJsonComments = require('strip-json-comments');
+const findUp = require('find-up');
 const constants = require('./constants');
 const env = require('./env');
 const rpc = require('./rpc');
+const prompts = require('./prompts');
 
-function ensureConfigAndFoldersExists() {
-  const REPOS_PATH = env.getReposPath();
-  const CONFIG_PATH = env.getConfigPath();
-
-  return rpc
-    .mkdirp(REPOS_PATH)
-    .then(getConfigTemplate)
-    .then(configTemplate => {
-      return rpc
-        .writeFile(CONFIG_PATH, configTemplate, {
-          flag: 'wx', // create and write file. Error if it already exists
-          mode: 0o600 // give the owner read-write privleges, no access for others
-        })
-        .catch(e => {
-          const FILE_ALREADY_EXISTS = 'EEXIST';
-          if (e.code !== FILE_ALREADY_EXISTS) {
-            throw e;
-          }
-        });
-    });
+function maybeCreateConfig() {
+  return createGlobalFolders().then(createGlobalConfig);
 }
 
-function getRepoConfig(owner, repoName, repositories) {
-  return repositories.find(repo => repo.name === `${owner}/${repoName}`);
+function createGlobalFolders() {
+  const REPOS_PATH = env.getReposPath();
+  return rpc.mkdirp(REPOS_PATH);
+}
+
+function createGlobalConfig() {
+  const GLOBAL_CONFIG_PATH = env.getGlobalConfigPath();
+  return getConfigTemplate().then(configTemplate => {
+    return rpc
+      .writeFile(GLOBAL_CONFIG_PATH, configTemplate, {
+        flag: 'wx', // create and write file. Error if it already exists
+        mode: 0o600 // give the owner read-write privleges, no access for others
+      })
+      .catch(e => {
+        const FILE_ALREADY_EXISTS = 'EEXIST';
+        if (e.code !== FILE_ALREADY_EXISTS) {
+          throw e;
+        }
+      });
+  });
 }
 
 function getConfigTemplate() {
@@ -43,73 +46,105 @@ class InvalidConfigError extends Error {
   }
 }
 
-function validateConfig({ username, accessToken, repositories }) {
-  const CONFIG_PATH = env.getConfigPath();
-  const hasCorrectPerms = hasConfigCorrectPermissions(CONFIG_PATH);
+function validateGlobalConfig({ username, accessToken }) {
+  const GLOBAL_CONFIG_PATH = env.getGlobalConfigPath();
 
   if (!username && !accessToken) {
     throw new InvalidConfigError(
-      `Welcome to the Backport tool. Please add your Github username, and a Github access token to the config: ${
-        CONFIG_PATH
+      `Please add your Github username, and Github access token to the config: ${
+        GLOBAL_CONFIG_PATH
       }`
     );
   }
 
   if (!username) {
     throw new InvalidConfigError(
-      `Please add your username to the config: ${CONFIG_PATH}`
+      `Please add your Github username to the config: ${GLOBAL_CONFIG_PATH}`
     );
   }
 
   if (!accessToken) {
     throw new InvalidConfigError(
-      `Please add a Github access token to the config: ${CONFIG_PATH}`
+      `Please add your Github access token to the config: ${GLOBAL_CONFIG_PATH}`
     );
   }
 
-  if (!repositories || repositories.length === 0) {
-    throw new InvalidConfigError(
-      `You must add at least 1 repository: ${CONFIG_PATH}`
-    );
-  }
-
-  if (!hasCorrectPerms) {
+  const isConfigValid = hasRestrictedPermissions(GLOBAL_CONFIG_PATH);
+  if (!isConfigValid) {
     throw new InvalidConfigError(
       `Config file at ${
-        CONFIG_PATH
-      } needs to have more restrictive permissions. Run the ` +
-        'following to limit access to the file to just your user account:\n' +
-        '\n' +
-        `  chmod 600 "${CONFIG_PATH}"\n`
+        GLOBAL_CONFIG_PATH
+      } needs to have more restrictive permissions. Run the following to limit access to the file to just your user account:
+        chmod 600 "${GLOBAL_CONFIG_PATH}"\n`
     );
   }
 }
 
-function hasConfigCorrectPermissions(CONFIG_PATH) {
-  const stat = rpc.statSync(CONFIG_PATH);
+function hasRestrictedPermissions(GLOBAL_CONFIG_PATH) {
+  const stat = rpc.statSync(GLOBAL_CONFIG_PATH);
   const hasGroupRead = stat.mode & fs.constants.S_IRGRP;
   const hasOthersRead = stat.mode & fs.constants.S_IROTH;
   return !hasGroupRead && !hasOthersRead;
 }
 
-function getConfig() {
-  const CONFIG_PATH = env.getConfigPath();
+function getGlobalConfig() {
+  const GLOBAL_CONFIG_PATH = env.getGlobalConfigPath();
+  return maybeCreateConfig()
+    .then(() => rpc.readFile(GLOBAL_CONFIG_PATH, 'utf8'))
+    .then(fileContents => {
+      const globalConfig = JSON.parse(stripJsonComments(fileContents));
+      validateGlobalConfig(globalConfig);
+      return globalConfig;
+    });
+}
 
-  try {
-    const res = fs.readFileSync(CONFIG_PATH, 'utf8');
-    return JSON.parse(stripJsonComments(res));
-  } catch (e) {
-    if (e.code === 'ENOENT') {
-      return {};
+function getProjectConfig() {
+  return findUp('.backportrc.json')
+    .then(filepath => {
+      if (!filepath) {
+        return null;
+      }
+      return rpc.readFile(filepath, 'utf8');
+    })
+    .then(fileContents => JSON.parse(stripJsonComments(fileContents)));
+}
+
+function getCombinedConfig() {
+  return Promise.all([getProjectConfig(), getGlobalConfig()]).then(
+    ([projectConfig, globalConfig]) => {
+      if (!projectConfig) {
+        if (isEmpty(globalConfig.projects)) {
+          throw new InvalidConfigError('.backportrc.json was not found');
+        }
+
+        return prompts
+          .listProjects(globalConfig.projects.map(project => project.upstream))
+          .then(upstream =>
+            mergeConfigs(projectConfig, globalConfig, upstream)
+          );
+      }
+      return mergeConfigs(projectConfig, globalConfig, projectConfig.upstream);
     }
+  );
+}
 
-    throw e;
-  }
+function mergeConfigs(projectConfig, globalConfig, upstream) {
+  const globalProjectConfig =
+    globalConfig.projects &&
+    globalConfig.projects.find(project => project.upstream === upstream);
+
+  return Object.assign(
+    {},
+    projectConfig,
+    {
+      accessToken: globalConfig.accessToken,
+      username: globalConfig.username
+    },
+    globalProjectConfig
+  );
 }
 
 module.exports = {
-  ensureConfigAndFoldersExists,
-  getConfig,
-  getRepoConfig,
-  validateConfig
+  getCombinedConfig,
+  mergeConfigs
 };

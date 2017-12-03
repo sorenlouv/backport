@@ -54,23 +54,14 @@ your Github username and a Github Access Token (can be created
   // Github username, eg. kimchy
   "username": "",
 
-  // Only allow picking own commits to backport
-  "own": true,
-
-  // Backport multiple commits
-  "multipleCommits": false,
-
-  // Backport to multiple versions
-  "multipleVersions": true,
-
-  // Repositories and the versions that will be available in backport cli
-  "repositories": [
+  // Override project-specific setting
+  "projects": [
     {
-      "name": "elastic/elasticsearch",
-      "versions": ["6.x", "6.1", "6.0"]
+      "upstream": "elastic/elasticsearch",
+      "versions": ["6.x", "6.1", "6.0"],
     },
     {
-      "name": "elastic/kibana",
+      "upstream": "elastic/kibana",
 
       // You can pre-select versions you use often
       "versions": [
@@ -78,6 +69,17 @@ your Github username and a Github Access Token (can be created
         { "name": "6.1", "checked": true },
         "6.0"
       ]
+
+      // Only allow picking own commits to backport
+      "own": true,
+
+      // Backport multiple commits
+      "multipleCommits": false,
+
+      // Backport to multiple versions
+      "multipleVersions": true,
+
+      // Labels will be added to the PR
       "labels": ["backport"]
     }
   ]
