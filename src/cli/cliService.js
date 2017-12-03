@@ -1,9 +1,10 @@
 const ora = require('ora');
+const chalk = require('chalk');
+
 const prompts = require('../lib/prompts');
 const github = require('../lib/github');
 const constants = require('../lib/constants');
 const { getRepoPath } = require('../lib/env');
-const chalk = require('chalk');
 
 const {
   resetAndPullMaster,
@@ -109,6 +110,7 @@ function maybeSetupRepo(owner, repoName, username) {
         'Cloning repository (may take a few minutes the first time)'
       );
     }
+    return false;
   });
 }
 

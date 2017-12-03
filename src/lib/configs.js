@@ -79,8 +79,8 @@ function validateGlobalConfig({ username, accessToken }) {
 
 function hasRestrictedPermissions(GLOBAL_CONFIG_PATH) {
   const stat = rpc.statSync(GLOBAL_CONFIG_PATH);
-  const hasGroupRead = stat.mode & fs.constants.S_IRGRP;
-  const hasOthersRead = stat.mode & fs.constants.S_IROTH;
+  const hasGroupRead = stat.mode & fs.constants.S_IRGRP; // eslint-disable-line no-bitwise
+  const hasOthersRead = stat.mode & fs.constants.S_IROTH; // eslint-disable-line no-bitwise
   return !hasGroupRead && !hasOthersRead;
 }
 

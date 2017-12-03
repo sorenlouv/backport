@@ -24,9 +24,13 @@ function initSteps(options) {
       });
 
   return promise
-    .then(c => (commits = c))
+    .then(c => {
+      commits = c;
+    })
     .then(() => promptVersions(options.versions, options.multipleVersions))
-    .then(v => (versions = v))
+    .then(v => {
+      versions = v;
+    })
     .then(() => maybeSetupRepo(owner, repoName, options.username))
     .then(() =>
       doBackportVersions({

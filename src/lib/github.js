@@ -1,8 +1,8 @@
 const axios = require('axios');
 const querystring = require('querystring');
 const constants = require('./constants');
-let accessToken;
 
+let accessToken;
 function getCommitMessage(message) {
   return message.split('\n')[0].trim();
 }
