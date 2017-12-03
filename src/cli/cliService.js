@@ -72,17 +72,18 @@ function doBackportVersion({
     )
     .then(() => {
       const payload = getPullRequestPayload(version, commits, username);
-      return withSpinner(
-        github.createPullRequest(owner, repoName, payload).then(res => {
+      const promise = github
+        .createPullRequest(owner, repoName, payload)
+        .then(res => {
           if (labels.length > 0) {
             return github
               .addLabels(owner, repoName, res.data.number, labels)
               .then(() => res);
           }
           return res;
-        }),
-        'Creating pull request'
-      );
+        });
+
+      return withSpinner(promise, 'Creating pull request');
     });
 }
 
@@ -154,6 +155,7 @@ function handleErrors(e) {
   switch (e.code) {
     // Handled exceptions
     case constants.GITHUB_ERROR:
+      console.error(JSON.stringify(e.message, null, 4));
       break;
 
     // Unhandled exceptions

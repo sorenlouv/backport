@@ -86,17 +86,16 @@ function setAccessToken(_accessToken) {
 }
 
 class GithubError extends Error {
-  constructor(response) {
+  constructor(message) {
     super();
     Error.captureStackTrace(this, GithubError);
     this.code = constants.GITHUB_ERROR;
-    this.response = response;
+    this.message = message;
   }
 }
 
 function handleError(e) {
   if (get(e.response, 'data')) {
-    console.error(JSON.stringify(e.response.data, null, 4));
     throw new GithubError(e.response.data);
   }
 
