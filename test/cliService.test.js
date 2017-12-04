@@ -10,26 +10,6 @@ const commitMock = require('./mocks/commit.json');
 axios.defaults.host = 'http://localhost';
 axios.defaults.adapter = httpAdapter;
 
-jest.mock('../src/lib/logger', () => {
-  return {
-    log: () => {},
-    error: () => {}
-  };
-});
-
-jest.mock('ora', () => {
-  return () => {
-    return {
-      start: () => ({
-        succeed: () => {},
-        stop: () => {},
-        fail: () => {},
-        stopAndPersist: () => {}
-      })
-    };
-  };
-});
-
 describe('doBackportVersion', () => {
   beforeEach(() => {
     os.homedir = jest.fn(() => '/homefolder');

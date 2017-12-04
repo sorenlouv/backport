@@ -10,26 +10,6 @@ const initSteps = require('../src/cli/steps');
 const github = require('../src/lib/github');
 const rpc = require('../src/lib/rpc');
 
-jest.mock('../src/lib/logger', () => {
-  return {
-    log: () => {},
-    error: () => {}
-  };
-});
-
-jest.mock('ora', () => {
-  return () => {
-    return {
-      start: () => ({
-        succeed: () => {},
-        stop: () => {},
-        fail: () => {},
-        stopAndPersist: () => {}
-      })
-    };
-  };
-});
-
 describe('run through steps', () => {
   beforeEach(() => {
     const owner = 'elastic';
