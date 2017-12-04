@@ -27,6 +27,10 @@ const args = yargs
     description: 'Only show own commits',
     type: 'boolean'
   })
+  .option('show-config', {
+    description: 'Show config settings',
+    type: 'boolean'
+  })
   .option('sha', {
     description: 'Supply a commit sha to backport',
     type: 'string'
@@ -41,6 +45,11 @@ getCombinedConfig()
     process.exit(1);
   })
   .then(config => {
+    if (args.showConfig) {
+      console.log(JSON.stringify(config, null, 4));
+      process.exit(0);
+    }
+
     const options = Object.assign(
       {
         multipleBranches: true,

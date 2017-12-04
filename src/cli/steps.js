@@ -5,12 +5,12 @@ const {
   promptBranches,
   doBackportVersions,
   handleErrors,
-  maybeSetupRepo,
-  parseUpstream
+  maybeSetupRepo
 } = require('./cliService');
 
 function initSteps(options) {
-  const { owner, repoName } = parseUpstream(options.upstream);
+  const [owner, repoName] = options.upstream.split('/');
+
   let commits, branches;
   github.setAccessToken(options.accessToken);
 

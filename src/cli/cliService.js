@@ -89,20 +89,14 @@ function doBackportVersion({
 
 // Add pull request info to commit if it exists
 function withPullRequest(owner, repoName, commits) {
-  return withSpinner(
-    Promise.all(
-      commits.map(commit => {
-        return github
-          .getPullRequestByCommit(owner, repoName, commit.sha)
-          .then(pullRequest => Object.assign({}, commit, { pullRequest }));
-      })
-    )
+  const promise = Promise.all(
+    commits.map(commit => {
+      return github
+        .getPullRequestByCommit(owner, repoName, commit.sha)
+        .then(pullRequest => Object.assign({}, commit, { pullRequest }));
+    })
   );
-}
-
-function parseUpstream(upstream) {
-  const [owner, repoName] = upstream.split('/');
-  return { owner, repoName };
+  return withSpinner(promise);
 }
 
 function maybeSetupRepo(owner, repoName, username) {
@@ -277,7 +271,6 @@ module.exports = {
   getReferenceLong,
   handleErrors,
   maybeSetupRepo,
-  parseUpstream,
   promptCommits,
   promptBranches,
   withPullRequest

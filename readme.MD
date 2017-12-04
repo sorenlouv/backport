@@ -29,8 +29,9 @@ npm install -g backport
 | --multiple          | Backport multiple commits and/or branches | boolean                     |
 | --multiple-commits  | Backport multiple commits                 | boolean (defaults to false) |
 | --multiple-branches | Backport to multiple branches             | boolean (defaults to true)  |
-| --sha               | Supply a commit sha to backport           | string                      |
 | --own               | Only show own commits                     | boolean (defaults to true)  |
+| --show-config       | Show configuration                        |                             |
+| --sha               | Commit sha to backport                    | string                      |
 | --help              | Show help                                 |                             |
 | -v, --version       | Show version number                       |                             |
 
