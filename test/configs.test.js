@@ -7,14 +7,12 @@ describe('config.js', () => {
   afterEach(() => jest.restoreAllMocks());
 
   describe('getProjectConfig', () => {
-    beforeEach(() => {
-      jest
-        .spyOn(rpc, 'findUp')
-        .mockReturnValue(Promise.resolve('/path/to/config'));
-    });
-
     describe('when projectConfig is valid', () => {
       beforeEach(() => {
+        jest
+          .spyOn(rpc, 'findUp')
+          .mockReturnValue(Promise.resolve('/path/to/config'));
+
         jest
           .spyOn(rpc, 'readFile')
           .mockReturnValue(
@@ -37,6 +35,10 @@ describe('config.js', () => {
 
     describe('when projectConfig is empty', () => {
       it('should throw error', () => {
+        jest
+          .spyOn(rpc, 'findUp')
+          .mockReturnValue(Promise.resolve('/path/to/config'));
+
         jest.spyOn(rpc, 'readFile').mockReturnValueOnce(Promise.resolve('{}'));
         expect.assertions(1);
 
@@ -45,6 +47,14 @@ describe('config.js', () => {
             'Your config (/path/to/config) must contain "upstream" property'
           );
         });
+      });
+    });
+
+    describe('when projectConfig is missing', () => {
+      it('should throw error', () => {
+        jest.spyOn(rpc, 'findUp').mockReturnValue(Promise.resolve(null));
+        expect.assertions(1);
+        return expect(configs.getProjectConfig()).resolves.toBe(null);
       });
     });
   });
