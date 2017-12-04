@@ -143,8 +143,8 @@ function promptCommits({ owner, repoName, author, multipleCommits }) {
     });
 }
 
-function promptBranches(branches, multipleChoice = false) {
-  return prompts.listBranches(branches, multipleChoice);
+function promptBranches(branches, isMultipleChoice = false) {
+  return prompts.listBranches(branches, isMultipleChoice);
 }
 
 function handleErrors(e) {

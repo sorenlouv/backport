@@ -14,11 +14,11 @@ function listProjects(repoNames) {
   });
 }
 
-function listCommits(commits, multipleChoice) {
+function listCommits(commits, isMultipleChoice) {
   const pageSize = Math.min(10, commits.length);
   return prompt({
     pageSize,
-    type: multipleChoice ? 'checkbox' : 'list',
+    type: isMultipleChoice ? 'checkbox' : 'list',
     message: 'Select commit to backport',
     choices: commits
       .map(commit => ({
@@ -28,26 +28,26 @@ function listCommits(commits, multipleChoice) {
       }))
       .concat(commits.length > pageSize ? new inquirer.Separator() : [])
   })
-    .then(commit => (multipleChoice ? commit.reverse() : [commit]))
+    .then(commit => (isMultipleChoice ? commit.reverse() : [commit]))
     .then(
       selectedCommits =>
         selectedCommits.length === 0
-          ? listCommits(commits, multipleChoice)
+          ? listCommits(commits, isMultipleChoice)
           : selectedCommits
     );
 }
 
-function listBranches(branches, multipleChoice) {
+function listBranches(branches, isMultipleChoice) {
   return prompt({
-    type: multipleChoice ? 'checkbox' : 'list',
+    type: isMultipleChoice ? 'checkbox' : 'list',
     message: 'Select branch to backport to',
     choices: branches
   })
-    .then(res => (multipleChoice ? res : [res]))
+    .then(res => (isMultipleChoice ? res : [res]))
     .then(
       selectedBranches =>
         selectedBranches.length === 0
-          ? listBranches(branches, multipleChoice)
+          ? listBranches(branches, isMultipleChoice)
           : selectedBranches
     );
 }

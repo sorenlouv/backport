@@ -32,7 +32,7 @@ const args = yargs
     type: 'boolean'
   })
   .option('sha', {
-    description: 'Supply a commit sha to backport',
+    description: 'Commit sha to backport',
     type: 'string'
   })
   .alias('v', 'version')
