@@ -3,7 +3,6 @@ const fs = require('fs');
 const isEmpty = require('lodash.isempty');
 const get = require('lodash.get');
 const stripJsonComments = require('strip-json-comments');
-const findUp = require('find-up');
 const constants = require('./constants');
 const env = require('./env');
 const rpc = require('./rpc');
@@ -85,7 +84,7 @@ function validateProjectConfig(config, filepath) {
   const { upstream } = config;
   if (!upstream) {
     throw new InvalidConfigError(
-      `Your config must contain "upstream" property: ${filepath}`
+      `Your config (${filepath}) must contain "upstream" property`
     );
   }
   return config;
@@ -126,7 +125,7 @@ function getGlobalConfig() {
 }
 
 function getProjectConfig() {
-  return findUp('.backportrc.json').then(filepath => {
+  return rpc.findUp('.backportrc.json').then(filepath => {
     if (!filepath) {
       return null;
     }
@@ -185,6 +184,7 @@ function mergeConfigs(projectConfig, globalConfig, upstream) {
 }
 
 module.exports = {
+  getProjectConfig,
   maybeCreateGlobalConfig,
   getCombinedConfig,
   _getCombinedConfig,
