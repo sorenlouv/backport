@@ -5,6 +5,7 @@ const prompts = require('../lib/prompts');
 const github = require('../lib/github');
 const constants = require('../lib/constants');
 const { getRepoPath } = require('../lib/env');
+const logger = require('../lib/logger');
 
 const {
   resetAndPullMaster,
@@ -36,7 +37,7 @@ function doBackportVersions({
           labels
         });
       })
-      .then(res => console.log(`View pull request: ${res.data.html_url}\n`))
+      .then(res => logger.log(`View pull request: ${res.data.html_url}\n`))
       .catch(handleErrors);
   });
 }
@@ -51,7 +52,7 @@ function doBackportVersion({
 }) {
   const backportBranchName = getBackportBranchName(branch, commits);
   const refValues = commits.map(commit => getReferenceLong(commit)).join(', ');
-  console.log(`Backporting ${refValues} to ${branch}`);
+  logger.log(`Backporting ${refValues} to ${branch}`);
 
   return withSpinner(
     resetAndPullMaster(owner, repoName).then(() =>
@@ -151,12 +152,12 @@ function handleErrors(e) {
   switch (e.code) {
     // Handled exceptions
     case constants.GITHUB_ERROR:
-      console.error(JSON.stringify(e.message, null, 4));
+      logger.error(JSON.stringify(e.message, null, 4));
       break;
 
     // Unhandled exceptions
     default:
-      console.error(e);
+      logger.error(e);
   }
 }
 

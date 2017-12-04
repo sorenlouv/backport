@@ -4,6 +4,7 @@ const yargs = require('yargs');
 const initSteps = require('./steps');
 const { getCombinedConfig } = require('../lib/configs');
 const { INVALID_CONFIG } = require('../lib/constants');
+const logger = require('../lib/logger');
 
 const args = yargs
   .usage('$0 [args]')
@@ -41,12 +42,12 @@ const args = yargs
 
 getCombinedConfig()
   .catch(e => {
-    console.error(e.code === INVALID_CONFIG ? e.message : e);
+    logger.error(e.code === INVALID_CONFIG ? e.message : e);
     process.exit(1);
   })
   .then(config => {
     if (args.showConfig) {
-      console.log(JSON.stringify(config, null, 4));
+      logger.log(JSON.stringify(config, null, 4));
       process.exit(0);
     }
 
