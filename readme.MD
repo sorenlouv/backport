@@ -31,11 +31,12 @@ npm install -g backport
 | --multiple-branches | Backport to multiple branches             | boolean (defaults to true)  |
 | --sha               | Supply a commit sha to backport           | string                      |
 | --own               | Only show own commits                     | boolean (defaults to true)  |
-| --config            | Show configuration file                   |                             |
 | --help              | Show help                                 |                             |
 | -v, --version       | Show version number                       |                             |
 
 ### Configuration
+
+#### Global Config
 
 The first time you run `backport` a skeleton configuration file will be created
 in `/<homedir>/.backport/config.json`. You need to update the config file with
@@ -43,7 +44,7 @@ your Github username and a Github Access Token (can be created
 [here](https://github.com/settings/tokens/new)).
 
 <details>
-<summary>View config sample</summary>
+<summary>View "config.json" sample</summary>
 
 ```js
 {
@@ -55,34 +56,41 @@ your Github username and a Github Access Token (can be created
   "username": "",
 
   // Override project-specific setting
-  "projects": [
-    {
-      "upstream": "elastic/elasticsearch",
-      "branches": ["6.x", "6.1", "6.0"],
-    },
-    {
-      "upstream": "elastic/kibana",
+  "projects": []
+}
+```
 
-      // You can pre-select branches you use often
-      "branches": [
-        { "name": "6.x", "checked": true },
-        { "name": "6.1", "checked": true },
-        "6.0"
-      ]
+</details>
 
-      // Only allow picking own commits to backport
-      "own": true,
+#### Project-specific config
 
-      // Backport multiple commits
-      "multipleCommits": false,
+Add `.backportrc.json` to the root of your project with the following structure:
 
-      // Backport to multiple branches
-      "multipleBranches": true,
+<details>
+<summary>View ".backportrc.json" sample</summary>
 
-      // Labels will be added to the PR
-      "labels": ["backport"]
-    }
+```js
+{
+  "upstream": "elastic/kibana",
+
+  // You can pre-select branches you use often
+  "branches": [
+    { "name": "6.x", "checked": true },
+    { "name": "6.1", "checked": true },
+    "6.0"
   ]
+
+  // Only allow picking own commits to backport
+  "own": true,
+
+  // Backport multiple commits
+  "multipleCommits": false,
+
+  // Backport to multiple branches
+  "multipleBranches": true,
+
+  // Labels will be added to the PR
+  "labels": ["backport"]
 }
 ```
 
