@@ -134,14 +134,19 @@ function getCombinedConfig() {
   return Promise.all([getProjectConfig(), getGlobalConfig()]).then(
     ([projectConfig, globalConfig]) => {
       if (!projectConfig) {
-        if (isEmpty(globalConfig.projects)) {
+        const globalProjects = globalConfig.projects.filter(
+          project => !isEmpty(project.branches)
+        );
+        if (isEmpty(globalProjects)) {
           throw new InvalidConfigError('.backportrc.json was not found');
         }
 
         return prompts
-          .listProjects(globalConfig.projects.map(project => project.upstream))
+          .listProjects(globalProjects.map(project => project.upstream))
           .then(upstream =>
-            mergeConfigs(projectConfig, globalConfig, upstream)
+            validateCombinedConfig(
+              mergeConfigs(projectConfig, globalConfig, upstream)
+            )
           );
       }
       return validateCombinedConfig(
