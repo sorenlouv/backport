@@ -1,5 +1,7 @@
 const configs = require('../src/lib/configs');
 const rpc = require('../src/lib/rpc');
+const inquirer = require('inquirer');
+
 const os = require('os');
 
 describe('maybeCreateGlobalConfig', () => {
@@ -93,5 +95,78 @@ describe('mergeConfigs', () => {
         branches: ['6.1', '6.0']
       }
     );
+  });
+});
+
+describe('getCombinedConfig', () => {
+  describe('when both configs are empty', () => {
+    it('should throw InvalidConfigError', () => {
+      expect.assertions(1);
+      return configs._getCombinedConfig(null, {}).catch(e => {
+        expect(e.message).toEqual('.backportrc.json was not found');
+      });
+    });
+  });
+
+  describe('when project config exists', () => {
+    beforeEach(() => {
+      return configs
+        ._getCombinedConfig(
+          {
+            upstream: 'elastic/kibana',
+            branches: ['6.x', '6.1']
+          },
+          {
+            username: 'sqren',
+            accessToken: 'myAccessToken'
+          }
+        )
+        .then(res => {
+          this.res = res;
+        });
+    });
+
+    it('should return correct config', () => {
+      expect(this.res).toEqual({
+        accessToken: 'myAccessToken',
+        username: 'sqren',
+        upstream: 'elastic/kibana',
+        branches: ['6.x', '6.1']
+      });
+    });
+  });
+
+  describe('when project config does not exists and global config has project', () => {
+    beforeEach(() => {
+      jest.spyOn(inquirer, 'prompt').mockReturnValueOnce(
+        Promise.resolve({
+          promptResult: 'elastic/kibana'
+        })
+      );
+
+      return configs
+        ._getCombinedConfig(null, {
+          projects: [
+            {
+              username: 'sqren',
+              accessToken: 'myAccessToken',
+              upstream: 'elastic/kibana',
+              branches: ['6.x', '6.1']
+            }
+          ]
+        })
+        .then(res => {
+          this.res = res;
+        });
+    });
+
+    it('should return correct config', () => {
+      expect(this.res).toEqual({
+        accessToken: 'myAccessToken',
+        username: 'sqren',
+        upstream: 'elastic/kibana',
+        branches: ['6.x', '6.1']
+      });
+    });
   });
 });

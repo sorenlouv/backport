@@ -13,6 +13,7 @@
         "semi": true
       }
     ],
+    "no-underscore-dangle": "off",
     "no-use-before-define": ["error", { "functions": false }],
     "one-var": ["error", { "initialized": "never", "uninitialized": "always" }],
     "no-console": 0,

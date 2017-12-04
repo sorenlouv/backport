@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const isEmpty = require('lodash.isempty');
+const get = require('lodash.get');
 const stripJsonComments = require('strip-json-comments');
 const findUp = require('find-up');
 const constants = require('./constants');
@@ -93,7 +94,13 @@ function validateProjectConfig(config, filepath) {
 function validateCombinedConfig(config) {
   const { branches } = config;
   if (isEmpty(branches)) {
-    throw new InvalidConfigError(`"branches" array in config cannot be empty`);
+    throw new InvalidConfigError(
+      `"branches" array in config cannot be empty:\n ${JSON.stringify(
+        config,
+        null,
+        4
+      )}`
+    );
   }
   return config;
 }
@@ -132,28 +139,33 @@ function getProjectConfig() {
 
 function getCombinedConfig() {
   return Promise.all([getProjectConfig(), getGlobalConfig()]).then(
-    ([projectConfig, globalConfig]) => {
-      if (!projectConfig) {
-        const globalProjects = globalConfig.projects.filter(
-          project => !isEmpty(project.branches)
-        );
-        if (isEmpty(globalProjects)) {
-          throw new InvalidConfigError('.backportrc.json was not found');
-        }
-
-        return prompts
-          .listProjects(globalProjects.map(project => project.upstream))
-          .then(upstream =>
-            validateCombinedConfig(
-              mergeConfigs(projectConfig, globalConfig, upstream)
-            )
-          );
-      }
-      return validateCombinedConfig(
-        mergeConfigs(projectConfig, globalConfig, projectConfig.upstream)
-      );
-    }
+    ([projectConfig, globalConfig]) =>
+      _getCombinedConfig(projectConfig, globalConfig)
   );
+}
+
+function _getCombinedConfig(projectConfig, globalConfig) {
+  return Promise.resolve().then(() => {
+    if (!projectConfig) {
+      const globalProjects = get(globalConfig, 'projects', []).filter(
+        project => !isEmpty(project.branches) && project.upstream
+      );
+      if (isEmpty(globalProjects)) {
+        throw new InvalidConfigError('.backportrc.json was not found');
+      }
+
+      return prompts
+        .listProjects(globalProjects.map(project => project.upstream))
+        .then(upstream => {
+          return validateCombinedConfig(
+            mergeConfigs(projectConfig, globalConfig, upstream)
+          );
+        });
+    }
+    return validateCombinedConfig(
+      mergeConfigs(projectConfig, globalConfig, projectConfig.upstream)
+    );
+  });
 }
 
 function mergeConfigs(projectConfig, globalConfig, upstream) {
@@ -175,5 +187,6 @@ function mergeConfigs(projectConfig, globalConfig, upstream) {
 module.exports = {
   maybeCreateGlobalConfig,
   getCombinedConfig,
+  _getCombinedConfig,
   mergeConfigs
 };

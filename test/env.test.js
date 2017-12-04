@@ -6,32 +6,26 @@ const {
   getRepoPath
 } = require('../src/lib/env');
 
-describe('getGlobalConfigPath', () => {
-  it('should return path to config.json ', () => {
+describe('env.js', () => {
+  beforeEach(() => {
     os.homedir = jest.fn(() => '/myHomeDir');
+  });
+
+  test('getGlobalConfigPath', () => {
     expect(getGlobalConfigPath()).toBe('/myHomeDir/.backport/config.json');
   });
-});
 
-describe('getReposPath', () => {
-  it('should return path to config.json ', () => {
-    os.homedir = jest.fn(() => '/myHomeDir');
+  test('getReposPath', () => {
     expect(getReposPath()).toBe('/myHomeDir/.backport/repositories');
   });
-});
 
-describe('getRepoOwnerPath', () => {
-  it('should return path to config.json ', () => {
-    os.homedir = jest.fn(() => '/myHomeDir');
+  test('getRepoOwnerPath', () => {
     expect(getRepoOwnerPath('elastic')).toBe(
       '/myHomeDir/.backport/repositories/elastic'
     );
   });
-});
 
-describe('getRepoPath', () => {
-  it('should return path to config.json ', () => {
-    os.homedir = jest.fn(() => '/myHomeDir');
+  test('getRepoPath', () => {
     expect(getRepoPath('elastic', 'kibana')).toBe(
       '/myHomeDir/.backport/repositories/elastic/kibana'
     );
