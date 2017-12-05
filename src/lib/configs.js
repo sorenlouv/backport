@@ -184,6 +184,7 @@ function mergeConfigs(projectConfig, globalConfig, upstream) {
 }
 
 module.exports = {
+  getGlobalConfig,
   getProjectConfig,
   maybeCreateGlobalConfig,
   getCombinedConfig,

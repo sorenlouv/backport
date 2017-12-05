@@ -130,7 +130,7 @@ function getCommitBySha({ owner, repoName, sha }) {
     });
 }
 
-function promptCommits({ owner, repoName, author, multipleCommits }) {
+function getCommitByPrompt({ owner, repoName, author, multipleCommits }) {
   const spinner = ora('Loading commits...').start();
   return github
     .getCommits(owner, repoName, author)
@@ -144,7 +144,7 @@ function promptCommits({ owner, repoName, author, multipleCommits }) {
     });
 }
 
-function promptBranches(branches, isMultipleChoice = false) {
+function getBranchesByPrompt(branches, isMultipleChoice = false) {
   return prompts.listBranches(branches, isMultipleChoice);
 }
 
@@ -272,7 +272,7 @@ module.exports = {
   getReferenceLong,
   handleErrors,
   maybeSetupRepo,
-  promptCommits,
-  promptBranches,
+  getCommitByPrompt,
+  getBranchesByPrompt,
   withPullRequest
 };

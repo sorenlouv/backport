@@ -59,9 +59,63 @@ describe('config.js', () => {
     });
   });
 
+  describe('getGlobalConfig', () => {
+    beforeEach(() => {
+      jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
+      jest.spyOn(rpc, 'mkdirp').mockReturnValue(Promise.resolve());
+      jest.spyOn(rpc, 'writeFile').mockReturnValue(Promise.resolve());
+      jest.spyOn(rpc, 'statSync').mockReturnValue({ mode: 33152 });
+      jest
+        .spyOn(rpc, 'readFile')
+        .mockReturnValue(
+          Promise.resolve(
+            JSON.stringify({ accessToken: 'myAccessToken', username: 'sqren' })
+          )
+        );
+      return configs.getGlobalConfig().then(res => {
+        this.res = res;
+      });
+    });
+
+    it("should create config if it doesn't exist", () => {
+      expect(rpc.writeFile).toHaveBeenCalledWith(
+        '/myHomeDir/.backport/config.json',
+        '{"accessToken":"myAccessToken","username":"sqren"}',
+        { flag: 'wx', mode: 384 }
+      );
+    });
+
+    it("should create config folders if it they don't exist", () => {
+      expect(rpc.mkdirp).toHaveBeenCalledWith(
+        '/myHomeDir/.backport/repositories'
+      );
+    });
+
+    it('should load configTemplate', () => {
+      expect(rpc.readFile).toHaveBeenCalledWith(
+        expect.stringContaining('/src/lib/configTemplate.json'),
+        'utf8'
+      );
+    });
+
+    it('should load config', () => {
+      expect(rpc.readFile).toHaveBeenCalledWith(
+        '/myHomeDir/.backport/config.json',
+        'utf8'
+      );
+    });
+
+    it('should return config', () => {
+      expect(this.res).toEqual({
+        accessToken: 'myAccessToken',
+        username: 'sqren'
+      });
+    });
+  });
+
   describe('maybeCreateGlobalConfig', () => {
     it('should create config and succeed', () => {
-      os.homedir = jest.fn(() => '/myHomeDir');
+      jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
       jest.spyOn(rpc, 'writeFile').mockReturnValue(Promise.resolve());
 
       return configs.maybeCreateGlobalConfig().then(() => {

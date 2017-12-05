@@ -1,8 +1,8 @@
 const github = require('../lib/github');
 const {
-  promptCommits,
+  getCommitByPrompt,
   getCommitBySha,
-  promptBranches,
+  getBranchesByPrompt,
   doBackportVersions,
   handleErrors,
   maybeSetupRepo
@@ -16,7 +16,7 @@ function initSteps(options) {
 
   const promise = options.sha
     ? getCommitBySha({ owner, repoName, sha: options.sha })
-    : promptCommits({
+    : getCommitByPrompt({
         owner,
         repoName,
         author: options.own ? options.username : null,
@@ -27,7 +27,7 @@ function initSteps(options) {
     .then(c => {
       commits = c;
     })
-    .then(() => promptBranches(options.branches, options.multipleBranches))
+    .then(() => getBranchesByPrompt(options.branches, options.multipleBranches))
     .then(v => {
       branches = v;
     })
