@@ -15,14 +15,19 @@
     "precommit": "lint-staged"
   },
   "lint-staged": {
-    "*.js": ["prettier --write", "git add"]
+    "*.js": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sqren/backport.git"
   },
   "jest": {
-    "setupFiles": ["./test/setup.js"]
+    "setupFiles": [
+      "./test/setup.js"
+    ]
   },
   "dependencies": {
     "axios": "^0.17.0",
@@ -30,6 +35,7 @@
     "es6-promisify": "^5.0.0",
     "find-up": "^2.1.0",
     "inquirer": "^4.0.0",
+    "joi": "^13.0.2",
     "lodash.get": "^4.4.2",
     "lodash.isempty": "^4.4.0",
     "mkdirp": "^0.5.1",
