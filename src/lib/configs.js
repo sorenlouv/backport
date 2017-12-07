@@ -54,17 +54,15 @@ function validateGlobalConfig(config, filename) {
 
   if (error) {
     throw new InvalidConfigError(
-      `The global config file (${
-        filename
-      }) is not valid:\n${schemas.formatError(error)}`
+      `The global config file (${filename}) is not valid:\n${schemas.formatError(
+        error
+      )}`
     );
   }
 
   if (!hasRestrictedPermissions(filename)) {
     throw new InvalidConfigError(
-      `The global config file (${
-        filename
-      }) needs to have more restrictive permissions. Run the following to limit access to the file to just your user account:
+      `The global config file (${filename}) needs to have more restrictive permissions. Run the following to limit access to the file to just your user account:
       chmod 600 "${filename}"\n`
     );
   }
@@ -81,9 +79,9 @@ function validateProjectConfig(config, filepath) {
 
   if (error) {
     throw new InvalidConfigError(
-      `The project config file (${
-        filepath
-      }) is not valid:\n${schemas.formatError(error)}`
+      `The project config file (${filepath}) is not valid:\n${schemas.formatError(
+        error
+      )}`
     );
   }
   return config;
