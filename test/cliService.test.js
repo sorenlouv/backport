@@ -102,45 +102,6 @@ describe('doBackportVersion', () => {
   });
 });
 
-describe('getCommitBySha', () => {
-  beforeEach(() => {
-    nock('https://api.github.com')
-      .get(`/repos/elastic/kibana/commits/mySha`)
-      .query(true)
-      .reply(200, commitMock);
-
-    return cliService
-      .getCommitBySha({
-        owner: 'elastic',
-        repoName: 'kibana',
-        sha: 'mySha'
-      })
-      .then(commits => (this.commits = commits));
-  });
-
-  it('should return a single commit in an array', () => {
-    expect(this.commits).toEqual([
-      {
-        message: '[Chrome] Bootstrap Angular into document.body (#15158)',
-        sha: 'f3430595978a6123c65f7501e61386de62b80b6e'
-      }
-    ]);
-  });
-});
-
-describe('getReferenceLong', () => {
-  it('should return a sha', () => {
-    expect(cliService.getReferenceLong({ sha: 'mySha1234567' })).toEqual(
-      'mySha12'
-    );
-  });
-
-  it('should return a pr', () => {
-    expect(
-      cliService.getReferenceLong({ pullRequest: '1337', sha: 'mySha1234567' })
-    ).toEqual('#1337');
-  });
-});
 
 describe('withPullRequest', () => {
   function mockGithubIssuesResponse(res) {
