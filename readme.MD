@@ -15,7 +15,7 @@ A simple CLI tool for backporting commits
 
 Source: https://en.wikipedia.org/wiki/Backporting
 
-This tool was built to automate the following backport workflow:
+This tool was built to automate the following workflow:
  1) Changes are merged to master
  2) One or more commits are cherry-picked from master onto another branch
  3) The branch is pushed and a pull request is created
