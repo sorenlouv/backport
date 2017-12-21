@@ -10,6 +10,17 @@ A simple CLI tool for backporting commits
 
 ![Demonstration gif](https://i.makeagif.com/media/10-05-2017/kEJLqe.gif)
 
+## What is backporting?
+> Backporting is the action of taking parts from a newer version of a software system or software component and porting them to an older version of the same software. It forms part of the maintenance step in a software development process, and it is commonly used for fixing security issues in older versions of the software and also for providing new features to older versions.
+
+Source: https://en.wikipedia.org/wiki/Backporting
+
+This tool was built to automate the following backport workflow:
+ 1) Changes are merged to master
+ 2) One or more commits are cherry-picked from master onto another branch
+ 3) The branch is pushed and a pull request is created
+
+
 ### Install
 
 ```
