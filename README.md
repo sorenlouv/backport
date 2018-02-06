@@ -69,6 +69,14 @@ Follow the steps. You can use the `arrow keys` to choose options, <space> to sel
 
 During installation `backport` will create an empty configuration file in `~/.backport/config.json`. You must update this file with your Github username and a [Github Access Token](https://github.com/settings/tokens/new)
 
+Example: 
+```json
+{
+  "accessToken": "b4914600112ba18af7798b6c1a1363728ae1d96f",
+  "username": "sqren"
+}
+```
+
 ##### `accessToken` (string) **required**
 A personal access token can be created here: https://github.com/settings/tokens/new
 
@@ -89,20 +97,24 @@ Example: `sqren`
 A list of project-specific settings. This is useful if you want to override project-specific configurations.
 [Read more about the project-specific configuration](#project-specific-configuration)
 
-<details>
-<summary>View "config.json" sample</summary>
-
-```js
-{
-  "accessToken": "b4914600112ba18af7798b6c1a1363728ae1d96f",
-  "username": "sqren"
-}
-```
-
-</details>
-
 ### Project-specific configuration
 `.backportrc.json` can be added to every project where you use `backport`. 
+
+Example:
+```json
+{
+  "upstream": "elastic/kibana",
+  "branches": [
+    { "name": "6.x", "checked": true },
+    { "name": "6.1", "checked": true },
+    "6.0"
+  ],
+  "own": true,
+  "multipleCommits": false,
+  "multipleBranches": true,
+  "labels": ["backport"]
+}
+```
 
 ##### `upstream` (string) **required**
 Github organization/user and repository name separated with forward slash.
@@ -140,26 +152,6 @@ Default: `true`
 List of labels that will be added to the backport pull request. These are often useful if you want to filter for backport PRs
 
 Example `["backport", "foobar"]`
-
-<details>
-<summary>View ".backportrc.json" sample</summary>
-
-```js
-{
-  "upstream": "elastic/kibana",
-  "branches": [
-    { "name": "6.x", "checked": true },
-    { "name": "6.1", "checked": true },
-    "6.0"
-  ],
-  "own": true,
-  "multipleCommits": false,
-  "multipleBranches": true,
-  "labels": ["backport"]
-}
-```
-
-</details>
 
 ## Troubleshooting
 
