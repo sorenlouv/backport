@@ -84,14 +84,10 @@ Access scopes:
  - Private repository: "Repo (Full control of private repositories)"
  - Public repository:  "public_repo (Access public repositories)"
 
-Example: `b4914600112ba18af7798b6c1a1363728ae1d96f`
-
 <img width="578" alt="Github Personal Access Token scopes for private repositories" src="https://user-images.githubusercontent.com/209966/35889278-3527877c-0b9b-11e8-8815-0d23899e872c.png">
 
 ##### `username` (string) **required**
 Your Github username
-
-Example: `sqren`
 
 ##### `projects` (object[]) 
 A list of project-specific settings. This is useful if you want to override project-specific configurations.
@@ -106,7 +102,6 @@ Example:
   "upstream": "elastic/kibana",
   "branches": [
     { "name": "6.x", "checked": true },
-    { "name": "6.1", "checked": true },
     "6.0"
   ],
   "own": true,
@@ -119,13 +114,8 @@ Example:
 ##### `upstream` (string) **required**
 Github organization/user and repository name separated with forward slash.
 
-Example: `elastic/elasticsearch`
-
 ##### `branches` (string[] | object[])
 List of branches that will be available to backport to. The list can contain string and objects. If a string is given, it must be the name of a branch, if an object is given it must use the format `{"name": "<string>", "checked": <boolean>}` where `name` is the branch name and `"checked"` indicates whether the branch should be auto-selected. It is useful to auto-select branches you often backport to.
-
-Example:
-`[{ "name": "6.x", "checked": true }, "6.1", "6.0"]`
 
 ##### `own` (boolean)
 `true`: only commits by you will be available to backport. 
@@ -150,8 +140,6 @@ Default: `true`
 
 ##### `labels` (string[])
 List of labels that will be added to the backport pull request. These are often useful if you want to filter for backport PRs
-
-Example `["backport", "foobar"]`
 
 ## Troubleshooting
 
