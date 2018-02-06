@@ -147,24 +147,14 @@ Example `["backport", "foobar"]`
 ```js
 {
   "upstream": "elastic/kibana",
-
-  // You can pre-select branches you use often
   "branches": [
     { "name": "6.x", "checked": true },
     { "name": "6.1", "checked": true },
     "6.0"
   ],
-
-  // Only allow picking own commits to backport
   "own": true,
-
-  // Backport multiple commits
   "multipleCommits": false,
-
-  // Backport to multiple branches
   "multipleBranches": true,
-
-  // Labels will be added to the PR
   "labels": ["backport"]
 }
 ```
