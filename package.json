@@ -62,7 +62,7 @@
     "lodash.get": "^4.4.2",
     "lodash.isempty": "^4.4.0",
     "mkdirp": "^0.5.1",
-    "ora": "^1.4.0",
+    "ora": "^2.0.0",
     "strip-json-comments": "^2.0.1",
     "yargs": "^11.0.0"
   },
