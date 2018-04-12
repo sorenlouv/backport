@@ -20,10 +20,10 @@ function repoExists(owner, repoName) {
 }
 
 // Clone repo and add remotes
-async function setupRepo(owner, repoName, username) {
+async function setupRepo(owner, repoName, username, callback) {
   await verifyGithubSshAuth();
   await rpc.mkdirp(env.getRepoOwnerPath(owner));
-  await cloneRepo(owner, repoName);
+  await cloneRepo(owner, repoName, callback);
   return addRemote(owner, repoName, username);
 }
 
@@ -31,9 +31,28 @@ function getRemoteUrl(owner, repoName) {
   return `git@github.com:${owner}/${repoName}`;
 }
 
-function cloneRepo(owner, repoName) {
-  return rpc.exec(`git clone ${getRemoteUrl(owner, repoName)}`, {
-    cwd: env.getRepoOwnerPath(owner)
+function cloneRepo(owner, repoName, callback) {
+  return new Promise((resolve, reject) => {
+    const cloneProc = rpc.spawn(
+      'git',
+      ['clone', getRemoteUrl(owner, repoName), '--progress'],
+      { cwd: env.getRepoOwnerPath(owner) }
+    );
+
+    cloneProc.stderr.on('data', data => {
+      const regex = /^Receiving objects:\s+(\d+)%/;
+      const [, progress] = data.toString().match(regex) || [];
+      if (callback && progress) {
+        callback(progress);
+      }
+    });
+
+    cloneProc.on('error', reject);
+    cloneProc.on('exit', code => {
+      const err = new Error();
+      err.code = code;
+      return code > 0 ? reject(err) : resolve();
+    });
   });
 }
 

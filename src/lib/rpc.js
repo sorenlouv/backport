@@ -5,6 +5,7 @@ const mkdirp = require('mkdirp');
 const findUp = require('find-up');
 
 module.exports = {
+  spawn: process.spawn,
   exec: promisify(process.exec),
   writeFile: promisify(fs.writeFile),
   readFile: promisify(fs.readFile),
