@@ -49,7 +49,7 @@ function cloneRepo(owner, repoName, callback) {
 
     cloneProc.on('error', reject);
     cloneProc.on('exit', code => {
-      const err = new Error();
+      const err = new Error('Cloning was aborted.');
       err.code = code;
       return code > 0 ? reject(err) : resolve();
     });
