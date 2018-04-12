@@ -38,6 +38,18 @@ Array [
 ]
 `;
 
+exports[`run through steps execVanilla should be called with correct args 1`] = `
+Array [
+  Array [
+    "git clone git@github.com:elastic/kibana --progress",
+    Object {
+      "cwd": "/myHomeDir/.backport/repositories/elastic",
+    },
+    [Function],
+  ],
+]
+`;
+
 exports[`run through steps prompt calls should match snapshot 1`] = `
 Array [
   Array [
@@ -91,22 +103,6 @@ Array [
         "type": "list",
       },
     ],
-  ],
-]
-`;
-
-exports[`run through steps spawn should be called with correct args 1`] = `
-Array [
-  Array [
-    "git",
-    Array [
-      "clone",
-      "git@github.com:elastic/kibana",
-      "--progress",
-    ],
-    Object {
-      "cwd": "/myHomeDir/.backport/repositories/elastic",
-    },
   ],
 ]
 `;

@@ -17,17 +17,7 @@ describe('run through steps', () => {
     axios.defaults.host = 'http://localhost';
     axios.defaults.adapter = httpAdapter;
 
-    rpc.spawn = jest.fn().mockReturnValue({
-      on: (name, handler) => {
-        if (name === 'exit') {
-          handler(0);
-        }
-      },
-      stderr: {
-        on: jest.fn()
-      }
-    });
-
+    rpc.execVanilla = jest.fn((cmd, options, callback) => callback(null));
     rpc.exec = jest.fn().mockReturnValue(Promise.resolve());
     rpc.writeFile = jest.fn().mockReturnValue(Promise.resolve());
     rpc.mkdirp = jest.fn().mockReturnValue(Promise.resolve());
@@ -112,7 +102,7 @@ describe('run through steps', () => {
     expect(rpc.exec.mock.calls).toMatchSnapshot();
   });
 
-  it('spawn should be called with correct args', () => {
-    expect(rpc.spawn.mock.calls).toMatchSnapshot();
+  it('execVanilla should be called with correct args', () => {
+    expect(rpc.execVanilla.mock.calls).toMatchSnapshot();
   });
 });

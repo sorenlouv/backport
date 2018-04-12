@@ -33,10 +33,15 @@ function getRemoteUrl(owner, repoName) {
 
 function cloneRepo(owner, repoName, callback) {
   return new Promise((resolve, reject) => {
-    const cloneProc = rpc.spawn(
-      'git',
-      ['clone', getRemoteUrl(owner, repoName), '--progress'],
-      { cwd: env.getRepoOwnerPath(owner) }
+    const cloneProc = rpc.execVanilla(
+      `git clone ${getRemoteUrl(owner, repoName)} --progress`,
+      { cwd: env.getRepoOwnerPath(owner) },
+      error => {
+        if (error) {
+          reject(error);
+        }
+        resolve();
+      }
     );
 
     cloneProc.stderr.on('data', data => {
@@ -45,13 +50,6 @@ function cloneRepo(owner, repoName, callback) {
       if (callback && progress) {
         callback(progress);
       }
-    });
-
-    cloneProc.on('error', reject);
-    cloneProc.on('exit', code => {
-      const err = new Error('Cloning was aborted.');
-      err.code = code;
-      return code > 0 ? reject(err) : resolve();
     });
   });
 }
