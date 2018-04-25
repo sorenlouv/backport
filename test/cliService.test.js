@@ -24,7 +24,7 @@ describe('doBackportVersion', () => {
   it('with pull request reference', async () => {
     const createPRMock = nock('https://api.github.com')
       .post(`/repos/elastic/kibana/pulls`, {
-        title: '[6.x] myCommitMessage | myOtherCommitMessage',
+        title: '[6.x] myCommitMessage | myOtherCommitMessage [backport]',
         body:
           'Backports the following commits to 6.x:\n - myCommitMessage (#myPullRequest)\n - myOtherCommitMessage (#myOtherPullRequest)',
         head: 'sqren:backport/6.x/pr-myPullRequest_pr-myOtherPullRequest',
@@ -65,7 +65,7 @@ describe('doBackportVersion', () => {
   it('without pull request reference', async () => {
     const createPRMock = nock('https://api.github.com')
       .post(`/repos/elastic/kibana/pulls`, {
-        title: '[6.x] myCommitMessage',
+        title: '[6.x] myCommitMessage [backport]',
         body:
           'Backports the following commits to 6.x:\n - myCommitMessage (mySha)',
         head: 'sqren:backport/6.x/commit-mySha',

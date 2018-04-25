@@ -3,10 +3,10 @@
 exports[`doBackportVersion with pull request reference 1`] = `
 Object {
   "adapter": [Function],
-  "data": "{\\"title\\":\\"[6.x] myCommitMessage | myOtherCommitMessage\\",\\"body\\":\\"Backports the following commits to 6.x:\\\\n - myCommitMessage (#myPullRequest)\\\\n - myOtherCommitMessage (#myOtherPullRequest)\\",\\"head\\":\\"sqren:backport/6.x/pr-myPullRequest_pr-myOtherPullRequest\\",\\"base\\":\\"6.x\\"}",
+  "data": "{\\"title\\":\\"[6.x] myCommitMessage | myOtherCommitMessage [backport]\\",\\"body\\":\\"Backports the following commits to 6.x:\\\\n - myCommitMessage (#myPullRequest)\\\\n - myOtherCommitMessage (#myOtherPullRequest)\\",\\"head\\":\\"sqren:backport/6.x/pr-myPullRequest_pr-myOtherPullRequest\\",\\"base\\":\\"6.x\\"}",
   "headers": Object {
     "Accept": "application/json, text/plain, */*",
-    "Content-Length": 269,
+    "Content-Length": 280,
     "Content-Type": "application/json;charset=utf-8",
     "User-Agent": "axios/0.18.0",
   },
@@ -65,10 +65,10 @@ Array [
 exports[`doBackportVersion without pull request reference 1`] = `
 Object {
   "adapter": [Function],
-  "data": "{\\"title\\":\\"[6.x] myCommitMessage\\",\\"body\\":\\"Backports the following commits to 6.x:\\\\n - myCommitMessage (mySha)\\",\\"head\\":\\"sqren:backport/6.x/commit-mySha\\",\\"base\\":\\"6.x\\"}",
+  "data": "{\\"title\\":\\"[6.x] myCommitMessage [backport]\\",\\"body\\":\\"Backports the following commits to 6.x:\\\\n - myCommitMessage (mySha)\\",\\"head\\":\\"sqren:backport/6.x/commit-mySha\\",\\"base\\":\\"6.x\\"}",
   "headers": Object {
     "Accept": "application/json, text/plain, */*",
-    "Content-Length": 164,
+    "Content-Length": 175,
     "Content-Type": "application/json;charset=utf-8",
     "User-Agent": "axios/0.18.0",
   },

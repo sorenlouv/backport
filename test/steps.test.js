@@ -90,7 +90,7 @@ describe('run through steps', () => {
       base: '6.2',
       body: `Backports the following commits to 6.2:\n - myCommitMessage (#myPullRequest)`,
       head: 'sqren:backport/6.2/pr-myPullRequest',
-      title: '[6.2] myCommitMessage'
+      title: '[6.2] myCommitMessage [backport]'
     });
   });
 

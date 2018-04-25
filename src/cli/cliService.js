@@ -267,7 +267,7 @@ function getPullRequestPayload(branch, commits, username) {
     .slice(0, 200);
 
   return {
-    title: `[${branch}] ${commitMessages}`,
+    title: `[${branch}] ${commitMessages} [backport]`,
     body: `Backports the following commits to ${branch}:\n${commitRefs}`,
     head: `${username}:${backportBranchName}`,
     base: `${branch}`
