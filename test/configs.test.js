@@ -1,14 +1,14 @@
 const configs = require('../src/lib/configs');
 const rpc = require('../src/lib/rpc');
 const inquirer = require('inquirer');
-const os = require('os');
 
 describe('config.js', () => {
   afterEach(() => jest.restoreAllMocks());
 
   describe('getProjectConfig', () => {
     describe('when projectConfig is valid', () => {
-      beforeEach(() => {
+      let projectConfig;
+      beforeEach(async () => {
         jest
           .spyOn(rpc, 'findUp')
           .mockReturnValue(Promise.resolve('/path/to/config'));
@@ -19,9 +19,7 @@ describe('config.js', () => {
             Promise.resolve(JSON.stringify({ upstream: 'elastic/kibana' }))
           );
 
-        return configs.getProjectConfig().then(projectConfig => {
-          this.projectConfig = projectConfig;
-        });
+        projectConfig = await configs.getProjectConfig();
       });
 
       it('should call findUp', () => {
@@ -29,7 +27,7 @@ describe('config.js', () => {
       });
 
       it('should return config', () => {
-        expect(this.projectConfig).toEqual({ upstream: 'elastic/kibana' });
+        expect(projectConfig).toEqual({ upstream: 'elastic/kibana' });
       });
     });
 
@@ -60,8 +58,8 @@ describe('config.js', () => {
   });
 
   describe('getGlobalConfig', () => {
-    beforeEach(() => {
-      jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
+    let res;
+    beforeEach(async () => {
       jest.spyOn(rpc, 'mkdirp').mockReturnValue(Promise.resolve());
       jest.spyOn(rpc, 'writeFile').mockReturnValue(Promise.resolve());
       jest.spyOn(rpc, 'statSync').mockReturnValue({ mode: 33152 });
@@ -73,9 +71,7 @@ describe('config.js', () => {
           })
         )
       );
-      return configs.getGlobalConfig().then(res => {
-        this.res = res;
-      });
+      res = await configs.getGlobalConfig();
     });
 
     it("should create config if it doesn't exist", () => {
@@ -107,7 +103,7 @@ describe('config.js', () => {
     });
 
     it('should return config', () => {
-      expect(this.res).toEqual({
+      expect(res).toEqual({
         accessToken: 'myAccessToken',
         username: 'sqren'
       });
@@ -115,17 +111,15 @@ describe('config.js', () => {
   });
 
   describe('maybeCreateGlobalConfig', () => {
-    it('should create config and succeed', () => {
-      jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
+    it('should create config and succeed', async () => {
       jest.spyOn(rpc, 'writeFile').mockReturnValue(Promise.resolve());
+      await configs.maybeCreateGlobalConfig();
 
-      return configs.maybeCreateGlobalConfig().then(() => {
-        expect(rpc.writeFile).toHaveBeenCalledWith(
-          '/myHomeDir/.backport/config.json',
-          expect.stringContaining('"accessToken": ""'),
-          { flag: 'wx', mode: 384 }
-        );
-      });
+      expect(rpc.writeFile).toHaveBeenCalledWith(
+        '/myHomeDir/.backport/config.json',
+        expect.stringContaining('"accessToken": ""'),
+        { flag: 'wx', mode: 384 }
+      );
     });
 
     it('should not fail if config already exists', () => {
@@ -216,31 +210,30 @@ describe('config.js', () => {
       it('should throw InvalidConfigError', () => {
         expect.assertions(1);
         return configs._getCombinedConfig(null, {}).catch(e => {
-          expect(e.message).toEqual('.backportrc.json was not found');
+          expect(e.message).toEqual(
+            'Global config (/myHomeDir/.backport/config.json) does not contain any valid projects, and no project config (.backportrc.json) was found.\nDocumentation: https://github.com/sqren/backport#global-configuration'
+          );
         });
       });
     });
 
     describe('when project config exists', () => {
-      beforeEach(() => {
-        return configs
-          ._getCombinedConfig(
-            {
-              upstream: 'elastic/kibana',
-              branches: ['6.x', '6.1']
-            },
-            {
-              username: 'sqren',
-              accessToken: 'myAccessToken'
-            }
-          )
-          .then(res => {
-            this.res = res;
-          });
+      let res;
+      beforeEach(async () => {
+        res = await configs._getCombinedConfig(
+          {
+            upstream: 'elastic/kibana',
+            branches: ['6.x', '6.1']
+          },
+          {
+            username: 'sqren',
+            accessToken: 'myAccessToken'
+          }
+        );
       });
 
       it('should return correct config', () => {
-        expect(this.res).toEqual({
+        expect(res).toEqual({
           accessToken: 'myAccessToken',
           username: 'sqren',
           upstream: 'elastic/kibana',
@@ -250,31 +243,28 @@ describe('config.js', () => {
     });
 
     describe('when project config does not exists and global config has projects', () => {
-      beforeEach(() => {
+      let res;
+      beforeEach(async () => {
         jest.spyOn(inquirer, 'prompt').mockReturnValueOnce(
           Promise.resolve({
             promptResult: 'elastic/kibana'
           })
         );
 
-        return configs
-          ._getCombinedConfig(null, {
-            username: 'sqren',
-            accessToken: 'myAccessToken',
-            projects: [
-              {
-                upstream: 'elastic/kibana',
-                branches: ['6.x', '6.1']
-              },
-              {
-                upstream: 'elastic/elasticsearch',
-                branches: ['6.x', '6.1']
-              }
-            ]
-          })
-          .then(res => {
-            this.res = res;
-          });
+        res = await configs._getCombinedConfig(null, {
+          username: 'sqren',
+          accessToken: 'myAccessToken',
+          projects: [
+            {
+              upstream: 'elastic/kibana',
+              branches: ['6.x', '6.1']
+            },
+            {
+              upstream: 'elastic/elasticsearch',
+              branches: ['6.x', '6.1']
+            }
+          ]
+        });
       });
 
       it('should call prompt with correct args', () => {
@@ -286,7 +276,7 @@ describe('config.js', () => {
       });
 
       it('should return correct config', () => {
-        expect(this.res).toEqual({
+        expect(res).toEqual({
           accessToken: 'myAccessToken',
           username: 'sqren',
           upstream: 'elastic/kibana',

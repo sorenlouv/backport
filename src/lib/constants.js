@@ -1,4 +1,0 @@
-module.exports = {
-  INVALID_CONFIG: 'INVALID_CONFIG',
-  GITHUB_ERROR: 'GITHUB_ERROR'
-};

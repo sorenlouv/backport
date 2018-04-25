@@ -1,7 +1,6 @@
 const axios = require('axios');
 const inquirer = require('inquirer');
 const nock = require('nock');
-const os = require('os');
 const httpAdapter = require('axios/lib/adapters/http');
 
 const commitsMock = require('./mocks/commits.json');
@@ -18,7 +17,7 @@ describe('run through steps', () => {
     axios.defaults.host = 'http://localhost';
     axios.defaults.adapter = httpAdapter;
 
-    os.homedir = jest.fn(() => '/homefolder');
+    rpc.execVanilla = jest.fn((cmd, options, callback) => callback(null));
     rpc.exec = jest.fn().mockReturnValue(Promise.resolve());
     rpc.writeFile = jest.fn().mockReturnValue(Promise.resolve());
     rpc.mkdirp = jest.fn().mockReturnValue(Promise.resolve());
@@ -101,5 +100,9 @@ describe('run through steps', () => {
 
   it('exec should be called with correct args', () => {
     expect(rpc.exec.mock.calls).toMatchSnapshot();
+  });
+
+  it('execVanilla should be called with correct args', () => {
+    expect(rpc.execVanilla.mock.calls).toMatchSnapshot();
   });
 });

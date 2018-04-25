@@ -1,17 +1,18 @@
 const env = require('./env');
 const rpc = require('./rpc');
+const { GithubSSHError } = require('./errors');
 
-function folderExists(path) {
-  return rpc
-    .stat(path)
-    .then(stats => stats.isDirectory())
-    .catch(e => {
-      if (e.code === 'ENOENT') {
-        return false;
-      }
+async function folderExists(path) {
+  try {
+    const stats = await rpc.stat(path);
+    return stats.isDirectory();
+  } catch (e) {
+    if (e.code === 'ENOENT') {
+      return false;
+    }
 
-      throw e;
-    });
+    throw e;
+  }
 }
 
 function repoExists(owner, repoName) {
@@ -19,21 +20,37 @@ function repoExists(owner, repoName) {
 }
 
 // Clone repo and add remotes
-function setupRepo(owner, repoName, username) {
-  return rpc.mkdirp(env.getRepoOwnerPath(owner)).then(() => {
-    return cloneRepo(owner, repoName).then(() =>
-      addRemote(owner, repoName, username)
-    );
-  });
+async function setupRepo(owner, repoName, username, callback) {
+  await verifyGithubSshAuth();
+  await rpc.mkdirp(env.getRepoOwnerPath(owner));
+  await cloneRepo(owner, repoName, callback);
+  return addRemote(owner, repoName, username);
 }
 
 function getRemoteUrl(owner, repoName) {
   return `git@github.com:${owner}/${repoName}`;
 }
 
-function cloneRepo(owner, repoName) {
-  return rpc.exec(`git clone ${getRemoteUrl(owner, repoName)}`, {
-    cwd: env.getRepoOwnerPath(owner)
+function cloneRepo(owner, repoName, callback) {
+  return new Promise((resolve, reject) => {
+    const cloneProc = rpc.execVanilla(
+      `git clone ${getRemoteUrl(owner, repoName)} --progress`,
+      { cwd: env.getRepoOwnerPath(owner) },
+      error => {
+        if (error) {
+          reject(error);
+        }
+        resolve();
+      }
+    );
+
+    cloneProc.stderr.on('data', data => {
+      const regex = /^Receiving objects:\s+(\d+)%/;
+      const [, progress] = data.toString().match(regex) || [];
+      if (callback && progress) {
+        callback(progress);
+      }
+    });
   });
 }
 
@@ -52,13 +69,15 @@ function cherrypick(owner, repoName, sha) {
   });
 }
 
-function isIndexDirty(owner, repoName) {
-  return rpc
-    .exec(`git diff-index --quiet HEAD --`, {
+async function isIndexDirty(owner, repoName) {
+  try {
+    await rpc.exec(`git diff-index --quiet HEAD --`, {
       cwd: env.getRepoPath(owner, repoName)
-    })
-    .then(() => false)
-    .catch(() => true);
+    });
+    return false;
+  } catch (e) {
+    return true;
+  }
 }
 
 function createAndCheckoutBranch(owner, repoName, baseBranch, featureBranch) {
@@ -76,7 +95,7 @@ function push(owner, repoName, username, branchName) {
   });
 }
 
-function resetAndPullMaster(owner, repoName) {
+async function resetAndPullMaster(owner, repoName) {
   return rpc.exec(
     `git reset --hard && git clean -d --force && git checkout master && git pull origin master`,
     {
@@ -85,7 +104,35 @@ function resetAndPullMaster(owner, repoName) {
   );
 }
 
+async function verifyGithubSshAuth() {
+  try {
+    await rpc.exec(`ssh -oBatchMode=yes -T git@github.com`);
+    return true;
+  } catch (e) {
+    switch (e.code) {
+      case 1:
+        return true;
+      case 255:
+        if (e.stderr.includes('Host key verification failed.')) {
+          throw new GithubSSHError(
+            'Host verification of github.com failed. To automatically add it to .ssh/known_hosts run:\nssh -T git@github.com'
+          );
+        } else if (e.stderr.includes('Permission denied')) {
+          throw new GithubSSHError(
+            'Permission denied. Please add your ssh private key to the keychain by following these steps:\nhttps://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/#adding-your-ssh-key-to-the-ssh-agent'
+          );
+        } else {
+          throw e;
+        }
+
+      default:
+        throw e;
+    }
+  }
+}
+
 module.exports = {
+  verifyGithubSshAuth,
   cherrypick,
   cloneRepo,
   createAndCheckoutBranch,

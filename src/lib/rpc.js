@@ -1,11 +1,12 @@
-const promisify = require('es6-promisify');
-const process = require('child_process');
+const { promisify } = require('util');
+const { exec } = require('child_process');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const findUp = require('find-up');
 
 module.exports = {
-  exec: promisify(process.exec),
+  execVanilla: exec,
+  exec: promisify(exec),
   writeFile: promisify(fs.writeFile),
   readFile: promisify(fs.readFile),
   stat: promisify(fs.stat),
