@@ -1,8 +1,8 @@
-import { getCommits, setAccessToken } from '../src/lib/github';
+import { getCommitsByAuthor, setAccessToken } from '../src/lib/github';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
-describe('getCommits', () => {
+describe('getCommitsByAuthor', () => {
   it('should return commits with pull request', async () => {
     const mock = new MockAdapter(axios);
     const owner = 'elastic';
@@ -37,10 +37,10 @@ describe('getCommits', () => {
         ]
       });
 
-    expect(await getCommits(owner, repoName, author)).toEqual([
+    expect(await getCommitsByAuthor(owner, repoName, author)).toEqual([
       {
         message: 'myMessage',
-        pullRequest: 'myPullRequestNumber',
+        pullNumber: 'myPullRequestNumber',
         sha: 'myCommitSha'
       }
     ]);
@@ -74,10 +74,10 @@ describe('getCommits', () => {
       )
       .reply(200, { items: [] });
 
-    expect(await getCommits(owner, repoName, author)).toEqual([
+    expect(await getCommitsByAuthor(owner, repoName, author)).toEqual([
       {
         message: 'myMessage',
-        pullRequest: undefined,
+        pullNumber: undefined,
         sha: 'myCommitSha'
       }
     ]);

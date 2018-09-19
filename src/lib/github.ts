@@ -6,7 +6,8 @@ import {
   GithubIssue,
   GithubPullRequestPayload,
   GithubApiError,
-  GithubSearch
+  GithubSearch,
+  GithubPullRequest
 } from '../types/types';
 
 import axios, { AxiosResponse } from 'axios';
@@ -20,7 +21,7 @@ function getCommitMessage(message: string) {
   return message.split('\n')[0].trim();
 }
 
-export async function getCommits(
+export async function getCommitsByAuthor(
   owner: string,
   repoName: string,
   author: string | null
@@ -42,14 +43,16 @@ export async function getCommits(
       )}`
     );
 
-    const promises = res.data.map(async commit => {
-      const sha = commit.sha;
-      return {
-        message: getCommitMessage(commit.commit.message),
-        sha,
-        pullRequest: await getPullRequestBySha(owner, repoName, sha)
-      };
-    });
+    const promises = res.data.map(
+      async (commit): Promise<Commit> => {
+        const sha = commit.sha;
+        return {
+          message: getCommitMessage(commit.commit.message),
+          sha,
+          pullNumber: await getPullNumberBySha(owner, repoName, sha)
+        };
+      }
+    );
 
     return Promise.all(promises);
   } catch (e) {
@@ -57,7 +60,7 @@ export async function getCommits(
   }
 }
 
-export async function getCommit(
+export async function getCommitBySha(
   owner: string,
   repoName: string,
   sha: string
@@ -78,12 +81,39 @@ export async function getCommit(
 
     const commitRes = res.data.items[0];
     const fullSha = commitRes.sha;
-    const pullRequest = await getPullRequestBySha(owner, repoName, fullSha);
+    const pullNumber = await getPullNumberBySha(owner, repoName, fullSha);
 
     return {
       message: getCommitMessage(commitRes.commit.message),
       sha: fullSha,
-      pullRequest
+      pullNumber
+    };
+  } catch (e) {
+    throw getError(e);
+  }
+}
+
+export async function getCommitByPullNumber(
+  owner: string,
+  repoName: string,
+  pullNumber: number
+): Promise<Commit> {
+  try {
+    const res: AxiosResponse<GithubPullRequest> = await axios(
+      `https://api.github.com/repos/${owner}/${repoName}/pulls/${pullNumber}?access_token=${accessToken}`
+    );
+
+    if (!res.data.merged) {
+      throw new HandledError(
+        `Pull request #${pullNumber} has not been merged to master`
+      );
+    }
+
+    const sha = res.data.merge_commit_sha;
+    return {
+      sha,
+      message: res.data.title,
+      pullNumber
     };
   } catch (e) {
     throw getError(e);
@@ -125,7 +155,7 @@ export async function addLabels(
   }
 }
 
-async function getPullRequestBySha(
+async function getPullNumberBySha(
   owner: string,
   repoName: string,
   commitSha: string

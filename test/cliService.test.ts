@@ -43,12 +43,12 @@ describe('doBackportVersion', () => {
       {
         sha: 'mySha',
         message: 'myCommitMessage',
-        pullRequest: 1000
+        pullNumber: 1000
       },
       {
         sha: 'mySha2',
         message: 'myOtherCommitMessage',
-        pullRequest: 2000
+        pullNumber: 2000
       }
     ];
 
@@ -128,7 +128,7 @@ describe('getCommitBySha', () => {
     expect(commits).toEqual({
       message: '[Chrome] Bootstrap Angular into document.body (#15158)',
       sha: 'myCommitSha',
-      pullRequest: undefined
+      pullNumber: undefined
     });
   });
 
@@ -162,7 +162,7 @@ describe('getCommitBySha', () => {
 
     expect(await getCommitBySha('elastic', 'kibana', 'myCommitSha')).toEqual({
       message: '[Chrome] Bootstrap Angular into document.body (#15158)',
-      pullRequest: 1338,
+      pullNumber: 1338,
       sha: 'myCommitSha'
     });
   });
@@ -178,7 +178,7 @@ describe('getReferenceLong', () => {
   it('should return a pr', () => {
     expect(
       getReferenceLong({
-        pullRequest: 1337,
+        pullNumber: 1337,
         sha: 'mySha1234567',
         message: 'myMessage'
       })

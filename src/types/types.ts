@@ -26,6 +26,12 @@ export interface GithubSearch<T> {
   items: T[];
 }
 
+export interface GithubPullRequest {
+  title: string;
+  merge_commit_sha: string;
+  merged: boolean;
+}
+
 export interface GithubPullRequestPayload {
   title: string;
   head: string;
@@ -88,6 +94,7 @@ export interface BackportOptions {
   username: string;
   branchChoices?: BranchChoice[];
   branches?: string[];
+  pullNumber?: number;
   sha?: string;
 }
 
@@ -107,7 +114,7 @@ export interface PullRequest {
 export interface Commit {
   sha: string;
   message: string;
-  pullRequest?: number;
+  pullNumber?: number;
 }
 
 /*

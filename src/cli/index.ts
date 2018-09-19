@@ -30,6 +30,7 @@ function getOptions(config: CombinedConfig, cliArgs: yargs.Arguments) {
       ...config,
       branches: flattenBranches(cliArgs.branch),
       sha: cliArgs.sha,
+      pullNumber: cliArgs.pull,
       all: cliArgs.all,
       multiple: cliArgs.multiple,
       multipleBranches: cliArgs.multipleBranches || cliArgs.multiple,
@@ -79,6 +80,10 @@ async function initYargs() {
     .option('sha', {
       description: 'Commit sha to backport',
       type: 'string'
+    })
+    .option('pull', {
+      description: 'Pull request to backport',
+      type: 'number'
     })
     .option('show-config', {
       description: 'Show config settings',

@@ -95,7 +95,7 @@ describe('run through steps', () => {
     jest.spyOn(rpc, 'writeFile').mockResolvedValue(undefined);
     jest.spyOn(rpc, 'mkdirp').mockResolvedValue(undefined);
 
-    jest.spyOn(github, 'getCommits');
+    jest.spyOn(github, 'getCommitsByAuthor');
     jest.spyOn(github, 'createPullRequest');
 
     inquirerPromptMock = jest
@@ -104,7 +104,7 @@ describe('run through steps', () => {
         promptResult: {
           message: 'myCommitMessage',
           sha: 'commitSha',
-          pullRequest: 'myPullRequest'
+          pullNumber: 'myPullRequest'
         }
       })
       .mockResolvedValueOnce({
@@ -171,8 +171,8 @@ describe('run through steps', () => {
     expect((axiosMock as any).history).toMatchSnapshot();
   });
 
-  it('getCommit should be called with correct args', () => {
-    expect(github.getCommits).toHaveBeenCalledWith(
+  it('getCommitsByAuthor should be called with correct args', () => {
+    expect(github.getCommitsByAuthor).toHaveBeenCalledWith(
       'elastic',
       'kibana',
       'sqren'

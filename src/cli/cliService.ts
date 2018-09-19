@@ -9,12 +9,7 @@ import {
   listBranches,
   confirmConflictResolved
 } from '../lib/prompts';
-import {
-  createPullRequest,
-  addLabels,
-  getCommit,
-  getCommits
-} from '../lib/github';
+import * as github from '../lib/github';
 import { HandledError } from '../lib/errors';
 import { getRepoPath } from '../lib/env';
 import * as logger from '../lib/logger';
@@ -98,9 +93,13 @@ export async function doBackportVersion(
 
   return withSpinner({ text: 'Creating pull request' }, async () => {
     const payload = getPullRequestPayload(branch, commits, username);
-    const pullRequest = await createPullRequest(owner, repoName, payload);
+    const pullRequest = await github.createPullRequest(
+      owner,
+      repoName,
+      payload
+    );
     if (labels.length > 0) {
-      await addLabels(owner, repoName, pullRequest.number, labels);
+      await github.addLabels(owner, repoName, pullRequest.number, labels);
     }
     return pullRequest;
   });
@@ -139,7 +138,30 @@ export async function getCommitBySha(
 ) {
   const spinner = ora().start();
   try {
-    const commit = await getCommit(owner, repoName, sha);
+    const commit = await github.getCommitBySha(owner, repoName, sha);
+    spinner.stopAndPersist({
+      symbol: chalk.green('?'),
+      text: `${chalk.bold('Select commit')} ${chalk.cyan(commit.message)}`
+    });
+    return commit;
+  } catch (e) {
+    spinner.stop();
+    throw e;
+  }
+}
+
+export async function getCommitByPullNumber(
+  owner: string,
+  repoName: string,
+  pullNumber: number
+) {
+  const spinner = ora().start();
+  try {
+    const commit = await github.getCommitByPullNumber(
+      owner,
+      repoName,
+      pullNumber
+    );
     spinner.stopAndPersist({
       symbol: chalk.green('?'),
       text: `${chalk.bold('Select commit')} ${chalk.cyan(commit.message)}`
@@ -159,7 +181,7 @@ export async function getCommitsByPrompt(
 ) {
   const spinner = ora('Loading commits...').start();
   try {
-    const commits = await getCommits(owner, repoName, author);
+    const commits = await github.getCommitsByAuthor(owner, repoName, author);
     if (isEmpty(commits)) {
       spinner.stopAndPersist({
         symbol: chalk.green('?'),
@@ -209,12 +231,12 @@ function getShortSha(commit: Commit) {
 }
 
 export function getReferenceLong(commit: Commit) {
-  return commit.pullRequest ? `#${commit.pullRequest}` : getShortSha(commit);
+  return commit.pullNumber ? `#${commit.pullNumber}` : getShortSha(commit);
 }
 
 function getReferenceShort(commit: Commit) {
-  return commit.pullRequest
-    ? `pr-${commit.pullRequest}`
+  return commit.pullNumber
+    ? `pr-${commit.pullNumber}`
     : `commit-${getShortSha(commit)}`;
 }
 

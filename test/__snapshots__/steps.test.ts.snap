@@ -71,7 +71,7 @@ Array [
             "short": "Update readme: Make ui-framework url a link",
             "value": Object {
               "message": "Update readme: Make ui-framework url a link",
-              "pullRequest": "PR for commitSha",
+              "pullNumber": "PR for commitSha",
               "sha": "commitSha",
             },
           },
@@ -80,7 +80,7 @@ Array [
             "short": "Update react 15.6.1 (#13672)",
             "value": Object {
               "message": "Update react 15.6.1 (#13672)",
-              "pullRequest": "PR for commitSha2",
+              "pullNumber": "PR for commitSha2",
               "sha": "commitSha2",
             },
           },
@@ -89,7 +89,7 @@ Array [
             "short": "Mock out static files when running in Jest (#13315)",
             "value": Object {
               "message": "Mock out static files when running in Jest (#13315)",
-              "pullRequest": "PR for commitSha3",
+              "pullNumber": "PR for commitSha3",
               "sha": "commitSha3",
             },
           },
