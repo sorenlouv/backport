@@ -82,7 +82,7 @@ function addRemote(owner: string, repoName: string, username: string) {
 }
 
 export function cherrypick(owner: string, repoName: string, sha: string) {
-  return exec(`git cherry-pick ${sha}`, {
+  return exec(`git fetch origin && git cherry-pick ${sha}`, {
     cwd: env.getRepoPath(owner, repoName)
   });
 }
@@ -105,8 +105,17 @@ export async function createAndCheckoutBranch(
   featureBranch: string
 ) {
   try {
+    await exec(`git branch --delete --force ${featureBranch}`);
+  } catch (e) {
+    // swallow error if branch cannot be deleted because it doesn't exist
+    if (!e.stderr.includes(`branch '${featureBranch}' not found.`)) {
+      throw e;
+    }
+  }
+
+  try {
     return await exec(
-      `git fetch origin ${baseBranch} && git branch ${featureBranch} origin/${baseBranch} --force && git checkout ${featureBranch} `,
+      `git fetch origin ${baseBranch} && git checkout origin/${baseBranch} && git checkout -b ${featureBranch}`,
       {
         cwd: env.getRepoPath(owner, repoName)
       }
@@ -135,7 +144,7 @@ export function push(
   });
 }
 
-export async function resetAndPullMaster(owner: string, repoName: string) {
+export function resetBranch(owner: string, repoName: string) {
   return exec(
     `git reset --hard && git clean -d --force && git checkout master && git pull origin master`,
     {

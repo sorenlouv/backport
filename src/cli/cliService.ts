@@ -15,7 +15,7 @@ import { getRepoPath } from '../lib/env';
 import * as logger from '../lib/logger';
 
 import {
-  resetAndPullMaster,
+  resetBranch,
   cherrypick,
   createAndCheckoutBranch,
   push,
@@ -34,13 +34,13 @@ export function doBackportVersions(
   username: string,
   labels: string[]
 ) {
-  return sequentially(branches, async (branch: string) => {
+  return sequentially(branches, async (baseBranch: string) => {
     try {
       const pullRequest = await doBackportVersion(
         owner,
         repoName,
         commits,
-        branch,
+        baseBranch,
         username,
         labels
       );
@@ -69,17 +69,17 @@ export async function doBackportVersion(
   owner: string,
   repoName: string,
   commits: Commit[],
-  branch: string,
+  baseBranch: string,
   username: string,
   labels: string[] = []
 ) {
-  const backportBranchName = getBackportBranchName(branch, commits);
+  const featureBranch = getFeatureBranchName(baseBranch, commits);
   const refValues = commits.map(commit => getReferenceLong(commit)).join(', ');
-  logger.log(`Backporting ${refValues} to ${branch}`);
+  logger.log(`Backporting ${refValues} to ${baseBranch}`);
 
   await withSpinner({ text: 'Pulling latest changes' }, async () => {
-    await resetAndPullMaster(owner, repoName);
-    await createAndCheckoutBranch(owner, repoName, branch, backportBranchName);
+    await resetBranch(owner, repoName);
+    await createAndCheckoutBranch(owner, repoName, baseBranch, featureBranch);
   });
 
   await sequentially(commits, commit =>
@@ -87,12 +87,12 @@ export async function doBackportVersion(
   );
 
   await withSpinner(
-    { text: `Pushing branch ${username}:${backportBranchName}` },
-    () => push(owner, repoName, username, backportBranchName)
+    { text: `Pushing branch ${username}:${featureBranch}` },
+    () => push(owner, repoName, username, featureBranch)
   );
 
   return withSpinner({ text: 'Creating pull request' }, async () => {
-    const payload = getPullRequestPayload(branch, commits, username);
+    const payload = getPullRequestPayload(baseBranch, commits, username);
     const pullRequest = await github.createPullRequest(
       owner,
       repoName,
@@ -218,12 +218,12 @@ function sequentially<T>(items: T[], handler: (item: T) => Promise<any>) {
   }, Promise.resolve());
 }
 
-function getBackportBranchName(branch: string, commits: Commit[]) {
+function getFeatureBranchName(baseBranch: string, commits: Commit[]) {
   const refValues = commits
     .map(commit => getReferenceShort(commit))
     .join('_')
     .slice(0, 200);
-  return `backport/${branch}/${refValues}`;
+  return `backport/${baseBranch}/${refValues}`;
 }
 
 function getShortSha(commit: Commit) {
@@ -278,21 +278,21 @@ async function confirmResolvedRecursive(owner: string, repoName: string) {
   }
 }
 
-function getPullRequestTitle(branch: string, commits: Commit[]) {
+function getPullRequestTitle(baseBranch: string, commits: Commit[]) {
   const commitMessages = commits
     .map(commit => commit.message)
     .join(' | ')
     .slice(0, 200);
 
-  return `[${branch}] ${commitMessages}`;
+  return `[${baseBranch}] ${commitMessages}`;
 }
 
 function getPullRequestPayload(
-  branch: string,
+  baseBranch: string,
   commits: Commit[],
   username: string
 ): GithubPullRequestPayload {
-  const backportBranchName = getBackportBranchName(branch, commits);
+  const featureBranch = getFeatureBranchName(baseBranch, commits);
   const commitRefs = commits
     .map(commit => {
       const ref = getReferenceLong(commit);
@@ -301,10 +301,10 @@ function getPullRequestPayload(
     .join('\n');
 
   return {
-    title: getPullRequestTitle(branch, commits),
-    body: `Backports the following commits to ${branch}:\n${commitRefs}`,
-    head: `${username}:${backportBranchName}`,
-    base: `${branch}`
+    title: getPullRequestTitle(baseBranch, commits),
+    body: `Backports the following commits to ${baseBranch}:\n${commitRefs}`,
+    head: `${username}:${featureBranch}`,
+    base: `${baseBranch}`
   };
 }
 
