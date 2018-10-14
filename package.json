@@ -80,7 +80,7 @@
     "chalk": "^2.4.1",
     "find-up": "^3.0.0",
     "inquirer": "^6.0.0",
-    "joi": "^13.4.0",
+    "joi": "^14.0.0",
     "lodash.flatten": "^4.4.0",
     "lodash.get": "^4.4.2",
     "lodash.isempty": "^4.4.0",
