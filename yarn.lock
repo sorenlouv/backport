@@ -42,9 +42,10 @@
     "@types/minimatch" "*"
     "@types/node" "*"
 
-"@types/inquirer@^0.0.42":
-  version "0.0.42"
-  resolved "https://registry.yarnpkg.com/@types/inquirer/-/inquirer-0.0.42.tgz#2310fd8623053bead72247adae416aa32bacdf0c"
+"@types/inquirer@^0.0.44":
+  version "0.0.44"
+  resolved "https://registry.yarnpkg.com/@types/inquirer/-/inquirer-0.0.44.tgz#60ce954581cfdf44ad3899ec4cdc5fbe3fef1694"
+  integrity sha512-ugbhy1yBtCz5iTWYF+AGRS/UcMcWicdyHhxl9VaeFYc3ueg0CCssthQLB3rIcIOeGtfG6WPEvHdLu/IjKYfefg==
   dependencies:
     "@types/rx" "*"
     "@types/through" "*"
