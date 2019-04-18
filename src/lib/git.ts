@@ -1,7 +1,7 @@
 import childProcess from 'child_process';
 import rimraf from 'rimraf';
 import * as env from './env';
-import { mkdirp, stat, exec } from './rpc';
+import { exec, mkdirp, stat } from './rpc';
 import { HandledError } from './HandledError';
 
 async function folderExists(path: string): Promise<boolean> {

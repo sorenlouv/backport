@@ -38,7 +38,7 @@ export interface GithubPullRequestPayload {
 export interface GithubApiError extends AxiosError {
   response?: AxiosResponse<{
     message: string;
-    errors?: Array<{}>;
+    errors?: {}[];
     documentation_url: string;
   }>;
 }

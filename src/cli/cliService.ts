@@ -5,13 +5,13 @@ import isEmpty from 'lodash.isempty';
 import ora from 'ora';
 
 import {
-  listCommits,
+  confirmConflictResolved,
   listBranches,
-  confirmConflictResolved
+  listCommits
 } from '../lib/prompts';
 import {
-  createPullRequest,
   addLabels,
+  createPullRequest,
   getCommit,
   getCommits
 } from '../lib/github';
@@ -20,14 +20,14 @@ import { getRepoPath } from '../lib/env';
 import * as logger from '../lib/logger';
 
 import {
-  resetAndPullMaster,
   cherrypick,
   createAndCheckoutBranch,
+  deleteRepo,
+  isIndexDirty,
   push,
   repoExists,
-  deleteRepo,
+  resetAndPullMaster,
   setupRepo,
-  isIndexDirty,
   verifyGithubSshAuth
 } from '../lib/git';
 import { BranchChoice } from '../lib/options/config/projectConfig';
@@ -176,7 +176,7 @@ export function getBranchesByPrompt(
   return listBranches(branchChoices, isMultipleChoice);
 }
 
-function sequentially<T>(items: T[], handler: (item: T) => Promise<any>) {
+function sequentially<T>(items: T[], handler: (item: T) => Promise<void>) {
   return items.reduce(async (p, item) => {
     await p;
     return handler(item);

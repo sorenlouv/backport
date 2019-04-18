@@ -2,10 +2,10 @@ import isEmpty from 'lodash.isempty';
 import { setAccessToken } from '../lib/github';
 
 import {
-  getCommitsByPrompt,
-  getCommitBySha,
-  getBranchesByPrompt,
   doBackportVersions,
+  getBranchesByPrompt,
+  getCommitBySha,
+  getCommitsByPrompt,
   maybeSetupRepo
 } from './cliService';
 import { printHandledError } from '../lib/HandledError';

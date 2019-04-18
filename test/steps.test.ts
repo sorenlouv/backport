@@ -2,8 +2,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import inquirer from 'inquirer';
 import * as childProcess from 'child_process';
-import commitsMock from './mocks/commits.json';
-
+import { commitsMock } from './mocks/commits';
 import { initSteps } from '../src/cli/steps';
 import * as github from '../src/lib/github';
 import * as rpc from '../src/lib/rpc';
@@ -43,7 +42,7 @@ function mockGetCommits(
     accessToken?: string;
     author?: string;
     perPage?: number;
-    res: Array<{}>;
+    res: {}[];
   }
 ) {
   return axiosMock

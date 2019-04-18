@@ -19,7 +19,7 @@ interface ProjectConfigBase {
 }
 
 interface ProjectConfigFile extends ProjectConfigBase {
-  branches?: Array<string | BranchChoice>;
+  branches?: (string | BranchChoice)[];
 }
 
 interface ProjectConfig extends ProjectConfigBase {

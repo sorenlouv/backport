@@ -1,12 +1,12 @@
 import {
-  GithubQuery,
-  GithubCommit,
-  PullRequest,
   Commit,
+  GithubApiError,
+  GithubCommit,
   GithubIssue,
   GithubPullRequestPayload,
-  GithubApiError,
-  GithubSearch
+  GithubQuery,
+  GithubSearch,
+  PullRequest
 } from '../types/types';
 
 import axios, { AxiosResponse } from 'axios';

@@ -11,7 +11,7 @@ import {
   getCommitBySha,
   getReferenceLong
 } from '../src/cli/cliService';
-import commitMock from './mocks/commit.json';
+import { commitMock } from './mocks/commit';
 
 axios.defaults.adapter = httpAdapter;
 
