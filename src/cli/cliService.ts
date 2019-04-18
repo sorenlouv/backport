@@ -1,9 +1,6 @@
-import { Commit, GithubPullRequestPayload } from '../types/types';
-
 import chalk from 'chalk';
 import isEmpty from 'lodash.isempty';
 import ora from 'ora';
-
 import {
   confirmConflictResolved,
   listBranches,
@@ -13,12 +10,12 @@ import {
   addLabels,
   createPullRequest,
   getCommit,
-  getCommits
+  getCommits,
+  Commit
 } from '../lib/github';
 import { HandledError, printHandledError } from '../lib/HandledError';
 import { getRepoPath } from '../lib/env';
 import * as logger from '../lib/logger';
-
 import {
   cherrypick,
   createAndCheckoutBranch,
@@ -252,11 +249,11 @@ function getPullRequestTitle(branch: string, commits: Commit[]) {
   return `[${branch}] ${commitMessages}`;
 }
 
-function getPullRequestPayload(
+export function getPullRequestPayload(
   branch: string,
   commits: Commit[],
   username: string
-): GithubPullRequestPayload {
+) {
   const backportBranchName = getBackportBranchName(branch, commits);
   const commitRefs = commits
     .map(commit => {

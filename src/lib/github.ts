@@ -1,19 +1,22 @@
 import {
-  Commit,
   GithubApiError,
   GithubCommit,
   GithubIssue,
-  GithubPullRequestPayload,
   GithubQuery,
-  GithubSearch,
-  PullRequest
-} from '../types/types';
-
+  GithubSearch
+} from '../types/GithubApi';
 import axios, { AxiosResponse } from 'axios';
 import querystring from 'querystring';
 import get from 'lodash.get';
 import isEmpty from 'lodash.isempty';
 import { HandledError } from './HandledError';
+import { getPullRequestPayload } from '../cli/cliService';
+
+export interface Commit {
+  sha: string;
+  message: string;
+  pullRequest?: number;
+}
 
 let accessToken: string;
 function getCommitMessage(message: string) {
@@ -93,8 +96,8 @@ export async function getCommit(
 export async function createPullRequest(
   owner: string,
   repoName: string,
-  payload: GithubPullRequestPayload
-): Promise<PullRequest> {
+  payload: ReturnType<typeof getPullRequestPayload>
+) {
   try {
     const res: AxiosResponse<GithubIssue> = await axios.post(
       `https://api.github.com/repos/${owner}/${repoName}/pulls?access_token=${accessToken}`,

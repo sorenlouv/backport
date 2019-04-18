@@ -1,7 +1,7 @@
 import inquirer, { Question } from 'inquirer';
 import isEmpty from 'lodash.isempty';
-import { Commit } from '../types/types';
 import { BranchChoice } from './options/config/projectConfig';
+import { Commit } from './github';
 
 async function prompt<T>(options: Question) {
   const { promptResult } = (await inquirer.prompt([
