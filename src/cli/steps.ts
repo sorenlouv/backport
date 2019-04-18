@@ -6,10 +6,11 @@ import {
   getCommitBySha,
   getBranchesByPrompt,
   doBackportVersions,
-  handleErrors,
   maybeSetupRepo
 } from './cliService';
-import { BackportOptions, BranchChoice } from '../types/types';
+import { printHandledError } from '../lib/HandledError';
+import { BranchChoice } from '../lib/options/config/projectConfig';
+import { BackportOptions } from '../lib/options/options';
 
 export async function initSteps(options: BackportOptions) {
   const [owner, repoName] = options.upstream.split('/');
@@ -27,7 +28,7 @@ export async function initSteps(options: BackportOptions) {
         );
 
     const branches = !isEmpty(options.branches)
-      ? (options.branches as string[])
+      ? options.branches
       : await getBranchesByPrompt(
           options.branchChoices as BranchChoice[],
           options.multipleBranches
@@ -43,6 +44,6 @@ export async function initSteps(options: BackportOptions) {
       options.labels
     );
   } catch (e) {
-    handleErrors(e);
+    printHandledError(e);
   }
 }

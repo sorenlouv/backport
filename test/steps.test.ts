@@ -149,6 +149,8 @@ describe('run through steps', () => {
 
     await initSteps({
       username: 'sqren',
+      branches: [],
+      sha: undefined,
       accessToken: 'myAccessToken',
       multiple: false,
       multipleBranches: false,

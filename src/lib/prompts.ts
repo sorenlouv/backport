@@ -1,6 +1,7 @@
 import inquirer, { Question } from 'inquirer';
 import isEmpty from 'lodash.isempty';
-import { Commit, BranchChoice } from '../types/types';
+import { Commit } from '../types/types';
+import { BranchChoice } from './options/config/projectConfig';
 
 async function prompt<T>(options: Question) {
   const { promptResult } = (await inquirer.prompt([
@@ -41,11 +42,11 @@ export async function listCommits(
 }
 
 export async function listBranches(
-  branches: BranchChoice[],
+  branchChoices: BranchChoice[],
   isMultipleChoice: boolean
 ): Promise<string[]> {
   const res = await prompt<string | string[]>({
-    choices: branches,
+    choices: branchChoices,
     message: 'Select branch to backport to',
     type: isMultipleChoice ? 'checkbox' : 'list'
   });
@@ -53,7 +54,7 @@ export async function listBranches(
   const selectedBranches = Array.isArray(res) ? res : [res];
 
   return isEmpty(selectedBranches)
-    ? listBranches(branches, isMultipleChoice)
+    ? listBranches(branchChoices, isMultipleChoice)
     : selectedBranches;
 }
 

@@ -1,0 +1,16 @@
+import * as rpc from '../../rpc';
+import stripJsonComments from 'strip-json-comments';
+import { HandledError } from '../../HandledError';
+
+export async function readConfigFile<T>(filepath: string): Promise<T> {
+  const fileContents = await rpc.readFile(filepath, 'utf8');
+  const configWithoutComments = stripJsonComments(fileContents);
+
+  try {
+    return JSON.parse(configWithoutComments);
+  } catch (e) {
+    throw new HandledError(
+      `"${filepath}" contains invalid JSON:\n\n${fileContents}\n\nTry validating the file on https://jsonlint.com/`
+    );
+  }
+}

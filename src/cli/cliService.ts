@@ -1,4 +1,4 @@
-import { Commit, BranchChoice, GithubPullRequestPayload } from '../types/types';
+import { Commit, GithubPullRequestPayload } from '../types/types';
 
 import chalk from 'chalk';
 import isEmpty from 'lodash.isempty';
@@ -15,7 +15,7 @@ import {
   getCommit,
   getCommits
 } from '../lib/github';
-import { HandledError } from '../lib/errors';
+import { HandledError, printHandledError } from '../lib/HandledError';
 import { getRepoPath } from '../lib/env';
 import * as logger from '../lib/logger';
 
@@ -30,6 +30,7 @@ import {
   isIndexDirty,
   verifyGithubSshAuth
 } from '../lib/git';
+import { BranchChoice } from '../lib/options/config/projectConfig';
 
 export function doBackportVersions(
   owner: string,
@@ -39,7 +40,7 @@ export function doBackportVersions(
   username: string,
   labels: string[]
 ) {
-  return sequentially(branches, async (branch: string) => {
+  return sequentially(branches, async branch => {
     try {
       const pullRequest = await doBackportVersion(
         owner,
@@ -51,23 +52,9 @@ export function doBackportVersions(
       );
       logger.log(`View pull request: ${pullRequest.html_url}\n`);
     } catch (e) {
-      handleErrors(e);
+      printHandledError(e);
     }
   });
-}
-
-export function handleErrors(e: Error) {
-  switch (e.name) {
-    // Handled exceptions
-    case 'HandledError':
-      console.error(e.message);
-      break;
-
-    // Unhandled exceptions
-    default:
-      console.error(e);
-      throw e;
-  }
 }
 
 export async function doBackportVersion(
@@ -183,10 +170,10 @@ export async function getCommitsByPrompt(
 }
 
 export function getBranchesByPrompt(
-  branches: BranchChoice[],
+  branchChoices: BranchChoice[],
   isMultipleChoice = false
 ) {
-  return listBranches(branches, isMultipleChoice);
+  return listBranches(branchChoices, isMultipleChoice);
 }
 
 function sequentially<T>(items: T[], handler: (item: T) => Promise<any>) {

@@ -13,7 +13,7 @@ import axios, { AxiosResponse } from 'axios';
 import querystring from 'querystring';
 import get from 'lodash.get';
 import isEmpty from 'lodash.isempty';
-import { HandledError } from './errors';
+import { HandledError } from './HandledError';
 
 let accessToken: string;
 function getCommitMessage(message: string) {

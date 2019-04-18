@@ -44,54 +44,6 @@ export interface GithubApiError extends AxiosError {
 }
 
 /*
- * Config
- */
-
-interface ConfigOptions {
-  all?: boolean;
-  multiple?: boolean;
-  multipleCommits?: boolean;
-  multipleBranches?: boolean;
-}
-
-export interface ProjectConfigRaw extends ConfigOptions {
-  upstream: string;
-  branches: Array<string | BranchChoice>;
-  labels?: string[];
-}
-
-export interface ProjectConfig extends ConfigOptions {
-  upstream: string;
-  branchChoices: BranchChoice[];
-  labels?: string[];
-}
-
-export interface GlobalConfig extends ConfigOptions {
-  username: string;
-  accessToken: string;
-}
-
-export type CombinedConfig = Partial<GlobalConfig> & Partial<ProjectConfig>;
-
-/*
- * Options
- */
-
-export interface BackportOptions {
-  accessToken: string;
-  all: boolean;
-  labels: string[];
-  multiple: boolean;
-  multipleBranches: boolean;
-  multipleCommits: boolean;
-  upstream: string;
-  username: string;
-  branchChoices?: BranchChoice[];
-  branches?: string[];
-  sha?: string;
-}
-
-/*
  * PullRequest
  */
 
@@ -108,13 +60,4 @@ export interface Commit {
   sha: string;
   message: string;
   pullRequest?: number;
-}
-
-/*
- * Branch
- */
-
-export interface BranchChoice {
-  name: string;
-  checked?: boolean;
 }
