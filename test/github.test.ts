@@ -1,4 +1,4 @@
-import { getCommits, setAccessToken } from '../src/lib/github';
+import { getCommits, setAccessToken } from '../src/github';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 

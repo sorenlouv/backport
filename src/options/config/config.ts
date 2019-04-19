@@ -1,6 +1,6 @@
 import { getGlobalConfig } from './globalConfig';
 import { getProjectConfig } from './projectConfig';
-import { PromiseReturnType } from '../../../types/commons';
+import { PromiseReturnType } from '../../types/commons';
 
 export type OptionsFromConfigFiles = PromiseReturnType<
   typeof getOptionsFromConfigFiles

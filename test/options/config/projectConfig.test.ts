@@ -1,6 +1,6 @@
 import findUp from 'find-up';
-import * as rpc from '../../../src/lib/rpc';
-import { getProjectConfig } from '../../../src/lib/options/config/projectConfig';
+import * as rpc from '../../../src/rpc';
+import { getProjectConfig } from '../../../src/options/config/projectConfig';
 import { PromiseReturnType } from '../../../src/types/commons';
 
 describe('getProjectConfig', () => {

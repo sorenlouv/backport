@@ -1,6 +1,6 @@
-import { getOptionsFromConfigFiles } from '../../../src/lib/options/config/config';
+import { getOptionsFromConfigFiles } from '../../../src/options/config/config';
 import { PromiseReturnType } from '../../../src/types/commons';
-import * as rpc from '../../../src/lib/rpc';
+import * as rpc from '../../../src/rpc';
 
 describe('getOptionsFromConfigFiles', () => {
   let res: PromiseReturnType<typeof getOptionsFromConfigFiles>;
@@ -11,9 +11,7 @@ describe('getOptionsFromConfigFiles', () => {
         throw new Error('unknown filepath');
       }
 
-      if (filepath.includes('/configTemplate.json')) {
-        return 'myConfigTemplate';
-      } else if (filepath === '/path/to/project/config') {
+      if (filepath === '/path/to/project/config') {
         return JSON.stringify({
           upstream: 'elastic/kibana',
           branches: ['6.x', '6.1']

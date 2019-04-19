@@ -1,6 +1,5 @@
 import isEmpty from 'lodash.isempty';
-import { setAccessToken } from '../lib/github';
-
+import { setAccessToken } from './github';
 import {
   doBackportVersions,
   getBranchesByPrompt,
@@ -8,9 +7,9 @@ import {
   getCommitsByPrompt,
   maybeSetupRepo
 } from './cliService';
-import { printHandledError } from '../lib/HandledError';
-import { BranchChoice } from '../lib/options/config/projectConfig';
-import { BackportOptions } from '../lib/options/options';
+import { printHandledError } from './HandledError';
+import { BranchChoice } from './options/config/projectConfig';
+import { BackportOptions } from './options/options';
 
 export async function initSteps(options: BackportOptions) {
   const [owner, repoName] = options.upstream.split('/');

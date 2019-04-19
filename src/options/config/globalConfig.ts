@@ -1,6 +1,5 @@
 import * as env from '../../env';
 import * as rpc from '../../rpc';
-import path from 'path';
 import { readConfigFile } from './readConfigFile';
 
 interface GlobalConfig {
@@ -26,8 +25,12 @@ export async function maybeCreateGlobalConfigAndFolder() {
   const globalConfigPath = env.getGlobalConfigPath();
   const configTemplate = await getConfigTemplate();
   await rpc.mkdirp(reposPath);
-  await maybeCreateGlobalConfig(globalConfigPath, configTemplate);
+  const didCreate = await maybeCreateGlobalConfig(
+    globalConfigPath,
+    configTemplate
+  );
   await ensureCorrectPermissions(globalConfigPath);
+  return didCreate;
 }
 
 function ensureCorrectPermissions(globalConfigPath: string) {
@@ -43,15 +46,23 @@ export async function maybeCreateGlobalConfig(
       flag: 'wx', // create and write file. Error if it already exists
       mode: 0o600 // give the owner read-write privleges, no access for others
     });
+    return true;
   } catch (e) {
     const FILE_ALREADY_EXISTS = 'EEXIST';
     if (e.code !== FILE_ALREADY_EXISTS) {
       throw e;
     }
+    return false;
   }
 }
 
 function getConfigTemplate() {
-  const p = path.join(__dirname, '../../../../templates/configTemplate.json');
-  return rpc.readFile(p, 'utf8');
+  return `{
+    // Github personal access token. Must be created here: https://github.com/settings/tokens/new
+    // Must have "Repo: Full control of private repositories"
+    "accessToken": "",
+
+    // Github username, eg. kimchy
+    "username": ""
+  }`;
 }

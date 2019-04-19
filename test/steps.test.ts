@@ -3,9 +3,9 @@ import MockAdapter from 'axios-mock-adapter';
 import inquirer from 'inquirer';
 import * as childProcess from 'child_process';
 import { commitsMock } from './mocks/commits';
-import { initSteps } from '../src/cli/steps';
-import * as github from '../src/lib/github';
-import * as rpc from '../src/lib/rpc';
+import { initSteps } from '../src/steps';
+import * as github from '../src/github';
+import * as rpc from '../src/rpc';
 
 function mockGetPullRequest(
   axiosMock: MockAdapter,

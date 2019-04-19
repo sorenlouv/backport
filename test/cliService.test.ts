@@ -4,13 +4,13 @@ import nock from 'nock';
 import httpAdapter from 'axios/lib/adapters/http';
 import * as childProcess from 'child_process';
 
-import * as rpc from '../src/lib/rpc';
+import * as rpc from '../src/rpc';
 import {
   maybeSetupRepo,
   doBackportVersion,
   getCommitBySha,
   getReferenceLong
-} from '../src/cli/cliService';
+} from '../src/cliService';
 import { commitMock } from './mocks/commit';
 
 axios.defaults.adapter = httpAdapter;

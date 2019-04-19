@@ -3,7 +3,7 @@ import {
   getReposPath,
   getRepoOwnerPath,
   getRepoPath
-} from '../src/lib/env';
+} from '../src/env';
 
 describe('env.js', () => {
   test('getGlobalConfigPath', () => {

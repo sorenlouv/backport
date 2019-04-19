@@ -4,13 +4,13 @@ import {
   GithubIssue,
   GithubQuery,
   GithubSearch
-} from '../types/GithubApi';
+} from './types/GithubApi';
 import axios, { AxiosResponse } from 'axios';
 import querystring from 'querystring';
 import get from 'lodash.get';
 import isEmpty from 'lodash.isempty';
 import { HandledError } from './HandledError';
-import { getPullRequestPayload } from '../cli/cliService';
+import { getPullRequestPayload } from './cliService';
 
 export interface Commit {
   sha: string;
@@ -30,7 +30,7 @@ export async function getCommits(
 ): Promise<Commit[]> {
   const query: GithubQuery = {
     access_token: accessToken,
-    per_page: 20
+    per_page: 10
   };
 
   if (author) {

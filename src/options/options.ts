@@ -3,7 +3,8 @@ import isEmpty from 'lodash.isempty';
 import { HandledError } from '../HandledError';
 import { OptionsFromCliArgs, getOptionsFromCliArgs } from './cliArgs';
 import { getOptionsFromConfigFiles } from './config/config';
-import { PromiseReturnType } from '../../types/commons';
+import { PromiseReturnType } from '../types/commons';
+import { getGlobalConfigPath } from '../env';
 
 export type BackportOptions = PromiseReturnType<typeof getOptions>;
 export async function getOptions(argv: typeof process.argv) {
@@ -27,8 +28,11 @@ function getErrorMessage({
 }) {
   const isGlobalConfigProperty =
     field === 'accessToken' || field === 'username';
+
+  const globalConfigPath = getGlobalConfigPath();
+
   const configFileMessage = isGlobalConfigProperty
-    ? `Config file: ".backport/config.json". Read more: ${GLOBAL_CONFIG_DOCS_LINK}`
+    ? `Config file: "${globalConfigPath}". Read more: ${GLOBAL_CONFIG_DOCS_LINK}`
     : `Config file: ".backportrc.json". Read more: ${PROJECT_CONFIG_DOCS_LINK}`;
 
   return `Invalid option "${field}"\n\nYou can add it with either:\n - ${configFileMessage}\n - CLI: "--${field} ${exampleValue}"`;

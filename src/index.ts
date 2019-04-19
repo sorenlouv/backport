@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import { initSteps } from './steps';
-import { printHandledError } from '../lib/HandledError';
-import { getOptions } from '../lib/options/options';
+import { printHandledError } from './HandledError';
+import { getOptions } from './options/options';
 
 async function init() {
   try {

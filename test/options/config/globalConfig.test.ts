@@ -1,8 +1,8 @@
-import * as rpc from '../../../src/lib/rpc';
+import * as rpc from '../../../src/rpc';
 import {
   getGlobalConfig,
   maybeCreateGlobalConfig
-} from '../../../src/lib/options/config/globalConfig';
+} from '../../../src/options/config/globalConfig';
 import { PromiseReturnType } from '../../../src/types/commons';
 
 describe('config', () => {
@@ -27,7 +27,7 @@ describe('config', () => {
     it("should create config if it doesn't exist", () => {
       expect(rpc.writeFile).toHaveBeenCalledWith(
         '/myHomeDir/.backport/config.json',
-        '{"accessToken":"myAccessToken","username":"sqren"}',
+        expect.any(String),
         { flag: 'wx', mode: 384 }
       );
     });
@@ -35,13 +35,6 @@ describe('config', () => {
     it("should create config folders if it they don't exist", () => {
       expect(rpc.mkdirp).toHaveBeenCalledWith(
         '/myHomeDir/.backport/repositories'
-      );
-    });
-
-    it('should load configTemplate', () => {
-      expect(rpc.readFile).toHaveBeenCalledWith(
-        expect.stringContaining('/templates/configTemplate.json'),
-        'utf8'
       );
     });
 
@@ -63,10 +56,12 @@ describe('config', () => {
   describe('maybeCreateGlobalConfig', () => {
     it('should create config and succeed', async () => {
       jest.spyOn(rpc, 'writeFile').mockResolvedValue(undefined);
-      await maybeCreateGlobalConfig(
+      const didCreate = await maybeCreateGlobalConfig(
         '/path/to/globalConfig',
         'myConfigTemplate'
       );
+
+      expect(didCreate).toEqual(true);
 
       expect(rpc.writeFile).toHaveBeenCalledWith(
         '/path/to/globalConfig',
@@ -80,9 +75,12 @@ describe('config', () => {
       (err as any).code = 'EEXIST';
       jest.spyOn(rpc, 'writeFile').mockRejectedValueOnce(err);
 
-      expect(
-        await maybeCreateGlobalConfig('myPath', 'myConfigTemplate')
-      ).toEqual(undefined);
+      const didCreate = await maybeCreateGlobalConfig(
+        'myPath',
+        'myConfigTemplate'
+      );
+
+      expect(didCreate).toEqual(false);
     });
   });
 });

@@ -1,21 +1,17 @@
 import chalk from 'chalk';
 import isEmpty from 'lodash.isempty';
 import ora from 'ora';
-import {
-  confirmConflictResolved,
-  listBranches,
-  listCommits
-} from '../lib/prompts';
+import { confirmConflictResolved, listBranches, listCommits } from './prompts';
 import {
   addLabels,
   createPullRequest,
   getCommit,
   getCommits,
   Commit
-} from '../lib/github';
-import { HandledError, printHandledError } from '../lib/HandledError';
-import { getRepoPath } from '../lib/env';
-import * as logger from '../lib/logger';
+} from './github';
+import { HandledError, printHandledError } from './HandledError';
+import { getRepoPath } from './env';
+import * as logger from './logger';
 import {
   cherrypick,
   createAndCheckoutBranch,
@@ -26,8 +22,8 @@ import {
   resetAndPullMaster,
   setupRepo,
   verifyGithubSshAuth
-} from '../lib/git';
-import { BranchChoice } from '../lib/options/config/projectConfig';
+} from './git';
+import { BranchChoice } from './options/config/projectConfig';
 
 export function doBackportVersions(
   owner: string,

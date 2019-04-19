@@ -1,5 +1,5 @@
-import { verifyGithubSshAuth } from '../src/lib/git';
-import * as rpc from '../src/lib/rpc';
+import { verifyGithubSshAuth } from '../src/git';
+import * as rpc from '../src/rpc';
 
 export class CustomError extends Error {
   public code: number;

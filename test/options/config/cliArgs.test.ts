@@ -1,4 +1,4 @@
-import { getOptionsFromCliArgs } from '../../../src/lib/options/cliArgs';
+import { getOptionsFromCliArgs } from '../../../src/options/cliArgs';
 
 describe('getOptionsFromCliArgs', () => {
   let res: ReturnType<typeof getOptionsFromCliArgs>;
@@ -18,7 +18,7 @@ describe('getOptionsFromCliArgs', () => {
 
     const argv = [
       '/Users/sqren/elastic/backport/node_modules/.bin/ts-node',
-      '/Users/sqren/elastic/backport/src/cli/index.ts',
+      '/Users/sqren/elastic/backport/src/index.ts',
       '--branch',
       '6.0',
       '--branch',

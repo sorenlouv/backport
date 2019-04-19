@@ -15,9 +15,9 @@
     "branching"
   ],
   "version": "4.4.2",
-  "main": "./dist/cli/index.js",
+  "main": "./dist/index.js",
   "bin": {
-    "backport": "./dist/cli/index.js"
+    "backport": "./dist/index.js"
   },
   "husky": {
     "hooks": {
