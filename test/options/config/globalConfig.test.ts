@@ -1,4 +1,4 @@
-import * as rpc from '../../../src/rpc';
+import * as rpc from '../../../src/services/rpc';
 import {
   getGlobalConfig,
   maybeCreateGlobalConfig

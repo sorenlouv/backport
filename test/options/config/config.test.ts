@@ -1,6 +1,6 @@
 import { getOptionsFromConfigFiles } from '../../../src/options/config/config';
 import { PromiseReturnType } from '../../../src/types/commons';
-import * as rpc from '../../../src/rpc';
+import * as rpc from '../../../src/services/rpc';
 
 describe('getOptionsFromConfigFiles', () => {
   let res: PromiseReturnType<typeof getOptionsFromConfigFiles>;

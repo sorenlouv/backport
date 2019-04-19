@@ -4,13 +4,13 @@ import {
   GithubIssue,
   GithubQuery,
   GithubSearch
-} from './types/GithubApi';
+} from '../types/GithubApi';
 import axios, { AxiosResponse } from 'axios';
 import querystring from 'querystring';
 import get from 'lodash.get';
 import isEmpty from 'lodash.isempty';
 import { HandledError } from './HandledError';
-import { getPullRequestPayload } from './cliService';
+import { getPullRequestPayload } from '../steps/doBackportVersions';
 
 export interface Commit {
   sha: string;
@@ -23,7 +23,7 @@ function getCommitMessage(message: string) {
   return message.split('\n')[0].trim();
 }
 
-export async function getCommits(
+export async function fetchCommits(
   owner: string,
   repoName: string,
   author: string | null
@@ -50,7 +50,7 @@ export async function getCommits(
       return {
         message: getCommitMessage(commit.commit.message),
         sha,
-        pullRequest: await getPullRequestBySha(owner, repoName, sha)
+        pullRequest: await fetchPullRequestBySha(owner, repoName, sha)
       };
     });
 
@@ -60,7 +60,7 @@ export async function getCommits(
   }
 }
 
-export async function getCommit(
+export async function fetchCommit(
   owner: string,
   repoName: string,
   sha: string
@@ -81,7 +81,7 @@ export async function getCommit(
 
     const commitRes = res.data.items[0];
     const fullSha = commitRes.sha;
-    const pullRequest = await getPullRequestBySha(owner, repoName, fullSha);
+    const pullRequest = await fetchPullRequestBySha(owner, repoName, fullSha);
 
     return {
       message: getCommitMessage(commitRes.commit.message),
@@ -128,7 +128,7 @@ export async function addLabels(
   }
 }
 
-async function getPullRequestBySha(
+async function fetchPullRequestBySha(
   owner: string,
   repoName: string,
   commitSha: string

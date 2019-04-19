@@ -1,4 +1,4 @@
-import { getCommits, setAccessToken } from '../src/github';
+import { fetchCommits, setAccessToken } from '../src/services/github';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
@@ -37,7 +37,7 @@ describe('getCommits', () => {
         ]
       });
 
-    expect(await getCommits(owner, repoName, author)).toEqual([
+    expect(await fetchCommits(owner, repoName, author)).toEqual([
       {
         message: 'myMessage',
         pullRequest: 'myPullRequestNumber',
@@ -74,7 +74,7 @@ describe('getCommits', () => {
       )
       .reply(200, { items: [] });
 
-    expect(await getCommits(owner, repoName, author)).toEqual([
+    expect(await fetchCommits(owner, repoName, author)).toEqual([
       {
         message: 'myMessage',
         pullRequest: undefined,

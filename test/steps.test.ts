@@ -3,9 +3,9 @@ import MockAdapter from 'axios-mock-adapter';
 import inquirer from 'inquirer';
 import * as childProcess from 'child_process';
 import { commitsMock } from './mocks/commits';
-import { initSteps } from '../src/steps';
-import * as github from '../src/github';
-import * as rpc from '../src/rpc';
+import { initSteps } from '../src/steps/steps';
+import * as github from '../src/services/github';
+import * as rpc from '../src/services/rpc';
 
 function mockGetPullRequest(
   axiosMock: MockAdapter,
@@ -94,7 +94,7 @@ describe('run through steps', () => {
     jest.spyOn(rpc, 'writeFile').mockResolvedValue(undefined);
     jest.spyOn(rpc, 'mkdirp').mockResolvedValue(undefined);
 
-    jest.spyOn(github, 'getCommits');
+    jest.spyOn(github, 'fetchCommits');
     jest.spyOn(github, 'createPullRequest');
 
     inquirerPromptMock = jest
@@ -173,7 +173,7 @@ describe('run through steps', () => {
   });
 
   it('getCommit should be called with correct args', () => {
-    expect(github.getCommits).toHaveBeenCalledWith(
+    expect(github.fetchCommits).toHaveBeenCalledWith(
       'elastic',
       'kibana',
       'sqren'

@@ -1,29 +1,16 @@
-import chalk from 'chalk';
-import isEmpty from 'lodash.isempty';
 import ora from 'ora';
-import { confirmConflictResolved, listBranches, listCommits } from './prompts';
-import {
-  addLabels,
-  createPullRequest,
-  getCommit,
-  getCommits,
-  Commit
-} from './github';
-import { HandledError, printHandledError } from './HandledError';
-import { getRepoPath } from './env';
-import * as logger from './logger';
+import { confirmConflictResolved } from '../services/prompts';
+import { addLabels, createPullRequest, Commit } from '../services/github';
+import { HandledError } from '../services/HandledError';
+import { getRepoPath } from '../services/env';
+import * as logger from '../services/logger';
 import {
   cherrypick,
   createAndCheckoutBranch,
-  deleteRepo,
   isIndexDirty,
   push,
-  repoExists,
-  resetAndPullMaster,
-  setupRepo,
-  verifyGithubSshAuth
-} from './git';
-import { BranchChoice } from './options/config/projectConfig';
+  resetAndPullMaster
+} from '../services/git';
 
 export function doBackportVersions(
   owner: string,
@@ -45,7 +32,12 @@ export function doBackportVersions(
       );
       logger.log(`View pull request: ${pullRequest.html_url}\n`);
     } catch (e) {
-      printHandledError(e);
+      if (e.name === 'HandledError') {
+        console.error(e.message);
+      } else {
+        console.error(e);
+        throw e;
+      }
     }
   });
 }
@@ -84,89 +76,6 @@ export async function doBackportVersion(
     }
     return pullRequest;
   });
-}
-
-export async function maybeSetupRepo(
-  owner: string,
-  repoName: string,
-  username: string
-) {
-  await verifyGithubSshAuth();
-
-  if (await repoExists(owner, repoName)) {
-    return;
-  }
-
-  const text = 'Cloning repository (only first time)';
-  const spinner = ora(`0% ${text}`).start();
-
-  try {
-    await setupRepo(owner, repoName, username, (progress: string) => {
-      spinner.text = `${progress}% ${text}`;
-    });
-    spinner.succeed();
-  } catch (e) {
-    spinner.stop();
-    await deleteRepo(owner, repoName);
-    throw e;
-  }
-}
-
-export async function getCommitBySha(
-  owner: string,
-  repoName: string,
-  sha: string
-) {
-  const spinner = ora().start();
-  try {
-    const commit = await getCommit(owner, repoName, sha);
-    spinner.stopAndPersist({
-      symbol: chalk.green('?'),
-      text: `${chalk.bold('Select commit')} ${chalk.cyan(commit.message)}`
-    });
-    return commit;
-  } catch (e) {
-    spinner.stop();
-    throw e;
-  }
-}
-
-export async function getCommitsByPrompt(
-  owner: string,
-  repoName: string,
-  author: string | null,
-  multipleCommits: boolean
-) {
-  const spinner = ora('Loading commits...').start();
-  try {
-    const commits = await getCommits(owner, repoName, author);
-    if (isEmpty(commits)) {
-      spinner.stopAndPersist({
-        symbol: chalk.green('?'),
-        text: `${chalk.bold('Select commit')} `
-      });
-
-      throw new HandledError(
-        chalk.red(
-          author
-            ? 'There are no commits by you in this repository'
-            : 'There are no commits in this repository'
-        )
-      );
-    }
-    spinner.stop();
-    return listCommits(commits, multipleCommits);
-  } catch (e) {
-    spinner.fail();
-    throw e;
-  }
-}
-
-export function getBranchesByPrompt(
-  branchChoices: BranchChoice[],
-  isMultipleChoice = false
-) {
-  return listBranches(branchChoices, isMultipleChoice);
 }
 
 function sequentially<T>(items: T[], handler: (item: T) => Promise<void>) {

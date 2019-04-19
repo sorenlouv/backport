@@ -1,6 +1,6 @@
 import inquirer, { Question } from 'inquirer';
 import isEmpty from 'lodash.isempty';
-import { BranchChoice } from './options/config/projectConfig';
+import { BranchChoice } from '../options/config/projectConfig';
 import { Commit } from './github';
 
 async function prompt<T>(options: Question) {

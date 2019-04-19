@@ -1,5 +1,5 @@
-import * as env from '../../env';
-import * as rpc from '../../rpc';
+import * as env from '../../services/env';
+import * as rpc from '../../services/rpc';
 import { readConfigFile } from './readConfigFile';
 
 interface GlobalConfig {

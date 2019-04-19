@@ -1,5 +1,5 @@
 import findUp from 'find-up';
-import * as rpc from '../../../src/rpc';
+import * as rpc from '../../../src/services/rpc';
 import { getProjectConfig } from '../../../src/options/config/projectConfig';
 import { PromiseReturnType } from '../../../src/types/commons';
 
