@@ -3,14 +3,14 @@ import axios from 'axios';
 import nock from 'nock';
 import httpAdapter from 'axios/lib/adapters/http';
 import * as childProcess from 'child_process';
-import * as rpc from '../src/services/rpc';
+import * as rpc from '../../src/services/rpc';
 import {
   doBackportVersion,
   getReferenceLong
-} from '../src/steps/doBackportVersions';
-import { commitMock } from './mocks/commit';
-import { getCommitBySha } from '../src/steps/getCommits';
-import { maybeSetupRepo } from '../src/steps/maybeSetupRepo';
+} from '../../src/steps/doBackportVersions';
+import { commitMock } from '../mocks/commit';
+import { getCommitBySha } from '../../src/steps/getCommits';
+import { maybeSetupRepo } from '../../src/steps/maybeSetupRepo';
 
 axios.defaults.adapter = httpAdapter;
 

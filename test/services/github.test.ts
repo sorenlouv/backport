@@ -1,4 +1,4 @@
-import { fetchCommits, setAccessToken } from '../src/services/github';
+import { fetchCommits, setAccessToken } from '../../src/services/github';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 

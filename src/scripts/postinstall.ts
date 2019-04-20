@@ -1,7 +1,7 @@
 import { getGlobalConfigPath } from '../services/env';
 import { maybeCreateGlobalConfigAndFolder } from '../options/config/globalConfig';
 
-async function runPostinstall() {
+export async function postinstall() {
   try {
     const didCreate = await maybeCreateGlobalConfigAndFolder();
     if (didCreate) {
@@ -14,5 +14,3 @@ async function runPostinstall() {
     console.error('Global config could not be created', e);
   }
 }
-
-runPostinstall();

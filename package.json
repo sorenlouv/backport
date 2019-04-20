@@ -30,7 +30,7 @@
     "cover": "jest --coverage",
     "format": "prettier \"./src/**/*.ts\" --write",
     "lint": "yarn tsc -p ./test/tsconfig.json && eslint ./src/**/*.ts",
-    "postinstall": "test -f ./dist/scripts/postinstall.js && node ./dist/scripts/postinstall.js || echo 'Dist folder missing'",
+    "postinstall": "test -f ./dist/scripts/runPostinstall.js && node ./dist/scripts/runPostinstall.js || echo 'Dist folder missing'",
     "prepublishOnly": "yarn tsc",
     "prepush": "yarn lint",
     "publish-dry-run": "tar -tf $(npm pack)",

@@ -1,4 +1,4 @@
-import { getOptionsFromCliArgs } from '../../../src/options/cliArgs';
+import { getOptionsFromCliArgs } from '../../src/options/cliArgs';
 
 describe('getOptionsFromCliArgs', () => {
   let res: ReturnType<typeof getOptionsFromCliArgs>;
