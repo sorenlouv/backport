@@ -29,7 +29,7 @@ export async function getCommitBySha(
     spinner.succeed();
     return commit;
   } catch (e) {
-    spinner.stop();
+    spinner.fail();
     throw e;
   }
 }

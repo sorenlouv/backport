@@ -45,7 +45,7 @@ export async function maybeSetupRepo(
 
     spinner.succeed();
   } catch (e) {
-    spinner.stop();
+    spinner.fail();
     await deleteRepo({ owner, repoName });
     throw e;
   }

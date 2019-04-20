@@ -187,18 +187,14 @@ export function getPullRequestPayload(
 }
 
 async function withSpinner<T>(
-  { text, errorText }: { text?: string; errorText?: string },
+  { text, errorText }: { text: string; errorText?: string },
   fn: () => Promise<T>
 ): Promise<T> {
   const spinner = ora(text).start();
 
   try {
     const res = await fn();
-    if (text) {
-      spinner.succeed();
-    } else {
-      spinner.stop();
-    }
+    spinner.succeed();
 
     return res;
   } catch (e) {
