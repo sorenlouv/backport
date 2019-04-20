@@ -52,11 +52,16 @@ export async function doBackportVersion(
 ) {
   const backportBranchName = getBackportBranchName(branch, commits);
   const refValues = commits.map(commit => getReferenceLong(commit)).join(', ');
-  logger.log(`Backporting ${refValues} to ${branch}`);
+  logger.log(`\nBackporting ${refValues} to ${branch}:`);
 
   await withSpinner({ text: 'Pulling latest changes' }, async () => {
-    await resetAndPullMaster(owner, repoName);
-    await createAndCheckoutBranch(owner, repoName, branch, backportBranchName);
+    await resetAndPullMaster({ owner, repoName });
+    await createAndCheckoutBranch({
+      owner,
+      repoName,
+      baseBranch: branch,
+      featureBranch: backportBranchName
+    });
   });
 
   await sequentially(commits, commit =>
@@ -65,7 +70,13 @@ export async function doBackportVersion(
 
   await withSpinner(
     { text: `Pushing branch ${username}:${backportBranchName}` },
-    () => push(owner, repoName, username, backportBranchName)
+    () =>
+      push({
+        owner,
+        repoName,
+        remoteName: username,
+        branchName: backportBranchName
+      })
   );
 
   return withSpinner({ text: 'Creating pull request' }, async () => {
@@ -121,7 +132,7 @@ async function cherrypickAndConfirm(
           repoName
         )}`
       },
-      () => cherrypick(owner, repoName, sha)
+      () => cherrypick({ owner, repoName, sha })
     );
   } catch (e) {
     const hasConflict = e.cmd.includes('git cherry-pick');
@@ -139,7 +150,7 @@ async function confirmResolvedRecursive(owner: string, repoName: string) {
     throw new HandledError('Application was aborted.');
   }
 
-  const isDirty = await isIndexDirty(owner, repoName);
+  const isDirty = await isIndexDirty({ owner, repoName });
   if (isDirty) {
     await confirmResolvedRecursive(owner, repoName);
   }

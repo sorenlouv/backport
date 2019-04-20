@@ -77,7 +77,6 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "chalk": "^2.4.2",
     "find-up": "^3.0.0",
     "inquirer": "^6.2.2",
     "lodash.flatten": "^4.4.0",

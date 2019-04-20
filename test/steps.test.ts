@@ -195,7 +195,7 @@ describe('run through steps', () => {
   });
 
   it('exec should be called with correct args', () => {
-    expect(execMock).toHaveBeenCalledTimes(7);
+    expect(execMock).toHaveBeenCalledTimes(9);
     expect(execMock.mock.calls).toMatchSnapshot();
   });
 });

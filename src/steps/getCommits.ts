@@ -1,8 +1,6 @@
 import { BackportOptions } from '../options/options';
 import { fetchCommit, fetchCommits } from '../services/github';
-import { HandledError } from '../services/HandledError';
 import { listCommits } from '../services/prompts';
-import chalk from 'chalk';
 import isEmpty from 'lodash.isempty';
 import ora = require('ora');
 
@@ -24,13 +22,11 @@ export async function getCommitBySha(
   repoName: string,
   sha: string
 ) {
-  const spinner = ora().start();
+  const spinner = ora(`Loading commit "${sha}"`).start();
   try {
     const commit = await fetchCommit(owner, repoName, sha);
-    spinner.stopAndPersist({
-      symbol: chalk.green('?'),
-      text: `${chalk.bold('Select commit')} ${chalk.cyan(commit.message)}`
-    });
+    spinner.text = `Loaded commit "${commit.message}" from "${sha}"`;
+    spinner.succeed();
     return commit;
   } catch (e) {
     spinner.stop();
@@ -48,18 +44,12 @@ async function getCommitsByPrompt(
   try {
     const commits = await fetchCommits(owner, repoName, author);
     if (isEmpty(commits)) {
-      spinner.stopAndPersist({
-        symbol: chalk.green('?'),
-        text: `${chalk.bold('Select commit')} `
-      });
+      const warningText = author
+        ? 'There are no commits by you in this repository'
+        : 'There are no commits in this repository';
 
-      throw new HandledError(
-        chalk.red(
-          author
-            ? 'There are no commits by you in this repository'
-            : 'There are no commits in this repository'
-        )
-      );
+      spinner.fail(warningText);
+      process.exit(1);
     }
     spinner.stop();
     return listCommits(commits, multipleCommits);

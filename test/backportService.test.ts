@@ -193,7 +193,7 @@ describe('maybeSetupRepo', () => {
     });
 
     try {
-      await maybeSetupRepo('elastic', 'kibana', 'sqren');
+      await maybeSetupRepo('myAccessToken', 'elastic', 'kibana', 'sqren');
     } catch (e) {
       expect(rimraf).toHaveBeenCalledWith(
         '/myHomeDir/.backport/repositories/elastic/kibana',

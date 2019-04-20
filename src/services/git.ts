@@ -1,7 +1,7 @@
 import childProcess from 'child_process';
 import rimraf from 'rimraf';
 import * as env from './env';
-import { exec, mkdirp, stat } from './rpc';
+import { exec, stat } from './rpc';
 import { HandledError } from './HandledError';
 
 async function folderExists(path: string): Promise<boolean> {
@@ -16,43 +16,55 @@ async function folderExists(path: string): Promise<boolean> {
   }
 }
 
-export function repoExists(owner: string, repoName: string): Promise<boolean> {
+export function repoExists({
+  owner,
+  repoName
+}: {
+  owner: string;
+  repoName: string;
+}): Promise<boolean> {
   return folderExists(env.getRepoPath(owner, repoName));
 }
 
-type CloneProgessHandler = (progress: string) => void;
-
-// Clone repo and add remotes
-export async function setupRepo(
-  owner: string,
-  repoName: string,
-  username: string,
-  callback: CloneProgessHandler
-) {
-  await mkdirp(env.getRepoOwnerPath(owner));
-  await cloneRepo(owner, repoName, callback);
-  return addRemote(owner, repoName, username);
-}
-
-export function deleteRepo(owner: string, repoName: string) {
+export function deleteRepo({
+  owner,
+  repoName
+}: {
+  owner: string;
+  repoName: string;
+}) {
   return new Promise(resolve => {
     const repoPath = env.getRepoPath(owner, repoName);
     rimraf(repoPath, resolve);
   });
 }
 
-function getRemoteUrl(owner: string, repoName: string) {
-  return `git@github.com:${owner}/${repoName}`;
+function getRemoteUrl({
+  owner,
+  repoName,
+  accessToken
+}: {
+  owner: string;
+  repoName: string;
+  accessToken: string;
+}) {
+  return `https://${accessToken}@github.com/${owner}/${repoName}.git`;
 }
 
-function cloneRepo(
-  owner: string,
-  repoName: string,
-  callback: CloneProgessHandler
-) {
+export function cloneRepo({
+  owner,
+  repoName,
+  accessToken,
+  callback
+}: {
+  owner: string;
+  repoName: string;
+  accessToken: string;
+  callback: (progress: string) => void;
+}) {
   return new Promise((resolve, reject) => {
     const execProcess = childProcess.exec(
-      `git clone ${getRemoteUrl(owner, repoName)} --progress`,
+      `git clone ${getRemoteUrl({ accessToken, owner, repoName })} --progress`,
       { cwd: env.getRepoOwnerPath(owner), maxBuffer: 100 * 1024 * 1024 },
       error => {
         if (error) {
@@ -75,22 +87,74 @@ function cloneRepo(
   });
 }
 
-function addRemote(owner: string, repoName: string, username: string) {
-  return exec(
-    `git remote add ${username} ${getRemoteUrl(username, repoName)}`,
-    {
+export async function deleteRemote({
+  owner,
+  repoName,
+  username
+}: {
+  owner: string;
+  repoName: string;
+  username: string;
+}) {
+  try {
+    await exec(`git remote rm ${username}`, {
       cwd: env.getRepoPath(owner, repoName)
-    }
-  );
+    });
+  } catch (e) {
+    // note: swallowing error
+    return;
+  }
 }
 
-export function cherrypick(owner: string, repoName: string, sha: string) {
+export async function addRemote({
+  owner,
+  repoName,
+  username,
+  accessToken
+}: {
+  owner: string;
+  repoName: string;
+  username: string;
+  accessToken: string;
+}) {
+  try {
+    await exec(
+      `git remote add ${username} ${getRemoteUrl({
+        accessToken,
+        owner: username,
+        repoName
+      })}`,
+      {
+        cwd: env.getRepoPath(owner, repoName)
+      }
+    );
+  } catch (e) {
+    // note: swallowing error
+    return;
+  }
+}
+
+export function cherrypick({
+  owner,
+  repoName,
+  sha
+}: {
+  owner: string;
+  repoName: string;
+  sha: string;
+}) {
   return exec(`git cherry-pick ${sha}`, {
     cwd: env.getRepoPath(owner, repoName)
   });
 }
 
-export async function isIndexDirty(owner: string, repoName: string) {
+export async function isIndexDirty({
+  owner,
+  repoName
+}: {
+  owner: string;
+  repoName: string;
+}) {
   try {
     await exec(`git diff-index --quiet HEAD --`, {
       cwd: env.getRepoPath(owner, repoName)
@@ -101,12 +165,17 @@ export async function isIndexDirty(owner: string, repoName: string) {
   }
 }
 
-export async function createAndCheckoutBranch(
-  owner: string,
-  repoName: string,
-  baseBranch: string,
-  featureBranch: string
-) {
+export async function createAndCheckoutBranch({
+  owner,
+  repoName,
+  baseBranch,
+  featureBranch
+}: {
+  owner: string;
+  repoName: string;
+  baseBranch: string;
+  featureBranch: string;
+}) {
   try {
     return await exec(
       `git fetch origin ${baseBranch} && git branch ${featureBranch} origin/${baseBranch} --force && git checkout ${featureBranch} `,
@@ -127,49 +196,33 @@ export async function createAndCheckoutBranch(
   }
 }
 
-export function push(
-  owner: string,
-  repoName: string,
-  username: string,
-  branchName: string
-) {
-  return exec(`git push ${username} ${branchName}:${branchName} --force`, {
+export function push({
+  owner,
+  repoName,
+  remoteName,
+  branchName
+}: {
+  owner: string;
+  repoName: string;
+  remoteName: string;
+  branchName: string;
+}) {
+  return exec(`git push ${remoteName} ${branchName}:${branchName} --force`, {
     cwd: env.getRepoPath(owner, repoName)
   });
 }
 
-export async function resetAndPullMaster(owner: string, repoName: string) {
+export async function resetAndPullMaster({
+  owner,
+  repoName
+}: {
+  owner: string;
+  repoName: string;
+}) {
   return exec(
     `git reset --hard && git clean -d --force && git checkout master && git pull origin master`,
     {
       cwd: env.getRepoPath(owner, repoName)
     }
   );
-}
-
-export async function verifyGithubSshAuth() {
-  try {
-    await exec(`ssh -oBatchMode=yes -T git@github.com`);
-    return true;
-  } catch (e) {
-    switch (e.code) {
-      case 1:
-        return true;
-      case 255:
-        if (e.stderr.includes('Host key verification failed.')) {
-          throw new HandledError(
-            'Host verification of github.com failed. To automatically add it to .ssh/known_hosts run:\nssh -T git@github.com'
-          );
-        } else if (e.stderr.includes('Permission denied')) {
-          throw new HandledError(
-            'Permission denied. Please add your ssh private key to the keychain by following these steps:\nhttps://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/#adding-your-ssh-key-to-the-ssh-agent'
-          );
-        } else {
-          throw e;
-        }
-
-      default:
-        throw e;
-    }
-  }
 }

@@ -12,7 +12,7 @@ export async function initSteps(options: BackportOptions) {
   const commits = await getCommits(options);
   const branches = await getBranches(options);
 
-  await maybeSetupRepo(owner, repoName, options.username);
+  await maybeSetupRepo(options.accessToken, owner, repoName, options.username);
   await doBackportVersions(
     owner,
     repoName,
