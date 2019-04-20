@@ -30,7 +30,7 @@
     "cover": "jest --coverage",
     "format": "prettier \"./src/**/*.ts\" --write",
     "lint": "yarn tsc -p ./test/tsconfig.json && eslint ./src/**/*.ts",
-    "postinstall": "node scripts/postinstall.js",
+    "postinstall": "test -f ./dist/scripts/postinstall.js && node ./dist/scripts/postinstall.js || echo 'Dist folder missing'",
     "prepublishOnly": "yarn tsc",
     "prepush": "yarn lint",
     "publish-dry-run": "tar -tf $(npm pack)",
@@ -44,9 +44,7 @@
   },
   "files": [
     "dist",
-    "yarn.lock",
-    "scripts/postinstall.js",
-    "templates/configTemplate.json"
+    "yarn.lock"
   ],
   "author": "Søren Louv-Jansen",
   "homepage": "https://github.com/sqren/backport/blob/master/README.md",
