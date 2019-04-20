@@ -3,19 +3,11 @@ import isEmpty from 'lodash.isempty';
 import { BranchChoice } from '../options/config/projectConfig';
 import { Commit } from './github';
 
-async function prompt<T>(options: Question) {
+async function prompt<T = never>(options: Question) {
   const { promptResult } = (await inquirer.prompt([
     { ...options, name: 'promptResult' }
   ])) as { promptResult: T };
   return promptResult;
-}
-
-export function listProjects(repoNames: string[]) {
-  return prompt({
-    choices: repoNames,
-    message: 'Select project',
-    type: 'list'
-  });
 }
 
 export async function listCommits(
@@ -28,7 +20,7 @@ export async function listCommits(
     value: c
   }));
 
-  const res = await prompt({
+  const res = await prompt<Commit[]>({
     choices,
     message: 'Select commit to backport',
     pageSize: Math.min(10, commits.length),
@@ -59,7 +51,7 @@ export async function listBranches(
 }
 
 export function confirmConflictResolved() {
-  return prompt({
+  return prompt<boolean>({
     message: 'Press enter when you have commited all changes',
     type: 'confirm'
   });

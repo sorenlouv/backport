@@ -2,7 +2,7 @@ import * as rpc from '../../services/rpc';
 import stripJsonComments from 'strip-json-comments';
 import { HandledError } from '../../services/HandledError';
 
-export async function readConfigFile<T>(filepath: string): Promise<T> {
+export async function readConfigFile<T = never>(filepath: string): Promise<T> {
   const fileContents = await rpc.readFile(filepath, 'utf8');
   const configWithoutComments = stripJsonComments(fileContents);
 
