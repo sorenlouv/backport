@@ -3,7 +3,7 @@ import { confirmPrompt } from '../services/prompts';
 import { addLabels, createPullRequest, Commit } from '../services/github';
 import { HandledError } from '../services/HandledError';
 import { getRepoPath } from '../services/env';
-import * as logger from '../services/logger';
+import { log } from '../services/logger';
 import {
   cherrypick,
   createAndCheckoutBranch,
@@ -30,7 +30,7 @@ export function doBackportVersions(
         username,
         labels
       );
-      logger.log(`View pull request: ${pullRequest.html_url}\n`);
+      log(`View pull request: ${pullRequest.html_url}\n`);
     } catch (e) {
       if (e.name === 'HandledError') {
         console.error(e.message);
@@ -52,7 +52,7 @@ export async function doBackportVersion(
 ) {
   const backportBranchName = getBackportBranchName(branch, commits);
   const refValues = commits.map(commit => getReferenceLong(commit)).join(', ');
-  logger.log(`\nBackporting ${refValues} to ${branch}:`);
+  log(`\nBackporting ${refValues} to ${branch}:`);
 
   await withSpinner({ text: 'Pulling latest changes' }, async () => {
     await resetAndPullMaster({ owner, repoName });

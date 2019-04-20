@@ -1,6 +1,6 @@
-import * as env from '../../services/env';
-import * as rpc from '../../services/rpc';
 import { readConfigFile } from './readConfigFile';
+import { mkdirp, chmod, writeFile } from '../../services/rpc';
+import { getGlobalConfigPath, getReposPath } from '../../services/env';
 
 interface GlobalConfig {
   username?: string;
@@ -16,15 +16,15 @@ interface GlobalConfig {
 export async function getGlobalConfig() {
   await maybeCreateGlobalConfigAndFolder();
 
-  const globalConfigPath = env.getGlobalConfigPath();
+  const globalConfigPath = getGlobalConfigPath();
   return readConfigFile<GlobalConfig>(globalConfigPath);
 }
 
 export async function maybeCreateGlobalConfigAndFolder() {
-  const reposPath = env.getReposPath();
-  const globalConfigPath = env.getGlobalConfigPath();
+  const reposPath = getReposPath();
+  const globalConfigPath = getGlobalConfigPath();
   const configTemplate = await getConfigTemplate();
-  await rpc.mkdirp(reposPath);
+  await mkdirp(reposPath);
   const didCreate = await maybeCreateGlobalConfig(
     globalConfigPath,
     configTemplate
@@ -34,7 +34,7 @@ export async function maybeCreateGlobalConfigAndFolder() {
 }
 
 function ensureCorrectPermissions(globalConfigPath: string) {
-  return rpc.chmod(globalConfigPath, '600');
+  return chmod(globalConfigPath, '600');
 }
 
 export async function maybeCreateGlobalConfig(
@@ -42,7 +42,7 @@ export async function maybeCreateGlobalConfig(
   configTemplate: string
 ) {
   try {
-    await rpc.writeFile(globalConfigPath, configTemplate, {
+    await writeFile(globalConfigPath, configTemplate, {
       flag: 'wx', // create and write file. Error if it already exists
       mode: 0o600 // give the owner read-write privleges, no access for others
     });

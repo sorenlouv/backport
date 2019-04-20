@@ -14,7 +14,6 @@ describe('config', () => {
       jest.spyOn(rpc, 'chmod').mockResolvedValue();
       jest.spyOn(rpc, 'mkdirp').mockResolvedValue();
       jest.spyOn(rpc, 'writeFile').mockResolvedValue();
-      jest.spyOn(rpc, 'statSync').mockReturnValue({ mode: 33152 } as any);
       jest.spyOn(rpc, 'readFile').mockResolvedValue(
         JSON.stringify({
           accessToken: 'myAccessToken',

@@ -1,8 +1,8 @@
 import childProcess from 'child_process';
 import rimraf from 'rimraf';
-import * as env from './env';
 import { exec, stat } from './rpc';
 import { HandledError } from './HandledError';
+import { getRepoPath, getRepoOwnerPath } from './env';
 
 async function folderExists(path: string): Promise<boolean> {
   try {
@@ -23,7 +23,7 @@ export function repoExists({
   owner: string;
   repoName: string;
 }): Promise<boolean> {
-  return folderExists(env.getRepoPath(owner, repoName));
+  return folderExists(getRepoPath(owner, repoName));
 }
 
 export function deleteRepo({
@@ -34,7 +34,7 @@ export function deleteRepo({
   repoName: string;
 }) {
   return new Promise(resolve => {
-    const repoPath = env.getRepoPath(owner, repoName);
+    const repoPath = getRepoPath(owner, repoName);
     rimraf(repoPath, resolve);
   });
 }
@@ -65,7 +65,7 @@ export function cloneRepo({
   return new Promise((resolve, reject) => {
     const execProcess = childProcess.exec(
       `git clone ${getRemoteUrl({ accessToken, owner, repoName })} --progress`,
-      { cwd: env.getRepoOwnerPath(owner), maxBuffer: 100 * 1024 * 1024 },
+      { cwd: getRepoOwnerPath(owner), maxBuffer: 100 * 1024 * 1024 },
       error => {
         if (error) {
           reject(error);
@@ -98,7 +98,7 @@ export async function deleteRemote({
 }) {
   try {
     await exec(`git remote rm ${username}`, {
-      cwd: env.getRepoPath(owner, repoName)
+      cwd: getRepoPath(owner, repoName)
     });
   } catch (e) {
     // note: swallowing error
@@ -125,7 +125,7 @@ export async function addRemote({
         repoName
       })}`,
       {
-        cwd: env.getRepoPath(owner, repoName)
+        cwd: getRepoPath(owner, repoName)
       }
     );
   } catch (e) {
@@ -144,7 +144,7 @@ export function cherrypick({
   sha: string;
 }) {
   return exec(`git cherry-pick ${sha}`, {
-    cwd: env.getRepoPath(owner, repoName)
+    cwd: getRepoPath(owner, repoName)
   });
 }
 
@@ -157,7 +157,7 @@ export async function isIndexDirty({
 }) {
   try {
     await exec(`git diff-index --quiet HEAD --`, {
-      cwd: env.getRepoPath(owner, repoName)
+      cwd: getRepoPath(owner, repoName)
     });
     return false;
   } catch (e) {
@@ -180,7 +180,7 @@ export async function createAndCheckoutBranch({
     return await exec(
       `git fetch origin ${baseBranch} && git branch ${featureBranch} origin/${baseBranch} --force && git checkout ${featureBranch} `,
       {
-        cwd: env.getRepoPath(owner, repoName)
+        cwd: getRepoPath(owner, repoName)
       }
     );
   } catch (e) {
@@ -208,7 +208,7 @@ export function push({
   branchName: string;
 }) {
   return exec(`git push ${remoteName} ${branchName}:${branchName} --force`, {
-    cwd: env.getRepoPath(owner, repoName)
+    cwd: getRepoPath(owner, repoName)
   });
 }
 
@@ -222,7 +222,7 @@ export async function resetAndPullMaster({
   return exec(
     `git reset --hard && git clean -d --force && git checkout master && git pull origin master`,
     {
-      cwd: env.getRepoPath(owner, repoName)
+      cwd: getRepoPath(owner, repoName)
     }
   );
 }

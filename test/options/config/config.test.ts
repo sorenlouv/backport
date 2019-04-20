@@ -7,23 +7,23 @@ describe('getOptionsFromConfigFiles', () => {
 
   beforeEach(async () => {
     jest.spyOn(rpc, 'readFile').mockImplementation(async filepath => {
-      if (typeof filepath !== 'string') {
-        throw new Error('unknown filepath');
-      }
+      switch (filepath) {
+        // mock project config
+        case '/path/to/project/config':
+          return JSON.stringify({
+            upstream: 'elastic/kibana',
+            branches: ['6.x', '6.1']
+          });
 
-      if (filepath === '/path/to/project/config') {
-        return JSON.stringify({
-          upstream: 'elastic/kibana',
-          branches: ['6.x', '6.1']
-        });
-      } else if (filepath === '/myHomeDir/.backport/config.json') {
-        return JSON.stringify({
-          username: 'sqren',
-          accessToken: 'myAccessToken'
-        });
+        // mock global config
+        case '/myHomeDir/.backport/config.json':
+          return JSON.stringify({
+            username: 'sqren',
+            accessToken: 'myAccessToken'
+          });
+        default:
+          throw new Error(`Unknown filepath: "${filepath}"`);
       }
-
-      throw new Error(`Unknown filepath: "${filepath}"`);
     });
     res = await getOptionsFromConfigFiles();
   });
