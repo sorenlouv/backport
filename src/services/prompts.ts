@@ -10,7 +10,7 @@ async function prompt<T = never>(options: Question) {
   return promptResult;
 }
 
-export async function listCommits(
+export async function promptForCommits(
   commits: Commit[],
   isMultipleChoice: boolean
 ): Promise<Commit[]> {
@@ -29,11 +29,11 @@ export async function listCommits(
 
   const selectedCommits = Array.isArray(res) ? res.reverse() : [res];
   return isEmpty(selectedCommits)
-    ? listCommits(commits, isMultipleChoice)
+    ? promptForCommits(commits, isMultipleChoice)
     : selectedCommits;
 }
 
-export async function listBranches(
+export async function promptForBranches(
   branchChoices: BranchChoice[],
   isMultipleChoice: boolean
 ): Promise<string[]> {
@@ -46,13 +46,10 @@ export async function listBranches(
   const selectedBranches = Array.isArray(res) ? res : [res];
 
   return isEmpty(selectedBranches)
-    ? listBranches(branchChoices, isMultipleChoice)
+    ? promptForBranches(branchChoices, isMultipleChoice)
     : selectedBranches;
 }
 
-export function confirmConflictResolved() {
-  return prompt<boolean>({
-    message: 'Press enter when you have commited all changes',
-    type: 'confirm'
-  });
+export function confirmPrompt(message: string) {
+  return prompt<boolean>({ message, type: 'confirm' });
 }

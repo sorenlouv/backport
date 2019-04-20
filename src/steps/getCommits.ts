@@ -1,6 +1,6 @@
 import { BackportOptions } from '../options/options';
 import { fetchCommit, fetchCommits } from '../services/github';
-import { listCommits } from '../services/prompts';
+import { promptForCommits } from '../services/prompts';
 import isEmpty from 'lodash.isempty';
 import ora = require('ora');
 
@@ -52,7 +52,7 @@ async function getCommitsByPrompt(
       process.exit(1);
     }
     spinner.stop();
-    return listCommits(commits, multipleCommits);
+    return promptForCommits(commits, multipleCommits);
   } catch (e) {
     spinner.fail();
     throw e;

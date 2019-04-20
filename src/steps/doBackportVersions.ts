@@ -1,5 +1,5 @@
 import ora from 'ora';
-import { confirmConflictResolved } from '../services/prompts';
+import { confirmPrompt } from '../services/prompts';
 import { addLabels, createPullRequest, Commit } from '../services/github';
 import { HandledError } from '../services/HandledError';
 import { getRepoPath } from '../services/env';
@@ -145,7 +145,9 @@ async function cherrypickAndConfirm(
 }
 
 async function confirmResolvedRecursive(owner: string, repoName: string) {
-  const res = await confirmConflictResolved();
+  const res = await confirmPrompt(
+    'Press enter when you have commited all changes'
+  );
   if (!res) {
     throw new HandledError('Application was aborted.');
   }
