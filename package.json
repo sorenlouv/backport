@@ -21,7 +21,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged",
+      "prepush": "lint"
     }
   },
   "license": "MIT",
@@ -29,10 +30,9 @@
     "build": "tsc",
     "cover": "jest --coverage",
     "format": "prettier \"./src/**/*.ts\" --write",
-    "lint": "yarn tsc -p ./test/tsconfig.json && eslint ./src/**/*.ts",
+    "lint": "tsc -p ./test/tsconfig.json && eslint ./src/**/*.ts",
     "postinstall": "test -f ./dist/scripts/runPostinstall.js && node ./dist/scripts/runPostinstall.js || echo 'Dist folder missing'",
-    "prepublishOnly": "yarn tsc",
-    "prepush": "yarn lint",
+    "prepublishOnly": "tsc",
     "publish-dry-run": "tar -tf $(npm pack)",
     "test": "jest"
   },
