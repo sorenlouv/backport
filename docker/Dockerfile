@@ -4,6 +4,8 @@ FROM node:latest
 RUN mkdir /app
 WORKDIR /app
 
-RUN npm install backport -g
-ENTRYPOINT ["backport"]
+COPY ./entrypoint.sh /entrypoint.sh
+
+RUN npm install backport@beta -g
+ENTRYPOINT ["/entrypoint.sh"]
 CMD []
