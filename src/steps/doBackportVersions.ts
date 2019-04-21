@@ -30,7 +30,7 @@ export function doBackportVersions(
         username,
         labels
       );
-      log(`View pull request: ${pullRequest.html_url}\n`);
+      log(`View pull request: ${pullRequest.html_url}`);
     } catch (e) {
       if (e.name === 'HandledError') {
         console.error(e.message);
@@ -126,7 +126,7 @@ async function cherrypickAndConfirm(
   try {
     await withSpinner(
       {
-        text: 'Cherry-picking commit',
+        text: `Cherry-picking commit ${sha}`,
         errorText: `Cherry-picking failed. Please resolve conflicts in: ${getRepoPath(
           owner,
           repoName

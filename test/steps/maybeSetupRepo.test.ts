@@ -10,7 +10,12 @@ describe('maybeSetupRepo', () => {
     });
 
     try {
-      await maybeSetupRepo('myAccessToken', 'elastic', 'kibana', 'sqren');
+      await maybeSetupRepo({
+        owner: 'elastic',
+        repoName: 'kibana',
+        username: 'sqren',
+        accessToken: 'myAccessToken'
+      });
     } catch (e) {
       expect(rimraf).toHaveBeenCalledWith(
         '/myHomeDir/.backport/repositories/elastic/kibana',

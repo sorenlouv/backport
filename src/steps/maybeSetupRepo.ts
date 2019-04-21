@@ -9,12 +9,17 @@ import ora = require('ora');
 import { mkdirp } from '../services/rpc';
 import { getRepoOwnerPath } from '../services/env';
 
-export async function maybeSetupRepo(
-  accessToken: string,
-  owner: string,
-  repoName: string,
-  username: string
-) {
+export async function maybeSetupRepo({
+  accessToken,
+  owner,
+  repoName,
+  username
+}: {
+  accessToken: string;
+  owner: string;
+  repoName: string;
+  username: string;
+}) {
   const spinner = ora('').start();
   const isAlreadyCloned = await repoExists({ owner, repoName });
 
@@ -33,8 +38,9 @@ export async function maybeSetupRepo(
           spinner.text = `${progress}% ${spinnerCloneText}`;
         }
       });
+      spinner.text = `100% ${spinnerCloneText}`;
     } else {
-      spinner.text = 'Cloning repository (skipped)';
+      spinner.text = `Setup remotes for repository`;
     }
 
     // ensure remote are setup with latest accessToken
