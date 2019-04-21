@@ -22,7 +22,7 @@
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",
-      "prepush": "lint"
+      "pre-push": "yarn lint"
     }
   },
   "license": "MIT",
