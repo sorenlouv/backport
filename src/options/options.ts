@@ -1,4 +1,3 @@
-import isString from 'lodash.isstring';
 import isEmpty from 'lodash.isempty';
 import { HandledError } from '../services/HandledError';
 import { OptionsFromCliArgs, getOptionsFromCliArgs } from './cliArgs';
@@ -51,7 +50,7 @@ export function validateOptions({
   upstream,
   username
 }: OptionsFromCliArgs) {
-  if (!isString(accessToken)) {
+  if (!accessToken) {
     throw new HandledError(
       getErrorMessage({ field: 'accessToken', exampleValue: 'myAccessToken' })
     );
@@ -63,13 +62,13 @@ export function validateOptions({
     );
   }
 
-  if (!isString(upstream)) {
+  if (!upstream) {
     throw new HandledError(
       getErrorMessage({ field: 'upstream', exampleValue: 'elastic/kibana' })
     );
   }
 
-  if (!isString(username)) {
+  if (!username) {
     throw new HandledError(
       getErrorMessage({ field: 'username', exampleValue: 'sqren' })
     );
