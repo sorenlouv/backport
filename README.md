@@ -28,8 +28,13 @@ Then `backport` might save you a lot of time and effort. The CLI will ask you wh
 ## Requirements
 
 - Node 8 or higher
+- git
 
-## Install
+OR
+
+- Docker ([read more](https://github.com/sqren/backport/blob/master/docs/docker))
+
+## Install with Node
 
 ```
 npm install -g backport
@@ -51,11 +56,14 @@ Follow the steps. You can use the `arrow keys` to choose options, `<space>` to s
 
 | Option        | Description                               | Accepts                  |
 | ------------- | ----------------------------------------- | ------------------------ |
+| --accessToken | Github access token                       | string                   |
 | --all         | Show all commits                          | boolean (default: false) |
-| --branch      | Branch to backport                        | array (default: [])      |
+| --branch      | Branch to backport to                     | string                   |
+| --labels      | Pull request labels                       | string                   |
 | --multiple    | Backport multiple commits and/or branches | boolean                  |
-| --upstream    | Name of repository                        | string                   |
 | --sha         | Commit sha to backport                    | string                   |
+| --upstream    | Name of repository                        | string                   |
+| --username    | Github username                           | string                   |
 | --help        | Show help                                 |                          |
 | -v, --version | Show version number                       |                          |
 
