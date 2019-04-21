@@ -28,7 +28,7 @@ This tools is for anybody who are working on a codebase where they have to maint
 
 OR
 
-- Docker ([read more](https://github.com/sqren/backport/blob/master/docs/docker))
+- Docker
 
 ## Install with Node
 
