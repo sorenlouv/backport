@@ -6,7 +6,7 @@ interface GlobalConfig {
   username?: string;
   accessToken?: string;
 
-  // the following are overwritable by project configL
+  // the following are overwritable by project config:
   all?: boolean;
   multiple?: boolean;
   multipleCommits?: boolean;
