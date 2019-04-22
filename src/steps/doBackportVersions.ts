@@ -50,21 +50,21 @@ export async function doBackportVersion(
   owner: string,
   repoName: string,
   commits: Commit[],
-  branch: string,
+  baseBranch: string,
   username: string,
   labels: string[] = []
 ) {
-  const backportBranchName = getBackportBranchName(branch, commits);
+  const featureBranch = getFeatureBranchName(baseBranch, commits);
   const refValues = commits.map(commit => getReferenceLong(commit)).join(', ');
-  log(`Backporting ${refValues} to ${branch}:`);
+  log(`Backporting ${refValues} to ${baseBranch}:`);
 
   await withSpinner({ text: 'Pulling latest changes' }, async () => {
     await resetAndPullMaster({ owner, repoName });
     await createAndCheckoutBranch({
       owner,
       repoName,
-      baseBranch: branch,
-      featureBranch: backportBranchName
+      baseBranch: baseBranch,
+      featureBranch: featureBranch
     });
   });
 
@@ -73,18 +73,18 @@ export async function doBackportVersion(
   );
 
   await withSpinner(
-    { text: `Pushing branch ${username}:${backportBranchName}` },
+    { text: `Pushing branch ${username}:${featureBranch}` },
     () =>
       push({
         owner,
         repoName,
         remoteName: username,
-        branchName: backportBranchName
+        branchName: featureBranch
       })
   );
 
   return withSpinner({ text: 'Creating pull request' }, async () => {
-    const payload = getPullRequestPayload(branch, commits, username);
+    const payload = getPullRequestPayload(baseBranch, commits, username);
     const pullRequest = await createPullRequest(owner, repoName, payload);
     if (labels.length > 0) {
       await addLabelsToPullRequest(owner, repoName, pullRequest.number, labels);
@@ -100,12 +100,12 @@ function sequentially<T>(items: T[], handler: (item: T) => Promise<void>) {
   }, Promise.resolve());
 }
 
-function getBackportBranchName(branch: string, commits: Commit[]) {
+function getFeatureBranchName(baseBranch: string, commits: Commit[]) {
   const refValues = commits
     .map(commit => getReferenceShort(commit))
     .join('_')
     .slice(0, 200);
-  return `backport/${branch}/${refValues}`;
+  return `backport/${baseBranch}/${refValues}`;
 }
 
 function getShortSha(commit: Commit) {
@@ -162,21 +162,21 @@ async function resolveConflictsOrAbort(owner: string, repoName: string) {
   }
 }
 
-function getPullRequestTitle(branch: string, commits: Commit[]) {
+function getPullRequestTitle(baseBranch: string, commits: Commit[]) {
   const commitMessages = commits
     .map(commit => commit.message)
     .join(' | ')
     .slice(0, 200);
 
-  return `[${branch}] ${commitMessages}`;
+  return `[${baseBranch}] ${commitMessages}`;
 }
 
 export function getPullRequestPayload(
-  branch: string,
+  baseBranch: string,
   commits: Commit[],
   username: string
 ) {
-  const backportBranchName = getBackportBranchName(branch, commits);
+  const featureBranch = getFeatureBranchName(baseBranch, commits);
   const commitRefs = commits
     .map(commit => {
       const ref = getReferenceLong(commit);
@@ -185,10 +185,10 @@ export function getPullRequestPayload(
     .join('\n');
 
   return {
-    title: getPullRequestTitle(branch, commits),
-    body: `Backports the following commits to ${branch}:\n${commitRefs}`,
-    head: `${username}:${backportBranchName}`,
-    base: `${branch}`
+    title: getPullRequestTitle(baseBranch, commits),
+    body: `Backports the following commits to ${baseBranch}:\n${commitRefs}`,
+    head: `${username}:${featureBranch}`,
+    base: `${baseBranch}`
   };
 }
 
