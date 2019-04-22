@@ -11,23 +11,7 @@ Array [
     [Function],
   ],
   Array [
-    "git remote rm elastic",
-    Object {
-      "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
-      "maxBuffer": 104857600,
-    },
-    [Function],
-  ],
-  Array [
     "git remote rm sqren",
-    Object {
-      "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
-      "maxBuffer": 104857600,
-    },
-    [Function],
-  ],
-  Array [
-    "git remote add elastic https://myAccessToken@github.com/elastic/kibana.git",
     Object {
       "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
       "maxBuffer": 104857600,
@@ -43,6 +27,22 @@ Array [
     [Function],
   ],
   Array [
+    "git remote rm elastic",
+    Object {
+      "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
+      "maxBuffer": 104857600,
+    },
+    [Function],
+  ],
+  Array [
+    "git remote add elastic https://myAccessToken@github.com/elastic/kibana.git",
+    Object {
+      "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
+      "maxBuffer": 104857600,
+    },
+    [Function],
+  ],
+  Array [
     "git reset --hard && git clean -d --force && git checkout master && git pull origin master",
     Object {
       "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
@@ -51,7 +51,7 @@ Array [
     [Function],
   ],
   Array [
-    "git fetch origin 6.2 && git branch backport/6.2/pr-myPullRequest origin/6.2 --force && git checkout backport/6.2/pr-myPullRequest ",
+    "git fetch origin 6.2 && git branch backport/6.2/pr-myPullRequestNumber origin/6.2 --force && git checkout backport/6.2/pr-myPullRequestNumber ",
     Object {
       "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
       "maxBuffer": 104857600,
@@ -67,7 +67,7 @@ Array [
     [Function],
   ],
   Array [
-    "git push sqren backport/6.2/pr-myPullRequest:backport/6.2/pr-myPullRequest --force",
+    "git push sqren backport/6.2/pr-myPullRequestNumber:backport/6.2/pr-myPullRequestNumber --force",
     Object {
       "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
       "maxBuffer": 104857600,
@@ -88,7 +88,7 @@ Array [
             "short": "Update readme: Make ui-framework url a link",
             "value": Object {
               "message": "Update readme: Make ui-framework url a link",
-              "pullRequest": "PR for commitSha",
+              "pullNumber": "Pull number for commitSha",
               "sha": "commitSha",
             },
           },
@@ -97,7 +97,7 @@ Array [
             "short": "Update react 15.6.1 (#13672)",
             "value": Object {
               "message": "Update react 15.6.1 (#13672)",
-              "pullRequest": "PR for commitSha2",
+              "pullNumber": "Pull number for commitSha2",
               "sha": "commitSha2",
             },
           },
@@ -106,7 +106,7 @@ Array [
             "short": "Mock out static files when running in Jest (#13315)",
             "value": Object {
               "message": "Mock out static files when running in Jest (#13315)",
-              "pullRequest": "PR for commitSha3",
+              "pullNumber": "Pull number for commitSha3",
               "sha": "commitSha3",
             },
           },
@@ -234,7 +234,7 @@ Object {
   "patch": Array [],
   "post": Array [
     Object {
-      "data": "{\\"title\\":\\"[6.2] myCommitMessage\\",\\"body\\":\\"Backports the following commits to 6.2:\\\\n - myCommitMessage (#myPullRequest)\\",\\"head\\":\\"sqren:backport/6.2/pr-myPullRequest\\",\\"base\\":\\"6.2\\"}",
+      "data": "{\\"title\\":\\"[6.2] myCommitMessage\\",\\"body\\":\\"Backports the following commits to 6.2:\\\\n - myCommitMessage (#myPullRequestNumber)\\",\\"head\\":\\"sqren:backport/6.2/pr-myPullRequestNumber\\",\\"base\\":\\"6.2\\"}",
       "headers": Object {
         "Accept": "application/json, text/plain, */*",
         "Content-Type": "application/json;charset=utf-8",

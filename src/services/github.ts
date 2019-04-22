@@ -15,7 +15,7 @@ import { getPullRequestPayload } from '../steps/doBackportVersions';
 export interface Commit {
   sha: string;
   message: string;
-  pullRequest?: number;
+  pullNumber?: number;
 }
 
 let accessToken: string;
@@ -23,7 +23,7 @@ function getCommitMessage(message: string) {
   return message.split('\n')[0].trim();
 }
 
-export async function fetchCommits(
+export async function fetchCommitsByAuthor(
   owner: string,
   repoName: string,
   author: string | null
@@ -50,7 +50,7 @@ export async function fetchCommits(
       return {
         message: getCommitMessage(commit.commit.message),
         sha,
-        pullRequest: await fetchPullRequestBySha(owner, repoName, sha)
+        pullNumber: await fetchPullRequestNumberBySha(owner, repoName, sha)
       };
     });
 
@@ -60,7 +60,7 @@ export async function fetchCommits(
   }
 }
 
-export async function fetchCommit(
+export async function fetchCommitBySha(
   owner: string,
   repoName: string,
   sha: string
@@ -81,13 +81,32 @@ export async function fetchCommit(
 
     const commitRes = res.data.items[0];
     const fullSha = commitRes.sha;
-    const pullRequest = await fetchPullRequestBySha(owner, repoName, fullSha);
+    const pullNumber = await fetchPullRequestNumberBySha(
+      owner,
+      repoName,
+      fullSha
+    );
 
     return {
       message: getCommitMessage(commitRes.commit.message),
       sha: fullSha,
-      pullRequest
+      pullNumber
     };
+  } catch (e) {
+    throw getError(e);
+  }
+}
+
+async function fetchPullRequestNumberBySha(
+  owner: string,
+  repoName: string,
+  commitSha: string
+): Promise<number> {
+  try {
+    const res: AxiosResponse<GithubSearch<GithubIssue>> = await axios(
+      `https://api.github.com/search/issues?q=repo:${owner}/${repoName}+${commitSha}+base:master&access_token=${accessToken}`
+    );
+    return get(res.data.items[0], 'number');
   } catch (e) {
     throw getError(e);
   }
@@ -112,7 +131,7 @@ export async function createPullRequest(
   }
 }
 
-export async function addLabels(
+export async function addLabelsToPullRequest(
   owner: string,
   repoName: string,
   pullNumber: number,
@@ -123,21 +142,6 @@ export async function addLabels(
       `https://api.github.com/repos/${owner}/${repoName}/issues/${pullNumber}/labels?access_token=${accessToken}`,
       labels
     );
-  } catch (e) {
-    throw getError(e);
-  }
-}
-
-async function fetchPullRequestBySha(
-  owner: string,
-  repoName: string,
-  commitSha: string
-): Promise<number> {
-  try {
-    const res: AxiosResponse<GithubSearch<GithubIssue>> = await axios(
-      `https://api.github.com/search/issues?q=repo:${owner}/${repoName}+${commitSha}+base:master&access_token=${accessToken}`
-    );
-    return get(res.data.items[0], 'number');
   } catch (e) {
     throw getError(e);
   }

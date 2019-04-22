@@ -37,12 +37,12 @@ describe('doBackportVersion', () => {
       {
         sha: 'mySha',
         message: 'myCommitMessage',
-        pullRequest: 1000
+        pullNumber: 1000
       },
       {
         sha: 'mySha2',
         message: 'myOtherCommitMessage',
-        pullRequest: 2000
+        pullNumber: 2000
       }
     ];
 
@@ -112,7 +112,7 @@ describe('getReferenceLong', () => {
   it('should return a pr', () => {
     expect(
       getReferenceLong({
-        pullRequest: 1337,
+        pullNumber: 1337,
         sha: 'mySha1234567',
         message: 'myMessage'
       })

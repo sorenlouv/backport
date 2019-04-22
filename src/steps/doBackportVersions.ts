@@ -1,6 +1,10 @@
 import ora from 'ora';
 import { confirmPrompt } from '../services/prompts';
-import { addLabels, createPullRequest, Commit } from '../services/github';
+import {
+  addLabelsToPullRequest,
+  createPullRequest,
+  Commit
+} from '../services/github';
 import { HandledError } from '../services/HandledError';
 import { getRepoPath } from '../services/env';
 import { log } from '../services/logger';
@@ -52,7 +56,7 @@ export async function doBackportVersion(
 ) {
   const backportBranchName = getBackportBranchName(branch, commits);
   const refValues = commits.map(commit => getReferenceLong(commit)).join(', ');
-  log(`\nBackporting ${refValues} to ${branch}:`);
+  log(`Backporting ${refValues} to ${branch}:`);
 
   await withSpinner({ text: 'Pulling latest changes' }, async () => {
     await resetAndPullMaster({ owner, repoName });
@@ -83,7 +87,7 @@ export async function doBackportVersion(
     const payload = getPullRequestPayload(branch, commits, username);
     const pullRequest = await createPullRequest(owner, repoName, payload);
     if (labels.length > 0) {
-      await addLabels(owner, repoName, pullRequest.number, labels);
+      await addLabelsToPullRequest(owner, repoName, pullRequest.number, labels);
     }
     return pullRequest;
   });
@@ -109,12 +113,12 @@ function getShortSha(commit: Commit) {
 }
 
 export function getReferenceLong(commit: Commit) {
-  return commit.pullRequest ? `#${commit.pullRequest}` : getShortSha(commit);
+  return commit.pullNumber ? `#${commit.pullNumber}` : getShortSha(commit);
 }
 
 function getReferenceShort(commit: Commit) {
-  return commit.pullRequest
-    ? `pr-${commit.pullRequest}`
+  return commit.pullNumber
+    ? `pr-${commit.pullNumber}`
     : `commit-${getShortSha(commit)}`;
 }
 
@@ -123,38 +127,38 @@ async function cherrypickAndConfirm(
   repoName: string,
   sha: string
 ) {
+  const spinner = ora(`Cherry-picking commit ${sha}`).start();
   try {
-    await withSpinner(
-      {
-        text: `Cherry-picking commit ${sha}`,
-        errorText: `Cherry-picking failed. Please resolve conflicts in: ${getRepoPath(
-          owner,
-          repoName
-        )}`
-      },
-      () => cherrypick({ owner, repoName, sha })
-    );
+    await cherrypick({ owner, repoName, sha });
+    spinner.succeed();
   } catch (e) {
+    spinner.fail(
+      `Cherry-picking failed. Please resolve conflicts in: ${getRepoPath(
+        owner,
+        repoName
+      )}`
+    );
+
     const hasConflict = e.cmd.includes('git cherry-pick');
     if (!hasConflict) {
       throw e;
     }
 
-    await confirmResolvedRecursive(owner, repoName);
+    await resolveConflictsOrAbort(owner, repoName);
   }
 }
 
-async function confirmResolvedRecursive(owner: string, repoName: string) {
+async function resolveConflictsOrAbort(owner: string, repoName: string) {
   const res = await confirmPrompt(
     'Press enter when you have commited all changes'
   );
   if (!res) {
-    throw new HandledError('Application was aborted.');
+    throw new HandledError('Aborted');
   }
 
   const isDirty = await isIndexDirty({ owner, repoName });
   if (isDirty) {
-    await confirmResolvedRecursive(owner, repoName);
+    await resolveConflictsOrAbort(owner, repoName);
   }
 }
 
@@ -189,7 +193,7 @@ export function getPullRequestPayload(
 }
 
 async function withSpinner<T>(
-  { text, errorText }: { text: string; errorText?: string },
+  { text }: { text: string },
   fn: () => Promise<T>
 ): Promise<T> {
   const spinner = ora(text).start();
@@ -197,12 +201,8 @@ async function withSpinner<T>(
   try {
     const res = await fn();
     spinner.succeed();
-
     return res;
   } catch (e) {
-    if (errorText) {
-      spinner.text = errorText;
-    }
     spinner.fail();
     throw e;
   }

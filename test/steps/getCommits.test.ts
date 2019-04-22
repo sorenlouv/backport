@@ -26,7 +26,7 @@ describe('getCommitBySha', () => {
     expect(commits).toEqual({
       message: '[Chrome] Bootstrap Angular into document.body (#15158)',
       sha: 'myCommitSha',
-      pullRequest: undefined
+      pullNumber: undefined
     });
   });
 
@@ -60,7 +60,7 @@ describe('getCommitBySha', () => {
 
     expect(await getCommitBySha('elastic', 'kibana', 'myCommitSha')).toEqual({
       message: '[Chrome] Bootstrap Angular into document.body (#15158)',
-      pullRequest: 1338,
+      pullNumber: 1338,
       sha: 'myCommitSha'
     });
   });

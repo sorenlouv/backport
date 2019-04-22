@@ -21,7 +21,7 @@ function mockGetPullRequest(
     .reply(200, {
       items: [
         {
-          number: `PR for ${commitSha}`
+          number: `Pull number for ${commitSha}`
         }
       ]
     });
@@ -94,7 +94,7 @@ describe('run through steps', () => {
     jest.spyOn(rpc, 'writeFile').mockResolvedValue(undefined);
     jest.spyOn(rpc, 'mkdirp').mockResolvedValue(undefined);
 
-    jest.spyOn(github, 'fetchCommits');
+    jest.spyOn(github, 'fetchCommitsByAuthor');
     jest.spyOn(github, 'createPullRequest');
 
     inquirerPromptMock = jest
@@ -103,7 +103,7 @@ describe('run through steps', () => {
         promptResult: {
           message: 'myCommitMessage',
           sha: 'commitSha',
-          pullRequest: 'myPullRequest'
+          pullNumber: 'myPullRequestNumber'
         }
       })
       .mockResolvedValueOnce({
@@ -173,7 +173,7 @@ describe('run through steps', () => {
   });
 
   it('getCommit should be called with correct args', () => {
-    expect(github.fetchCommits).toHaveBeenCalledWith(
+    expect(github.fetchCommitsByAuthor).toHaveBeenCalledWith(
       'elastic',
       'kibana',
       'sqren'
@@ -183,8 +183,8 @@ describe('run through steps', () => {
   it('createPullRequest should be called with correct args', () => {
     expect(github.createPullRequest).toHaveBeenCalledWith('elastic', 'kibana', {
       base: '6.2',
-      body: `Backports the following commits to 6.2:\n - myCommitMessage (#myPullRequest)`,
-      head: 'sqren:backport/6.2/pr-myPullRequest',
+      body: `Backports the following commits to 6.2:\n - myCommitMessage (#myPullRequestNumber)`,
+      head: 'sqren:backport/6.2/pr-myPullRequestNumber',
       title: '[6.2] myCommitMessage'
     });
   });

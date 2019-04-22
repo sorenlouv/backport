@@ -1,20 +1,23 @@
 import { BackportOptions } from '../options/options';
-import { fetchCommit, fetchCommits } from '../services/github';
+import { fetchCommitBySha, fetchCommitsByAuthor } from '../services/github';
 import { promptForCommits } from '../services/prompts';
 import isEmpty from 'lodash.isempty';
 import ora = require('ora');
 
 export async function getCommits(options: BackportOptions) {
   const [owner, repoName] = options.upstream.split('/');
+
+  if (options.sha) {
+    return [await getCommitBySha(owner, repoName, options.sha)];
+  }
+
   const author = options.all ? null : options.username;
-  return options.sha
-    ? [await getCommitBySha(owner, repoName, options.sha)]
-    : await getCommitsByPrompt(
-        owner,
-        repoName,
-        author,
-        options.multipleCommits
-      );
+  return await getCommitsByPrompt(
+    owner,
+    repoName,
+    author,
+    options.multipleCommits
+  );
 }
 
 export async function getCommitBySha(
@@ -24,9 +27,8 @@ export async function getCommitBySha(
 ) {
   const spinner = ora(`Loading commit "${sha}"`).start();
   try {
-    const commit = await fetchCommit(owner, repoName, sha);
-    spinner.text = `Loaded commit "${commit.message}" from "${sha}"`;
-    spinner.succeed();
+    const commit = await fetchCommitBySha(owner, repoName, sha);
+    spinner.stop();
     return commit;
   } catch (e) {
     spinner.fail();
@@ -42,7 +44,7 @@ async function getCommitsByPrompt(
 ) {
   const spinner = ora('Loading commits...').start();
   try {
-    const commits = await fetchCommits(owner, repoName, author);
+    const commits = await fetchCommitsByAuthor(owner, repoName, author);
     if (isEmpty(commits)) {
       const warningText = author
         ? 'There are no commits by you in this repository'
