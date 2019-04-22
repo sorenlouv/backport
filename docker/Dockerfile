@@ -6,6 +6,6 @@ WORKDIR /app
 
 COPY ./entrypoint.sh /entrypoint.sh
 
-RUN npm install backport@beta -g
+RUN npm install backport -g
 ENTRYPOINT ["/entrypoint.sh"]
 CMD []
