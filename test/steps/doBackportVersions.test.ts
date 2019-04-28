@@ -1,38 +1,33 @@
-import axios from 'axios';
-import nock from 'nock';
-import httpAdapter from 'axios/lib/adapters/http';
+import mockAxios from 'axios';
 import * as childProcess from 'child_process';
 import {
   doBackportVersion,
   getReferenceLong
 } from '../../src/steps/doBackportVersions';
-
-axios.defaults.adapter = httpAdapter;
+import { PromiseReturnType } from '../../src/types/commons';
 
 describe('doBackportVersion', () => {
-  let addLabelMock: nock.Scope;
-  beforeEach(() => {
-    addLabelMock = nock('https://api.github.com')
-      .post(`/repos/elastic/kibana/issues/1337/labels`, ['backport'])
-      .query(true)
-      .reply(200, {});
+  let axiosMock: jest.Mock;
+  afterEach(() => {
+    axiosMock.mockReset();
   });
 
   describe('when commit has a pull request reference', () => {
-    it('should create PR with PR reference', async () => {
-      const createPRMock = nock('https://api.github.com')
-        .post(`/repos/elastic/kibana/pulls`, {
-          title: '[6.x] myCommitMessage | myOtherCommitMessage',
-          body:
-            'Backports the following commits to 6.x:\n - myCommitMessage (#1000)\n - myOtherCommitMessage (#2000)',
-          head: 'sqren:backport/6.x/pr-1000_pr-2000',
-          base: '6.x'
+    let execSpy: jest.SpyInstance;
+    let res: PromiseReturnType<typeof doBackportVersion>;
+    beforeEach(async () => {
+      // mock: createPullRequest
+      axiosMock = (mockAxios.post as jest.Mock)
+        .mockImplementationOnce(() => {
+          return {
+            data: {
+              number: 1337,
+              html_url: 'myHtmlUrl'
+            }
+          };
         })
-        .query(true)
-        .reply(200, {
-          number: 1337,
-          html_url: 'myHtmlUrl'
-        });
+        // mock: addLabelsToPullRequest
+        .mockResolvedValueOnce(null);
 
       const commits = [
         {
@@ -47,9 +42,9 @@ describe('doBackportVersion', () => {
         }
       ];
 
-      const execSpy = jest.spyOn(childProcess, 'exec');
+      execSpy = jest.spyOn(childProcess, 'exec');
 
-      const res = await doBackportVersion(
+      res = await doBackportVersion(
         'elastic',
         'kibana',
         commits,
@@ -57,29 +52,53 @@ describe('doBackportVersion', () => {
         'sqren',
         ['backport']
       );
+    });
 
-      expect(res).toMatchSnapshot();
+    it('should make correct git commands', () => {
       expect(execSpy.mock.calls).toMatchSnapshot();
-      expect(createPRMock.isDone()).toBe(true);
-      expect(addLabelMock.isDone()).toBe(true);
+    });
+
+    it('should return correct response', () => {
+      expect(res).toEqual({ html_url: 'myHtmlUrl', number: 1337 });
+    });
+
+    it('should create pull request and add labels', () => {
+      expect(axiosMock).toHaveBeenCalledTimes(2);
+      expect(axiosMock).toHaveBeenNthCalledWith(
+        1,
+        'https://api.github.com/repos/elastic/kibana/pulls?access_token=undefined',
+        {
+          title: '[6.x] myCommitMessage | myOtherCommitMessage',
+          body:
+            'Backports the following commits to 6.x:\n - myCommitMessage (#1000)\n - myOtherCommitMessage (#2000)',
+          head: 'sqren:backport/6.x/pr-1000_pr-2000',
+          base: '6.x'
+        }
+      );
+
+      expect(axiosMock).toHaveBeenNthCalledWith(
+        2,
+        'https://api.github.com/repos/elastic/kibana/issues/1337/labels?access_token=undefined',
+        ['backport']
+      );
     });
   });
 
   describe('when commit does not have a pull request reference', () => {
-    it('should create PR correctly without PR reference', async () => {
-      const createPRMock = nock('https://api.github.com')
-        .post(`/repos/elastic/kibana/pulls`, {
-          title: '[6.x] myCommitMessage',
-          body:
-            'Backports the following commits to 6.x:\n - myCommitMessage (mySha)',
-          head: 'sqren:backport/6.x/commit-mySha',
-          base: '6.x'
+    let axiosMock: jest.Mock;
+    beforeEach(async () => {
+      // mock: createPullRequest
+      axiosMock = (mockAxios.post as jest.Mock)
+        .mockImplementationOnce(() => {
+          return {
+            data: {
+              number: 1337,
+              html_url: 'myHtmlUrl'
+            }
+          };
         })
-        .query(true)
-        .reply(200, {
-          number: 1337,
-          html_url: 'myHtmlUrl'
-        });
+        // mock: addLabelsToPullRequest
+        .mockResolvedValueOnce(null);
 
       const commits = [
         {
@@ -88,20 +107,30 @@ describe('doBackportVersion', () => {
         }
       ];
 
-      const execSpy = jest.spyOn(childProcess, 'exec');
+      await doBackportVersion('elastic', 'kibana', commits, '6.x', 'sqren', [
+        'backport'
+      ]);
+    });
 
-      const res = await doBackportVersion(
-        'elastic',
-        'kibana',
-        commits,
-        '6.x',
-        'sqren'
+    it('should create pull request and add labels', () => {
+      expect(axiosMock).toHaveBeenCalledTimes(2);
+      expect(axiosMock).toHaveBeenNthCalledWith(
+        1,
+        'https://api.github.com/repos/elastic/kibana/pulls?access_token=undefined',
+        {
+          title: '[6.x] myCommitMessage',
+          body:
+            'Backports the following commits to 6.x:\n - myCommitMessage (mySha)',
+          head: 'sqren:backport/6.x/commit-mySha',
+          base: '6.x'
+        }
       );
 
-      expect(res).toMatchSnapshot();
-      expect(execSpy.mock.calls).toMatchSnapshot();
-      expect(createPRMock.isDone()).toBe(true);
-      expect(addLabelMock.isDone()).toBe(false);
+      expect(axiosMock).toHaveBeenNthCalledWith(
+        2,
+        'https://api.github.com/repos/elastic/kibana/issues/1337/labels?access_token=undefined',
+        ['backport']
+      );
     });
   });
 });
