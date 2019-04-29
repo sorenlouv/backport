@@ -1,34 +1,40 @@
-import mockAxios from 'axios';
+import axios from 'axios';
 import * as childProcess from 'child_process';
 import {
   doBackportVersion,
   getReferenceLong
 } from '../../src/steps/doBackportVersions';
 import { PromiseReturnType } from '../../src/types/commons';
+import last from 'lodash.last';
+import * as prompts from '../../src/services/prompts';
+import * as logger from '../../src/services/logger';
 
 describe('doBackportVersion', () => {
-  let axiosMock: jest.Mock;
+  let axiosMockInstance: jest.Mock;
+
+  beforeEach(() => {
+    axiosMockInstance = jest
+      .spyOn(axios, 'post')
+      // mock: createPullRequest
+      // @ts-ignore
+      .mockResolvedValueOnce({
+        data: {
+          number: 1337,
+          html_url: 'myHtmlUrl'
+        }
+      })
+      // mock: addLabelsToPullRequest
+      .mockResolvedValueOnce(null);
+  });
+
   afterEach(() => {
-    axiosMock.mockReset();
+    jest.clearAllMocks();
   });
 
   describe('when commit has a pull request reference', () => {
     let execSpy: jest.SpyInstance;
     let res: PromiseReturnType<typeof doBackportVersion>;
     beforeEach(async () => {
-      // mock: createPullRequest
-      axiosMock = (mockAxios.post as jest.Mock)
-        .mockImplementationOnce(() => {
-          return {
-            data: {
-              number: 1337,
-              html_url: 'myHtmlUrl'
-            }
-          };
-        })
-        // mock: addLabelsToPullRequest
-        .mockResolvedValueOnce(null);
-
       const commits = [
         {
           sha: 'mySha',
@@ -63,8 +69,8 @@ describe('doBackportVersion', () => {
     });
 
     it('should create pull request and add labels', () => {
-      expect(axiosMock).toHaveBeenCalledTimes(2);
-      expect(axiosMock).toHaveBeenNthCalledWith(
+      expect(axiosMockInstance).toHaveBeenCalledTimes(2);
+      expect(axiosMockInstance).toHaveBeenNthCalledWith(
         1,
         'https://api.github.com/repos/elastic/kibana/pulls?access_token=undefined',
         {
@@ -76,7 +82,7 @@ describe('doBackportVersion', () => {
         }
       );
 
-      expect(axiosMock).toHaveBeenNthCalledWith(
+      expect(axiosMockInstance).toHaveBeenNthCalledWith(
         2,
         'https://api.github.com/repos/elastic/kibana/issues/1337/labels?access_token=undefined',
         ['backport']
@@ -85,21 +91,7 @@ describe('doBackportVersion', () => {
   });
 
   describe('when commit does not have a pull request reference', () => {
-    let axiosMock: jest.Mock;
     beforeEach(async () => {
-      // mock: createPullRequest
-      axiosMock = (mockAxios.post as jest.Mock)
-        .mockImplementationOnce(() => {
-          return {
-            data: {
-              number: 1337,
-              html_url: 'myHtmlUrl'
-            }
-          };
-        })
-        // mock: addLabelsToPullRequest
-        .mockResolvedValueOnce(null);
-
       const commits = [
         {
           sha: 'mySha',
@@ -113,8 +105,8 @@ describe('doBackportVersion', () => {
     });
 
     it('should create pull request and add labels', () => {
-      expect(axiosMock).toHaveBeenCalledTimes(2);
-      expect(axiosMock).toHaveBeenNthCalledWith(
+      expect(axiosMockInstance).toHaveBeenCalledTimes(2);
+      expect(axiosMockInstance).toHaveBeenNthCalledWith(
         1,
         'https://api.github.com/repos/elastic/kibana/pulls?access_token=undefined',
         {
@@ -126,11 +118,85 @@ describe('doBackportVersion', () => {
         }
       );
 
-      expect(axiosMock).toHaveBeenNthCalledWith(
+      expect(axiosMockInstance).toHaveBeenNthCalledWith(
         2,
         'https://api.github.com/repos/elastic/kibana/issues/1337/labels?access_token=undefined',
         ['backport']
       );
+    });
+  });
+
+  describe('when cherry-picking fails', () => {
+    function didResolveConflict(didResolve: boolean) {
+      const logSpy = jest.spyOn(logger, 'log');
+      const commits = [
+        {
+          sha: 'mySha',
+          message: 'myCommitMessage'
+        }
+      ];
+
+      const execSpy = jest
+        .spyOn(childProcess, 'exec')
+        .mockImplementation((...args: any[]) => {
+          const [cmd] = args;
+          if (cmd.includes('git cherry-pick')) {
+            const e = new Error('as');
+            // @ts-ignore
+            e.cmd = cmd;
+            throw e;
+          } else {
+            last(args)();
+          }
+
+          return {} as any;
+        });
+
+      spyOn(prompts, 'confirmPrompt').and.returnValue(didResolve);
+
+      const promise = doBackportVersion(
+        'elastic',
+        'kibana',
+        commits,
+        '6.x',
+        'sqren',
+        ['backport']
+      );
+
+      return { logSpy, execSpy, promise };
+    }
+
+    it('and conflicts were resolved', async () => {
+      const { execSpy, promise } = didResolveConflict(true);
+      await promise;
+      expect(execSpy.mock.calls).toMatchSnapshot();
+      expect(axiosMockInstance).toHaveBeenCalledTimes(2);
+    });
+
+    it('and conflicts were not resolved', async () => {
+      const { execSpy, promise, logSpy } = didResolveConflict(false);
+      expect.assertions(4);
+
+      await promise.catch(e => {
+        expect(logSpy.mock.calls).toMatchInlineSnapshot(`
+          Array [
+            Array [
+              "Backporting mySha to 6.x:",
+            ],
+            Array [
+              "Please resolve conflicts in: /myHomeDir/.backport/repositories/elastic/kibana and when all conflicts have been resolved and staged run:",
+            ],
+            Array [
+              "
+              git cherry-pick --continue
+              ",
+            ],
+          ]
+        `);
+        expect(e.message).toEqual('Aborted');
+        expect(execSpy.mock.calls).toMatchSnapshot();
+        expect(axiosMockInstance).toHaveBeenCalledTimes(0);
+      });
     });
   });
 });
