@@ -180,14 +180,15 @@ function getPullRequestTitle(
   commits: Commit[],
   prTitle: string
 ) {
-  // @ts-ignore
-  const commitMessages = commits // eslint-disable-line @typescript-eslint/no-unused-vars
+  const commitMessages = commits
     .map(commit => commit.message)
     .join(' | ')
     .slice(0, 200);
 
   // prTitle could include baseBranch or commitMessages in template literal
-  return eval('`' + prTitle + '`');
+  return prTitle
+    .replace('${baseBranch}', baseBranch)
+    .replace('${commitMessages}', commitMessages);
 }
 
 export function getPullRequestPayload(
