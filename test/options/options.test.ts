@@ -5,7 +5,7 @@ const validOptions = {
   all: false,
   branchChoices: [],
   branches: ['branchA'],
-  githubUrl: 'github.com',
+  gitHostname: 'github.com',
   labels: [],
   multiple: false,
   multipleBranches: true,

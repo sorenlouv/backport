@@ -9,7 +9,7 @@ interface GlobalConfig {
 
   // the following are overwritable by project config:
   all?: boolean;
-  githubUrl?: string;
+  gitHostname?: string;
   multiple?: boolean;
   multipleCommits?: boolean;
   multipleBranches?: boolean;

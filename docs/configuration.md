@@ -110,12 +110,12 @@ Text that will be added to the pull request body.
 
 CLI: `--prDescription "skip-ci"`
 
-#### `githubUrl`
+#### `gitHostname`
 
-Url that will be used when calling the Github API.
+Hostname for Github.
 
 Example: `github.my-private-company.com`
 
 Default: `github.com`
 
-CLI: `--githubUrl "github.my-private-company.com"`
+CLI: `--gitHostname "github.my-private-company.com"`

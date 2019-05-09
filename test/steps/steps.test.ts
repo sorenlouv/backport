@@ -157,7 +157,7 @@ describe('run through steps', () => {
         { name: '5.5' },
         { name: '5.4' }
       ],
-      githubUrl: 'github.com',
+      gitHostname: 'github.com',
       labels: [],
       multiple: false,
       multipleBranches: false,

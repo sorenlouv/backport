@@ -43,14 +43,14 @@ function getRemoteUrl({
   owner,
   repoName,
   accessToken,
-  githubUrl
+  gitHostname
 }: {
   owner: string;
   repoName: string;
   accessToken: string;
-  githubUrl: string;
+  gitHostname: string;
 }) {
-  return `https://${accessToken}@${githubUrl}/${owner}/${repoName}.git`;
+  return `https://${accessToken}@${gitHostname}/${owner}/${repoName}.git`;
 }
 
 export function cloneRepo({
@@ -58,13 +58,13 @@ export function cloneRepo({
   repoName,
   accessToken,
   callback,
-  githubUrl
+  gitHostname
 }: {
   owner: string;
   repoName: string;
   accessToken: string;
   callback: (progress: string) => void;
-  githubUrl: string;
+  gitHostname: string;
 }) {
   return new Promise((resolve, reject) => {
     const execProcess = childProcess.exec(
@@ -72,7 +72,7 @@ export function cloneRepo({
         accessToken,
         owner,
         repoName,
-        githubUrl
+        gitHostname
       })} --progress`,
       { cwd: getRepoOwnerPath(owner), maxBuffer: 100 * 1024 * 1024 },
       error => {
@@ -120,13 +120,13 @@ export async function addRemote({
   repoName,
   username,
   accessToken,
-  githubUrl
+  gitHostname
 }: {
   owner: string;
   repoName: string;
   username: string;
   accessToken: string;
-  githubUrl: string;
+  gitHostname: string;
 }) {
   try {
     await exec(
@@ -134,7 +134,7 @@ export async function addRemote({
         accessToken,
         owner: username,
         repoName,
-        githubUrl
+        gitHostname
       })}`,
       {
         cwd: getRepoPath(owner, repoName)

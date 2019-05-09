@@ -13,7 +13,7 @@ export async function getCommits(options: BackportOptions) {
 
   if (options.sha) {
     return [
-      await getCommitBySha(owner, repoName, options.sha, options.githubUrl)
+      await getCommitBySha(owner, repoName, options.sha, options.gitHostname)
     ];
   }
 
@@ -23,7 +23,7 @@ export async function getCommits(options: BackportOptions) {
     repoName,
     author,
     options.multipleCommits,
-    options.githubUrl
+    options.gitHostname
   );
 }
 
@@ -31,11 +31,11 @@ export async function getCommitBySha(
   owner: string,
   repoName: string,
   sha: string,
-  githubUrl: string
+  gitHostname: string
 ) {
   const spinner = ora(`Loading commit "${getShortSha(sha)}"`).start();
   try {
-    const commit = await fetchCommitBySha(owner, repoName, sha, githubUrl);
+    const commit = await fetchCommitBySha(owner, repoName, sha, gitHostname);
     spinner.stop();
     return commit;
   } catch (e) {
@@ -49,7 +49,7 @@ async function getCommitsByPrompt(
   repoName: string,
   author: string | null,
   multipleCommits: boolean,
-  githubUrl: string
+  gitHostname: string
 ) {
   const spinner = ora('Loading commits...').start();
   try {
@@ -57,7 +57,7 @@ async function getCommitsByPrompt(
       owner,
       repoName,
       author,
-      githubUrl
+      gitHostname
     );
     if (isEmpty(commits)) {
       const warningText = author

@@ -31,7 +31,7 @@ export async function fetchCommitsByAuthor(
   owner: string,
   repoName: string,
   author: string | null,
-  githubUrl: string
+  gitHostname: string
 ): Promise<Commit[]> {
   const query: GithubQuery = {
     access_token: accessToken,
@@ -45,7 +45,7 @@ export async function fetchCommitsByAuthor(
 
   try {
     const res: AxiosResponse<GithubCommit[]> = await axios(
-      `https://api.${githubUrl}/repos/${owner}/${repoName}/commits?${querystring.stringify(
+      `https://api.${gitHostname}/repos/${owner}/${repoName}/commits?${querystring.stringify(
         query
       )}`
     );
@@ -59,7 +59,7 @@ export async function fetchCommitsByAuthor(
           owner,
           repoName,
           sha,
-          githubUrl
+          gitHostname
         )
       };
     });
@@ -74,11 +74,11 @@ export async function fetchCommitBySha(
   owner: string,
   repoName: string,
   sha: string,
-  githubUrl: string
+  gitHostname: string
 ): Promise<Commit> {
   try {
     const res: AxiosResponse<GithubSearch<GithubCommit>> = await axios(
-      `https://api.${githubUrl}/search/commits?q=hash:${sha}%20repo:${owner}/${repoName}&per_page=1&access_token=${accessToken}`,
+      `https://api.${gitHostname}/search/commits?q=hash:${sha}%20repo:${owner}/${repoName}&per_page=1&access_token=${accessToken}`,
       {
         headers: {
           Accept: 'application/vnd.github.cloak-preview'
@@ -96,7 +96,7 @@ export async function fetchCommitBySha(
       owner,
       repoName,
       fullSha,
-      githubUrl
+      gitHostname
     );
 
     return {
@@ -113,11 +113,11 @@ async function fetchPullRequestNumberBySha(
   owner: string,
   repoName: string,
   commitSha: string,
-  githubUrl: string
+  gitHostname: string
 ): Promise<number> {
   try {
     const res: AxiosResponse<GithubSearch<GithubIssue>> = await axios(
-      `https://api.${githubUrl}/search/issues?q=repo:${owner}/${repoName}+${commitSha}+base:master&access_token=${accessToken}`
+      `https://api.${gitHostname}/search/issues?q=repo:${owner}/${repoName}+${commitSha}+base:master&access_token=${accessToken}`
     );
     return get(res.data.items[0], 'number');
   } catch (e) {
@@ -129,11 +129,11 @@ export async function createPullRequest(
   owner: string,
   repoName: string,
   payload: ReturnType<typeof getPullRequestPayload>,
-  githubUrl: string
+  gitHostname: string
 ) {
   try {
     const res: AxiosResponse<GithubIssue> = await axios.post(
-      `https://api.${githubUrl}/repos/${owner}/${repoName}/pulls?access_token=${accessToken}`,
+      `https://api.${gitHostname}/repos/${owner}/${repoName}/pulls?access_token=${accessToken}`,
       payload
     );
     return {
@@ -150,11 +150,11 @@ export async function addLabelsToPullRequest(
   repoName: string,
   pullNumber: number,
   labels: string[],
-  githubUrl: string
+  gitHostname: string
 ) {
   try {
     return await axios.post(
-      `https://api.${githubUrl}/repos/${owner}/${repoName}/issues/${pullNumber}/labels?access_token=${accessToken}`,
+      `https://api.${gitHostname}/repos/${owner}/${repoName}/issues/${pullNumber}/labels?access_token=${accessToken}`,
       labels
     );
   } catch (e) {

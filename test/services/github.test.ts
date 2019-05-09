@@ -13,7 +13,7 @@ describe('getCommits', () => {
     const accessToken = 'myAccessToken';
     const author = 'sqren';
     const commitSha = 'myCommitSha';
-    const githubUrl = 'github.com';
+    const gitHostname = 'github.com';
     setAccessToken(accessToken);
 
     mock
@@ -42,7 +42,7 @@ describe('getCommits', () => {
       });
 
     expect(
-      await fetchCommitsByAuthor(owner, repoName, author, githubUrl)
+      await fetchCommitsByAuthor(owner, repoName, author, gitHostname)
     ).toEqual([
       {
         message: 'myMessage',
@@ -59,7 +59,7 @@ describe('getCommits', () => {
     const accessToken = 'myAccessToken';
     const author = 'sqren';
     const commitSha = 'myCommitSha';
-    const githubUrl = 'github.com';
+    const gitHostname = 'github.com';
     setAccessToken(accessToken);
 
     mock
@@ -82,7 +82,7 @@ describe('getCommits', () => {
       .reply(200, { items: [] });
 
     expect(
-      await fetchCommitsByAuthor(owner, repoName, author, githubUrl)
+      await fetchCommitsByAuthor(owner, repoName, author, gitHostname)
     ).toEqual([
       {
         message: 'myMessage',
@@ -99,12 +99,12 @@ describe('getCommits', () => {
     const accessToken = 'myAccessToken';
     const author = 'sqren';
     const commitSha = 'myCommitSha';
-    const githubUrl = 'github.my-company.com';
+    const gitHostname = 'github.my-company.com';
     setAccessToken(accessToken);
 
     mock
       .onGet(
-        `https://api.${githubUrl}/repos/${owner}/${repoName}/commits?access_token=${accessToken}&per_page=5&author=${author}`
+        `https://api.${gitHostname}/repos/${owner}/${repoName}/commits?access_token=${accessToken}&per_page=5&author=${author}`
       )
       .reply(200, [
         {
@@ -117,7 +117,7 @@ describe('getCommits', () => {
 
     mock
       .onGet(
-        `https://api.${githubUrl}/search/issues?q=repo:${owner}/${repoName}+${commitSha}+base:master&access_token=${accessToken}`
+        `https://api.${gitHostname}/search/issues?q=repo:${owner}/${repoName}+${commitSha}+base:master&access_token=${accessToken}`
       )
       .reply(200, {
         items: [
@@ -128,7 +128,7 @@ describe('getCommits', () => {
       });
 
     expect(
-      await fetchCommitsByAuthor(owner, repoName, author, githubUrl)
+      await fetchCommitsByAuthor(owner, repoName, author, gitHostname)
     ).toEqual([
       {
         message: 'myMessage',

@@ -17,7 +17,7 @@ export async function initSteps(options: BackportOptions) {
     repoName,
     username: options.username,
     accessToken: options.accessToken,
-    githubUrl: options.githubUrl
+    gitHostname: options.gitHostname
   });
   await doBackportVersions(
     owner,
@@ -27,6 +27,6 @@ export async function initSteps(options: BackportOptions) {
     options.username,
     options.labels,
     options.prDescription,
-    options.githubUrl
+    options.gitHostname
   );
 }

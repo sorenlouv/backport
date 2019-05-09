@@ -9,7 +9,7 @@ describe('addRemote', () => {
       owner: 'elastic',
       repoName: 'kibana',
       username: 'elastic',
-      githubUrl: 'github.com'
+      gitHostname: 'github.com'
     });
 
     return expect(spy).toHaveBeenCalledWith(
@@ -25,7 +25,7 @@ describe('addRemote', () => {
       owner: 'elastic',
       repoName: 'kibana',
       username: 'sqren',
-      githubUrl: 'github.com'
+      gitHostname: 'github.com'
     });
 
     return expect(spy).toHaveBeenCalledWith(
@@ -41,7 +41,7 @@ describe('addRemote', () => {
       owner: 'elastic',
       repoName: 'kibana',
       username: 'sqren',
-      githubUrl: 'github.my-company.com'
+      gitHostname: 'github.my-company.com'
     });
 
     return expect(spy).toHaveBeenCalledWith(
