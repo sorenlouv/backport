@@ -27,6 +27,19 @@ function mockGetPullRequest(
     });
 }
 
+function mockVerifyAccessToken(
+  axiosMock: MockAdapter,
+  owner: string,
+  repoName: string,
+  accessToken: string
+) {
+  return axiosMock
+    .onHead(
+      `https://api.github.com/repos/${owner}/${repoName}?access_token=${accessToken}`
+    )
+    .reply(200);
+}
+
 function mockGetCommits(
   axiosMock: MockAdapter,
   {
@@ -111,6 +124,9 @@ describe('run through steps', () => {
       });
 
     axiosMock = new MockAdapter(axios);
+
+    mockVerifyAccessToken(axiosMock, owner, repoName, accessToken);
+
     mockGetCommits(axiosMock, {
       owner,
       repoName,
@@ -163,6 +179,7 @@ describe('run through steps', () => {
       multiple: false,
       multipleBranches: false,
       multipleCommits: false,
+      prTitle: 'myPrTitle',
       prDescription: 'myPrDescription',
       sha: undefined,
       upstream,
@@ -191,7 +208,7 @@ describe('run through steps', () => {
         base: '6.2',
         body: `Backports the following commits to 6.2:\n - myCommitMessage (#myPullRequestNumber)\n\nmyPrDescription`,
         head: 'sqren:backport/6.2/pr-myPullRequestNumber',
-        title: '[6.2] myCommitMessage'
+        title: 'myPrTitle'
       },
       'api.github.com'
     );

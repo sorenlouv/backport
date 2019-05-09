@@ -24,6 +24,7 @@ export function doBackportVersions(
   branches: string[],
   username: string,
   labels: string[],
+  prTitle: string,
   prDescription: string | undefined,
   apiHostname: string
 ) {
@@ -36,6 +37,7 @@ export function doBackportVersions(
         branch,
         username,
         labels,
+        prTitle,
         prDescription,
         apiHostname
       );
@@ -58,6 +60,7 @@ export async function doBackportVersion(
   baseBranch: string,
   username: string,
   labels: string[] = [],
+  prTitle: string,
   prDescription: string | undefined,
   apiHostname: string
 ) {
@@ -95,6 +98,7 @@ export async function doBackportVersion(
       baseBranch,
       commits,
       username,
+      prTitle,
       prDescription
     );
     const pullRequest = await createPullRequest(
@@ -185,19 +189,27 @@ async function resolveConflictsOrAbort(owner: string, repoName: string) {
   }
 }
 
-function getPullRequestTitle(baseBranch: string, commits: Commit[]) {
+function getPullRequestTitle(
+  baseBranch: string,
+  commits: Commit[],
+  prTitle: string
+) {
   const commitMessages = commits
     .map(commit => commit.message)
     .join(' | ')
     .slice(0, 200);
 
-  return `[${baseBranch}] ${commitMessages}`;
+  // prTitle could include baseBranch or commitMessages in template literal
+  return prTitle
+    .replace('{baseBranch}', baseBranch)
+    .replace('{commitMessages}', commitMessages);
 }
 
 export function getPullRequestPayload(
   baseBranch: string,
   commits: Commit[],
   username: string,
+  prTitle: string,
   prDescription: string | undefined
 ) {
   const featureBranch = getFeatureBranchName(baseBranch, commits);
@@ -211,7 +223,7 @@ export function getPullRequestPayload(
   const bodySuffix = prDescription ? `\n\n${prDescription}` : '';
 
   return {
-    title: getPullRequestTitle(baseBranch, commits),
+    title: getPullRequestTitle(baseBranch, commits, prTitle),
     body: `Backports the following commits to ${baseBranch}:\n${commitRefs}${bodySuffix}`,
     head: `${username}:${featureBranch}`,
     base: `${baseBranch}`

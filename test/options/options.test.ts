@@ -11,6 +11,7 @@ const validOptions = {
   multiple: false,
   multipleBranches: true,
   multipleCommits: false,
+  prTitle: 'myPrTitle',
   prDescription: undefined,
   sha: undefined,
   upstream: 'elastic/kibana',

@@ -27,10 +27,8 @@ Access tokens can be created here: https://github.com/settings/tokens/new
 
 Please select the necessary access scopes:
 
-- _repo:status (required for private repos)_
-- _repo_deployment (required for private repos)_
-- **public_repo (required)**
-- _repo:invite (required for private repos)_
+- `repo` (for public and private repos)
+- `public_repo` (for public repos only)
 
 CLI: `--accessToken myAccessToken`
 
@@ -103,6 +101,17 @@ Labels that will be added to the backport pull request. These are often useful i
 Example: `["backport", "apm-team"]`
 
 CLI: `--labels myLabel --labels myOtherLabel`
+
+#### `prTitle`
+
+Text that will be the pull request title. Note: You can access the base branch (`baseBranch`) and commit message (`commitMessages`) strings by wrapping them in curly braces (See Example).
+If there are multiple commits the commit messages will be concatenated and separated by pipes.
+
+Example: `"{commitMessages} backport for {baseBranch}"`
+
+Default: `"[{baseBranch}] {commitMessages}"`
+
+CLI: `--prTitle "My PR Title"`
 
 #### `prDescription`
 

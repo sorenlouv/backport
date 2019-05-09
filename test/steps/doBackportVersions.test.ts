@@ -57,6 +57,7 @@ describe('doBackportVersion', () => {
         '6.x',
         'sqren',
         ['backport'],
+        '[{baseBranch}] {commitMessages}',
         'myPrSuffix',
         'api.github.com'
       );
@@ -108,6 +109,7 @@ describe('doBackportVersion', () => {
         '6.x',
         'sqren',
         ['backport'],
+        '[{baseBranch}] {commitMessages}',
         undefined,
         'api.github.com'
       );
@@ -170,6 +172,7 @@ describe('doBackportVersion', () => {
         '6.x',
         'sqren',
         ['backport'],
+        'myPrTitle',
         undefined,
         'api.github.com'
       );
