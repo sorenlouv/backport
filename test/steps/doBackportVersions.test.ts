@@ -58,7 +58,7 @@ describe('doBackportVersion', () => {
         'sqren',
         ['backport'],
         'myPrSuffix',
-        'github.com'
+        'api.github.com'
       );
     });
 
@@ -109,7 +109,7 @@ describe('doBackportVersion', () => {
         'sqren',
         ['backport'],
         undefined,
-        'github.com'
+        'api.github.com'
       );
     });
 
@@ -171,7 +171,7 @@ describe('doBackportVersion', () => {
         'sqren',
         ['backport'],
         undefined,
-        'github.com'
+        'api.github.com'
       );
 
       return { logSpy, execSpy, promise };

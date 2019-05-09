@@ -179,7 +179,7 @@ describe('run through steps', () => {
       'elastic',
       'kibana',
       'sqren',
-      'github.com'
+      'api.github.com'
     );
   });
 
@@ -193,7 +193,7 @@ describe('run through steps', () => {
         head: 'sqren:backport/6.2/pr-myPullRequestNumber',
         title: '[6.2] myCommitMessage'
       },
-      'github.com'
+      'api.github.com'
     );
   });
 

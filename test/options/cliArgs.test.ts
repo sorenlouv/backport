@@ -39,7 +39,7 @@ describe('getOptionsFromCliArgs', () => {
     expect(res).toEqual({
       accessToken: 'myAccessToken',
       all: true,
-      apiHostname: 'github.com',
+      apiHostname: 'api.github.com',
       branches: ['6.0', '6.1'],
       branchChoices: [],
       gitHostname: 'github.com',
