@@ -187,8 +187,8 @@ function getPullRequestTitle(
 
   // prTitle could include baseBranch or commitMessages in template literal
   return prTitle
-    .replace('${baseBranch}', baseBranch)
-    .replace('${commitMessages}', commitMessages);
+    .replace('{baseBranch}', baseBranch)
+    .replace('{commitMessages}', commitMessages);
 }
 
 export function getPullRequestPayload(

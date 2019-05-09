@@ -106,12 +106,12 @@ CLI: `--labels myLabel --labels myOtherLabel`
 
 #### `prTitle`
 
-Text that will be the pull request title. Note: You can pass a template literal string to access the base branch (`baseBranch`) and commit message (`commitMessages`) strings.
+Text that will be the pull request title. Note: You can access the base branch (`baseBranch`) and commit message (`commitMessages`) strings by wrapping them in curly braces (See Example).
 If there are multiple commits the commit messages will be concatenated and separated by pipes.
 
-Example: `"${commitMessages} backport for ${baseBranch}"`
+Example: `"{commitMessages} backport for {baseBranch}"`
 
-Default: `"[${baseBranch}] ${commitMessages}"`
+Default: `"[{baseBranch}] {commitMessages}"`
 
 CLI: `--prTitle "My PR Title"`
 
