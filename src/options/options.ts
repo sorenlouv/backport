@@ -40,6 +40,7 @@ function getErrorMessage({
 export function validateOptions({
   accessToken,
   all,
+  apiHostname,
   branchChoices,
   branches,
   gitHostname,
@@ -79,6 +80,7 @@ export function validateOptions({
   return {
     accessToken,
     all,
+    apiHostname,
     branchChoices,
     branches,
     labels,

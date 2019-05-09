@@ -19,6 +19,7 @@ export async function getOptionsFromConfigFiles() {
     all: false,
     labels: [] as string[],
     gitHostname: 'github.com',
+    apiHostname: 'api.github.com',
 
     // options from config files
     ...globalConfig,

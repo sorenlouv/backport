@@ -149,6 +149,7 @@ describe('run through steps', () => {
     await initSteps({
       accessToken: 'myAccessToken',
       all: false,
+      apiHostname: 'api.github.com',
       branches: [],
       branchChoices: [
         { name: '6.x' },

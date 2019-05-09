@@ -119,3 +119,13 @@ Example: `github.my-private-company.com`
 Default: `github.com`
 
 CLI: `--gitHostname "github.my-private-company.com"`
+
+#### `apiHostname`
+
+Hostname for the Github API.
+
+Example: `api.github.my-private-company.com`
+
+Default: `api.github.com`
+
+CLI: `--apiHostname "api.github.my-private-company.com"`

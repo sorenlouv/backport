@@ -19,6 +19,11 @@ export function getOptionsFromCliArgs(
       description: 'List all commits',
       type: 'boolean'
     })
+    .option('apiHostname', {
+      default: configOptions.apiHostname,
+      description: 'Hostname for the Github API',
+      type: 'string'
+    })
     .option('branches', {
       default: [] as string[],
       description: 'Branch(es) to backport to',
@@ -78,6 +83,7 @@ export function getOptionsFromCliArgs(
   return {
     accessToken: cliArgs.accessToken,
     all: cliArgs.all,
+    apiHostname: cliArgs.apiHostname,
     branchChoices: configOptions.branchChoices,
     branches: cliArgs.branches,
     gitHostname: cliArgs.gitHostname,

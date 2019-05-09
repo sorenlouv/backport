@@ -32,6 +32,7 @@ describe('getOptionsFromConfigFiles', () => {
     expect(res).toEqual({
       accessToken: 'myAccessToken',
       all: false,
+      apiHostname: 'api.github.com',
       branchChoices: [
         { checked: false, name: '6.x' },
         { checked: false, name: '6.1' }

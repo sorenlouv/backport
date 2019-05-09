@@ -27,6 +27,6 @@ export async function initSteps(options: BackportOptions) {
     options.username,
     options.labels,
     options.prDescription,
-    options.gitHostname
+    options.apiHostname
   );
 }

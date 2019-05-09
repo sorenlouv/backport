@@ -13,7 +13,7 @@ describe('getCommits', () => {
     const accessToken = 'myAccessToken';
     const author = 'sqren';
     const commitSha = 'myCommitSha';
-    const gitHostname = 'github.com';
+    const apiHostname = 'api.github.com';
     setAccessToken(accessToken);
 
     mock
@@ -42,7 +42,7 @@ describe('getCommits', () => {
       });
 
     expect(
-      await fetchCommitsByAuthor(owner, repoName, author, gitHostname)
+      await fetchCommitsByAuthor(owner, repoName, author, apiHostname)
     ).toEqual([
       {
         message: 'myMessage',
@@ -59,7 +59,7 @@ describe('getCommits', () => {
     const accessToken = 'myAccessToken';
     const author = 'sqren';
     const commitSha = 'myCommitSha';
-    const gitHostname = 'github.com';
+    const apiHostname = 'api.github.com';
     setAccessToken(accessToken);
 
     mock
@@ -82,7 +82,7 @@ describe('getCommits', () => {
       .reply(200, { items: [] });
 
     expect(
-      await fetchCommitsByAuthor(owner, repoName, author, gitHostname)
+      await fetchCommitsByAuthor(owner, repoName, author, apiHostname)
     ).toEqual([
       {
         message: 'myMessage',
@@ -92,19 +92,19 @@ describe('getCommits', () => {
     ]);
   });
 
-  it('allows a custom github url', async () => {
+  it('allows a custom github api hostname', async () => {
     const mock = new MockAdapter(axios);
     const owner = 'elastic';
     const repoName = 'kibana';
     const accessToken = 'myAccessToken';
     const author = 'sqren';
     const commitSha = 'myCommitSha';
-    const gitHostname = 'github.my-company.com';
+    const apiHostname = 'api.github.my-company.com';
     setAccessToken(accessToken);
 
     mock
       .onGet(
-        `https://api.${gitHostname}/repos/${owner}/${repoName}/commits?access_token=${accessToken}&per_page=5&author=${author}`
+        `https://${apiHostname}/repos/${owner}/${repoName}/commits?access_token=${accessToken}&per_page=5&author=${author}`
       )
       .reply(200, [
         {
@@ -117,7 +117,7 @@ describe('getCommits', () => {
 
     mock
       .onGet(
-        `https://api.${gitHostname}/search/issues?q=repo:${owner}/${repoName}+${commitSha}+base:master&access_token=${accessToken}`
+        `https://${apiHostname}/search/issues?q=repo:${owner}/${repoName}+${commitSha}+base:master&access_token=${accessToken}`
       )
       .reply(200, {
         items: [
@@ -128,7 +128,7 @@ describe('getCommits', () => {
       });
 
     expect(
-      await fetchCommitsByAuthor(owner, repoName, author, gitHostname)
+      await fetchCommitsByAuthor(owner, repoName, author, apiHostname)
     ).toEqual([
       {
         message: 'myMessage',

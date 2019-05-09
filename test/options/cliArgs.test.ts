@@ -7,6 +7,7 @@ describe('getOptionsFromCliArgs', () => {
     const configOptions = {
       accessToken: 'myAccessToken',
       all: false,
+      apiHostname: 'api.github.com',
       branchChoices: [],
       gitHostname: 'github.com',
       labels: [],
@@ -38,6 +39,7 @@ describe('getOptionsFromCliArgs', () => {
     expect(res).toEqual({
       accessToken: 'myAccessToken',
       all: true,
+      apiHostname: 'github.com',
       branches: ['6.0', '6.1'],
       branchChoices: [],
       gitHostname: 'github.com',

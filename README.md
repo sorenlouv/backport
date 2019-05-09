@@ -85,6 +85,7 @@ The above commands will start an interactive prompt. You can use the `arrow keys
 | --------------- | ----------------------------------------- | ------------------------ |
 | --accessToken   | Github access token                       | string                   |
 | --all           | Show all commits                          | boolean (default: false) |
+| --apiHostname   | Hostname for the Github API               | string                   |
 | --branch        | Branch to backport to                     | string                   |
 | --gitHostname   | Hostname for Github                       | string                   |
 | --labels        | Pull request labels                       | string                   |
