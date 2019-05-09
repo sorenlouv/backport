@@ -42,29 +42,38 @@ export function deleteRepo({
 function getRemoteUrl({
   owner,
   repoName,
-  accessToken
+  accessToken,
+  githubUrl
 }: {
   owner: string;
   repoName: string;
   accessToken: string;
+  githubUrl: string;
 }) {
-  return `https://${accessToken}@github.com/${owner}/${repoName}.git`;
+  return `https://${accessToken}@${githubUrl}/${owner}/${repoName}.git`;
 }
 
 export function cloneRepo({
   owner,
   repoName,
   accessToken,
-  callback
+  callback,
+  githubUrl
 }: {
   owner: string;
   repoName: string;
   accessToken: string;
   callback: (progress: string) => void;
+  githubUrl: string;
 }) {
   return new Promise((resolve, reject) => {
     const execProcess = childProcess.exec(
-      `git clone ${getRemoteUrl({ accessToken, owner, repoName })} --progress`,
+      `git clone ${getRemoteUrl({
+        accessToken,
+        owner,
+        repoName,
+        githubUrl
+      })} --progress`,
       { cwd: getRepoOwnerPath(owner), maxBuffer: 100 * 1024 * 1024 },
       error => {
         if (error) {
@@ -110,19 +119,22 @@ export async function addRemote({
   owner,
   repoName,
   username,
-  accessToken
+  accessToken,
+  githubUrl
 }: {
   owner: string;
   repoName: string;
   username: string;
   accessToken: string;
+  githubUrl: string;
 }) {
   try {
     await exec(
       `git remote add ${username} ${getRemoteUrl({
         accessToken,
         owner: username,
-        repoName
+        repoName,
+        githubUrl
       })}`,
       {
         cwd: getRepoPath(owner, repoName)

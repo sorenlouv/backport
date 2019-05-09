@@ -26,6 +26,11 @@ export function getOptionsFromCliArgs(
       alias: 'branch',
       string: true // ensure `6.0` is not coerced to `6`
     })
+    .option('githubUrl', {
+      default: configOptions.githubUrl,
+      description: 'Url for github API calls',
+      type: 'string'
+    })
     .option('labels', {
       default: configOptions.labels,
       description: 'Pull request labels',
@@ -75,6 +80,7 @@ export function getOptionsFromCliArgs(
     all: cliArgs.all,
     branchChoices: configOptions.branchChoices,
     branches: cliArgs.branches,
+    githubUrl: cliArgs.githubUrl,
     labels: cliArgs.labels,
     multiple: cliArgs.multiple,
     multipleBranches: cliArgs.multipleBranches || cliArgs.multiple,

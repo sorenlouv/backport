@@ -36,6 +36,7 @@ describe('getOptionsFromConfigFiles', () => {
         { checked: false, name: '6.x' },
         { checked: false, name: '6.1' }
       ],
+      githubUrl: 'github.com',
       labels: [],
       multiple: false,
       multipleBranches: true,

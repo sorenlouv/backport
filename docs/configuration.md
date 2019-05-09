@@ -109,3 +109,13 @@ CLI: `--labels myLabel --labels myOtherLabel`
 Text that will be added to the pull request body.
 
 CLI: `--prDescription "skip-ci"`
+
+#### `githubUrl`
+
+Url that will be used when calling the Github Url.
+
+Example: `github.my-private-company.com`
+
+Default: `github.com`
+
+CLI: `--githubUrl "github.my-private-company.com"`

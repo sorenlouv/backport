@@ -86,6 +86,7 @@ The above commands will start an interactive prompt. You can use the `arrow keys
 | --accessToken   | Github access token                       | string                   |
 | --all           | Show all commits                          | boolean (default: false) |
 | --branch        | Branch to backport to                     | string                   |
+| --githubUrl     | Url for Github API                        | string                   |
 | --labels        | Pull request labels                       | string                   |
 | --multiple      | Backport multiple commits and/or branches | boolean                  |
 | --prDescription | Description to be added to pull request   | string                   |

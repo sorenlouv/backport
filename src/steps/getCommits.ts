@@ -12,7 +12,9 @@ export async function getCommits(options: BackportOptions) {
   const [owner, repoName] = options.upstream.split('/');
 
   if (options.sha) {
-    return [await getCommitBySha(owner, repoName, options.sha)];
+    return [
+      await getCommitBySha(owner, repoName, options.sha, options.githubUrl)
+    ];
   }
 
   const author = options.all ? null : options.username;
@@ -20,18 +22,20 @@ export async function getCommits(options: BackportOptions) {
     owner,
     repoName,
     author,
-    options.multipleCommits
+    options.multipleCommits,
+    options.githubUrl
   );
 }
 
 export async function getCommitBySha(
   owner: string,
   repoName: string,
-  sha: string
+  sha: string,
+  githubUrl: string
 ) {
   const spinner = ora(`Loading commit "${getShortSha(sha)}"`).start();
   try {
-    const commit = await fetchCommitBySha(owner, repoName, sha);
+    const commit = await fetchCommitBySha(owner, repoName, sha, githubUrl);
     spinner.stop();
     return commit;
   } catch (e) {
@@ -44,11 +48,17 @@ async function getCommitsByPrompt(
   owner: string,
   repoName: string,
   author: string | null,
-  multipleCommits: boolean
+  multipleCommits: boolean,
+  githubUrl: string
 ) {
   const spinner = ora('Loading commits...').start();
   try {
-    const commits = await fetchCommitsByAuthor(owner, repoName, author);
+    const commits = await fetchCommitsByAuthor(
+      owner,
+      repoName,
+      author,
+      githubUrl
+    );
     if (isEmpty(commits)) {
       const warningText = author
         ? 'There are no commits by you in this repository'

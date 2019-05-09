@@ -57,7 +57,8 @@ describe('doBackportVersion', () => {
         '6.x',
         'sqren',
         ['backport'],
-        'myPrSuffix'
+        'myPrSuffix',
+        'github.com'
       );
     });
 
@@ -107,7 +108,8 @@ describe('doBackportVersion', () => {
         '6.x',
         'sqren',
         ['backport'],
-        undefined
+        undefined,
+        'github.com'
       );
     });
 
@@ -168,7 +170,8 @@ describe('doBackportVersion', () => {
         '6.x',
         'sqren',
         ['backport'],
-        undefined
+        undefined,
+        'github.com'
       );
 
       return { logSpy, execSpy, promise };

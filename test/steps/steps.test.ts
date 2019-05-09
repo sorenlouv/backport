@@ -157,6 +157,7 @@ describe('run through steps', () => {
         { name: '5.5' },
         { name: '5.4' }
       ],
+      githubUrl: 'github.com',
       labels: [],
       multiple: false,
       multipleBranches: false,
@@ -176,17 +177,23 @@ describe('run through steps', () => {
     expect(github.fetchCommitsByAuthor).toHaveBeenCalledWith(
       'elastic',
       'kibana',
-      'sqren'
+      'sqren',
+      'github.com'
     );
   });
 
   it('createPullRequest should be called with correct args', () => {
-    expect(github.createPullRequest).toHaveBeenCalledWith('elastic', 'kibana', {
-      base: '6.2',
-      body: `Backports the following commits to 6.2:\n - myCommitMessage (#myPullRequestNumber)\n\nmyPrDescription`,
-      head: 'sqren:backport/6.2/pr-myPullRequestNumber',
-      title: '[6.2] myCommitMessage'
-    });
+    expect(github.createPullRequest).toHaveBeenCalledWith(
+      'elastic',
+      'kibana',
+      {
+        base: '6.2',
+        body: `Backports the following commits to 6.2:\n - myCommitMessage (#myPullRequestNumber)\n\nmyPrDescription`,
+        head: 'sqren:backport/6.2/pr-myPullRequestNumber',
+        title: '[6.2] myCommitMessage'
+      },
+      'github.com'
+    );
   });
 
   it('prompt calls should match snapshot', () => {
