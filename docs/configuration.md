@@ -112,7 +112,7 @@ CLI: `--prDescription "skip-ci"`
 
 #### `githubUrl`
 
-Url that will be used when calling the Github Url.
+Url that will be used when calling the Github API.
 
 Example: `github.my-private-company.com`
 
