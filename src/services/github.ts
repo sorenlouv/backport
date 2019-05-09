@@ -187,7 +187,7 @@ export async function verifyAccessToken(
         throw new HandledError(
           `Please check your access token and make sure it is valid`
         );
-      default:
+      case 404:
         if (grantedScopes === requiredScopes) {
           throw new HandledError(
             `The repository "${owner}/${repoName}" doesn't exist`
@@ -197,6 +197,8 @@ export async function verifyAccessToken(
         throw new HandledError(
           `You do not have access to the repository "${owner}/${repoName}". Please make sure your access token has the required scopes.\n\nRequired scopes: ${requiredScopes}\nAccess token scopes: ${grantedScopes}`
         );
+      default:
+        throw e.message;
     }
   }
 }
