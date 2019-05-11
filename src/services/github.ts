@@ -23,7 +23,6 @@ export function getShortSha(sha: string) {
   return sha.slice(0, 7);
 }
 
-let accessToken: string;
 function getCommitMessage(message: string) {
   return message.split('\n')[0].trim();
 }
@@ -31,12 +30,20 @@ function getCommitMessage(message: string) {
 export async function fetchCommitsByAuthor(
   options: BackportOptions
 ): Promise<Commit[]> {
+  const {
+    accessToken,
+    all,
+    apiHostname,
+    repoName,
+    repoOwner,
+    username
+  } = options;
+
   const query: GithubQuery = {
     access_token: accessToken,
     per_page: 10
   };
 
-  const { all, apiHostname, repoName, repoOwner, username } = options;
   if (!all) {
     query.author = username;
     query.per_page = 5;
@@ -65,7 +72,7 @@ export async function fetchCommitsByAuthor(
 export async function fetchCommitBySha(
   options: BackportOptions & { sha: string }
 ): Promise<Commit> {
-  const { apiHostname, repoName, repoOwner, sha } = options;
+  const { apiHostname, repoName, repoOwner, sha, accessToken } = options;
   try {
     const res: AxiosResponse<GithubSearch<GithubCommit>> = await axios(
       `https://${apiHostname}/search/commits?q=hash:${sha}%20repo:${repoOwner}/${repoName}&per_page=1&access_token=${accessToken}`,
@@ -95,7 +102,7 @@ export async function fetchCommitBySha(
 }
 
 async function fetchPullRequestNumberBySha(
-  { apiHostname, repoName, repoOwner }: BackportOptions,
+  { apiHostname, repoName, repoOwner, accessToken }: BackportOptions,
   commitSha: string
 ): Promise<number> {
   try {
@@ -109,7 +116,7 @@ async function fetchPullRequestNumberBySha(
 }
 
 export async function createPullRequest(
-  { apiHostname, repoName, repoOwner }: BackportOptions,
+  { apiHostname, repoName, repoOwner, accessToken }: BackportOptions,
   payload: ReturnType<typeof getPullRequestPayload>
 ) {
   try {
@@ -127,7 +134,7 @@ export async function createPullRequest(
 }
 
 export async function addLabelsToPullRequest(
-  { apiHostname, repoName, repoOwner, labels }: BackportOptions,
+  { apiHostname, repoName, repoOwner, labels, accessToken }: BackportOptions,
   pullNumber: number
 ) {
   try {
@@ -179,10 +186,6 @@ export async function verifyAccessToken({
         throw e.message;
     }
   }
-}
-
-export function setAccessToken(token: string) {
-  accessToken = token;
 }
 
 function getError(e: GithubApiError) {
