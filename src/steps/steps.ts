@@ -6,34 +6,12 @@ import { getBranches } from './getBranches';
 import { maybeSetupRepo } from './maybeSetupRepo';
 
 export async function initSteps(options: BackportOptions) {
-  const [owner, repoName] = options.upstream.split('/');
-  await verifyAccessToken(
-    owner,
-    repoName,
-    options.accessToken,
-    options.apiHostname
-  );
+  await verifyAccessToken(options);
   setAccessToken(options.accessToken);
 
   const commits = await getCommits(options);
   const branches = await getBranches(options);
 
-  await maybeSetupRepo({
-    owner,
-    repoName,
-    username: options.username,
-    accessToken: options.accessToken,
-    gitHostname: options.gitHostname
-  });
-  await doBackportVersions(
-    owner,
-    repoName,
-    commits,
-    branches,
-    options.username,
-    options.labels,
-    options.prTitle,
-    options.prDescription,
-    options.apiHostname
-  );
+  await maybeSetupRepo(options);
+  await doBackportVersions(options, commits, branches);
 }

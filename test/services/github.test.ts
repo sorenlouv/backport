@@ -4,21 +4,22 @@ import {
 } from '../../src/services/github';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { BackportOptions } from '../../src/options/options';
 
 describe('getCommits', () => {
   it('should return commits with pull request', async () => {
     const mock = new MockAdapter(axios);
-    const owner = 'elastic';
+    const repoOwner = 'elastic';
     const repoName = 'kibana';
     const accessToken = 'myAccessToken';
-    const author = 'sqren';
+    const username = 'sqren';
     const commitSha = 'myCommitSha';
     const apiHostname = 'api.github.com';
     setAccessToken(accessToken);
 
     mock
       .onGet(
-        `https://api.github.com/repos/${owner}/${repoName}/commits?access_token=${accessToken}&per_page=5&author=${author}`
+        `https://api.github.com/repos/${repoOwner}/${repoName}/commits?access_token=${accessToken}&per_page=5&author=${username}`
       )
       .reply(200, [
         {
@@ -31,7 +32,7 @@ describe('getCommits', () => {
 
     mock
       .onGet(
-        `https://api.github.com/search/issues?q=repo:${owner}/${repoName}+${commitSha}+base:master&access_token=${accessToken}`
+        `https://api.github.com/search/issues?q=repo:${repoOwner}/${repoName}+${commitSha}+base:master&access_token=${accessToken}`
       )
       .reply(200, {
         items: [
@@ -42,7 +43,12 @@ describe('getCommits', () => {
       });
 
     expect(
-      await fetchCommitsByAuthor(owner, repoName, author, apiHostname)
+      await fetchCommitsByAuthor({
+        repoOwner,
+        repoName,
+        username,
+        apiHostname
+      } as BackportOptions)
     ).toEqual([
       {
         message: 'myMessage',
@@ -54,17 +60,17 @@ describe('getCommits', () => {
 
   it('should return commits without pull request', async () => {
     const mock = new MockAdapter(axios);
-    const owner = 'elastic';
+    const repoOwner = 'elastic';
     const repoName = 'kibana';
     const accessToken = 'myAccessToken';
-    const author = 'sqren';
+    const username = 'sqren';
     const commitSha = 'myCommitSha';
     const apiHostname = 'api.github.com';
     setAccessToken(accessToken);
 
     mock
       .onGet(
-        `https://api.github.com/repos/${owner}/${repoName}/commits?access_token=${accessToken}&per_page=5&author=${author}`
+        `https://api.github.com/repos/${repoOwner}/${repoName}/commits?access_token=${accessToken}&per_page=5&author=${username}`
       )
       .reply(200, [
         {
@@ -77,12 +83,17 @@ describe('getCommits', () => {
 
     mock
       .onGet(
-        `https://api.github.com/search/issues?q=repo:${owner}/${repoName}+${commitSha}+base:master&access_token=${accessToken}`
+        `https://api.github.com/search/issues?q=repo:${repoOwner}/${repoName}+${commitSha}+base:master&access_token=${accessToken}`
       )
       .reply(200, { items: [] });
 
     expect(
-      await fetchCommitsByAuthor(owner, repoName, author, apiHostname)
+      await fetchCommitsByAuthor({
+        repoOwner,
+        repoName,
+        username,
+        apiHostname
+      } as BackportOptions)
     ).toEqual([
       {
         message: 'myMessage',
@@ -94,17 +105,17 @@ describe('getCommits', () => {
 
   it('allows a custom github api hostname', async () => {
     const mock = new MockAdapter(axios);
-    const owner = 'elastic';
+    const repoOwner = 'elastic';
     const repoName = 'kibana';
     const accessToken = 'myAccessToken';
-    const author = 'sqren';
+    const username = 'sqren';
     const commitSha = 'myCommitSha';
     const apiHostname = 'api.github.my-company.com';
     setAccessToken(accessToken);
 
     mock
       .onGet(
-        `https://${apiHostname}/repos/${owner}/${repoName}/commits?access_token=${accessToken}&per_page=5&author=${author}`
+        `https://${apiHostname}/repos/${repoOwner}/${repoName}/commits?access_token=${accessToken}&per_page=5&author=${username}`
       )
       .reply(200, [
         {
@@ -117,7 +128,7 @@ describe('getCommits', () => {
 
     mock
       .onGet(
-        `https://${apiHostname}/search/issues?q=repo:${owner}/${repoName}+${commitSha}+base:master&access_token=${accessToken}`
+        `https://${apiHostname}/search/issues?q=repo:${repoOwner}/${repoName}+${commitSha}+base:master&access_token=${accessToken}`
       )
       .reply(200, {
         items: [
@@ -128,7 +139,12 @@ describe('getCommits', () => {
       });
 
     expect(
-      await fetchCommitsByAuthor(owner, repoName, author, apiHostname)
+      await fetchCommitsByAuthor({
+        repoOwner,
+        repoName,
+        apiHostname,
+        username
+      } as BackportOptions)
     ).toEqual([
       {
         message: 'myMessage',
