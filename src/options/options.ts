@@ -38,7 +38,10 @@ function getErrorMessage({
   return `Invalid option "${field}"\n\nYou can add it with either:\n - ${configFileMessage}\n - CLI: "--${field} ${exampleValue}"`;
 }
 
-export function validateRequiredOptions(options: OptionsFromCliArgs) {
+export function validateRequiredOptions({
+  upstream = '',
+  ...options
+}: OptionsFromCliArgs) {
   if (!options.accessToken) {
     throw new HandledError(
       getErrorMessage({ field: 'accessToken', exampleValue: 'myAccessToken' })
@@ -51,7 +54,7 @@ export function validateRequiredOptions(options: OptionsFromCliArgs) {
     );
   }
 
-  const [repoOwner, repoName] = (options.upstream || '').split('/');
+  const [repoOwner, repoName] = upstream.split('/');
   if (!repoOwner || !repoName) {
     throw new HandledError(
       getErrorMessage({ field: 'upstream', exampleValue: 'elastic/kibana' })
