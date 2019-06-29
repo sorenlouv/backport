@@ -1,9 +1,9 @@
 import * as rpc from '../../../src/services/rpc';
+import { PromiseReturnType } from '../../../src/types/commons';
 import {
   getGlobalConfig,
   maybeCreateGlobalConfig
 } from '../../../src/options/config/globalConfig';
-import { PromiseReturnType } from '../../../src/types/commons';
 
 describe('config', () => {
   afterEach(() => jest.restoreAllMocks());
@@ -12,7 +12,7 @@ describe('config', () => {
     let res: PromiseReturnType<typeof getGlobalConfig>;
     beforeEach(async () => {
       jest.spyOn(rpc, 'chmod').mockResolvedValue();
-      jest.spyOn(rpc, 'mkdirp').mockResolvedValue();
+      jest.spyOn(rpc, 'mkdirp').mockResolvedValue(undefined);
       jest.spyOn(rpc, 'writeFile').mockResolvedValue();
       jest.spyOn(rpc, 'readFile').mockResolvedValue(
         JSON.stringify({

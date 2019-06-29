@@ -1,24 +1,14 @@
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
-import inquirer from 'inquirer';
 import * as childProcess from 'child_process';
-import { commitsMock } from '../mocks/commits';
-import { initSteps } from '../../src/steps/steps';
-import * as github from '../../src/services/github';
+import MockAdapter from 'axios-mock-adapter';
+import axios from 'axios';
+import inquirer from 'inquirer';
+import * as createPullRequest from '../../src/services/github/createPullRequest';
+import * as fetchCommitsByAuthor from '../../src/services/github/fetchCommitsByAuthor';
+import * as gqlRequest from '../../src/services/github/gqlRequest';
 import * as rpc from '../../src/services/rpc';
 import { BackportOptions } from '../../src/options/options';
-
-function mockGetPullRequest(
-  axiosMock: MockAdapter,
-  { repoName, repoOwner, accessToken }: BackportOptions,
-  commitSha: string
-) {
-  return axiosMock
-    .onGet(
-      `https://api.github.com/search/issues?q=repo:${repoOwner}/${repoName}+${commitSha}+base:master&access_token=${accessToken}`
-    )
-    .reply(200, { items: [{ number: `Pull number for ${commitSha}` }] });
-}
+import { commitsWithPullRequestsMock } from '../services/github/mocks/commitsByAuthorMock';
+import { initSteps } from '../../src/steps/steps';
 
 function mockVerifyAccessToken(
   axiosMock: MockAdapter,
@@ -31,16 +21,11 @@ function mockVerifyAccessToken(
     .reply(200);
 }
 
-function mockGetCommits(
-  axiosMock: MockAdapter,
-  { repoName, repoOwner, accessToken, username }: BackportOptions,
-  res: any
-) {
-  return axiosMock
-    .onGet(
-      `https://api.github.com/repos/${repoOwner}/${repoName}/commits?access_token=${accessToken}&per_page=5&author=${username}`
-    )
-    .reply(200, res);
+function mockGetCommitsByAuthor() {
+  spyOn(gqlRequest, 'gqlRequest').and.returnValues(
+    { user: { id: 'myUserId' } },
+    commitsWithPullRequestsMock
+  );
 }
 
 function mockCreatePullRequest(
@@ -58,7 +43,7 @@ function mockCreatePullRequest(
 describe('run through steps', () => {
   let axiosMock: MockAdapter;
   let execMock: jest.SpyInstance;
-  let inquirerPromptMock: jest.Mock;
+  let inquirerPromptMock: jest.SpyInstance;
 
   afterEach(() => {
     inquirerPromptMock.mockClear();
@@ -66,10 +51,11 @@ describe('run through steps', () => {
   });
 
   beforeEach(async () => {
-    const options = {
+    const options: BackportOptions = {
       accessToken: 'myAccessToken',
       all: false,
       apiHostname: 'api.github.com',
+      author: undefined,
       branches: [],
       branchChoices: [
         { name: '6.x' },
@@ -78,13 +64,14 @@ describe('run through steps', () => {
         { name: '5.5' },
         { name: '5.4' }
       ],
+      commitsCount: 10,
       gitHostname: 'github.com',
       labels: [],
       multiple: false,
       multipleBranches: false,
       multipleCommits: false,
       prDescription: 'myPrDescription',
-      prTitle: 'myPrTitle',
+      prTitle: 'myPrTitle {baseBranch} {commitMessages}',
       repoName: 'kibana',
       repoOwner: 'elastic',
       sha: undefined,
@@ -96,26 +83,22 @@ describe('run through steps', () => {
     jest.spyOn(rpc, 'writeFile').mockResolvedValue(undefined);
     jest.spyOn(rpc, 'mkdirp').mockResolvedValue(undefined);
 
-    jest.spyOn(github, 'fetchCommitsByAuthor');
-    jest.spyOn(github, 'createPullRequest');
+    jest.spyOn(fetchCommitsByAuthor, 'fetchCommitsByAuthor');
+    jest.spyOn(createPullRequest, 'createPullRequest');
 
     inquirerPromptMock = jest
       .spyOn(inquirer, 'prompt')
-      .mockResolvedValueOnce({
-        promptResult: {
-          message: 'myCommitMessage',
-          sha: 'myCommitSha',
-          pullNumber: 'myPullRequestNumber'
-        }
+      // @ts-ignore
+      .mockImplementationOnce(async (args: any) => {
+        return { promptResult: args[0].choices[0].value };
       })
-      .mockResolvedValueOnce({ promptResult: '6.2' });
+      .mockImplementationOnce(async (args: any) => {
+        return { promptResult: args[0].choices[0].name };
+      });
 
     axiosMock = new MockAdapter(axios);
     mockVerifyAccessToken(axiosMock, options);
-    mockGetCommits(axiosMock, options, commitsMock);
-    mockGetPullRequest(axiosMock, options, 'commitSha');
-    mockGetPullRequest(axiosMock, options, 'commitSha2');
-    mockGetPullRequest(axiosMock, options, 'commitSha3');
+    mockGetCommitsByAuthor();
     mockCreatePullRequest(axiosMock, options, {
       res: { html_url: 'myHtmlUrl' }
     });
@@ -128,7 +111,7 @@ describe('run through steps', () => {
   });
 
   it('getCommit should be called with correct args', () => {
-    expect(github.fetchCommitsByAuthor).toHaveBeenCalledWith(
+    expect(fetchCommitsByAuthor.fetchCommitsByAuthor).toHaveBeenCalledWith(
       expect.objectContaining({
         repoName: 'kibana',
         repoOwner: 'elastic',
@@ -139,17 +122,17 @@ describe('run through steps', () => {
   });
 
   it('createPullRequest should be called with correct args', () => {
-    expect(github.createPullRequest).toHaveBeenCalledWith(
+    expect(createPullRequest.createPullRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         repoName: 'kibana',
         repoOwner: 'elastic',
         apiHostname: 'api.github.com'
       }),
       {
-        base: '6.2',
-        body: `Backports the following commits to 6.2:\n - myCommitMessage (#myPullRequestNumber)\n\nmyPrDescription`,
-        head: 'sqren:backport/6.2/pr-myPullRequestNumber',
-        title: 'myPrTitle'
+        base: '6.x',
+        body: `Backports the following commits to 6.x:\n - [APM] Some long git commit message (#1337)\n\nmyPrDescription`,
+        head: 'sqren:backport/6.x/pr-1337',
+        title: 'myPrTitle 6.x [APM] Some long git commit message (#1337)'
       }
     );
   });
@@ -160,7 +143,7 @@ describe('run through steps', () => {
   });
 
   it('exec should be called with correct args', () => {
-    expect(execMock).toHaveBeenCalledTimes(9);
+    expect(execMock).toHaveBeenCalledTimes(10);
     expect(execMock.mock.calls).toMatchSnapshot();
   });
 });

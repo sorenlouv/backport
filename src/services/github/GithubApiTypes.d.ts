@@ -1,11 +1,5 @@
 import { AxiosError, AxiosResponse } from 'axios';
 
-export interface GithubQuery {
-  access_token: string;
-  per_page: number;
-  author?: string;
-}
-
 export interface GithubIssue {
   html_url: string;
   number: number;

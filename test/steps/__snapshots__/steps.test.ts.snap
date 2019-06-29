@@ -11,6 +11,14 @@ Array [
     [Function],
   ],
   Array [
+    "git remote rm origin",
+    Object {
+      "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
+      "maxBuffer": 104857600,
+    },
+    [Function],
+  ],
+  Array [
     "git remote rm sqren",
     Object {
       "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
@@ -43,7 +51,7 @@ Array [
     [Function],
   ],
   Array [
-    "git reset --hard && git clean -d --force && git checkout master && git pull origin master",
+    "git reset --hard && git clean -d --force && git fetch elastic 6.x && git checkout -B backport/6.x/pr-1337 elastic/6.x --no-track",
     Object {
       "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
       "maxBuffer": 104857600,
@@ -51,7 +59,7 @@ Array [
     [Function],
   ],
   Array [
-    "git fetch origin 6.2 && git branch backport/6.2/pr-myPullRequestNumber origin/6.2 --force && git checkout backport/6.2/pr-myPullRequestNumber ",
+    "git fetch elastic master:master --force && git cherry-pick myCommitSha",
     Object {
       "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
       "maxBuffer": 104857600,
@@ -59,7 +67,7 @@ Array [
     [Function],
   ],
   Array [
-    "git cherry-pick myCommitSha",
+    "git push sqren backport/6.x/pr-1337:backport/6.x/pr-1337 --force",
     Object {
       "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
       "maxBuffer": 104857600,
@@ -67,7 +75,7 @@ Array [
     [Function],
   ],
   Array [
-    "git push sqren backport/6.2/pr-myPullRequestNumber:backport/6.2/pr-myPullRequestNumber --force",
+    "git checkout master && git branch -D backport/6.x/pr-1337",
     Object {
       "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
       "maxBuffer": 104857600,
@@ -84,30 +92,56 @@ Array [
       Object {
         "choices": Array [
           Object {
-            "name": "1. Update readme: Make ui-framework url a link",
-            "short": "Update readme: Make ui-framework url a link",
+            "name": "[90m1.[39m [APM] Some long git commit message (#1337) [32m7.x[39m, [32m7.2[39m",
+            "short": "#1337",
             "value": Object {
-              "message": "Update readme: Make ui-framework url a link",
-              "pullNumber": "Pull number for commitSha",
-              "sha": "commitSha",
+              "existingBackports": Array [
+                Object {
+                  "branch": "7.x",
+                  "state": "MERGED",
+                },
+                Object {
+                  "branch": "7.2",
+                  "state": "MERGED",
+                },
+              ],
+              "message": "[APM] Some long git commit message (#1337)",
+              "pullNumber": 1337,
+              "sha": "myCommitSha",
             },
           },
           Object {
-            "name": "2. Update react 15.6.1 (#13672)",
-            "short": "Update react 15.6.1 (#13672)",
+            "name": "[90m2.[39m [APM] Refactor ESClient to allow other operations than \`search\` (#37334) [32m7.x[39m",
+            "short": "#37334",
             "value": Object {
-              "message": "Update react 15.6.1 (#13672)",
-              "pullNumber": "Pull number for commitSha2",
-              "sha": "commitSha2",
+              "existingBackports": Array [
+                Object {
+                  "branch": "7.x",
+                  "state": "MERGED",
+                },
+              ],
+              "message": "[APM] Refactor ESClient to allow other operations than \`search\` (#37334)",
+              "pullNumber": 37334,
+              "sha": "myGitHash2",
             },
           },
           Object {
-            "name": "3. Mock out static files when running in Jest (#13315)",
-            "short": "Mock out static files when running in Jest (#13315)",
+            "name": "[90m3.[39m [APM] Fix issue with missing agentName on metrics page (#37210) [32m7.x[39m, [32m7.2[39m",
+            "short": "#37210",
             "value": Object {
-              "message": "Mock out static files when running in Jest (#13315)",
-              "pullNumber": "Pull number for commitSha3",
-              "sha": "commitSha3",
+              "existingBackports": Array [
+                Object {
+                  "branch": "7.x",
+                  "state": "MERGED",
+                },
+                Object {
+                  "branch": "7.2",
+                  "state": "MERGED",
+                },
+              ],
+              "message": "[APM] Fix issue with missing agentName on metrics page (#37210)",
+              "pullNumber": 37210,
+              "sha": "myGitHash3",
             },
           },
         ],
@@ -150,84 +184,7 @@ Array [
 exports[`run through steps should make correct requests 1`] = `
 Object {
   "delete": Array [],
-  "get": Array [
-    Object {
-      "data": undefined,
-      "headers": Object {
-        "Accept": "application/json, text/plain, */*",
-      },
-      "maxContentLength": -1,
-      "method": "get",
-      "timeout": 0,
-      "transformRequest": Object {
-        "0": [Function],
-      },
-      "transformResponse": Object {
-        "0": [Function],
-      },
-      "url": "https://api.github.com/repos/elastic/kibana/commits?access_token=myAccessToken&per_page=5&author=sqren",
-      "validateStatus": [Function],
-      "xsrfCookieName": "XSRF-TOKEN",
-      "xsrfHeaderName": "X-XSRF-TOKEN",
-    },
-    Object {
-      "data": undefined,
-      "headers": Object {
-        "Accept": "application/json, text/plain, */*",
-      },
-      "maxContentLength": -1,
-      "method": "get",
-      "timeout": 0,
-      "transformRequest": Object {
-        "0": [Function],
-      },
-      "transformResponse": Object {
-        "0": [Function],
-      },
-      "url": "https://api.github.com/search/issues?q=repo:elastic/kibana+commitSha+base:master&access_token=myAccessToken",
-      "validateStatus": [Function],
-      "xsrfCookieName": "XSRF-TOKEN",
-      "xsrfHeaderName": "X-XSRF-TOKEN",
-    },
-    Object {
-      "data": undefined,
-      "headers": Object {
-        "Accept": "application/json, text/plain, */*",
-      },
-      "maxContentLength": -1,
-      "method": "get",
-      "timeout": 0,
-      "transformRequest": Object {
-        "0": [Function],
-      },
-      "transformResponse": Object {
-        "0": [Function],
-      },
-      "url": "https://api.github.com/search/issues?q=repo:elastic/kibana+commitSha2+base:master&access_token=myAccessToken",
-      "validateStatus": [Function],
-      "xsrfCookieName": "XSRF-TOKEN",
-      "xsrfHeaderName": "X-XSRF-TOKEN",
-    },
-    Object {
-      "data": undefined,
-      "headers": Object {
-        "Accept": "application/json, text/plain, */*",
-      },
-      "maxContentLength": -1,
-      "method": "get",
-      "timeout": 0,
-      "transformRequest": Object {
-        "0": [Function],
-      },
-      "transformResponse": Object {
-        "0": [Function],
-      },
-      "url": "https://api.github.com/search/issues?q=repo:elastic/kibana+commitSha3+base:master&access_token=myAccessToken",
-      "validateStatus": [Function],
-      "xsrfCookieName": "XSRF-TOKEN",
-      "xsrfHeaderName": "X-XSRF-TOKEN",
-    },
-  ],
+  "get": Array [],
   "head": Array [
     Object {
       "data": undefined,
@@ -254,7 +211,7 @@ Object {
   "patch": Array [],
   "post": Array [
     Object {
-      "data": "{\\"title\\":\\"myPrTitle\\",\\"body\\":\\"Backports the following commits to 6.2:\\\\n - myCommitMessage (#myPullRequestNumber)\\\\n\\\\nmyPrDescription\\",\\"head\\":\\"sqren:backport/6.2/pr-myPullRequestNumber\\",\\"base\\":\\"6.2\\"}",
+      "data": "{\\"title\\":\\"myPrTitle 6.x [APM] Some long git commit message (#1337)\\",\\"body\\":\\"Backports the following commits to 6.x:\\\\n - [APM] Some long git commit message (#1337)\\\\n\\\\nmyPrDescription\\",\\"head\\":\\"sqren:backport/6.x/pr-1337\\",\\"base\\":\\"6.x\\"}",
       "headers": Object {
         "Accept": "application/json, text/plain, */*",
         "Content-Type": "application/json;charset=utf-8",

@@ -11,7 +11,7 @@ export const commitMock = {
       email: 'noreply@github.com',
       date: '2017-11-28T18:44:33Z'
     },
-    message: '[Chrome] Bootstrap Angular into document.body (#15158)',
+    message: '[Chrome] Bootstrap Angular into document.body',
     tree: {
       sha: 'ce129055d52748ed4d931cbc1591d984d71ec04f',
       url:
@@ -25,7 +25,7 @@ export const commitMock = {
       signature:
         '-----BEGIN PGP SIGNATURE-----\n\nwsBcBAABCAAQBQJaHa6RCRBK7hj4Ov3rIwAAdHIIAKCbJdxH0Rvxt7oY5hIHFbpI\nFLFKyvzssgIDULgWzqIcc839ChnQuJOtCvobSeGCS3OMcxG+D0DKfn0MAOVGMyfD\n3vWYfkwE7asq2wKPPAsJ8tXNFQ4QLdCh9M24VyZxZwL49si2tZlLwN7vbWAdLgrc\n8MP4YWw7s7Y3Bw0Sm13kDMw07jUWJJd/PgU+cYs3EU+nkjGuz5V85U6w6qavdhqM\n1tQ5iv3q6AyzUDBm4LRX0t89STrCZpt3lG6jhUsqQscGKGBCxhks3zra4DClJIeK\nWoZbSiLcuKgU81KJyF2Wq/i7XMvhv1UQdTu3gqZOHpZEwNjaMaqGoUVs8bu0w+Q=\n=EWOy\n-----END PGP SIGNATURE-----\n',
       payload:
-        'tree ce129055d52748ed4d931cbc1591d984d71ec04f\nparent b81fd782c7a63bc231b4678aa4e685c2025fa302\nauthor Søren Louv-Jansen <sorenlouv@gmail.com> 1511894673 +0100\ncommitter GitHub <noreply@github.com> 1511894673 +0100\n\n[Chrome] Bootstrap Angular into document.body (#15158)\n\n'
+        'tree ce129055d52748ed4d931cbc1591d984d71ec04f\nparent b81fd782c7a63bc231b4678aa4e685c2025fa302\nauthor Søren Louv-Jansen <sorenlouv@gmail.com> 1511894673 +0100\ncommitter GitHub <noreply@github.com> 1511894673 +0100\n\n[Chrome] Bootstrap Angular into document.body\n\n'
     }
   },
   url: 'https://api.github.com/repos/elastic/kibana/commits/myCommitSha',

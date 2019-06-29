@@ -1,11 +1,14 @@
+import { OptionsFromCliArgs } from '../../src/options/cliArgs';
 import { validateRequiredOptions } from '../../src/options/options';
 
-const validOptions = {
+const validOptions: OptionsFromCliArgs = {
   accessToken: 'myAccessToken',
   all: false,
   apiHostname: 'api.github.com',
+  author: undefined,
   branchChoices: [],
   branches: ['branchA'],
+  commitsCount: 10,
   gitHostname: 'github.com',
   labels: [],
   multiple: false,

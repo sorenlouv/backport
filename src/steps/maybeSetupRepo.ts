@@ -1,14 +1,14 @@
 import {
-  repoExists,
-  deleteRepo,
-  cloneRepo,
   addRemote,
-  deleteRemote
+  cloneRepo,
+  deleteRemote,
+  deleteRepo,
+  repoExists
 } from '../services/git';
 import ora = require('ora');
-import { mkdirp } from '../services/rpc';
-import { getRepoOwnerPath } from '../services/env';
 import { BackportOptions } from '../options/options';
+import { getRepoOwnerPath } from '../services/env';
+import { mkdirp } from '../services/rpc';
 
 export async function maybeSetupRepo(options: BackportOptions) {
   const isAlreadyCloned = await repoExists(options);
@@ -24,6 +24,7 @@ export async function maybeSetupRepo(options: BackportOptions) {
       await cloneRepo(options, (progress: string) => {
         spinner.text = `${progress}% ${spinnerCloneText}`;
       });
+      await deleteRemote(options, 'origin');
       spinner.succeed(`100% ${spinnerCloneText}`);
     } catch (e) {
       spinner.fail();

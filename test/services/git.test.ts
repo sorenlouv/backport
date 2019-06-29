@@ -1,6 +1,6 @@
-import { addRemote } from '../../src/services/git';
 import * as rpc from '../../src/services/rpc';
 import { BackportOptions } from '../../src/options/options';
+import { addRemote } from '../../src/services/git';
 
 describe('addRemote', () => {
   it('add correct origin remote', async () => {

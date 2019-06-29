@@ -1,9 +1,9 @@
 import childProcess from 'child_process';
 import rimraf from 'rimraf';
-import { exec, stat } from './rpc';
-import { HandledError } from './HandledError';
-import { getRepoPath, getRepoOwnerPath } from './env';
 import { BackportOptions } from '../options/options';
+import { HandledError } from './HandledError';
+import { exec, stat } from './rpc';
+import { getRepoOwnerPath, getRepoPath } from './env';
 
 async function folderExists(path: string): Promise<boolean> {
   try {
@@ -87,9 +87,7 @@ export async function deleteRemote(
 export async function addRemote(options: BackportOptions, remoteName: string) {
   try {
     await exec(
-      `git remote add ${remoteName} https://${options.accessToken}@${
-        options.gitHostname
-      }/${remoteName}/${options.repoName}.git`,
+      `git remote add ${remoteName} https://${options.accessToken}@${options.gitHostname}/${remoteName}/${options.repoName}.git`,
       {
         cwd: getRepoPath(options)
       }
@@ -101,9 +99,12 @@ export async function addRemote(options: BackportOptions, remoteName: string) {
 }
 
 export function cherrypick(options: BackportOptions, commitSha: string) {
-  return exec(`git cherry-pick ${commitSha}`, {
-    cwd: getRepoPath(options)
-  });
+  return exec(
+    `git fetch ${options.repoOwner} master:master --force && git cherry-pick ${commitSha}`,
+    {
+      cwd: getRepoPath(options)
+    }
+  );
 }
 
 export async function isIndexDirty(options: BackportOptions) {
@@ -117,14 +118,14 @@ export async function isIndexDirty(options: BackportOptions) {
   }
 }
 
-export async function createAndCheckoutBranch(
+export async function createFeatureBranch(
   options: BackportOptions,
   baseBranch: string,
   featureBranch: string
 ) {
   try {
     return await exec(
-      `git fetch origin ${baseBranch} && git branch ${featureBranch} origin/${baseBranch} --force && git checkout ${featureBranch} `,
+      `git reset --hard && git clean -d --force && git fetch ${options.repoOwner} ${baseBranch} && git checkout -B ${featureBranch} ${options.repoOwner}/${baseBranch} --no-track`,
       {
         cwd: getRepoPath(options)
       }
@@ -142,18 +143,21 @@ export async function createAndCheckoutBranch(
   }
 }
 
-export function push(options: BackportOptions, featureBranch: string) {
-  return exec(
-    `git push ${options.username} ${featureBranch}:${featureBranch} --force`,
-    {
-      cwd: getRepoPath(options)
-    }
-  );
+export function deleteFeatureBranch(
+  options: BackportOptions,
+  featureBranch: string
+) {
+  return exec(`git checkout master && git branch -D ${featureBranch}`, {
+    cwd: getRepoPath(options)
+  });
 }
 
-export async function resetAndPullMaster(options: BackportOptions) {
+export function pushFeatureBranch(
+  options: BackportOptions,
+  featureBranch: string
+) {
   return exec(
-    `git reset --hard && git clean -d --force && git checkout master && git pull origin master`,
+    `git push ${options.username} ${featureBranch}:${featureBranch} --force`,
     {
       cwd: getRepoPath(options)
     }

@@ -1,5 +1,5 @@
-import { getBranches } from '../../src/steps/getBranches';
 import * as prompts from '../../src/services/prompts';
+import { getBranches } from '../../src/steps/getBranches';
 
 describe('getBranches', () => {
   let promptSpy: ReturnType<typeof spyOn>;

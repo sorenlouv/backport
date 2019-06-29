@@ -1,7 +1,7 @@
 import rimraf from 'rimraf';
 import * as rpc from '../../src/services/rpc';
-import { maybeSetupRepo } from '../../src/steps/maybeSetupRepo';
 import { BackportOptions } from '../../src/options/options';
+import { maybeSetupRepo } from '../../src/steps/maybeSetupRepo';
 
 describe('maybeSetupRepo', () => {
   it('should delete repo if an error occurs', async () => {

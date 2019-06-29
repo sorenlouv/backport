@@ -1,14 +1,14 @@
-import { commitMock } from '../mocks/commit';
 import axios from 'axios';
-import nock from 'nock';
 import httpAdapter from 'axios/lib/adapters/http';
+import nock from 'nock';
 import { getCommitBySha } from '../../src/steps/getCommits';
 import { BackportOptions } from '../../src/options/options';
+import { commitMock } from './commitMock';
 
 axios.defaults.adapter = httpAdapter;
 
 describe('getCommitBySha', () => {
-  it('should return a single commit', async () => {
+  it('should return a single commit without PR', async () => {
     nock('https://api.github.com')
       .get(`/search/commits`)
       .query(true)
@@ -23,14 +23,14 @@ describe('getCommitBySha', () => {
         items: []
       });
 
-    const commits = await getCommitBySha({
+    const commit = await getCommitBySha({
       repoOwner: 'elastic',
       repoName: 'kibana',
       sha: 'myCommitSha',
       apiHostname: 'api.github.com'
     } as BackportOptions & { sha: string });
-    expect(commits).toEqual({
-      message: '[Chrome] Bootstrap Angular into document.body (#15158)',
+    expect(commit).toEqual({
+      message: '[Chrome] Bootstrap Angular into document.body (myCommit)',
       sha: 'myCommitSha',
       pullNumber: undefined
     });
@@ -51,7 +51,7 @@ describe('getCommitBySha', () => {
         sha: 'myCommitSha',
         apiHostname: 'api.github.com'
       } as BackportOptions & { sha: string })
-    ).rejects.toThrowError('No commit found for SHA: myCommitSha');
+    ).rejects.toThrowError('No commit found on master with sha "myCommitSha"');
   });
 
   it('should add PR number if available', async () => {
@@ -77,7 +77,7 @@ describe('getCommitBySha', () => {
         apiHostname: 'api.github.com'
       } as BackportOptions & { sha: string })
     ).toEqual({
-      message: '[Chrome] Bootstrap Angular into document.body (#15158)',
+      message: '[Chrome] Bootstrap Angular into document.body (#1338)',
       pullNumber: 1338,
       sha: 'myCommitSha'
     });

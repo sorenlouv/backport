@@ -1,9 +1,9 @@
 import isEmpty from 'lodash.isempty';
 import { HandledError } from '../services/HandledError';
-import { OptionsFromCliArgs, getOptionsFromCliArgs } from './cliArgs';
-import { getOptionsFromConfigFiles } from './config/config';
 import { PromiseReturnType } from '../types/commons';
 import { getGlobalConfigPath } from '../services/env';
+import { OptionsFromCliArgs, getOptionsFromCliArgs } from './cliArgs';
+import { getOptionsFromConfigFiles } from './config/config';
 
 export type BackportOptions = Readonly<PromiseReturnType<typeof getOptions>>;
 export async function getOptions(argv: typeof process.argv) {

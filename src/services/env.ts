@@ -1,5 +1,5 @@
-import path from 'path';
 import os from 'os';
+import path from 'path';
 import { BackportOptions } from '../options/options';
 
 export function getGlobalConfigPath() {

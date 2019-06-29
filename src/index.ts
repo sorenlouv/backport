@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { initSteps } from './steps/steps';
 import { getOptions } from './options/options';
+import { initSteps } from './steps/steps';
 
 async function init() {
   try {

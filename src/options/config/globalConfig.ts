@@ -1,6 +1,6 @@
-import { readConfigFile } from './readConfigFile';
-import { mkdirp, chmod, writeFile } from '../../services/rpc';
+import { chmod, mkdirp, writeFile } from '../../services/rpc';
 import { getGlobalConfigPath, getReposPath } from '../../services/env';
+import { readConfigFile } from './readConfigFile';
 
 export async function getGlobalConfig() {
   await maybeCreateGlobalConfigAndFolder();

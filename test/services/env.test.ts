@@ -1,10 +1,10 @@
+import { BackportOptions } from '../../src/options/options';
 import {
   getGlobalConfigPath,
-  getReposPath,
   getRepoOwnerPath,
-  getRepoPath
+  getRepoPath,
+  getReposPath
 } from '../../src/services/env';
-import { BackportOptions } from '../../src/options/options';
 
 describe('env.js', () => {
   test('getGlobalConfigPath', () => {

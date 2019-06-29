@@ -1,5 +1,5 @@
-import { postinstall } from '../../src/scripts/postinstall';
 import * as globalConfig from '../../src/options/config/globalConfig';
+import { postinstall } from '../../src/scripts/postinstall';
 
 describe('postinstall', () => {
   it("should create global config if it doesn't exist", async () => {
