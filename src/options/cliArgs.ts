@@ -4,7 +4,7 @@ import { OptionsFromConfigFiles } from './config/config';
 export type OptionsFromCliArgs = ReturnType<typeof getOptionsFromCliArgs>;
 export function getOptionsFromCliArgs(
   configOptions: OptionsFromConfigFiles,
-  argv: typeof process.argv
+  argv: string[]
 ) {
   const cliArgs = yargs(argv)
     .usage('$0 [args]')

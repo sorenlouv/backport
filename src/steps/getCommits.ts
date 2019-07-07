@@ -35,7 +35,7 @@ async function getCommitsByPrompt(options: BackportOptions) {
     if (isEmpty(commits)) {
       const warningText = options.all
         ? 'There are no commits in this repository'
-        : 'There are no commits by you in this repository. Try with `--all` to see commits by others or `--author=<username>` to see commits from a specific user';
+        : `There are no commits by "${options.author}" in this repository. Try with \`--all\` for commits by all users or \`--author=<username>\` for commits from a specific user`;
 
       spinner.fail(warningText);
       process.exit(1);

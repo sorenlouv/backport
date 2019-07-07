@@ -6,7 +6,7 @@ interface DataResponse {
 }
 
 export async function fetchAuthorId(options: BackportOptions) {
-  const { all, author, username, accessToken, apiHostname } = options;
+  const { all, author, accessToken, apiHostname } = options;
   if (all) {
     return null;
   }
@@ -23,7 +23,7 @@ export async function fetchAuthorId(options: BackportOptions) {
     apiHostname,
     accessToken,
     query,
-    variables: { login: author || username }
+    variables: { login: author }
   });
 
   return res.user.id;

@@ -5,7 +5,8 @@ import { initSteps } from './steps/steps';
 
 async function init() {
   try {
-    const options = await getOptions(process.argv);
+    const args = process.argv.slice(2);
+    const options = await getOptions(args);
     return await initSteps(options);
   } catch (e) {
     if (e.name === 'HandledError') {

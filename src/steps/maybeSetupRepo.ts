@@ -5,10 +5,10 @@ import {
   deleteRepo,
   repoExists
 } from '../services/git';
+import makeDir from 'make-dir';
 import ora = require('ora');
 import { BackportOptions } from '../options/options';
 import { getRepoOwnerPath } from '../services/env';
-import { mkdirp } from '../services/rpc';
 
 export async function maybeSetupRepo(options: BackportOptions) {
   const isAlreadyCloned = await repoExists(options);
@@ -19,11 +19,13 @@ export async function maybeSetupRepo(options: BackportOptions) {
     try {
       const spinnerCloneText = 'Cloning repository (one-time operation)';
       spinner.text = `0% ${spinnerCloneText}`;
-      await mkdirp(getRepoOwnerPath(options));
+      await makeDir(getRepoOwnerPath(options));
 
       await cloneRepo(options, (progress: string) => {
         spinner.text = `${progress}% ${spinnerCloneText}`;
       });
+
+      // delete default "origin" remote to avoid confusion
       await deleteRemote(options, 'origin');
       spinner.succeed(`100% ${spinnerCloneText}`);
     } catch (e) {

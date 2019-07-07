@@ -6,7 +6,7 @@ import { OptionsFromCliArgs, getOptionsFromCliArgs } from './cliArgs';
 import { getOptionsFromConfigFiles } from './config/config';
 
 export type BackportOptions = Readonly<PromiseReturnType<typeof getOptions>>;
-export async function getOptions(argv: typeof process.argv) {
+export async function getOptions(argv: string[]) {
   const optionsFromConfig = await getOptionsFromConfigFiles();
   const optionsFromCli = getOptionsFromCliArgs(optionsFromConfig, argv);
   return validateRequiredOptions(optionsFromCli);
@@ -72,6 +72,7 @@ export function validateRequiredOptions({
     accessToken: options.accessToken,
     repoName,
     repoOwner,
-    username: options.username
+    username: options.username,
+    author: options.author || options.username
   };
 }
