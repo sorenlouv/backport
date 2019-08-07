@@ -64,9 +64,10 @@ export async function doBackportVersion(
     cherrypickAndConfirm(options, commit.sha)
   );
 
-  await withSpinner(
-    { text: `Pushing branch ${options.username}:${featureBranch}` },
-    () => pushFeatureBranch(options, featureBranch)
+  const headBranchName = getHeadBranchName(options, featureBranch);
+
+  await withSpinner({ text: `Pushing branch "${headBranchName}"` }, () =>
+    pushFeatureBranch(options, featureBranch)
   );
 
   await deleteFeatureBranch(options, featureBranch);
@@ -149,11 +150,21 @@ function getPullRequestTitle(
     .slice(0, 240);
 }
 
+function getHeadBranchName(
+  { username, fork, repoOwner }: BackportOptions,
+  featureBranch: string
+) {
+  return fork
+    ? `${username}:${featureBranch}`
+    : `${repoOwner}:${featureBranch}`;
+}
+
 function getPullRequestPayload(
-  { prDescription, prTitle, username }: BackportOptions,
+  options: BackportOptions,
   baseBranch: string,
   commits: CommitSelected[]
 ) {
+  const { prDescription, prTitle } = options;
   const featureBranch = getFeatureBranchName(baseBranch, commits);
   const commitMessages = commits
     .map(commit => ` - ${commit.message}`)
@@ -163,8 +174,8 @@ function getPullRequestPayload(
   return {
     title: getPullRequestTitle(baseBranch, commits, prTitle),
     body: `Backports the following commits to ${baseBranch}:\n${commitMessages}${bodySuffix}`,
-    head: `${username}:${featureBranch}`,
-    base: `${baseBranch}`
+    head: getHeadBranchName(options, featureBranch),
+    base: baseBranch
   };
 }
 

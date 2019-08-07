@@ -152,10 +152,9 @@ export function pushFeatureBranch(
   options: BackportOptions,
   featureBranch: string
 ) {
+  const remoteName = options.fork ? options.username : options.repoOwner;
   return exec(
-    `git push ${options.username} ${featureBranch}:${featureBranch} --force`,
-    {
-      cwd: getRepoPath(options)
-    }
+    `git push ${remoteName} ${featureBranch}:${featureBranch} --force`,
+    { cwd: getRepoPath(options) }
   );
 }
