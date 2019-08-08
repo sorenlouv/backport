@@ -169,18 +169,6 @@ describe('when disabling fork mode', () => {
     expect(createPullRequestPayload.head).toBe('elastic:backport/6.0/pr-85');
   });
 
-  it('should make correct API requests', async () => {
-    const {
-      getAuthorPayload,
-      getCommitsPayload,
-      createPullRequestPayload
-    } = spies.getAxiosCalls();
-
-    expect(getAuthorPayload).toMatchSnapshot();
-    expect(getCommitsPayload).toMatchSnapshot();
-    expect(createPullRequestPayload).toMatchSnapshot();
-  });
-
   it('should create new branches in origin (elastic/backport-demo)', async () => {
     const branches = await getBranches(REMOTE_ORIGIN_REPO_PATH);
     expect(branches).toEqual(['6.0', 'backport/6.0/pr-85', '* master']);
