@@ -9,7 +9,8 @@ import {
   createFeatureBranch,
   deleteFeatureBranch,
   isIndexDirty,
-  pushFeatureBranch
+  pushFeatureBranch,
+  getRemoteName
 } from '../services/git';
 import { confirmPrompt } from '../services/prompts';
 import { createPullRequest } from '../services/github/createPullRequest';
@@ -150,13 +151,9 @@ function getPullRequestTitle(
     .slice(0, 240);
 }
 
-function getHeadBranchName(
-  { username, fork, repoOwner }: BackportOptions,
-  featureBranch: string
-) {
-  return fork
-    ? `${username}:${featureBranch}`
-    : `${repoOwner}:${featureBranch}`;
+function getHeadBranchName(options: BackportOptions, featureBranch: string) {
+  const remoteName = getRemoteName(options);
+  return `${remoteName}:${featureBranch}`;
 }
 
 function getPullRequestPayload(
