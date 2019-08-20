@@ -95,6 +95,7 @@ The above commands will start an interactive prompt. You can use the `arrow keys
 | --git-hostname   | Hostname for Git remotes                               | github.com                      | string  |
 | --labels         | Pull request labels                                    |                                 | string  |
 | --multiple       | Select multiple commits/branches                       | false                           | boolean |
+| --path           | List commits for a specific path                       |                                 | string  |
 | --pr-description | Pull request description suffix                        |                                 | string  |
 | --pr-title       | Pull request title pattern                             | [{baseBranch}] {commitMessages} | string  |
 | --sha            | Sha of commit to backport                              |                                 | string  |
