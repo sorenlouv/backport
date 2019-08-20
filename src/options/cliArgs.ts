@@ -79,7 +79,7 @@ export function getOptionsFromCliArgs(
     })
     .option('path', {
       default: configOptions.path,
-      description: 'List commits for a specific path',
+      description: 'Only list commits touching files under the specified path',
       type: 'string'
     })
     .option('prTitle', {
