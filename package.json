@@ -29,7 +29,7 @@
   "scripts": {
     "cover": "jest --coverage",
     "format": "prettier \"./{src,test}/**/*.ts\" --write",
-    "lint": "tsc --project ./test/tsconfig.json && eslint ./src/**/*.ts ./test/**/*.ts",
+    "lint": "tsc --project ./src/test/tsconfig.json && eslint ./src/**/*.ts",
     "postinstall": "test -f ./dist/scripts/runPostinstall.js && node ./dist/scripts/runPostinstall.js || echo 'Dist folder missing'",
     "prepublishOnly": "tsc",
     "publish-dry-run": "tar -tf $(npm pack)",
