@@ -23,6 +23,12 @@ export const commitsWithPullRequestsMock: DataResponse = {
                   edges: [
                     {
                       node: {
+                        repository: {
+                          name: 'kibana',
+                          owner: {
+                            login: 'elastic'
+                          }
+                        },
                         number: 85,
                         timelineItems: {
                           edges: []
@@ -42,6 +48,12 @@ export const commitsWithPullRequestsMock: DataResponse = {
                   edges: [
                     {
                       node: {
+                        repository: {
+                          name: 'kibana',
+                          owner: {
+                            login: 'elastic'
+                          }
+                        },
                         number: 80,
                         timelineItems: {
                           edges: [

@@ -1,11 +1,18 @@
 import axios from 'axios';
 import { fetchCommitBySha } from '../../../../src/services/github/fetchCommitBySha';
-import { getDefaultOptions } from './getDefaultOptions';
+import { BackportOptions } from '../../../../src/options/options';
 
 describe('fetchCommitBySha', () => {
   it('should return single commit with pull request', async () => {
-    const commitSha = 'myCommitSha';
-    const options = getDefaultOptions();
+    const commitSha = 'sha123456789';
+    const options = {
+      repoOwner: 'elastic',
+      repoName: 'kibana',
+      accessToken: 'myAccessToken',
+      username: 'sqren',
+      author: 'sqren',
+      apiHostname: 'api.github.com'
+    } as BackportOptions;
 
     const axiosSpy = jest
       .spyOn(axios, 'get')
@@ -13,17 +20,12 @@ describe('fetchCommitBySha', () => {
       // mock commits
       .mockResolvedValueOnce({
         data: { items: [{ commit: { message: 'myMessage' }, sha: commitSha }] }
-      })
-
-      // mock PRs
-      .mockResolvedValueOnce({
-        data: { items: [{ number: 'myPullRequestNumber' }] }
       });
 
     expect(await fetchCommitBySha({ ...options, sha: commitSha })).toEqual({
-      message: 'myMessage (#myPullRequestNumber)',
-      pullNumber: 'myPullRequestNumber',
-      sha: 'myCommitSha'
+      message: 'myMessage (sha12345)',
+      pullNumber: undefined,
+      sha: 'sha123456789'
     });
 
     expect(axiosSpy.mock.calls).toMatchSnapshot();

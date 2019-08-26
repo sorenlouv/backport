@@ -66,18 +66,18 @@ export function createSpies({ commitCount }: { commitCount: number }) {
   // mock prompt
   jest
     .spyOn(inquirer, 'prompt')
-    // @ts-ignore
-    .mockImplementationOnce(async (args: any) => {
+
+    .mockImplementationOnce((async (args: any) => {
       return {
         promptResult:
           commitCount === 2
             ? [args[0].choices[0].value, args[0].choices[1].value]
             : args[0].choices[1].value
       };
-    })
-    .mockImplementationOnce(async (args: any) => {
+    }) as any)
+    .mockImplementationOnce((async (args: any) => {
       return { promptResult: args[0].choices[0].name };
-    });
+    }) as any);
 
   return {
     getAxiosCalls: () => {

@@ -64,6 +64,32 @@ describe('fetchCommitsByAuthor', () => {
     });
   });
 
+  describe('existingBackports', () => {
+    it('should return existingBackports when repoNames match', async () => {
+      const res = await getExistingBackportsByRepoName('kibana', 'kibana');
+      expect(res).toEqual([
+        {
+          existingBackports: [{ branch: '6.3', state: 'MERGED' }],
+          message: 'Add SF mention (#80)',
+          pullNumber: 80,
+          sha: '79cf18453ec32a4677009dcbab1c9c8c73fc14fe'
+        }
+      ]);
+    });
+
+    it('should not return existingBackports when repoNames does not match', async () => {
+      const res = await getExistingBackportsByRepoName('kibana', 'kibana2');
+      expect(res).toEqual([
+        {
+          existingBackports: [],
+          message: 'Add SF mention (#80)',
+          pullNumber: 80,
+          sha: '79cf18453ec32a4677009dcbab1c9c8c73fc14fe'
+        }
+      ]);
+    });
+  });
+
   describe('when a custom github api hostname is supplied', () => {
     it('should be used in gql requests', async () => {
       const requestSpy = spyOn(gqlRequest, 'gqlRequest').and.returnValues(
@@ -91,6 +117,12 @@ describe('getExistingBackportPRs', () => {
   beforeEach(() => {
     pullRequest = {
       node: {
+        repository: {
+          name: 'kibana',
+          owner: {
+            login: 'elastic'
+          }
+        },
         number: 1234,
         timelineItems: {
           edges: [
@@ -137,3 +169,78 @@ describe('getExistingBackportPRs', () => {
     expect(existingPRs).toEqual([{ branch: '7.x', state: 'MERGED' }]);
   });
 });
+
+async function getExistingBackportsByRepoName(
+  repoName1: string,
+  repoName2: string
+) {
+  const mock = {
+    repository: {
+      ref: {
+        target: {
+          history: {
+            edges: [
+              {
+                node: {
+                  oid: '79cf18453ec32a4677009dcbab1c9c8c73fc14fe',
+                  message:
+                    'Add SF mention (#80)\n\n* Add SF mention\r\n\r\n* Add several emojis!',
+                  associatedPullRequests: {
+                    edges: [
+                      {
+                        node: {
+                          repository: {
+                            name: repoName1,
+                            owner: {
+                              login: 'elastic'
+                            }
+                          },
+                          number: 80,
+                          timelineItems: {
+                            edges: [
+                              {
+                                node: {
+                                  source: {
+                                    __typename: 'PullRequest',
+                                    state: 'MERGED',
+                                    baseRefName: '6.3',
+                                    commits: {
+                                      edges: [
+                                        {
+                                          node: {
+                                            commit: {
+                                              message:
+                                                'Add SF mention (#80)\n\n* Add SF mention\r\n\r\n* Add several emojis!'
+                                            }
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  };
+
+  spyOn(gqlRequest, 'gqlRequest').and.returnValues(
+    { user: { id: 'myUserId' } },
+    mock
+  );
+
+  const options = getDefaultOptions({
+    repoName: repoName2
+  });
+  return fetchCommitsByAuthor(options);
+}

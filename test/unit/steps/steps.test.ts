@@ -13,7 +13,6 @@ describe('run through steps', () => {
   let rpcExecOriginalMock: jest.SpyInstance;
   let inquirerPromptMock: jest.SpyInstance;
   let axiosHeadSpy: jest.SpyInstance;
-  let axiosPostSpy: jest.SpyInstance;
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -44,6 +43,7 @@ describe('run through steps', () => {
       path: undefined,
       prDescription: 'myPrDescription',
       prTitle: 'myPrTitle {baseBranch} {commitMessages}',
+      pullNumber: undefined,
       repoName: 'kibana',
       repoOwner: 'elastic',
       sha: undefined,
@@ -72,7 +72,7 @@ describe('run through steps', () => {
     axiosHeadSpy = jest.spyOn(axios, 'head').mockReturnValueOnce(true as any);
 
     // mock axios post request (graphql)
-    axiosPostSpy = jest
+    jest
       .spyOn(axios, 'post')
 
       // mock author id
@@ -108,10 +108,6 @@ describe('run through steps', () => {
     expect(axiosHeadSpy).toHaveBeenCalledWith(
       'https://api.github.com/repos/elastic/kibana?access_token=myAccessToken'
     );
-  });
-
-  it('should make correct POST requests', () => {
-    expect(axiosPostSpy).toMatchSnapshot();
   });
 
   it('getCommit should be called with correct args', () => {

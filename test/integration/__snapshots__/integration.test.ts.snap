@@ -41,6 +41,12 @@ Object {
                     associatedPullRequests(first: 1) {
                       edges {
                         node {
+                          repository {
+                            owner {
+                              login
+                            }
+                            name
+                          }
                           number
                           timelineItems(
                             last: 20
@@ -143,6 +149,12 @@ Object {
                     associatedPullRequests(first: 1) {
                       edges {
                         node {
+                          repository {
+                            owner {
+                              login
+                            }
+                            name
+                          }
                           number
                           timelineItems(
                             last: 20

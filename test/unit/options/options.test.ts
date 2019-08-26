@@ -17,8 +17,9 @@ const validOptions: OptionsFromCliArgs = {
   multipleBranches: true,
   multipleCommits: false,
   path: undefined,
-  prTitle: 'myPrTitle',
   prDescription: undefined,
+  prTitle: 'myPrTitle',
+  pullNumber: undefined,
   sha: undefined,
   upstream: 'elastic/kibana',
   username: 'sqren'

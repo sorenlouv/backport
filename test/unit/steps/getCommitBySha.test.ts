@@ -16,13 +16,6 @@ describe('getCommitBySha', () => {
         items: [commitByShaMock]
       });
 
-    nock('https://api.github.com')
-      .get(`/search/issues`)
-      .query(true)
-      .reply(200, {
-        items: []
-      });
-
     const commit = await getCommitBySha({
       repoOwner: 'elastic',
       repoName: 'kibana',
@@ -52,34 +45,5 @@ describe('getCommitBySha', () => {
         apiHostname: 'api.github.com'
       } as BackportOptions & { sha: string })
     ).rejects.toThrowError('No commit found on master with sha "myCommitSha"');
-  });
-
-  it('should add PR number if available', async () => {
-    nock('https://api.github.com')
-      .get(`/search/commits`)
-      .query(true)
-      .reply(200, {
-        items: [commitByShaMock]
-      });
-
-    nock('https://api.github.com')
-      .get(`/search/issues`)
-      .query(true)
-      .reply(200, {
-        items: [{ number: 1338 }]
-      });
-
-    expect(
-      await getCommitBySha({
-        repoOwner: 'elastic',
-        repoName: 'kibana',
-        sha: 'myCommitSha',
-        apiHostname: 'api.github.com'
-      } as BackportOptions & { sha: string })
-    ).toEqual({
-      message: '[Chrome] Bootstrap Angular into document.body (#1338)',
-      pullNumber: 1338,
-      sha: 'myCommitSha'
-    });
   });
 });

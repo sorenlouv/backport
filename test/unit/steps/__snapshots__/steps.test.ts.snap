@@ -80,7 +80,7 @@ Array [
         "choices": Array [
           Object {
             "name": "[90m1.[39m Add 👻 (2e63475c) ",
-            "short": "2e63475c",
+            "short": "Add 👻 (2e63475c)",
             "value": Object {
               "existingBackports": Array [],
               "message": "Add 👻 (2e63475c)",
@@ -90,7 +90,7 @@ Array [
           },
           Object {
             "name": "[90m2.[39m Add witch (#85) ",
-            "short": "#85",
+            "short": "Add witch (#85)",
             "value": Object {
               "existingBackports": Array [],
               "message": "Add witch (#85)",
@@ -100,7 +100,7 @@ Array [
           },
           Object {
             "name": "[90m3.[39m Add SF mention (#80) [32m6.3[39m",
-            "short": "#80",
+            "short": "Add SF mention (#80)",
             "value": Object {
               "existingBackports": Array [
                 Object {
@@ -115,7 +115,7 @@ Array [
           },
           Object {
             "name": "[90m4.[39m Add backport config (3827bbba) ",
-            "short": "3827bbba",
+            "short": "Add backport config (3827bbba)",
             "value": Object {
               "existingBackports": Array [],
               "message": "Add backport config (3827bbba)",
@@ -125,7 +125,7 @@ Array [
           },
           Object {
             "name": "[90m5.[39m Initial commit (5ea0da55) ",
-            "short": "5ea0da55",
+            "short": "Initial commit (5ea0da55)",
             "value": Object {
               "existingBackports": Array [],
               "message": "Initial commit (5ea0da55)",
@@ -221,6 +221,12 @@ exports[`run through steps should make correct POST requests 1`] = `
                     associatedPullRequests(first: 1) {
                       edges {
                         node {
+                          repository {
+                            owner {
+                              login
+                            }
+                            name
+                          }
                           number
                           timelineItems(
                             last: 20
@@ -328,6 +334,12 @@ myPrDescription",
                               Object {
                                 "node": Object {
                                   "number": 85,
+                                  "repository": Object {
+                                    "name": "kibana",
+                                    "owner": Object {
+                                      "login": "elastic",
+                                    },
+                                  },
                                   "timelineItems": Object {
                                     "edges": Array [],
                                   },
@@ -346,6 +358,12 @@ myPrDescription",
                               Object {
                                 "node": Object {
                                   "number": 80,
+                                  "repository": Object {
+                                    "name": "kibana",
+                                    "owner": Object {
+                                      "login": "elastic",
+                                    },
+                                  },
                                   "timelineItems": Object {
                                     "edges": Array [
                                       Object {
