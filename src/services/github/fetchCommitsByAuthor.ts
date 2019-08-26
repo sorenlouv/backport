@@ -2,7 +2,10 @@ import get from 'lodash.get';
 import { BackportOptions } from '../../options/options';
 import { CommitChoice } from './Commit';
 import { fetchAuthorId } from './fetchAuthorId';
-import { getFirstCommitMessageLine, getShortSha } from './commitFormatters';
+import {
+  getFirstCommitMessageLine,
+  getFormattedCommitMessage
+} from './commitFormatters';
 import { gqlRequest } from './gqlRequest';
 
 export async function fetchCommitsByAuthor(
@@ -118,18 +121,24 @@ export async function fetchCommitsByAuthor(
     const firstMessageLine = getFirstCommitMessageLine(historyNode.message);
     const pullNumber =
       get(associatedPullRequest, 'node.number') ||
-      getPullNumber(firstMessageLine);
-    const commitRef = pullNumber ? `` : ` (${getShortSha(sha)})`;
+      getPullNumberFromMessage(firstMessageLine);
+
+    const message = getFormattedCommitMessage({
+      message: firstMessageLine,
+      pullNumber,
+      sha
+    });
+
     return {
       sha,
-      message: `${firstMessageLine}${commitRef}`,
+      message,
       pullNumber,
       existingBackports
     };
   });
 }
 
-function getPullNumber(firstMessageLine: string) {
+function getPullNumberFromMessage(firstMessageLine: string) {
   const matches = firstMessageLine.match(/\(#(\d+)\)/);
   if (matches) {
     return parseInt(matches[1], 10);

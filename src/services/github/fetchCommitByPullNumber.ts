@@ -1,7 +1,7 @@
 import { BackportOptions } from '../../options/options';
 import { HandledError } from '../HandledError';
 import { CommitSelected } from './Commit';
-import { getFirstCommitMessageLine } from './commitFormatters';
+import { getFormattedCommitMessage } from './commitFormatters';
 import { gqlRequest } from './gqlRequest';
 
 export async function fetchCommitByPullNumber(
@@ -46,11 +46,16 @@ export async function fetchCommitByPullNumber(
     );
   }
 
+  const sha = res.repository.pullRequest.mergeCommit.oid;
+  const message = getFormattedCommitMessage({
+    message: res.repository.pullRequest.mergeCommit.message,
+    sha,
+    pullNumber
+  });
+
   return {
-    sha: res.repository.pullRequest.mergeCommit.oid,
-    message: getFirstCommitMessageLine(
-      res.repository.pullRequest.mergeCommit.message
-    ),
+    sha,
+    message,
     pullNumber
   };
 }

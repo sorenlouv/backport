@@ -5,7 +5,7 @@ import { HandledError } from '../HandledError';
 import { CommitSelected } from './Commit';
 import { GithubCommit, GithubSearch } from './GithubApiTypes';
 import { handleGithubError } from './handleGithubError';
-import { getFirstCommitMessageLine, getShortSha } from './commitFormatters';
+import { getFormattedCommitMessage } from './commitFormatters';
 
 export async function fetchCommitBySha(
   options: BackportOptions & { sha: string }
@@ -27,10 +27,14 @@ export async function fetchCommitBySha(
 
     const commitRes = res.data.items[0];
     const fullSha = commitRes.sha;
-    const firstLine = getFirstCommitMessageLine(commitRes.commit.message);
+
+    const message = getFormattedCommitMessage({
+      message: commitRes.commit.message,
+      sha: fullSha
+    });
 
     return {
-      message: `${firstLine} (${getShortSha(fullSha)})`,
+      message,
       sha: fullSha
     };
   } catch (e) {
