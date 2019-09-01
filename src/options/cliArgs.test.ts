@@ -49,6 +49,7 @@ describe('getOptionsFromCliArgs', () => {
       multipleBranches: true,
       multipleCommits: false,
       prTitle: 'myPrTitle',
+      resetAuthor: false,
       sha: undefined,
       upstream: 'sqren/backport-demo',
       username: 'sqren'

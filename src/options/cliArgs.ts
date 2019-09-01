@@ -97,6 +97,11 @@ export function getOptionsFromCliArgs(
       type: 'number',
       alias: 'pr'
     })
+    .option('resetAuthor', {
+      default: false,
+      description: 'Set yourself as commit author',
+      type: 'boolean'
+    })
     .option('sha', {
       description: 'Commit sha to backport',
       type: 'string',
@@ -135,6 +140,7 @@ export function getOptionsFromCliArgs(
     prTitle: cliArgs.prTitle,
     prDescription: cliArgs.prDescription,
     pullNumber: cliArgs.pullNumber,
+    resetAuthor: cliArgs.resetAuthor,
     sha: cliArgs.sha,
     upstream: cliArgs.upstream,
     username: cliArgs.username
