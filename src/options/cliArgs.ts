@@ -7,6 +7,10 @@ export function getOptionsFromCliArgs(
   argv: string[]
 ) {
   const cliArgs = yargs(argv)
+    .parserConfiguration({
+      'strip-dashed': true,
+      'strip-aliased': true
+    })
     .usage('$0 [args]')
     .wrap(Math.max(100, Math.min(120, yargs.terminalWidth())))
     .option('accessToken', {
@@ -121,28 +125,13 @@ export function getOptionsFromCliArgs(
     .version()
     .help().argv;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { $0, _, ...rest } = cliArgs;
+
   return {
-    accessToken: cliArgs.accessToken,
-    all: cliArgs.all,
-    apiHostname: cliArgs.apiHostname,
-    author: cliArgs.author,
-    commitsCount: cliArgs.commitsCount,
+    ...rest,
     branchChoices: configOptions.branchChoices,
-    branches: cliArgs.branches,
-    editor: cliArgs.editor,
-    fork: cliArgs.fork,
-    gitHostname: cliArgs.gitHostname,
-    labels: cliArgs.labels,
-    multiple: cliArgs.multiple,
     multipleBranches: cliArgs.multipleBranches || cliArgs.multiple,
-    multipleCommits: cliArgs.multipleCommits || cliArgs.multiple,
-    path: cliArgs.path,
-    prTitle: cliArgs.prTitle,
-    prDescription: cliArgs.prDescription,
-    pullNumber: cliArgs.pullNumber,
-    resetAuthor: cliArgs.resetAuthor,
-    sha: cliArgs.sha,
-    upstream: cliArgs.upstream,
-    username: cliArgs.username
+    multipleCommits: cliArgs.multipleCommits || cliArgs.multiple
   };
 }
