@@ -14,7 +14,7 @@
     "branches",
     "branching"
   ],
-  "version": "4.7.3",
+  "version": "4.7.7",
   "main": "./dist/index.js",
   "bin": {
     "backport": "./dist/index.js"
@@ -74,7 +74,7 @@
     "lodash.isempty": "^4.4.0",
     "lodash.isstring": "^4.0.1",
     "make-dir": "^3.0.0",
-    "ora": "^4.0.2",
+    "ora": "^3.4.0",
     "strip-json-comments": "^3.0.1",
     "winston": "^3.2.1",
     "yargs": "^14.0.0"
