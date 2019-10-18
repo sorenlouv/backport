@@ -24,10 +24,10 @@ export async function getOptions(argv: string[]) {
 }
 
 const GLOBAL_CONFIG_DOCS_LINK =
-  'https://github.com/sqren/backport/blob/f0535241177c5b343b04fe12844bfb513237d847/docs/configuration.md#global-config-backportconfigjson';
+  'https://github.com/sqren/backport/blob/434a28b431bb58c9a014d4489a95f561e6bb2769/docs/configuration.md#global-config-backportconfigjson';
 
 const PROJECT_CONFIG_DOCS_LINK =
-  'https://github.com/sqren/backport/blob/f0535241177c5b343b04fe12844bfb513237d847/docs/configuration.md#project-config-backportrcjson';
+  'https://github.com/sqren/backport/blob/434a28b431bb58c9a014d4489a95f561e6bb2769/docs/configuration.md#project-config-backportrcjson';
 
 export function validateRequiredOptions({
   upstream = '',
