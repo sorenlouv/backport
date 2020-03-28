@@ -140,8 +140,8 @@ export function getOptionsFromCliArgs(
       description: 'Show additional debug information',
       type: 'boolean',
     })
-    .alias('v', 'version')
-    .version()
+    .alias('version', 'v')
+    .alias('version', 'V')
     .help().argv;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
