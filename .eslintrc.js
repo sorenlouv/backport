@@ -1,4 +1,5 @@
 module.exports = {
+  ignorePatterns: ['dist/', 'node_modules/'],
   plugins: ['@typescript-eslint'],
   parser: '@typescript-eslint/parser', // Specifies the ESLint parser
   extends: [
