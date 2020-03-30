@@ -54,8 +54,10 @@ describe('runWithOptions', () => {
       verbose: false,
     };
 
-    rpcExecMock = (childProcess.exec as any) as jest.SpyInstance;
-    rpcExecOriginalMock = (childProcess.execAsCallback as any) as jest.SpyInstance;
+    rpcExecMock = jest
+      .spyOn(childProcess, 'exec')
+      .mockResolvedValue({ stdout: 'success' } as any);
+    rpcExecOriginalMock = jest.spyOn(childProcess, 'execAsCallback');
 
     jest.spyOn(fs, 'writeFile').mockResolvedValue(undefined);
 

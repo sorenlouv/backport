@@ -1,6 +1,9 @@
 import child_process from 'child_process';
 import { promisify } from 'util';
 import { logger } from './logger';
+import { PromiseReturnType } from '../types/PromiseReturnType';
+
+export type ExecReturnType = PromiseReturnType<typeof exec>;
 
 export const exec = (cmd: string, options: child_process.ExecOptions = {}) => {
   logger.info(`exec: ${cmd}`);

@@ -2,18 +2,19 @@ import chalk from 'chalk';
 import ora = require('ora');
 import { BackportOptions } from '../options/options';
 import { CommitSelected } from '../services/github/Commit';
-import { HandledError } from '../services/HandledError';
 import { addLabelsToPullRequest } from '../services/github/addLabelsToPullRequest';
 import {
   cherrypick,
   createFeatureBranch,
   deleteFeatureBranch,
-  isIndexDirty,
   pushFeatureBranch,
   getRemoteName,
   setCommitAuthor,
+  getFilesWithConflicts,
+  getUnstagedFiles,
+  addUnstagedFiles,
+  cherrypickContinue,
 } from '../services/git';
-import { confirmPrompt } from '../services/prompts';
 import { createPullRequest } from '../services/github/createPullRequest';
 import { getRepoPath } from '../services/env';
 import { getShortSha } from '../services/github/commitFormatters';
@@ -21,6 +22,9 @@ import { consoleLog } from '../services/logger';
 import { exec } from '../services/child-process-promisified';
 import { sequentially } from '../services/sequentially';
 import { withSpinner } from './withSpinner';
+import { confirmPrompt } from '../services/prompts';
+import { HandledError } from '../services/HandledError';
+import isEmpty = require('lodash.isempty');
 
 export async function cherrypickAndCreatePullRequest({
   options,
@@ -45,9 +49,7 @@ export async function cherrypickAndCreatePullRequest({
     createFeatureBranch(options, baseBranch, featureBranch)
   );
 
-  await sequentially(commits, (commit) =>
-    cherrypickAndConfirm(options, commit)
-  );
+  await sequentially(commits, (commit) => waitForCherrypick(options, commit));
 
   if (options.resetAuthor) {
     await withSpinner(
@@ -64,7 +66,7 @@ export async function cherrypickAndCreatePullRequest({
 
   await deleteFeatureBranch(options, featureBranch);
 
-  await withSpinner({ text: 'Creating pull request' }, async (spinner) => {
+  return withSpinner({ text: 'Creating pull request' }, async (spinner) => {
     const payload = getPullRequestPayload(options, baseBranch, commits);
     const pullRequest = await createPullRequest(options, payload);
 
@@ -73,6 +75,7 @@ export async function cherrypickAndCreatePullRequest({
     }
 
     spinner.text = `Created pull request: ${pullRequest.html_url}`;
+    return pullRequest;
   });
 }
 
@@ -88,7 +91,7 @@ function getFeatureBranchName(baseBranch: string, commits: CommitSelected[]) {
   return `backport/${baseBranch}/${refValues}`;
 }
 
-async function cherrypickAndConfirm(
+async function waitForCherrypick(
   options: BackportOptions,
   commit: CommitSelected
 ) {
@@ -99,36 +102,63 @@ async function cherrypickAndConfirm(
     await cherrypick(options, commit);
     spinner.succeed();
   } catch (e) {
-    const repoPath = getRepoPath(options);
-    spinner.fail(`Cherry-picking failed.\n`);
-    consoleLog(
-      `Please resolve conflicts in: ${repoPath} and when all conflicts have been resolved and staged run:`
-    );
-    consoleLog(`\ngit cherry-pick --continue\n`);
-    if (options.editor) {
-      await exec(`${options.editor} ${repoPath}`);
-    }
-
-    const hasConflict = e.cmd.includes('git cherry-pick');
-    if (!hasConflict) {
+    const filesWithConflicts = await getFilesWithConflicts(options);
+    if (isEmpty(filesWithConflicts)) {
       throw e;
     }
 
-    await resolveConflictsOrAbort(options);
+    spinner.fail();
+    if (options.editor) {
+      const repoPath = getRepoPath(options);
+      await exec(`${options.editor} ${repoPath}`);
+    }
+
+    // list conflicting files and require the user to resolve them
+    await waitForConflictsToBeResolved(options);
+
+    // list unstaged files and require user to confirm adding+comitting them
+    await waitForEnterAndListUnstaged(options);
+
+    // add unstaged files
+    await addUnstagedFiles(options);
+
+    // continue cherrypick (similar to commit)
+    await cherrypickContinue(options);
+
+    ora(`Stage and commit files`).start().succeed();
   }
 }
 
-async function resolveConflictsOrAbort(options: BackportOptions) {
-  const res = await confirmPrompt(
-    'Press enter when you have commited all changes'
-  );
+async function waitForConflictsToBeResolved(options: BackportOptions) {
+  const spinnerText = `Please resolve the conflicts in the following files:`;
+  const spinner = ora(spinnerText).start();
+
+  return new Promise((resolve) => {
+    const checkForConflicts = async () => {
+      const filesWithConflicts = await getFilesWithConflicts(options);
+      if (isEmpty(filesWithConflicts)) {
+        clearInterval(intervalId);
+        resolve();
+        spinner.succeed('Conflicts resolved');
+      } else {
+        spinner.text = `${spinnerText}\n${filesWithConflicts.join('\n')}`;
+      }
+    };
+
+    checkForConflicts();
+    const intervalId = setInterval(checkForConflicts, 1000);
+  });
+}
+
+async function waitForEnterAndListUnstaged(options: BackportOptions) {
+  const unstagedFiles = await getUnstagedFiles(options);
+
+  consoleLog(`\n\nThe following files will be staged:
+${unstagedFiles.join('\n')}\n`);
+
+  const res = await confirmPrompt('Press ENTER to continue...');
   if (!res) {
     throw new HandledError('Aborted');
-  }
-
-  const isDirty = await isIndexDirty(options);
-  if (isDirty) {
-    await resolveConflictsOrAbort(options);
   }
 }
 
