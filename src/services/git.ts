@@ -75,12 +75,13 @@ export async function deleteRemote(
   remoteName: string
 ) {
   try {
-    await exec(`git remote rm ${remoteName}`, {
-      cwd: getRepoPath(options),
-    });
+    await exec(`git remote rm ${remoteName}`, { cwd: getRepoPath(options) });
   } catch (e) {
-    // note: swallowing error
-    return;
+    const isExecError = e.code === 128;
+    // re-throw if error is not an exec related error
+    if (!isExecError) {
+      throw e;
+    }
   }
 }
 
@@ -88,9 +89,7 @@ export async function addRemote(options: BackportOptions, remoteName: string) {
   try {
     await exec(
       `git remote add ${remoteName} ${getRemoteUrl(options, remoteName)}`,
-      {
-        cwd: getRepoPath(options),
-      }
+      { cwd: getRepoPath(options) }
     );
   } catch (e) {
     // note: swallowing error
@@ -101,9 +100,7 @@ export async function addRemote(options: BackportOptions, remoteName: string) {
 export function cherrypick(options: BackportOptions, commit: CommitSelected) {
   return exec(
     `git fetch ${options.repoOwner} ${commit.branch}:${commit.branch} --force && git cherry-pick ${commit.sha}`,
-    {
-      cwd: getRepoPath(options),
-    }
+    { cwd: getRepoPath(options) }
   );
 }
 
@@ -114,9 +111,16 @@ export async function cherrypickContinue(options: BackportOptions) {
       cwd: getRepoPath(options),
     });
   } catch (e) {
-    logger.info(
-      `Cherry pick continue failed. Probably because the cherry pick operation was manually completed. ${e}`
-    );
+    const isCherrypickError = e.code === 128;
+    if (isCherrypickError) {
+      logger.info(
+        `Cherry pick continue failed. Probably because the cherry pick operation was manually completed. ${JSON.stringify(
+          e
+        )}`
+      );
+      return;
+    }
+    throw e;
   }
 }
 
@@ -149,9 +153,7 @@ export async function getFilesWithConflicts(options: BackportOptions) {
 export function setCommitAuthor(options: BackportOptions, username: string) {
   return exec(
     `git commit --amend --no-edit --author "${username} <${username}@users.noreply.github.com>"`,
-    {
-      cwd: getRepoPath(options),
-    }
+    { cwd: getRepoPath(options) }
   );
 }
 
@@ -183,17 +185,16 @@ export async function createFeatureBranch(
   try {
     return await exec(
       `git reset --hard && git clean -d --force && git fetch ${options.repoOwner} ${baseBranch} && git checkout -B ${featureBranch} ${options.repoOwner}/${baseBranch} --no-track`,
-      {
-        cwd: getRepoPath(options),
-      }
+      { cwd: getRepoPath(options) }
     );
   } catch (e) {
-    if (
-      e.stderr.includes(`Couldn't find remote ref`) ||
-      e.stderr.includes(`Invalid refspec`)
-    ) {
+    const isBranchInvalid =
+      e.stderr?.toLowerCase().includes(`couldn't find remote ref`) ||
+      e.stderr?.toLowerCase().includes(`Invalid refspec`);
+
+    if (isBranchInvalid) {
       throw new HandledError(
-        `The branch "${baseBranch}"  is invalid or doesn't exist`
+        `The branch "${baseBranch}" is invalid or doesn't exist`
       );
     }
     throw e;
@@ -206,9 +207,7 @@ export function deleteFeatureBranch(
 ) {
   return exec(
     `git checkout ${options.sourceBranch} && git branch -D ${featureBranch}`,
-    {
-      cwd: getRepoPath(options),
-    }
+    { cwd: getRepoPath(options) }
   );
 }
 

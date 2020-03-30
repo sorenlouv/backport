@@ -299,6 +299,11 @@ function setupExecSpy() {
         return { stdout: `` };
       }
 
+      // cherrypickContinue
+      if (cmd.includes('cherry-pick --continue')) {
+        return { stdout: `` };
+      }
+
       // pushFeatureBranch
       if (cmd.startsWith('git push ')) {
         return { stdout: `` };
