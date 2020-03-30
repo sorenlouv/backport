@@ -176,8 +176,9 @@ describe('cherrypickAndCreatePullRequest', () => {
   describe('when cherry-picking fails', () => {
     it('should start conflict resolution mode', async () => {
       // spies
-      jest.spyOn(prompts, 'confirmPrompt').mockResolvedValue(true);
-
+      const promptSpy = jest
+        .spyOn(prompts, 'confirmPrompt')
+        .mockResolvedValue(true);
       const logSpy = jest.spyOn(logger, 'consoleLog');
       const execSpy = setupExecSpy();
 
@@ -206,20 +207,24 @@ describe('cherrypickAndCreatePullRequest', () => {
         number: 1337,
       });
 
+      expect(promptSpy.mock.calls).toMatchInlineSnapshot(`
+        Array [
+          Array [
+            "[0mThe following files will be staged and committed:[0m
+        [0m - /myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt[0m
+        [0m - /myHomeDir/.backport/repositories/elastic/kibana/another-conflicting-file.js[0m
+
+        Press ENTER to continue...",
+          ],
+        ]
+      `);
+
       expect(logSpy.mock.calls).toMatchInlineSnapshot(`
         Array [
           Array [
             "
         [1mBackporting the following commits to 6.x:[22m
          - myCommitMessage
-        ",
-          ],
-          Array [
-            "
-
-        The following files will be staged:
-         - /myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt
-         - /myHomeDir/.backport/repositories/elastic/kibana/another-conflicting-file.js
         ",
           ],
         ]
@@ -233,10 +238,10 @@ describe('cherrypickAndCreatePullRequest', () => {
             "Cherry-picking commit mySha",
           ],
           Array [
-            "Please resolve the conflicts in the following files:",
+            "Waiting for conflicts to be resolved",
           ],
           Array [
-            "Stage and commit files",
+            "Staging and committing files",
           ],
           Array [
             "Pushing branch \\"sqren:backport/6.x/commit-mySha\\"",

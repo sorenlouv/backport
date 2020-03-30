@@ -25,6 +25,7 @@ import { withSpinner } from './withSpinner';
 import { confirmPrompt } from '../services/prompts';
 import { HandledError } from '../services/HandledError';
 import isEmpty = require('lodash.isempty');
+import dedent = require('dedent');
 
 export async function cherrypickAndCreatePullRequest({
   options,
@@ -125,12 +126,12 @@ async function waitForCherrypick(
     // continue cherrypick (similar to commit)
     await cherrypickContinue(options);
 
-    ora(`Stage and commit files`).start().succeed();
+    ora(`Staging and committing files`).start().succeed();
   }
 }
 
 async function waitForConflictsToBeResolved(options: BackportOptions) {
-  const spinnerText = `Please resolve the conflicts in the following files:`;
+  const spinnerText = `Waiting for conflicts to be resolved`;
   const spinner = ora(spinnerText).start();
 
   return new Promise((resolve) => {
@@ -139,9 +140,12 @@ async function waitForConflictsToBeResolved(options: BackportOptions) {
       if (isEmpty(filesWithConflicts)) {
         clearInterval(intervalId);
         resolve();
-        spinner.succeed('Conflicts resolved');
+        spinner.succeed(spinnerText);
       } else {
-        spinner.text = `${spinnerText}\n${filesWithConflicts.join('\n')}`;
+        spinner.text = dedent(`${spinnerText}
+
+        Resolve the conflicts the following files and then return here. You do not need to \`git add\` or \`git commit\`:
+        ${filesWithConflicts.join('\n')}`);
       }
     };
 
@@ -152,11 +156,15 @@ async function waitForConflictsToBeResolved(options: BackportOptions) {
 
 async function waitForEnterAndListUnstaged(options: BackportOptions) {
   const unstagedFiles = await getUnstagedFiles(options);
+  const text = dedent(`${chalk.reset(
+    `The following files will be staged and committed:`
+  )}
+  ${chalk.reset(unstagedFiles.join('\n'))}
 
-  consoleLog(`\n\nThe following files will be staged:
-${unstagedFiles.join('\n')}\n`);
+  Press ENTER to continue...`);
 
-  const res = await confirmPrompt('Press ENTER to continue...');
+  const res = await confirmPrompt(text);
+
   if (!res) {
     throw new HandledError('Aborted');
   }
