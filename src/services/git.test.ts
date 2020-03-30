@@ -8,8 +8,9 @@ import {
   createFeatureBranch,
 } from '../services/git';
 import * as childProcess from '../services/child-process-promisified';
+import { PromiseReturnType } from '../types/PromiseReturnType';
 
-type ExecReturnType = childProcess.ExecReturnType;
+type ExecReturnType = PromiseReturnType<typeof childProcess.exec>;
 
 describe('getUnstagedFiles', () => {
   it('should split by linebreak and remove empty items', async () => {

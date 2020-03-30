@@ -112,15 +112,15 @@ export async function cherrypickContinue(options: BackportOptions) {
     });
   } catch (e) {
     const isCherrypickError = e.code === 128;
-    if (isCherrypickError) {
-      logger.info(
-        `Cherry pick continue failed. Probably because the cherry pick operation was manually completed. ${JSON.stringify(
-          e
-        )}`
-      );
-      return;
+    if (!isCherrypickError) {
+      throw e;
     }
-    throw e;
+
+    logger.info(
+      `Cherry pick continue failed. Probably because the cherry pick operation was manually completed. ${JSON.stringify(
+        e
+      )}`
+    );
   }
 }
 

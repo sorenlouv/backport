@@ -6,6 +6,9 @@ import * as childProcess from '../services/child-process-promisified';
 import * as logger from '../services/logger';
 import dedent from 'dedent';
 import ora from 'ora';
+import { PromiseReturnType } from '../types/PromiseReturnType';
+
+type ExecReturnType = PromiseReturnType<typeof childProcess.exec>;
 
 describe('cherrypickAndCreatePullRequest', () => {
   let axiosPostMock: jest.SpyInstance;
@@ -35,7 +38,7 @@ describe('cherrypickAndCreatePullRequest', () => {
     beforeEach(async () => {
       execSpy = jest
         .spyOn(childProcess, 'exec')
-        .mockResolvedValue({ stdout: '' } as any);
+        .mockResolvedValue({ stdout: '' } as ExecReturnType);
 
       const options = {
         githubApiBaseUrlV3: 'https://api.github.com',

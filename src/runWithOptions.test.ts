@@ -7,6 +7,9 @@ import { BackportOptions } from './options/options';
 import { commitsWithPullRequestsMock } from './services/github/mocks/commitsByAuthorMock';
 import { runWithOptions } from './runWithOptions';
 import * as childProcess from './services/child-process-promisified';
+import { PromiseReturnType } from './types/PromiseReturnType';
+
+type ExecReturnType = PromiseReturnType<typeof childProcess.exec>;
 
 describe('runWithOptions', () => {
   let rpcExecMock: jest.SpyInstance;
@@ -56,7 +59,7 @@ describe('runWithOptions', () => {
 
     rpcExecMock = jest
       .spyOn(childProcess, 'exec')
-      .mockResolvedValue({ stdout: 'success' } as any);
+      .mockResolvedValue({ stdout: 'success' } as ExecReturnType);
     rpcExecOriginalMock = jest.spyOn(childProcess, 'execAsCallback');
 
     jest.spyOn(fs, 'writeFile').mockResolvedValue(undefined);
