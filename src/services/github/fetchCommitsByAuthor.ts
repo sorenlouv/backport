@@ -173,8 +173,6 @@ function getAssociatedPullRequest(
     pullRequestEdge?.node.repository.owner.login === options.repoOwner &&
     pullRequestEdge?.node.mergeCommit.oid === sha;
 
-  console.log({ isAssociated, sha });
-
   if (isAssociated) {
     return pullRequestEdge;
   }
