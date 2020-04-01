@@ -43,7 +43,7 @@ export async function gqlRequest<DataResponse>({
       }
     );
 
-    logger.verbose(response.data);
+    logger.debug(response.data);
 
     if (response.data.errors) {
       const newError = new Error();

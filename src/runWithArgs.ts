@@ -24,8 +24,12 @@ export async function runWithArgs(args: string[]) {
         )
       );
       logger.info('Unknown error:');
-      logger.info(e);
-      logger.info(e.stack);
+      if (e) {
+        logger.info(e);
+        logger.info('code:', e.code);
+        logger.info('cmd:', e.cmd);
+        logger.info(e.stack);
+      }
     }
 
     // wait exiting until logs have been flushed to disc

@@ -1,56 +1,28 @@
 import { BackportOptions } from '../options/options';
 import {
   addRemote,
-  getUnstagedFiles,
-  getFilesWithConflicts,
+  getUnmergedFiles,
   cherrypickContinue,
   deleteRemote,
   createFeatureBranch,
 } from '../services/git';
 import * as childProcess from '../services/child-process-promisified';
-import { PromiseReturnType } from '../types/PromiseReturnType';
 
-type ExecReturnType = PromiseReturnType<typeof childProcess.exec>;
-
-describe('getUnstagedFiles', () => {
-  it('should split by linebreak and remove empty items', async () => {
-    const stdout = `add 'conflicting-file.txt'\nadd 'another-conflicting-file.js'\n`;
-    jest
-      .spyOn(childProcess, 'exec')
-      .mockResolvedValue({ stdout } as ExecReturnType);
-
-    const options = {
-      repoOwner: 'elastic',
-      repoName: 'kibana',
-    } as BackportOptions;
-
-    expect(await getUnstagedFiles(options)).toEqual([
-      ' - /myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt',
-      ' - /myHomeDir/.backport/repositories/elastic/kibana/another-conflicting-file.js',
-    ]);
-  });
-});
-
-describe('getFilesWithConflicts', () => {
+describe('getUnmergedFiles', () => {
   it('should split by linebreak and remove empty and duplicate items', async () => {
-    const err = {
-      killed: false,
-      code: 2,
-      signal: null,
-      cmd: 'git --no-pager diff --check',
-      stdout:
-        'conflicting-file.txt:1: leftover conflict marker\nconflicting-file.txt:3: leftover conflict marker\nconflicting-file.txt:5: leftover conflict marker\n',
+    jest.spyOn(childProcess, 'exec').mockResolvedValue({
+      stdout: 'conflicting-file.txt\nconflicting-file2.txt\n',
       stderr: '',
-    };
-    jest.spyOn(childProcess, 'exec').mockRejectedValue(err as ExecReturnType);
+    });
 
     const options = {
       repoOwner: 'elastic',
       repoName: 'kibana',
     } as BackportOptions;
 
-    expect(await getFilesWithConflicts(options)).toEqual([
+    expect(await getUnmergedFiles(options)).toEqual([
       ' - /myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt',
+      ' - /myHomeDir/.backport/repositories/elastic/kibana/conflicting-file2.txt',
     ]);
   });
 });
@@ -171,7 +143,7 @@ describe('addRemote', () => {
   it('add correct origin remote', async () => {
     const spy = jest
       .spyOn(childProcess, 'exec')
-      .mockResolvedValue({} as ExecReturnType);
+      .mockResolvedValue({ stderr: '', stdout: '' });
     await addRemote(options, 'elastic');
 
     return expect(
@@ -185,7 +157,7 @@ describe('addRemote', () => {
   it('add correct user remote', async () => {
     const spy = jest
       .spyOn(childProcess, 'exec')
-      .mockResolvedValue({} as ExecReturnType);
+      .mockResolvedValue({ stderr: '', stdout: '' });
     await addRemote(options, 'sqren');
 
     return expect(
@@ -199,7 +171,7 @@ describe('addRemote', () => {
   it('allows custom github url', async () => {
     const spy = jest
       .spyOn(childProcess, 'exec')
-      .mockResolvedValue({} as ExecReturnType);
+      .mockResolvedValue({ stderr: '', stdout: '' });
     await addRemote(
       { ...options, gitHostname: 'github.my-company.com' },
       'sqren'

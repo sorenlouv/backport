@@ -11,11 +11,12 @@ export function consoleLog(...args: unknown[]) {
   console.log(...args);
 }
 
-const enabledVerboseLogging = argv.verbose;
+const level = argv.verbose ? 'verbose' : argv.debug ? 'debug' : 'info';
 
 export let logger = ({
   info: () => {},
   verbose: () => {},
+  debug: () => {},
 } as unknown) as winston.Logger;
 
 export function initLogger() {
@@ -23,7 +24,7 @@ export function initLogger() {
     transports: [
       // log to file
       new winston.transports.File({
-        level: enabledVerboseLogging ? 'verbose' : 'info',
+        level,
         format: combine(
           timestamp(),
           printf(
