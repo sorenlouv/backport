@@ -1,6 +1,6 @@
 import { DataResponse } from '../fetchCommitsByAuthor';
 
-export const getExistingBackportPRsMock = (repoName: string): DataResponse => ({
+export const getCommitsByAuthorMock = (repoName: string): DataResponse => ({
   repository: {
     ref: {
       target: {
