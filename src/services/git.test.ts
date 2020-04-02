@@ -5,6 +5,7 @@ import {
   cherrypickContinue,
   deleteRemote,
   createFeatureBranch,
+  cherrypick,
 } from '../services/git';
 import * as childProcess from '../services/child-process-promisified';
 
@@ -20,7 +21,7 @@ describe('getUnmergedFiles', () => {
       repoName: 'kibana',
     } as BackportOptions;
 
-    expect(await getUnmergedFiles(options)).toEqual([
+    await expect(await getUnmergedFiles(options)).toEqual([
       ' - /myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt',
       ' - /myHomeDir/.backport/repositories/elastic/kibana/conflicting-file2.txt',
     ]);
@@ -36,7 +37,7 @@ describe('createFeatureBranch', () => {
   const baseBranch = '4.x';
   const featureBranch = 'backport/4.x/commit-72f94e76';
 
-  it('should throw HandledError', () => {
+  it('should throw HandledError', async () => {
     expect.assertions(1);
     const err = {
       killed: false,
@@ -49,20 +50,20 @@ describe('createFeatureBranch', () => {
     };
 
     jest.spyOn(childProcess, 'exec').mockRejectedValue(err);
-    expect(
+    await expect(
       createFeatureBranch(options, baseBranch, featureBranch)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"The branch \\"4.x\\" is invalid or doesn't exist"`
     );
   });
 
-  it('should rethrow normal error', () => {
+  it('should rethrow normal error', async () => {
     expect.assertions(1);
     const err = new Error('just a normal error');
     jest.spyOn(childProcess, 'exec').mockRejectedValue(err);
     expect.assertions(1);
 
-    expect(
+    await expect(
       createFeatureBranch(options, baseBranch, featureBranch)
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"just a normal error"`);
   });
@@ -86,7 +87,7 @@ describe('deleteRemote', () => {
     };
 
     jest.spyOn(childProcess, 'exec').mockRejectedValue(err);
-    expect(await deleteRemote(options, remoteName)).toBe(undefined);
+    await expect(await deleteRemote(options, remoteName)).toBe(undefined);
   });
 
   it('should rethrow normal error', async () => {
@@ -94,9 +95,51 @@ describe('deleteRemote', () => {
     jest.spyOn(childProcess, 'exec').mockRejectedValue(err);
     expect.assertions(1);
 
-    expect(
+    await expect(
       deleteRemote(options, remoteName)
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"just a normal error"`);
+  });
+});
+
+describe('cherrypick', () => {
+  const options = {
+    repoOwner: 'elastic',
+    repoName: 'kibana',
+  } as BackportOptions;
+
+  const commit = {
+    branch: '7.x',
+    formattedMessage: '',
+    sha: 'abcd',
+  };
+
+  it('should swallow cherrypick error', async () => {
+    jest
+      .spyOn(childProcess, 'exec')
+      .mockResolvedValueOnce({ stderr: '', stdout: '' });
+
+    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce({
+      killed: false,
+      code: 128,
+      signal: null,
+      cmd: 'git cherry-pick abcd',
+      stdout: '',
+      stderr: '',
+    });
+    await expect(await cherrypick(options, commit)).toBe(false);
+  });
+
+  it('should re-throw other errors', async () => {
+    const err = new Error('non-cherrypick error');
+    jest
+      .spyOn(childProcess, 'exec')
+      .mockResolvedValueOnce({ stderr: '', stdout: '' });
+
+    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce(err);
+
+    await expect(
+      cherrypick(options, commit)
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"non-cherrypick error"`);
   });
 });
 
@@ -118,7 +161,7 @@ describe('cherrypickContinue', () => {
     };
 
     jest.spyOn(childProcess, 'exec').mockRejectedValue(err);
-    expect(await cherrypickContinue(options)).toBe(undefined);
+    await expect(await cherrypickContinue(options)).toBe(undefined);
   });
 
   it('should re-throw other errors', async () => {
@@ -126,7 +169,7 @@ describe('cherrypickContinue', () => {
     jest.spyOn(childProcess, 'exec').mockRejectedValue(err);
     expect.assertions(1);
 
-    expect(
+    await expect(
       cherrypickContinue(options)
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"non-cherrypick error"`);
   });
