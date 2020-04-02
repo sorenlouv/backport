@@ -23,13 +23,7 @@ export async function runWithArgs(args: string[]) {
           `Please check the logs for addtional details: ${getLogfilePath()}`
         )
       );
-      logger.info('Unknown error:');
-      if (e) {
-        logger.info(e);
-        logger.info('code:', e.code);
-        logger.info('cmd:', e.cmd);
-        logger.info(e.stack);
-      }
+      logger.info('Unknown error:', e);
     }
 
     // wait exiting until logs have been flushed to disc
