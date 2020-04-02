@@ -133,9 +133,8 @@ export async function cherrypickContinue(options: BackportOptions) {
     }
 
     logger.info(
-      `Cherry pick continue failed. Probably because the cherry pick operation was manually completed. ${JSON.stringify(
-        e
-      )}`
+      `Cherry pick continue failed. Probably because the cherry pick operation was manually completed`,
+      e
     );
   }
 }

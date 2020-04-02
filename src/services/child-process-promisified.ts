@@ -9,7 +9,7 @@ export async function exec(cmd: string, options: child_process.ExecOptions) {
     maxBuffer: 100 * 1024 * 1024,
     ...options,
   });
-  logger.verbose(`exec result: ${JSON.stringify(res)}`);
+  logger.verbose(`exec result`, res);
   return res;
 }
 
