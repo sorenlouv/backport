@@ -10,7 +10,7 @@ import {
 import * as childProcess from '../services/child-process-promisified';
 
 describe('getUnmergedFiles', () => {
-  it('should split by linebreak and remove empty and duplicate items', async () => {
+  it('should split lines and remove empty', async () => {
     jest.spyOn(childProcess, 'exec').mockResolvedValue({
       stdout: 'conflicting-file.txt\nconflicting-file2.txt\n',
       stderr: '',
@@ -25,6 +25,20 @@ describe('getUnmergedFiles', () => {
       ' - /myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt',
       ' - /myHomeDir/.backport/repositories/elastic/kibana/conflicting-file2.txt',
     ]);
+  });
+
+  it('should not error on empty', async () => {
+    jest.spyOn(childProcess, 'exec').mockResolvedValue({
+      stdout: '',
+      stderr: '',
+    });
+
+    const options = {
+      repoOwner: 'elastic',
+      repoName: 'kibana',
+    } as BackportOptions;
+
+    await expect(await getUnmergedFiles(options)).toEqual([]);
   });
 });
 

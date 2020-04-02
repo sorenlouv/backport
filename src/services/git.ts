@@ -106,10 +106,8 @@ export async function cherrypick(
   );
 
   const cmd = `git cherry-pick ${commit.sha}`;
-
   try {
     await exec(cmd, { cwd: getRepoPath(options) });
-
     return true;
   } catch (e) {
     // re-throw unknown errors
