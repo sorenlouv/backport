@@ -65,10 +65,16 @@ export async function gqlRequest<DataResponse>({
         (error) => error.message
       );
 
-      throw new HandledError(
-        `Unexpected response from Github:
+      if (errorMessages) {
+        throw new HandledError(errorMessages.join(', '));
+      }
 
-${JSON.stringify(errorMessages ? errorMessages : e.response.data, null, 2)}`
+      throw new HandledError(
+        `Unexpected response from Github:\n${JSON.stringify(
+          e.response.data,
+          null,
+          2
+        )}`
       );
     }
 
