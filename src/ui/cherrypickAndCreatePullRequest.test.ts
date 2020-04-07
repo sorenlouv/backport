@@ -223,25 +223,25 @@ describe('cherrypickAndCreatePullRequest', () => {
       expect(promptSpy.mock.calls).toMatchInlineSnapshot(`
         Array [
           Array [
-            "[0mResolve the conflicts in the following files and then return here. You do not need to \`git add\` or \`git commit\`:[0m
+            "[0mResolve the conflicts in the following files. You do not need to \`git add\` or \`git commit\`:[0m
         [0m - /myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt[0m
 
-        Press ENTER to stage and commit the above files...",
+        Press ENTER when the conflicts have been resolved",
           ],
           Array [
-            "[0mResolve the conflicts in the following files and then return here. You do not need to \`git add\` or \`git commit\`:[0m
+            "[0mResolve the conflicts in the following files. You do not need to \`git add\` or \`git commit\`:[0m
         [0m - /myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt[0m
 
-        Press ENTER to stage and commit the above files...",
+        Press ENTER when the conflicts have been resolved",
           ],
           Array [
-            "[0mResolve the conflicts in the following files and then return here. You do not need to \`git add\` or \`git commit\`:[0m
+            "[0mResolve the conflicts in the following files. You do not need to \`git add\` or \`git commit\`:[0m
         [0m - /myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt[0m
 
-        Press ENTER to stage and commit the above files...",
+        Press ENTER when the conflicts have been resolved",
           ],
           Array [
-            "[0mResolve the conflicts in the following files and then return here. You do not need to \`git add\` or \`git commit\`:[0m
+            "[0mThe following files are unstaged:[0m
         [0m - /myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt[0m
 
         Press ENTER to stage and commit the above files...",
