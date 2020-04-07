@@ -154,12 +154,14 @@ async function listConflictingFiles(options: BackportOptions) {
     consoleLog(''); // linebreak
     const res = await confirmPrompt(
       dedent(`
-        ${chalk.reset(
-          `Resolve the conflicts in the following files. You do not need to \`git add\` or \`git commit\`:`
-        )}
+        ${chalk.reset(`The following files have conflicts:`)}
         ${chalk.reset(filesWithConflicts.join('\n'))}
 
-        Press ENTER when the conflicts have been resolved
+        ${chalk.reset.italic(
+          'You do not need to `git add` or `git commit` the files - simply fix the conflicts.'
+        )}
+
+        Press ENTER to continue
       `)
     );
     if (!res) {
@@ -185,7 +187,7 @@ async function listUnstagedFiles(options: BackportOptions) {
       ${chalk.reset(`The following files are unstaged:`)}
       ${chalk.reset(unmergedFiles.join('\n'))}
 
-      Press ENTER to stage and commit the above files...
+      Press ENTER to stage them
     `)
   );
   if (!res) {
