@@ -151,6 +151,7 @@ async function listConflictingFiles(options: BackportOptions) {
       return;
     }
 
+    consoleLog(''); // linebreak
     const res = await confirmPrompt(
       dedent(`
         ${chalk.reset(
@@ -178,6 +179,7 @@ async function listUnstagedFiles(options: BackportOptions) {
     return;
   }
 
+  consoleLog(''); // linebreak
   const res = await confirmPrompt(
     dedent(`
       ${chalk.reset(`The following files are unstaged:`)}
@@ -189,6 +191,7 @@ async function listUnstagedFiles(options: BackportOptions) {
   if (!res) {
     throw new HandledError('Aborted');
   }
+  consoleLog(''); // linebreak
 }
 
 function getPullRequestTitle(
