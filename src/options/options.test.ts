@@ -1,6 +1,6 @@
+import axios from 'axios';
 import { OptionsFromCliArgs } from './cliArgs';
 import { validateRequiredOptions, getOptions } from './options';
-import axios from 'axios';
 
 describe('getOptions', () => {
   function getPerformStartChecksSpy({

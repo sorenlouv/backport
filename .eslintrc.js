@@ -4,7 +4,7 @@ module.exports = {
     node: true,
   },
   ignorePatterns: ['dist/', 'node_modules/'],
-  plugins: ['@typescript-eslint', 'jest', 'import-order'],
+  plugins: ['@typescript-eslint', 'jest', 'import', 'import-order'],
   parser: '@typescript-eslint/parser', // Specifies the ESLint parser
   extends: [
     'plugin:@typescript-eslint/recommended', // Uses the recommended rules from the @typescript-eslint/eslint-plugin
@@ -12,10 +12,21 @@ module.exports = {
     'plugin:prettier/recommended', // Enables eslint-plugin-prettier and displays prettier errors as ESLint errors. Make sure this is always the last configuration in the extends array.
     'plugin:jest/recommended',
     'eslint:recommended',
-    'plugin:import/typescript',
   ],
   rules: {
-    'import-order/import-order': 2,
+    'import/order': [
+      'error',
+      {
+        groups: [
+          'builtin',
+          'external',
+          'internal',
+          'parent',
+          'sibling',
+          'index',
+        ],
+      },
+    ],
     '@typescript-eslint/ban-ts-ignore': 'off',
     '@typescript-eslint/camelcase': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',

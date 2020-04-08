@@ -1,6 +1,6 @@
+import { AxiosError } from 'axios';
 import { HandledError } from '../../HandledError';
 import { logger } from '../../logger';
-import { AxiosError } from 'axios';
 
 // Docs: https://developer.github.com/v3/#client-errors
 type GithubV3Error = AxiosError<{

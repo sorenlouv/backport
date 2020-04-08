@@ -1,7 +1,7 @@
+import os from 'os';
 import axios from 'axios';
 import inquirer from 'inquirer';
 import { commitsWithPullRequestsMock } from '../../services/github/v4/mocks/commitsByAuthorMock';
-import os from 'os';
 import childProcess = require('child_process');
 import {
   HOMEDIR_PATH,

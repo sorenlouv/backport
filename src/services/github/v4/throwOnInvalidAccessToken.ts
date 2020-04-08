@@ -1,7 +1,7 @@
-import { GithubV4Response } from './apiRequestV4';
-import { HandledError } from '../../HandledError';
 import { AxiosResponse } from 'axios';
+import { HandledError } from '../../HandledError';
 import { getGlobalConfigPath } from '../../env';
+import { GithubV4Response } from './apiRequestV4';
 
 export function throwOnInvalidAccessToken({
   repoOwner,

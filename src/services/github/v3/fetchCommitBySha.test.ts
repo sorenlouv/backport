@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { fetchCommitBySha } from './fetchCommitBySha';
 import { BackportOptions } from '../../../options/options';
+import { fetchCommitBySha } from './fetchCommitBySha';
 
 describe('fetchCommitBySha', () => {
   it('should return single commit with pull request', async () => {

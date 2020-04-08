@@ -1,12 +1,12 @@
+import axios from 'axios';
 import { CommitSelected } from '../Commit';
+import { getDefaultOptions } from '../../../test/getDefaultOptions';
 import {
   fetchCommitsByAuthor,
   getExistingBackportPRs,
 } from './fetchCommitsByAuthor';
 import { commitsWithPullRequestsMock } from './mocks/commitsByAuthorMock';
 import { getCommitsByAuthorMock } from './mocks/getCommitsByAuthorMock';
-import { getDefaultOptions } from '../../../test/getDefaultOptions';
-import axios from 'axios';
 import { getPullRequestEdgeMock } from './mocks/getPullRequestEdgeMock';
 
 const currentUserMock = { user: { id: 'myUserId' } } as const;

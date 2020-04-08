@@ -1,12 +1,12 @@
 import { BackportOptions } from '../../../options/options';
 import { CommitChoice } from '../Commit';
-import { fetchAuthorId } from './fetchAuthorId';
 import {
   getFirstCommitMessageLine,
   getFormattedCommitMessage,
 } from '../commitFormatters';
-import { apiRequestV4 } from './apiRequestV4';
 import { HandledError } from '../../HandledError';
+import { fetchAuthorId } from './fetchAuthorId';
+import { apiRequestV4 } from './apiRequestV4';
 
 export async function fetchCommitsByAuthor(
   options: BackportOptions

@@ -1,7 +1,7 @@
+import makeDir from 'make-dir';
 import * as fs from '../../services/fs-promisified';
 import { PromiseReturnType } from '../../types/PromiseReturnType';
 import { getGlobalConfig, maybeCreateGlobalConfig } from './globalConfig';
-import makeDir from 'make-dir';
 
 describe('config', () => {
   afterEach(() => jest.restoreAllMocks());

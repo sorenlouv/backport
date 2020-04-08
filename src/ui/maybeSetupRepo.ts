@@ -1,3 +1,4 @@
+import makeDir from 'make-dir';
 import {
   addRemote,
   cloneRepo,
@@ -5,7 +6,6 @@ import {
   deleteRepo,
   repoExists,
 } from '../services/git';
-import makeDir from 'make-dir';
 import ora = require('ora');
 import { BackportOptions } from '../options/options';
 import { getRepoOwnerPath } from '../services/env';

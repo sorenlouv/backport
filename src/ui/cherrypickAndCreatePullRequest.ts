@@ -21,9 +21,9 @@ import { getShortSha } from '../services/github/commitFormatters';
 import { consoleLog } from '../services/logger';
 import { exec } from '../services/child-process-promisified';
 import { sequentially } from '../services/sequentially';
-import { withSpinner } from './withSpinner';
 import { confirmPrompt } from '../services/prompts';
 import { HandledError } from '../services/HandledError';
+import { withSpinner } from './withSpinner';
 import dedent = require('dedent');
 import isEmpty = require('lodash.isempty');
 

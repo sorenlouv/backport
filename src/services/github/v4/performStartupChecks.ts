@@ -1,11 +1,11 @@
+import { AxiosError } from 'axios';
+import { validateRequiredOptions } from '../../../options/options';
+import { HandledError } from '../../HandledError';
 import {
   apiRequestV4,
   handleGithubV4Error,
   GithubV4Response,
 } from './apiRequestV4';
-import { validateRequiredOptions } from '../../../options/options';
-import { HandledError } from '../../HandledError';
-import { AxiosError } from 'axios';
 import { throwOnInvalidAccessToken } from './throwOnInvalidAccessToken';
 
 export interface DataResponse {

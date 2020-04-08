@@ -1,8 +1,8 @@
 import axios from 'axios';
 import httpAdapter from 'axios/lib/adapters/http';
-import { getCommitBySha } from './getCommits';
 import { BackportOptions } from '../options/options';
 import { commitByShaMock } from '../services/github/v3/mocks/commitByShaMock';
+import { getCommitBySha } from './getCommits';
 
 axios.defaults.adapter = httpAdapter;
 

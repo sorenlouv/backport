@@ -1,14 +1,14 @@
 import axios from 'axios';
-import { BackportOptions } from '../options/options';
-import * as prompts from '../services/prompts';
-import { cherrypickAndCreatePullRequest } from './cherrypickAndCreatePullRequest';
-import * as childProcess from '../services/child-process-promisified';
-import * as logger from '../services/logger';
 import dedent from 'dedent';
 import ora from 'ora';
+import * as childProcess from '../services/child-process-promisified';
+import * as logger from '../services/logger';
+import * as prompts from '../services/prompts';
+import { BackportOptions } from '../options/options';
 import { PromiseReturnType } from '../types/PromiseReturnType';
 import { CommitSelected } from '../services/github/Commit';
 import { ExecError } from '../test/ExecError';
+import { cherrypickAndCreatePullRequest } from './cherrypickAndCreatePullRequest';
 
 type ExecReturnType = PromiseReturnType<typeof childProcess.exec>;
 

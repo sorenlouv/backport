@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { BackportOptions } from '../../../options/options';
-import { handleGithubV3Error } from './handleGithubV3Error';
 import { logger } from '../../logger';
+import { handleGithubV3Error } from './handleGithubV3Error';
 
 export async function addLabelsToPullRequest(
   {

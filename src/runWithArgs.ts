@@ -1,10 +1,10 @@
+import chalk from 'chalk';
+import ora from 'ora';
 import { getOptions } from './options/options';
 import { runWithOptions } from './runWithOptions';
 import { HandledError } from './services/HandledError';
 import { initLogger } from './services/logger';
 import { getLogfilePath } from './services/env';
-import chalk from 'chalk';
-import ora from 'ora';
 
 export async function runWithArgs(args: string[]) {
   const logger = initLogger();

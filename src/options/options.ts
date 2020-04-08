@@ -2,10 +2,9 @@ import isEmpty from 'lodash.isempty';
 import { HandledError } from '../services/HandledError';
 import { PromiseReturnType } from '../types/PromiseReturnType';
 import { getGlobalConfigPath } from '../services/env';
+import { performStartupChecks } from '../services/github/v4/performStartupChecks';
 import { getOptionsFromCliArgs, OptionsFromCliArgs } from './cliArgs';
 import { getOptionsFromConfigFiles } from './config/config';
-
-import { performStartupChecks } from '../services/github/v4/performStartupChecks';
 
 export type BackportOptions = Readonly<PromiseReturnType<typeof getOptions>>;
 export async function getOptions(argv: readonly string[]) {
