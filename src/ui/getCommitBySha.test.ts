@@ -1,14 +1,14 @@
 import axios from 'axios';
-import httpAdapter from 'axios/lib/adapters/http';
 import { BackportOptions } from '../options/options';
 import { commitByShaMock } from '../services/github/v3/mocks/commitByShaMock';
 import { getCommitBySha } from './getCommits';
 
-axios.defaults.adapter = httpAdapter;
-
 describe('getCommitBySha', () => {
   it('should return a single commit without PR', async () => {
-    const axiosSpy = mockCommitItems([commitByShaMock]);
+    const axiosSpy = jest
+      .spyOn(axios, 'get')
+      .mockResolvedValue({ data: { items: [commitByShaMock] } });
+
     const commit = await getCommitBySha({
       username: 'sqren',
       accessToken: 'myAccessToken',
@@ -36,7 +36,7 @@ describe('getCommitBySha', () => {
   });
 
   it('should throw error if sha does not exist', async () => {
-    mockCommitItems([]);
+    jest.spyOn(axios, 'get').mockResolvedValue({ data: { items: [] } });
 
     await expect(
       getCommitBySha({
@@ -48,7 +48,3 @@ describe('getCommitBySha', () => {
     ).rejects.toThrowError('No commit found on master with sha "myCommitSha"');
   });
 });
-
-function mockCommitItems(items: any) {
-  return jest.spyOn(axios, 'get').mockResolvedValue({ data: { items } });
-}

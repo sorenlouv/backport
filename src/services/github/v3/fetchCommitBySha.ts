@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import isEmpty from 'lodash.isempty';
 import { BackportOptions } from '../../../options/options';
 import { HandledError } from '../../HandledError';
-import { CommitSelected } from '../Commit';
+import { CommitSelected } from '../../../types/Commit';
 import { getFormattedCommitMessage } from '../commitFormatters';
 import { handleGithubV3Error } from './handleGithubV3Error';
 

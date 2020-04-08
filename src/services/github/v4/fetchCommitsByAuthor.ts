@@ -1,5 +1,5 @@
 import { BackportOptions } from '../../../options/options';
-import { CommitChoice } from '../Commit';
+import { CommitChoice } from '../../../types/Commit';
 import {
   getFirstCommitMessageLine,
   getFormattedCommitMessage,

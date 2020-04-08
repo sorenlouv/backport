@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { CommitSelected } from '../Commit';
 import { getDefaultOptions } from '../../../test/getDefaultOptions';
+import { CommitSelected } from '../../../types/Commit';
 import {
   fetchCommitsByAuthor,
   getExistingBackportPRs,

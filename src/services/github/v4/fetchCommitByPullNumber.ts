@@ -1,5 +1,5 @@
 import { BackportOptions } from '../../../options/options';
-import { CommitSelected } from '../Commit';
+import { CommitSelected } from '../../../types/Commit';
 import { getFormattedCommitMessage } from '../commitFormatters';
 import { HandledError } from '../../HandledError';
 import { apiRequestV4 } from './apiRequestV4';

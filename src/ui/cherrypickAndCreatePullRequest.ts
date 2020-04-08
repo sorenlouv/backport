@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import ora = require('ora');
 import { BackportOptions } from '../options/options';
-import { CommitSelected } from '../services/github/Commit';
+import { CommitSelected } from '../types/Commit';
 import { addLabelsToPullRequest } from '../services/github/v3/addLabelsToPullRequest';
 import {
   cherrypick,

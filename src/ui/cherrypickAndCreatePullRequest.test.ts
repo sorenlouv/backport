@@ -6,7 +6,7 @@ import * as logger from '../services/logger';
 import * as prompts from '../services/prompts';
 import { BackportOptions } from '../options/options';
 import { PromiseReturnType } from '../types/PromiseReturnType';
-import { CommitSelected } from '../services/github/Commit';
+import { CommitSelected } from '../types/Commit';
 import { ExecError } from '../test/ExecError';
 import { cherrypickAndCreatePullRequest } from './cherrypickAndCreatePullRequest';
 

@@ -2,11 +2,11 @@ import { resolve as pathResolve } from 'path';
 import del from 'del';
 import uniq from 'lodash.uniq';
 import { BackportOptions } from '../options/options';
+import { CommitSelected } from '../types/Commit';
 import { HandledError } from './HandledError';
 import { stat } from './fs-promisified';
 import { getRepoOwnerPath, getRepoPath } from './env';
 import { execAsCallback, exec } from './child-process-promisified';
-import { CommitSelected } from './github/Commit';
 import { logger } from './logger';
 
 async function folderExists(path: string): Promise<boolean> {
