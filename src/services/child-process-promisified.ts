@@ -5,12 +5,17 @@ import { logger } from './logger';
 export async function exec(cmd: string, options: child_process.ExecOptions) {
   logger.info(`exec cmd: ${cmd}`);
   const execPromisified = promisify(child_process.exec);
-  const res = await execPromisified(cmd, {
-    maxBuffer: 100 * 1024 * 1024,
-    ...options,
-  });
-  logger.verbose(`exec result`, res);
-  return res;
+  try {
+    const res = await execPromisified(cmd, {
+      maxBuffer: 100 * 1024 * 1024,
+      ...options,
+    });
+    logger.verbose(`exec result:`, res);
+    return res;
+  } catch (e) {
+    logger.info(`exec error:`, e);
+    throw e;
+  }
 }
 
 export const execAsCallback = (

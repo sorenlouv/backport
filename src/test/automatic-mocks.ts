@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { last } from 'lodash';
 import os from 'os';
 

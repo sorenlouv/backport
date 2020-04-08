@@ -6,14 +6,18 @@ import isString from 'lodash.isstring';
 import dedent from 'dedent';
 
 const { combine } = format;
-const { argv } = yargs.help(false);
 
 // wrapper around console.log
 export function consoleLog(message: string) {
   console.log(message);
 }
 
-const level = argv.verbose ? 'verbose' : argv.debug ? 'debug' : 'info';
+const { argv } = yargs.help(false);
+export const logLevel = argv.verbose
+  ? 'verbose'
+  : argv.debug
+  ? 'debug'
+  : 'info';
 
 let winstonInstance: winston.Logger;
 
@@ -40,7 +44,7 @@ export function initLogger() {
     transports: [
       // log to file
       new winston.transports.File({
-        level,
+        level: logLevel,
         format: combine(
           format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
           winston.format.metadata({
@@ -53,12 +57,12 @@ export function initLogger() {
             }
 
             if (isString(info.metadata.meta)) {
-              return `${info.timestamp} ${info.message}\n${dedent(
+              return `${info.timestamp}: ${info.message}\n${dedent(
                 info.metadata.meta
               )}\n`;
             }
 
-            return `${info.timestamp} ${info.message}\n${safeJsonStringify(
+            return `${info.timestamp}: ${info.message}\n${safeJsonStringify(
               info.metadata.meta,
               null,
               2

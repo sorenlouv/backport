@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import ora = require('ora');
 import { BackportOptions } from '../options/options';
 import { CommitSelected } from '../services/github/Commit';
-import { addLabelsToPullRequest } from '../services/github/addLabelsToPullRequest';
+import { addLabelsToPullRequest } from '../services/github/v3/addLabelsToPullRequest';
 import {
   cherrypick,
   createFeatureBranch,
@@ -15,7 +15,7 @@ import {
   cherrypickContinue,
   getFilesWithConflicts,
 } from '../services/git';
-import { createPullRequest } from '../services/github/createPullRequest';
+import { createPullRequest } from '../services/github/v3/createPullRequest';
 import { getRepoPath } from '../services/env';
 import { getShortSha } from '../services/github/commitFormatters';
 import { consoleLog } from '../services/logger';

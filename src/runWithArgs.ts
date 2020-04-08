@@ -4,14 +4,19 @@ import { HandledError } from './services/HandledError';
 import { initLogger } from './services/logger';
 import { getLogfilePath } from './services/env';
 import chalk from 'chalk';
+import ora from 'ora';
 
 export async function runWithArgs(args: string[]) {
   const logger = initLogger();
 
+  const spinner = ora().start('Initializing');
   try {
     const options = await getOptions(args);
+    spinner.stop();
     await runWithOptions(options);
   } catch (e) {
+    spinner.stop();
+
     if (e instanceof HandledError) {
       console.error(e.message);
     } else {

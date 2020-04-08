@@ -6,7 +6,7 @@ import { logger } from './services/logger';
 import { cherrypickAndCreatePullRequest } from './ui/cherrypickAndCreatePullRequest';
 import { sequentially } from './services/sequentially';
 import { HandledError } from './services/HandledError';
-import { addLabelsToPullRequest } from './services/github/addLabelsToPullRequest';
+import { addLabelsToPullRequest } from './services/github/v3/addLabelsToPullRequest';
 import { withSpinner } from './ui/withSpinner';
 
 export async function runWithOptions(options: BackportOptions) {

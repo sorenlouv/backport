@@ -1,10 +1,10 @@
 import axios from 'axios';
 import inquirer from 'inquirer';
-import * as createPullRequest from './services/github/createPullRequest';
-import * as fetchCommitsByAuthor from './services/github/fetchCommitsByAuthor';
+import * as createPullRequest from './services/github/v3/createPullRequest';
+import * as fetchCommitsByAuthor from './services/github/v4/fetchCommitsByAuthor';
 import * as fs from './services/fs-promisified';
 import { BackportOptions } from './options/options';
-import { commitsWithPullRequestsMock } from './services/github/mocks/commitsByAuthorMock';
+import { commitsWithPullRequestsMock } from './services/github/v4/mocks/commitsByAuthorMock';
 import { runWithOptions } from './runWithOptions';
 import * as childProcess from './services/child-process-promisified';
 import { PromiseReturnType } from './types/PromiseReturnType';

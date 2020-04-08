@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { HandledError } from '../HandledError';
-import { gqlRequest } from './gqlRequest';
+import { HandledError } from '../../HandledError';
+import { apiRequestV4 } from './apiRequestV4';
 
-describe('gqlRequest', () => {
+describe('apiRequestV4', () => {
   describe('when request succeeds', () => {
     let spy: jest.SpyInstance;
     let res: unknown;
@@ -13,7 +13,7 @@ describe('gqlRequest', () => {
         },
       } as any);
 
-      res = await gqlRequest({
+      res = await apiRequestV4({
         accessToken: 'myAccessToken',
         githubApiBaseUrlV4: 'https://my-custom-api.com/graphql',
         query: 'myQuery',
@@ -60,7 +60,7 @@ describe('gqlRequest', () => {
 
     it('should return parsed github error', async () => {
       return expect(
-        gqlRequest({
+        apiRequestV4({
           accessToken: 'myAccessToken',
           githubApiBaseUrlV4: 'myApiHostname',
           query: 'myQuery',
@@ -68,7 +68,9 @@ describe('gqlRequest', () => {
             foo: 'bar',
           },
         })
-      ).rejects.toThrowError(new HandledError(`some error, some other error`));
+      ).rejects.toThrowError(
+        new HandledError(`some error, some other error (Github v4)`)
+      );
     });
   });
 
@@ -85,7 +87,7 @@ describe('gqlRequest', () => {
 
     it('should return parsed github error', async () => {
       return expect(
-        gqlRequest({
+        apiRequestV4({
           accessToken: 'myAccessToken',
           githubApiBaseUrlV4: 'myApiHostname',
           query: 'myQuery',

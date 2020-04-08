@@ -4,22 +4,22 @@ import { PromiseReturnType } from '../types/PromiseReturnType';
 import { getGlobalConfigPath } from '../services/env';
 import { getOptionsFromCliArgs, OptionsFromCliArgs } from './cliArgs';
 import { getOptionsFromConfigFiles } from './config/config';
-import { verifyAccessToken } from '../services/github/verifyAccessToken';
-import { getDefaultRepoBranch } from '../services/github/getDefaultRepoBranch';
+
+import { performStartupChecks } from '../services/github/v4/performStartupChecks';
 
 export type BackportOptions = Readonly<PromiseReturnType<typeof getOptions>>;
-export async function getOptions(argv: string[]) {
+export async function getOptions(argv: readonly string[]) {
   const optionsFromConfig = await getOptionsFromConfigFiles();
   const optionsFromCli = getOptionsFromCliArgs(optionsFromConfig, argv);
   const validatedOptions = validateRequiredOptions(optionsFromCli);
 
-  await verifyAccessToken(validatedOptions);
+  const { defaultBranch } = await performStartupChecks(validatedOptions);
 
   return {
     ...validatedOptions,
     sourceBranch: validatedOptions.sourceBranch
       ? validatedOptions.sourceBranch
-      : await getDefaultRepoBranch(validatedOptions),
+      : defaultBranch,
   };
 }
 

@@ -1,12 +1,12 @@
-import { BackportOptions } from '../../options/options';
-import { CommitChoice } from './Commit';
+import { BackportOptions } from '../../../options/options';
+import { CommitChoice } from '../Commit';
 import { fetchAuthorId } from './fetchAuthorId';
 import {
   getFirstCommitMessageLine,
   getFormattedCommitMessage,
-} from './commitFormatters';
-import { gqlRequest } from './gqlRequest';
-import { HandledError } from '../HandledError';
+} from '../commitFormatters';
+import { apiRequestV4 } from './apiRequestV4';
+import { HandledError } from '../../HandledError';
 
 export async function fetchCommitsByAuthor(
   options: BackportOptions
@@ -98,7 +98,7 @@ export async function fetchCommitsByAuthor(
   `;
 
   const authorId = await fetchAuthorId(options);
-  const res = await gqlRequest<DataResponse>({
+  const res = await apiRequestV4<DataResponse>({
     githubApiBaseUrlV4,
     accessToken,
     query,

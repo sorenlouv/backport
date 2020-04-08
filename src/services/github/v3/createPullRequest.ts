@@ -1,8 +1,12 @@
 import axios, { AxiosResponse } from 'axios';
-import { BackportOptions } from '../../options/options';
-import { GithubIssue } from './GithubApiTypes';
-import { handleGithubError } from './handleGithubError';
-import { logger } from '../logger';
+import { BackportOptions } from '../../../options/options';
+import { handleGithubV3Error } from './handleGithubV3Error';
+import { logger } from '../../logger';
+
+interface GithubIssue {
+  html_url: string;
+  number: number;
+}
 
 export async function createPullRequest(
   {
@@ -39,6 +43,6 @@ export async function createPullRequest(
       number: res.data.number,
     };
   } catch (e) {
-    throw handleGithubError(e);
+    throw handleGithubV3Error(e);
   }
 }
