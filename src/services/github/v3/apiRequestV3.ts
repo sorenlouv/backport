@@ -17,7 +17,7 @@ export type GithubV3Error = AxiosError<{
 export async function apiRequestV3<T>(config: AxiosRequestConfig) {
   try {
     const response = await Axios.request<T>(config);
-    logger.debug(
+    logger.info(
       `Request (Github v3): ${config.method?.toUpperCase()} ${config.url}`
     );
     logger.debug('Response headers (Github v3):', response.headers);
