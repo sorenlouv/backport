@@ -4,7 +4,7 @@ import { PromiseReturnType } from '../../types/PromiseReturnType';
 import { getProjectConfig } from './projectConfig';
 
 describe('getProjectConfig', () => {
-  afterEach(() => jest.restoreAllMocks());
+  afterEach(() => jest.clearAllMocks());
 
   describe('when projectConfig is valid', () => {
     let projectConfig: PromiseReturnType<typeof getProjectConfig>;

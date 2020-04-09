@@ -1,4 +1,5 @@
 import * as globalConfig from '../options/config/globalConfig';
+import * as logger from '../services/logger';
 import { postinstall } from './postinstall';
 
 describe('postinstall', () => {
@@ -7,14 +8,13 @@ describe('postinstall', () => {
   });
 
   it("should create global config if it doesn't exist", async () => {
-    const consoleSpy = jest.spyOn(console, 'log');
     const maybeCreateGlobalConfigAndFolderSpy = jest
       .spyOn(globalConfig, 'maybeCreateGlobalConfigAndFolder')
       .mockResolvedValueOnce(true);
 
     await postinstall();
     expect(maybeCreateGlobalConfigAndFolderSpy).toBeCalledTimes(1);
-    expect(consoleSpy).toBeCalledWith(
+    expect(logger.consoleLog).toBeCalledWith(
       'Global config successfully created in /myHomeDir/.backport/config.json'
     );
   });

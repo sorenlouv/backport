@@ -4,7 +4,7 @@ import { PromiseReturnType } from '../../types/PromiseReturnType';
 import { getGlobalConfig, maybeCreateGlobalConfig } from './globalConfig';
 
 describe('config', () => {
-  afterEach(() => jest.restoreAllMocks());
+  afterEach(() => jest.clearAllMocks());
 
   describe('getGlobalConfig', () => {
     let res: PromiseReturnType<typeof getGlobalConfig>;

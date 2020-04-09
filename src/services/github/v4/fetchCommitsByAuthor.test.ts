@@ -14,7 +14,7 @@ const currentUserMock = { user: { id: 'myUserId' } } as const;
 
 describe('fetchCommitsByAuthor', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('when commit has an associated pull request', () => {

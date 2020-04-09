@@ -9,6 +9,7 @@ const { combine } = format;
 
 // wrapper around console.log
 export function consoleLog(message: string) {
+  // eslint-disable-next-line no-console
   console.log(message);
 }
 

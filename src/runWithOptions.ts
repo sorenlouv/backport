@@ -1,7 +1,7 @@
 import { BackportOptions } from './options/options';
 import { HandledError } from './services/HandledError';
 import { addLabelsToPullRequest } from './services/github/v3/addLabelsToPullRequest';
-import { logger } from './services/logger';
+import { logger, consoleLog } from './services/logger';
 import { sequentially } from './services/sequentially';
 import { cherrypickAndCreatePullRequest } from './ui/cherrypickAndCreatePullRequest';
 import { getBranches } from './ui/getBranches';
@@ -23,7 +23,7 @@ export async function runWithOptions(options: BackportOptions) {
       backportSucceeded = true;
     } catch (e) {
       if (e instanceof HandledError) {
-        console.error(e.message);
+        consoleLog(e.message);
       } else {
         throw e;
       }
