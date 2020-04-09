@@ -1,12 +1,12 @@
 import axios from 'axios';
 import dedent from 'dedent';
 import ora from 'ora';
+import { BackportOptions } from '../options/options';
 import * as childProcess from '../services/child-process-promisified';
 import * as logger from '../services/logger';
 import * as prompts from '../services/prompts';
-import { BackportOptions } from '../options/options';
-import { CommitSelected } from '../types/Commit';
 import { ExecError } from '../test/ExecError';
+import { CommitSelected } from '../types/Commit';
 import { SpyHelper } from '../types/SpyHelper';
 import { cherrypickAndCreatePullRequest } from './cherrypickAndCreatePullRequest';
 

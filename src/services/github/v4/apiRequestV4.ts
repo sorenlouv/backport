@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { AxiosError } from 'axios';
-import { logger } from '../../logger';
 import { HandledError } from '../../HandledError';
+import { logger } from '../../logger';
 
 export interface GithubV4Response<DataResponse> {
   data: DataResponse;

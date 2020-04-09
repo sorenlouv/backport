@@ -1,8 +1,8 @@
 import { once } from 'lodash';
 import { getOptions } from '../../options/options';
 import { runWithOptions } from '../../runWithOptions';
-import { REMOTE_ORIGIN_REPO_PATH, REMOTE_FORK_REPO_PATH } from './envConstants';
 import { createSpies } from './createSpies';
+import { REMOTE_ORIGIN_REPO_PATH, REMOTE_FORK_REPO_PATH } from './envConstants';
 import {
   getBranches,
   getLatestCommit,

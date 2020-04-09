@@ -1,5 +1,5 @@
-import { getGlobalConfigPath } from '../services/env';
 import { maybeCreateGlobalConfigAndFolder } from '../options/config/globalConfig';
+import { getGlobalConfigPath } from '../services/env';
 
 export async function postinstall() {
   try {

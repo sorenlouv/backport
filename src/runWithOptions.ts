@@ -1,12 +1,12 @@
 import { BackportOptions } from './options/options';
+import { HandledError } from './services/HandledError';
+import { addLabelsToPullRequest } from './services/github/v3/addLabelsToPullRequest';
+import { logger } from './services/logger';
+import { sequentially } from './services/sequentially';
+import { cherrypickAndCreatePullRequest } from './ui/cherrypickAndCreatePullRequest';
 import { getBranches } from './ui/getBranches';
 import { getCommits } from './ui/getCommits';
 import { maybeSetupRepo } from './ui/maybeSetupRepo';
-import { logger } from './services/logger';
-import { cherrypickAndCreatePullRequest } from './ui/cherrypickAndCreatePullRequest';
-import { sequentially } from './services/sequentially';
-import { HandledError } from './services/HandledError';
-import { addLabelsToPullRequest } from './services/github/v3/addLabelsToPullRequest';
 import { withSpinner } from './ui/withSpinner';
 
 export async function runWithOptions(options: BackportOptions) {

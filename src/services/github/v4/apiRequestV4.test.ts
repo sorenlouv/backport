@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { HandledError } from '../../HandledError';
 import { SpyHelper } from '../../../types/SpyHelper';
+import { HandledError } from '../../HandledError';
 import { apiRequestV4 } from './apiRequestV4';
 
 describe('apiRequestV4', () => {

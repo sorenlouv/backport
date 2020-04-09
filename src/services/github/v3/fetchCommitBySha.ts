@@ -1,7 +1,7 @@
 import isEmpty from 'lodash.isempty';
 import { BackportOptions } from '../../../options/options';
-import { HandledError } from '../../HandledError';
 import { CommitSelected } from '../../../types/Commit';
+import { HandledError } from '../../HandledError';
 import { getFormattedCommitMessage } from '../commitFormatters';
 import { apiRequestV3 } from './apiRequestV3';
 

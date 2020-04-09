@@ -14,7 +14,22 @@ module.exports = {
     'eslint:recommended',
   ],
   rules: {
-    'import/order': 'error',
+    'import/order': [
+      'error',
+      {
+        alphabetize: { order: 'asc' },
+        'newlines-between': 'never',
+        groups: [
+          'builtin',
+          'external',
+          'internal',
+          'parent',
+          'sibling',
+          'index',
+        ],
+      },
+    ],
+
     '@typescript-eslint/ban-ts-ignore': 'off',
     '@typescript-eslint/camelcase': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',

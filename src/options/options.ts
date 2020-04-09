@@ -1,8 +1,8 @@
 import isEmpty from 'lodash.isempty';
 import { HandledError } from '../services/HandledError';
-import { PromiseReturnType } from '../types/PromiseReturnType';
 import { getGlobalConfigPath } from '../services/env';
 import { getDefaultRepoBranchAndPerformStartupChecks } from '../services/github/v4/getDefaultRepoBranchAndPerformStartupChecks';
+import { PromiseReturnType } from '../types/PromiseReturnType';
 import { getOptionsFromCliArgs, OptionsFromCliArgs } from './cliArgs';
 import { getOptionsFromConfigFiles } from './config/config';
 

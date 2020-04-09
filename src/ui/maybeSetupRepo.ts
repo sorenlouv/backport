@@ -1,4 +1,7 @@
+import ora = require('ora');
 import makeDir from 'make-dir';
+import { BackportOptions } from '../options/options';
+import { getRepoOwnerPath } from '../services/env';
 import {
   addRemote,
   cloneRepo,
@@ -6,9 +9,6 @@ import {
   deleteRepo,
   repoExists,
 } from '../services/git';
-import ora = require('ora');
-import { BackportOptions } from '../options/options';
-import { getRepoOwnerPath } from '../services/env';
 
 export async function maybeSetupRepo(options: BackportOptions) {
   const isAlreadyCloned = await repoExists(options);

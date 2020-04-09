@@ -1,8 +1,8 @@
+import dedent from 'dedent';
+import isString from 'lodash.isstring';
+import safeJsonStringify from 'safe-json-stringify';
 import winston, { format } from 'winston';
 import yargs from 'yargs';
-import safeJsonStringify from 'safe-json-stringify';
-import isString from 'lodash.isstring';
-import dedent from 'dedent';
 import { getLogfilePath } from './env';
 
 const { combine } = format;

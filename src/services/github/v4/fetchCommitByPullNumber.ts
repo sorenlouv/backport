@@ -1,7 +1,7 @@
 import { BackportOptions } from '../../../options/options';
 import { CommitSelected } from '../../../types/Commit';
-import { getFormattedCommitMessage } from '../commitFormatters';
 import { HandledError } from '../../HandledError';
+import { getFormattedCommitMessage } from '../commitFormatters';
 import { apiRequestV4 } from './apiRequestV4';
 
 export async function fetchCommitByPullNumber(

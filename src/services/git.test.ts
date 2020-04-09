@@ -1,4 +1,5 @@
 import { BackportOptions } from '../options/options';
+import * as childProcess from '../services/child-process-promisified';
 import {
   addRemote,
   getUnmergedFiles,
@@ -8,7 +9,6 @@ import {
   cherrypick,
   getFilesWithConflicts,
 } from '../services/git';
-import * as childProcess from '../services/child-process-promisified';
 
 describe('getUnmergedFiles', () => {
   it('should split lines and remove empty', async () => {
