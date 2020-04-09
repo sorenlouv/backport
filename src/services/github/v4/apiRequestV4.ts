@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { AxiosError } from 'axios';
-import { logger, logLevel } from '../../logger';
+import { logger } from '../../logger';
 import { HandledError } from '../../HandledError';
 
 export interface GithubV4Response<DataResponse> {
@@ -31,9 +31,6 @@ export async function apiRequestV4<DataResponse>({
   };
   handleError?: boolean;
 }) {
-  logger.debug('Query (Github v4):', query);
-  logger.debug('Variables (Github v4):', variables);
-
   try {
     const response = await axios.post<GithubV4Response<DataResponse>>(
       githubApiBaseUrlV4,
@@ -53,16 +50,15 @@ export async function apiRequestV4<DataResponse>({
       throw newError;
     }
 
+    logger.debug('Query (Github v4):', query);
+    logger.debug('Variables (Github v4):', variables);
     logger.debug('Response headers (Github v4):', response.headers);
     logger.debug('Response data (Github v4)', response.data);
 
     return response.data.data;
   } catch (e) {
-    if (logLevel !== 'debug') {
-      logger.info('Query (Github v4):', query);
-      logger.info('Variables (Github v4):', variables);
-    }
-
+    logger.info('Query (Github v4):', query);
+    logger.info('Variables (Github v4):', variables);
     logger.info('Response headers (Github v4):', e.response?.headers);
     logger.info('Response data (Github v4)', e.response?.data);
 

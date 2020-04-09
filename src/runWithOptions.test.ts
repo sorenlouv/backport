@@ -7,14 +7,12 @@ import { BackportOptions } from './options/options';
 import { commitsWithPullRequestsMock } from './services/github/v4/mocks/commitsByAuthorMock';
 import { runWithOptions } from './runWithOptions';
 import * as childProcess from './services/child-process-promisified';
-import { PromiseReturnType } from './types/PromiseReturnType';
-
-type ExecReturnType = PromiseReturnType<typeof childProcess.exec>;
+import { SpyHelper } from './types/SpyHelper';
 
 describe('runWithOptions', () => {
-  let rpcExecMock: jest.SpyInstance;
-  let rpcExecOriginalMock: jest.SpyInstance;
-  let inquirerPromptMock: jest.SpyInstance;
+  let rpcExecMock: SpyHelper<typeof childProcess.exec>;
+  let rpcExecOriginalMock: SpyHelper<typeof childProcess.execAsCallback>;
+  let inquirerPromptMock: SpyHelper<typeof inquirer.prompt>;
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -59,7 +57,7 @@ describe('runWithOptions', () => {
 
     rpcExecMock = jest
       .spyOn(childProcess, 'exec')
-      .mockResolvedValue({ stdout: 'success' } as ExecReturnType);
+      .mockResolvedValue({ stdout: 'success', stderr: '' });
     rpcExecOriginalMock = jest.spyOn(childProcess, 'execAsCallback');
 
     jest.spyOn(fs, 'writeFile').mockResolvedValue(undefined);
@@ -76,12 +74,12 @@ describe('runWithOptions', () => {
         return { promptResult: args[0].choices[0].name };
       }) as any);
 
-    // mock axios post request (graphql)
+    // Mock Github v4 API
     jest
       .spyOn(axios, 'post')
 
       // mock author id
-      .mockReturnValueOnce({
+      .mockResolvedValueOnce({
         data: {
           data: {
             user: {
@@ -89,22 +87,26 @@ describe('runWithOptions', () => {
             },
           },
         },
-      } as any)
+      })
 
       // mock list of commits
-      .mockReturnValueOnce({
+      .mockResolvedValueOnce({
         data: {
           data: commitsWithPullRequestsMock,
         },
-      } as any)
+      });
+
+    // Mock Github v3 API
+    jest
+      .spyOn(axios, 'request')
 
       // mock create pull request
-      .mockReturnValueOnce({
+      .mockResolvedValueOnce({
         data: {
           html_url: 'pull request url',
           number: 1337,
         },
-      } as any);
+      });
 
     await runWithOptions(options);
   });

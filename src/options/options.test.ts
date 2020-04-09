@@ -11,7 +11,7 @@ describe('getOptions', () => {
     refName?: 'backport';
   }) {
     // startup check request
-    return jest.spyOn(axios, 'post').mockReturnValueOnce({
+    return jest.spyOn(axios, 'post').mockResolvedValueOnce({
       data: {
         data: {
           repository: {
@@ -22,7 +22,7 @@ describe('getOptions', () => {
           },
         },
       },
-    } as any);
+    });
   }
 
   const argv = [

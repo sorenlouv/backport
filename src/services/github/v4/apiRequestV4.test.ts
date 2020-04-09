@@ -1,17 +1,18 @@
 import axios from 'axios';
 import { HandledError } from '../../HandledError';
+import { SpyHelper } from '../../../types/SpyHelper';
 import { apiRequestV4 } from './apiRequestV4';
 
 describe('apiRequestV4', () => {
   describe('when request succeeds', () => {
-    let spy: jest.SpyInstance;
+    let spy: SpyHelper<typeof axios.post>;
     let res: unknown;
     beforeEach(async () => {
-      spy = jest.spyOn(axios, 'post').mockResolvedValue({
+      spy = jest.spyOn(axios, 'post').mockResolvedValueOnce({
         data: {
           data: 'some data',
         },
-      } as any);
+      });
 
       res = await apiRequestV4({
         accessToken: 'myAccessToken',
@@ -55,7 +56,7 @@ describe('apiRequestV4', () => {
             ],
           },
         },
-      } as any);
+      });
     });
 
     it('should return parsed github error', async () => {
@@ -82,7 +83,7 @@ describe('apiRequestV4', () => {
             foo: 'bar',
           },
         },
-      } as any);
+      });
     });
 
     it('should return parsed github error', async () => {

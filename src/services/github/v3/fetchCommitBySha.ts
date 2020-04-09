@@ -1,10 +1,9 @@
-import axios, { AxiosResponse } from 'axios';
 import isEmpty from 'lodash.isempty';
 import { BackportOptions } from '../../../options/options';
 import { HandledError } from '../../HandledError';
 import { CommitSelected } from '../../../types/Commit';
 import { getFormattedCommitMessage } from '../commitFormatters';
-import { handleGithubV3Error } from './handleGithubV3Error';
+import { apiRequestV3 } from './apiRequestV3';
 
 export interface GithubCommit {
   commit: {
@@ -29,30 +28,24 @@ export async function fetchCommitBySha(
     username,
   } = options;
 
-  let res: AxiosResponse<GithubSearch<GithubCommit>>;
-  try {
-    res = await axios.get<GithubSearch<GithubCommit>>(
-      `${githubApiBaseUrlV3}/search/commits?q=hash:${sha}%20repo:${repoOwner}/${repoName}&per_page=1`,
-      {
-        auth: {
-          username: username,
-          password: accessToken,
-        },
-        headers: {
-          Accept: 'application/vnd.github.cloak-preview',
-        },
-      }
-    );
-  } catch (e) {
-    throw handleGithubV3Error(e);
-  }
+  const res = await apiRequestV3<GithubSearch<GithubCommit>>({
+    method: 'get',
+    url: `${githubApiBaseUrlV3}/search/commits?q=hash:${sha}%20repo:${repoOwner}/${repoName}&per_page=1`,
+    auth: {
+      username: username,
+      password: accessToken,
+    },
+    headers: {
+      Accept: 'application/vnd.github.cloak-preview',
+    },
+  });
 
   // TODO: it should be possible to backport from other branches than master
-  if (isEmpty(res.data.items)) {
+  if (isEmpty(res.items)) {
     throw new HandledError(`No commit found on master with sha "${sha}"`);
   }
 
-  const commitRes = res.data.items[0];
+  const commitRes = res.items[0];
   const fullSha = commitRes.sha;
 
   const formattedMessage = getFormattedCommitMessage({

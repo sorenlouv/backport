@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { getDefaultOptions } from '../../../test/getDefaultOptions';
 import { CommitSelected } from '../../../types/Commit';
+import { SpyHelper } from '../../../types/SpyHelper';
 import {
   fetchCommitsByAuthor,
   getExistingBackportPRs,
@@ -17,10 +18,10 @@ describe('fetchCommitsByAuthor', () => {
   });
 
   describe('when commit has an associated pull request', () => {
-    let requestSpy: jest.SpyInstance;
+    let axiosPostSpy: SpyHelper<typeof axios.post>;
     let res: CommitSelected[];
     beforeEach(async () => {
-      requestSpy = jest
+      axiosPostSpy = jest
         .spyOn(axios, 'post')
         .mockResolvedValueOnce({ data: { data: currentUserMock } })
         .mockResolvedValueOnce({ data: { data: commitsWithPullRequestsMock } });
@@ -62,11 +63,11 @@ describe('fetchCommitsByAuthor', () => {
     });
 
     it('should call with correct args to fetch author id', () => {
-      expect(requestSpy.mock.calls[0]).toMatchSnapshot();
+      expect(axiosPostSpy.mock.calls[0]).toMatchSnapshot();
     });
 
     it('should call with correct args to fetch commits', () => {
-      expect(requestSpy.mock.calls[1]).toMatchSnapshot();
+      expect(axiosPostSpy.mock.calls[1]).toMatchSnapshot();
     });
   });
 
@@ -98,7 +99,7 @@ describe('fetchCommitsByAuthor', () => {
 
   describe('when a custom github api hostname is supplied', () => {
     it('should be used in gql requests', async () => {
-      const requestSpy = jest
+      const axiosPostSpy = jest
         .spyOn(axios, 'post')
         .mockResolvedValueOnce({ data: { data: currentUserMock } })
         .mockResolvedValueOnce({ data: { data: commitsWithPullRequestsMock } });
@@ -108,7 +109,7 @@ describe('fetchCommitsByAuthor', () => {
       });
       await fetchCommitsByAuthor(options);
 
-      const baseUrls = requestSpy.mock.calls.map((args) => args[0]);
+      const baseUrls = axiosPostSpy.mock.calls.map((args) => args[0]);
       expect(baseUrls).toEqual([
         'https://api.github.my-company.com',
         'https://api.github.my-company.com',

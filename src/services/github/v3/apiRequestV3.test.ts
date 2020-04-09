@@ -1,4 +1,4 @@
-import { handleGithubV3Error } from './handleGithubV3Error';
+import { handleGithubV3Error } from './apiRequestV3';
 
 describe('handleGithubV3Error', () => {
   it('should return formatted error when pull request already exists', () => {

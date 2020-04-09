@@ -1,7 +1,6 @@
-import axios, { AxiosResponse } from 'axios';
 import { BackportOptions } from '../../../options/options';
 import { logger } from '../../logger';
-import { handleGithubV3Error } from './handleGithubV3Error';
+import { apiRequestV3 } from './apiRequestV3';
 
 interface GithubIssue {
   html_url: string;
@@ -26,23 +25,18 @@ export async function createPullRequest(
   logger.info(
     `Creating PR with title: "${payload.title}". ${payload.head} -> ${payload.base}`
   );
+  const res = await apiRequestV3<GithubIssue>({
+    method: 'post',
+    url: `${githubApiBaseUrlV3}/repos/${repoOwner}/${repoName}/pulls`,
+    data: payload,
+    auth: {
+      username: username,
+      password: accessToken,
+    },
+  });
 
-  try {
-    const res: AxiosResponse<GithubIssue> = await axios.post(
-      `${githubApiBaseUrlV3}/repos/${repoOwner}/${repoName}/pulls`,
-      payload,
-      {
-        auth: {
-          username: username,
-          password: accessToken,
-        },
-      }
-    );
-    return {
-      html_url: res.data.html_url,
-      number: res.data.number,
-    };
-  } catch (e) {
-    throw handleGithubV3Error(e);
-  }
+  return {
+    html_url: res.html_url,
+    number: res.number,
+  };
 }

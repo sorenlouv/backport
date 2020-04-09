@@ -2,7 +2,7 @@ import isEmpty from 'lodash.isempty';
 import { HandledError } from '../services/HandledError';
 import { PromiseReturnType } from '../types/PromiseReturnType';
 import { getGlobalConfigPath } from '../services/env';
-import { performStartupChecks } from '../services/github/v4/performStartupChecks';
+import { getDefaultRepoBranchAndPerformStartupChecks } from '../services/github/v4/getDefaultRepoBranchAndPerformStartupChecks';
 import { getOptionsFromCliArgs, OptionsFromCliArgs } from './cliArgs';
 import { getOptionsFromConfigFiles } from './config/config';
 
@@ -12,7 +12,9 @@ export async function getOptions(argv: readonly string[]) {
   const optionsFromCli = getOptionsFromCliArgs(optionsFromConfig, argv);
   const validatedOptions = validateRequiredOptions(optionsFromCli);
 
-  const { defaultBranch } = await performStartupChecks(validatedOptions);
+  const { defaultBranch } = await getDefaultRepoBranchAndPerformStartupChecks(
+    validatedOptions
+  );
 
   return {
     ...validatedOptions,

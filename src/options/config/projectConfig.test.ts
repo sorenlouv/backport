@@ -11,7 +11,7 @@ describe('getProjectConfig', () => {
     beforeEach(async () => {
       jest
         .spyOn(fs, 'readFile')
-        .mockResolvedValue(
+        .mockResolvedValueOnce(
           JSON.stringify({ upstream: 'elastic/kibana', branches: ['6.x'] })
         );
 

@@ -15,7 +15,7 @@ describe('fetchCommitBySha', () => {
     } as BackportOptions;
 
     const axiosSpy = jest
-      .spyOn(axios, 'get')
+      .spyOn(axios, 'request')
 
       // mock commits
       .mockResolvedValueOnce({

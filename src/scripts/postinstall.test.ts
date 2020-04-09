@@ -10,7 +10,7 @@ describe('postinstall', () => {
     const consoleSpy = jest.spyOn(console, 'log');
     const maybeCreateGlobalConfigAndFolderSpy = jest
       .spyOn(globalConfig, 'maybeCreateGlobalConfigAndFolder')
-      .mockResolvedValue(true);
+      .mockResolvedValueOnce(true);
 
     await postinstall();
     expect(maybeCreateGlobalConfigAndFolderSpy).toBeCalledTimes(1);
@@ -23,7 +23,7 @@ describe('postinstall', () => {
     const consoleSpy = jest.spyOn(console, 'log');
     const maybeCreateGlobalConfigAndFolderSpy = jest
       .spyOn(globalConfig, 'maybeCreateGlobalConfigAndFolder')
-      .mockResolvedValue(false);
+      .mockResolvedValueOnce(false);
 
     await postinstall();
     expect(maybeCreateGlobalConfigAndFolderSpy).toBeCalledTimes(1);

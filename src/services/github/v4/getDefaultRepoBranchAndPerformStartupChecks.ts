@@ -15,14 +15,17 @@ export interface DataResponse {
   };
 }
 
-export async function performStartupChecks({
+export async function getDefaultRepoBranchAndPerformStartupChecks({
   accessToken,
   githubApiBaseUrlV4,
   repoName,
   repoOwner,
 }: ReturnType<typeof validateRequiredOptions>) {
   const query = /* GraphQL */ `
-    query performStartupChecks($repoOwner: String!, $repoName: String!) {
+    query getDefaultRepoBranchAndPerformStartupChecks(
+      $repoOwner: String!
+      $repoName: String!
+    ) {
       repository(owner: $repoOwner, name: $repoName) {
         # check whether "backport" branch exists
         ref(qualifiedName: "refs/heads/backport") {
