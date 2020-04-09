@@ -1,6 +1,6 @@
-import Axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import Axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { HandledError } from '../../HandledError';
-import { logger, logLevel } from '../../logger';
+import { logger } from '../../logger';
 
 // Docs: https://developer.github.com/v3/#client-errors
 export type GithubV3Error = AxiosError<{
@@ -17,19 +17,26 @@ export type GithubV3Error = AxiosError<{
 export async function apiRequestV3<T>(config: AxiosRequestConfig) {
   try {
     const response = await Axios.request<T>(config);
+
     logger.info(
-      `Request (Github v3): ${config.method?.toUpperCase()} ${config.url}`
+      `${config.method?.toUpperCase()} ${config.url} (status: ${
+        response?.status
+      })`
     );
-    logger.debug('Response headers (Github v3):', response.headers);
-    logger.debug('Response data (Github v3):', response.data);
+    logger.debug('Response headers:', response.headers);
+    logger.verbose('Response data:', response.data);
 
     return response.data;
-  } catch (e) {
+  } catch (ex) {
+    const e = ex as GithubV3Error;
+
     logger.info(
-      `Request (Github v3): ${config.method?.toUpperCase()} ${config.url}`
+      `${config.method?.toUpperCase()} ${config.url} (status: ${
+        e.response?.status
+      })`
     );
-    logger.info('Response headers (Github v3):', e.response?.headers);
-    logger.info('Response data (Github v3):', e.response?.data);
+    logger.info('Response headers:', e.response?.headers);
+    logger.info('Response data:', e.response?.data);
 
     throw handleGithubV3Error(e);
   }

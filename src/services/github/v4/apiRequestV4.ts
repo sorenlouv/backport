@@ -50,17 +50,19 @@ export async function apiRequestV4<DataResponse>({
       throw newError;
     }
 
-    logger.info('Query (Github v4):', query);
-    logger.verbose('Variables (Github v4):', variables);
-    logger.verbose('Response headers (Github v4):', response.headers);
-    logger.verbose('Response data (Github v4)', response.data);
+    logger.info(`POST ${githubApiBaseUrlV4} (status: ${response.status})`);
+    logger.verbose('Query:', query);
+    logger.verbose('Variables:', variables);
+    logger.debug('Response headers:', response.headers);
+    logger.verbose('Response data', response.data);
 
     return response.data.data;
   } catch (e) {
-    logger.info('Query (Github v4):', query);
-    logger.info('Variables (Github v4):', variables);
-    logger.info('Response headers (Github v4):', e.response?.headers);
-    logger.info('Response data (Github v4)', e.response?.data);
+    logger.info(`POST ${githubApiBaseUrlV4} (status: ${e.response?.status})`);
+    logger.info('Query:', query);
+    logger.info('Variables:', variables);
+    logger.info('Response headers:', e.response?.headers);
+    logger.info('Response data', e.response?.data);
 
     if (handleError) {
       throw handleGithubV4Error(e);
