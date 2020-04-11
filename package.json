@@ -100,6 +100,7 @@
     "eslint-plugin-prettier": "^3.1.1",
     "husky": "^4.2.3",
     "jest": "^25.3.0",
+    "jest-snapshot-serializer-ansi": "^1.0.0",
     "lint-staged": "^10.1.2",
     "lodash": "^4.17.15",
     "prettier": "^2.0.4",
