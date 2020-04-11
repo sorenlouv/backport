@@ -1,7 +1,7 @@
 import { execSync, spawn } from 'child_process';
 import stripAnsi from 'strip-ansi';
 
-const options = {
+const execOptions = {
   stdio: 'pipe',
   encoding: 'utf-8',
 } as const;
@@ -11,7 +11,7 @@ function getGlobalConfig() {
   return JSON.parse(
     execSync(
       `./node_modules/.bin/ts-node --transpile-only ./src/test/getGlobalConfig.ts`,
-      options
+      execOptions
     )
   );
 }
@@ -23,34 +23,40 @@ describe('yargs', () => {
   beforeAll(() => {
     const config = getGlobalConfig();
 
+    accessToken = config.accessToken;
+    username = config.username;
+
+    if (!username || !accessToken) {
+      throw new Error('username or accessToken is missing');
+    }
+
     // eslint-disable-next-line no-console
     console.log(
       `Config values came from ${
         config.isConfigFile ? 'config file' : 'environment variables'
       }`
     );
-
-    accessToken = config.accessToken;
-    username = config.username;
   });
 
   it('--version', () => {
-    const res = execSync(`node ./dist/index.js --version`, options);
+    const res = runBackport(`--version`);
     expect(res).toContain(process.env.npm_package_version);
   });
 
   it('-v', () => {
-    const res = execSync(`node ./dist/index.js -v`, options);
+    const res = runBackport(`-v`);
     expect(res).toContain(process.env.npm_package_version);
   });
 
   it('--help', () => {
-    const res = execSync(`node ./dist/index.js --help`, options);
+    const res = runBackport(`--help`);
     expect(res).toContain('Show version number');
   });
 
   it('should return error when branch is missing', () => {
-    const res = execSync(`node ./dist/index.js --upstream foo`, options);
+    const res = runBackport(
+      `--upstream foo  --username ${username} --accessToken ${accessToken}`
+    );
     expect(res).toMatchInlineSnapshot(`
       "Invalid option \\"branches\\"
 
@@ -62,7 +68,9 @@ describe('yargs', () => {
   });
 
   it('should return error when upstream is missing', () => {
-    const res = execSync(`node ./dist/index.js --branch foo`, options);
+    const res = runBackport(
+      `--branch foo  --username ${username} --accessToken ${accessToken}`
+    );
     expect(res).toMatchInlineSnapshot(`
       "Invalid option \\"upstream\\"
 
@@ -74,9 +82,8 @@ describe('yargs', () => {
   });
 
   it('should return error when access token is invalid', () => {
-    const res = execSync(
-      `node ./dist/index.js --branch foo --upstream foo/bar --username some-user --accessToken some-token`,
-      options
+    const res = runBackport(
+      `--branch foo --upstream foo/bar  --username some-user --accessToken some-token`
     );
     expect(res).toContain(
       'Please check your access token and make sure it is valid'
@@ -84,9 +91,8 @@ describe('yargs', () => {
   });
 
   it(`should return error when repo doesn't exist`, () => {
-    const res = execSync(
-      `node ./dist/index.js --branch foo --upstream foo/bar --username ${username} --accessToken ${accessToken}`,
-      options
+    const res = runBackport(
+      `--branch foo --upstream foo/bar --username ${username} --accessToken ${accessToken}`
     );
     expect(res).toMatchInlineSnapshot(`
       "The repository \\"foo/bar\\" doesn't exist
@@ -95,7 +101,7 @@ describe('yargs', () => {
   });
 
   it(`should list commits from master`, async () => {
-    const output = await getOutputFromBackport([
+    const output = await runBackportAsync([
       '--branch',
       'foo',
       '--upstream',
@@ -120,7 +126,7 @@ describe('yargs', () => {
   });
 
   it(`should list commits from 6.3`, async () => {
-    const output = await getOutputFromBackport([
+    const output = await runBackportAsync([
       '--branch',
       'foo',
       '--upstream',
@@ -145,7 +151,13 @@ describe('yargs', () => {
   });
 });
 
-function getOutputFromBackport(options: string[]) {
+function runBackport(args: string) {
+  const cmd = `node ./dist/index.js ${args}`;
+  console.log({ cmd });
+  return execSync(cmd, execOptions);
+}
+
+function runBackportAsync(options: string[]) {
   const proc = spawn('node', ['./dist/index.js', ...options]);
 
   return new Promise<string>((resolve) => {
