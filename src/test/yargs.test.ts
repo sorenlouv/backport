@@ -1,4 +1,5 @@
-import { execSync, spawn, ChildProcessWithoutNullStreams } from 'child_process';
+import { execSync, spawn } from 'child_process';
+import stripAnsi from 'strip-ansi';
 
 const options = {
   stdio: 'pipe',
@@ -93,22 +94,8 @@ describe('yargs', () => {
     `);
   });
 
-  function getCommitsFromOutput(proc: ChildProcessWithoutNullStreams) {
-    return new Promise<string[]>((resolve) => {
-      let total = '';
-      proc.stdout.on('data', (data) => {
-        total += data;
-        const lines = total.toString();
-        if (lines.includes('Select commit to backport')) {
-          resolve(lines);
-        }
-      });
-    });
-  }
-
   it(`should list commits from master`, async () => {
-    const proc = spawn('node', [
-      './dist/index.js',
+    const output = await getOutputFromBackport([
       '--branch',
       'foo',
       '--upstream',
@@ -121,22 +108,19 @@ describe('yargs', () => {
       '6',
     ]);
 
-    const commits = await getCommitsFromOutput(proc);
-    expect(commits).toMatchInlineSnapshot(`
+    expect(output).toMatchInlineSnapshot(`
       "? Select commit to backport (Use arrow keys)
-      ❯ 1. Create \\"conflicting-file.txt\\" in master (f8bb8b70)  
-        2. Update romeo-and-juliet.txt (91eee967)  
-        3. Add 👻 (2e63475c)  
-        4. Add witch (#85)  
-        5. Add SF mention (#80) 6.3 
-        6. Add backport config (3827bbba)  "
+      ❯ 1. Create \\"conflicting-file.txt\\" in master (f8bb8b70)
+        2. Update romeo-and-juliet.txt (91eee967)
+        3. Add 👻 (2e63475c)
+        4. Add witch (#85)
+        5. Add SF mention (#80) 6.3
+        6. Add backport config (3827bbba)"
     `);
-    proc.kill();
   });
 
   it(`should list commits from 6.3`, async () => {
-    const proc = spawn('node', [
-      './dist/index.js',
+    const output = await getOutputFromBackport([
       '--branch',
       'foo',
       '--upstream',
@@ -151,14 +135,28 @@ describe('yargs', () => {
       '6.3',
     ]);
 
-    const commits = await getCommitsFromOutput(proc);
-    expect(commits).toMatchInlineSnapshot(`
+    expect(output).toMatchInlineSnapshot(`
       "? Select commit to backport (Use arrow keys)
-      ❯ 1. Create \`conflicting-file.txt\` in 6.3 (e8128293)  
-        2. Add SF mention (#80) 6.3 
-        3. Add backport config (3827bbba)  
-        4. Initial commit (5ea0da55)  "
+      ❯ 1. Create \`conflicting-file.txt\` in 6.3 (e8128293)
+        2. Add SF mention (#80) 6.3
+        3. Add backport config (3827bbba)
+        4. Initial commit (5ea0da55)"
     `);
-    proc.kill();
   });
 });
+
+function getOutputFromBackport(options: string[]) {
+  const proc = spawn('node', ['./dist/index.js', ...options]);
+
+  return new Promise<string>((resolve) => {
+    let total = '';
+    proc.stdout.on('data', (data) => {
+      total += data;
+      const lines = total.toString();
+      if (lines.includes('Select commit to backport')) {
+        resolve(stripAnsi(lines).replace(/\s+$/gm, ''));
+        proc.kill();
+      }
+    });
+  });
+}
