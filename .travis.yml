@@ -15,8 +15,9 @@ cache: yarn
 before_script:
   - yarn
 script:
-  - yarn lint
-  - yarn cover
+  - yarn tsc
+  - yarn lint # lint ts and eslint
+  - yarn cover # run tests and publish coverage
 after_success:
   - npm install -g coveralls
   - cat coverage/lcov.info | coveralls
