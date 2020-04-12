@@ -34,8 +34,8 @@ describe('when a single commit is backported', () => {
   });
 
   it('should call logger correctly', () => {
-    const { logger } = spies.getSpyCalls();
-    expect(logger).toMatchSnapshot();
+    const { loggerCalls } = spies.getSpyCalls();
+    expect(loggerCalls).toMatchSnapshot();
   });
 
   it('should make correct API requests', () => {

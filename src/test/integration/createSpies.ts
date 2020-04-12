@@ -104,21 +104,25 @@ export function createSpies({ commitCount }: { commitCount: number }) {
         (call) => call[0].data
       );
 
+      const loggerSpy = (logger as any).spy as SpyHelper<typeof logger.info>;
+      const loggerCalls = loggerSpy.mock.calls.map(([msg, meta]) => {
+        return [
+          msg,
+
+          typeof meta === 'string'
+            ? meta
+                // remove commit hash in commit summary
+                .replace?.(/\b[0-9a-f]{5,40}\b/g, '<COMMIT HASH>')
+
+                // remove author in commit summary (response from `git cherrypick`)
+                .replace(/^\s+Author:.+$\n/gm, '')
+            : meta,
+        ];
+      });
+
       return {
         // all log calls (info, verbose and debug) are al routed to the same spy
-        // @ts-ignore
-        logger: (logger.spy as SpyHelper<typeof logger.info>).mock.calls.map(
-          ([msg, meta]) => {
-            return [
-              msg,
-
-              // remove commit hash
-              typeof meta === 'string'
-                ? meta.replace?.(/\b[0-9a-f]{5,40}\b/g, '<COMMIT HASH>')
-                : meta,
-            ];
-          }
-        ),
+        loggerCalls,
         getDefaultRepoBranchAndPerformStartupChecks,
         getAuthorRequestConfig,
         getCommitsRequestConfig,
