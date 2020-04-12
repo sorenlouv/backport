@@ -80,6 +80,25 @@ export function getOptionsFromCliArgs(
       description: 'Select multiple branches/commits',
       type: 'boolean',
     })
+    .option('mainline', {
+      description:
+        'Parent number of the mainline (https://git-scm.com/docs/git-cherry-pick)',
+      type: 'number',
+      coerce: (mainline) => {
+        // `--mainline` (default to 1 when no parent is given)
+        if (mainline === undefined) {
+          return 1;
+        }
+
+        // use specified mainline parent
+        if (Number.isInteger(mainline)) {
+          return mainline as number;
+        }
+
+        // Invalid value provided
+        throw new Error(`--mainline must be an integer. Received: ${mainline}`);
+      },
+    })
     .option('multipleCommits', {
       default: configOptions.multipleCommits,
       description: 'Backport multiple commits',

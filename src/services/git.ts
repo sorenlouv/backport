@@ -105,8 +105,10 @@ export async function cherrypick(
     `git fetch ${options.repoOwner} ${commit.branch}:${commit.branch} --force`,
     { cwd: getRepoPath(options) }
   );
+  const mainline =
+    options.mainline != undefined ? ` --mainline ${options.mainline}` : '';
 
-  const cmd = `git cherry-pick ${commit.sha}`;
+  const cmd = `git cherry-pick${mainline} ${commit.sha}`;
   try {
     await exec(cmd, { cwd: getRepoPath(options) });
     return true;
