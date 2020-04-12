@@ -29,13 +29,6 @@ describe('yargs', () => {
     if (!username || !accessToken) {
       throw new Error('username or accessToken is missing');
     }
-
-    // eslint-disable-next-line no-console
-    console.log(
-      `Config values came from ${
-        config.isConfigFile ? 'config file' : 'environment variables'
-      }`
-    );
   });
 
   it('--version', () => {
@@ -125,7 +118,7 @@ describe('yargs', () => {
     `);
   });
 
-  it(`should list commits from 6.3`, async () => {
+  it(`should list commits from 7.x`, async () => {
     const output = await runBackportAsync([
       '--branch',
       'foo',
@@ -138,22 +131,23 @@ describe('yargs', () => {
       '--commitsCount',
       '6',
       '--sourceBranch',
-      '6.3',
+      '7.x',
     ]);
 
     expect(output).toMatchInlineSnapshot(`
       "? Select commit to backport (Use arrow keys)
-      ❯ 1. Create \`conflicting-file.txt\` in 6.3 (e8128293)
-        2. Add SF mention (#80) 6.3
-        3. Add backport config (3827bbba)
-        4. Initial commit (5ea0da55)"
+      ❯ 1. Change to be forwardported (#181)
+        2. Create \\"conflicting-file.txt\\" in master (72f94e76)
+        3. Update romeo-and-juliet.txt (91eee967)
+        4. Add 👻 (2e63475c)
+        5. Add witch (#85)
+        6. Add SF mention (#80) 6.3"
     `);
   });
 });
 
 function runBackport(args: string) {
   const cmd = `node ./dist/index.js ${args}`;
-  console.log({ cmd });
   return execSync(cmd, execOptions);
 }
 
@@ -161,12 +155,13 @@ function runBackportAsync(options: string[]) {
   const proc = spawn('node', ['./dist/index.js', ...options]);
 
   return new Promise<string>((resolve) => {
-    let total = '';
-    proc.stdout.on('data', (data) => {
-      total += data;
-      const lines = total.toString();
-      if (lines.includes('Select commit to backport')) {
-        resolve(stripAnsi(lines).replace(/\s+$/gm, ''));
+    let data = '';
+    proc.stdout.on('data', (dataChunk) => {
+      data += dataChunk;
+      const output = data.toString();
+      if (output.includes('Select commit to backport')) {
+        // remove ansi codes and whitespace
+        resolve(stripAnsi(output).replace(/\s+$/gm, ''));
         proc.kill();
       }
     });
