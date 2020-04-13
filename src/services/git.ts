@@ -1,5 +1,6 @@
 import { resolve as pathResolve } from 'path';
 import del from 'del';
+import isEmpty from 'lodash.isempty';
 import uniq from 'lodash.uniq';
 import { BackportOptions } from '../options/options';
 import { CommitSelected } from '../types/Commit';
@@ -111,15 +112,24 @@ export async function cherrypick(
   const cmd = `git cherry-pick${mainline} ${commit.sha}`;
   try {
     await exec(cmd, { cwd: getRepoPath(options) });
-    return true;
+    return { needsResolving: false };
   } catch (e) {
-    // re-throw unknown errors
-    if (e.cmd !== cmd) {
-      throw e;
+    if (e.message.includes('is a merge but no -m option was given')) {
+      throw new HandledError(
+        'Failed to cherrypick because the selected commit was a merge. Please try again by specifying the mainline:\n\n> backport --mainline <parent-number>\n\nOr refer to the git documentation for more information: https://git-scm.com/docs/git-cherry-pick#Documentation/git-cherry-pick.txt---mainlineparent-number'
+      );
     }
 
-    // handle cherrypick-related error
-    return false;
+    const isCherryPickError = e.cmd === cmd;
+    const hasConflicts = !isEmpty(await getFilesWithConflicts(options));
+    const hasUnmergedFiles = !isEmpty(await getUnmergedFiles(options));
+
+    if (isCherryPickError && (hasConflicts || hasUnmergedFiles)) {
+      return { needsResolving: true };
+    }
+
+    // re-throw error if there are no conflicts to solve
+    throw e;
   }
 }
 

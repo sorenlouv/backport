@@ -9,6 +9,11 @@ import {
   cherrypick,
   getFilesWithConflicts,
 } from '../services/git';
+import { ExecError } from '../test/ExecError';
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
 
 describe('getUnmergedFiles', () => {
   it('should split lines and remove empty', async () => {
@@ -54,7 +59,7 @@ describe('getFilesWithConflicts', () => {
         'conflicting-file.txt:1: leftover conflict marker\nconflicting-file.txt:3: leftover conflict marker\nconflicting-file.txt:5: leftover conflict marker\n',
       stderr: '',
     };
-    jest.spyOn(childProcess, 'exec').mockRejectedValue(err);
+    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce(err);
 
     const options = {
       repoOwner: 'elastic',
@@ -88,7 +93,7 @@ describe('createFeatureBranch', () => {
       stderr: "fatal: couldn't find remote ref 4.x\n",
     };
 
-    jest.spyOn(childProcess, 'exec').mockRejectedValue(err);
+    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce(err);
     await expect(
       createFeatureBranch(options, baseBranch, featureBranch)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -99,7 +104,7 @@ describe('createFeatureBranch', () => {
   it('should rethrow normal error', async () => {
     expect.assertions(1);
     const err = new Error('just a normal error');
-    jest.spyOn(childProcess, 'exec').mockRejectedValue(err);
+    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce(err);
     expect.assertions(1);
 
     await expect(
@@ -125,13 +130,13 @@ describe('deleteRemote', () => {
       stderr: "fatal: No such remote: 'origin'\n",
     };
 
-    jest.spyOn(childProcess, 'exec').mockRejectedValue(err);
+    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce(err);
     await expect(await deleteRemote(options, remoteName)).toBe(undefined);
   });
 
   it('should rethrow normal error', async () => {
     const err = new Error('just a normal error');
-    jest.spyOn(childProcess, 'exec').mockRejectedValue(err);
+    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce(err);
     expect.assertions(1);
 
     await expect(
@@ -152,29 +157,88 @@ describe('cherrypick', () => {
     sha: 'abcd',
   };
 
-  it('should swallow cherrypick error', async () => {
+  it('should return `needsResolving: false` when no errors are encountered', async () => {
     jest
       .spyOn(childProcess, 'exec')
+
+      // mock git fetch
+      .mockResolvedValueOnce({ stderr: '', stdout: '' })
+
+      // mock cherry pick command
       .mockResolvedValueOnce({ stderr: '', stdout: '' });
 
-    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce({
-      killed: false,
-      code: 128,
-      signal: null,
-      cmd: 'git cherry-pick abcd',
-      stdout: '',
-      stderr: '',
+    expect(await cherrypick(options, commit)).toEqual({
+      needsResolving: false,
     });
-    await expect(await cherrypick(options, commit)).toBe(false);
   });
 
-  it('should re-throw other errors', async () => {
-    const err = new Error('non-cherrypick error');
-    jest
+  it('should use mainline option when specified', async () => {
+    const execSpy = jest
       .spyOn(childProcess, 'exec')
+
+      // mock git fetch
+      .mockResolvedValueOnce({ stderr: '', stdout: '' })
+
+      // mock cherry pick command
       .mockResolvedValueOnce({ stderr: '', stdout: '' });
 
-    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce(err);
+    await cherrypick({ ...options, mainline: 1 }, commit);
+
+    expect(execSpy.mock.calls[1][0]).toBe('git cherry-pick --mainline 1 abcd');
+  });
+
+  it('should return `needsResolving: true` upon cherrypick error', async () => {
+    jest
+      .spyOn(childProcess, 'exec')
+
+      // mock git fetch
+      .mockResolvedValueOnce({ stderr: '', stdout: '' })
+
+      // mock cherry pick command
+      .mockRejectedValueOnce(
+        new ExecError('some message', {
+          killed: false,
+          code: 128,
+          cmd: 'git cherry-pick abcd',
+          stdout: '',
+          stderr: '',
+        })
+      )
+
+      // mock getFilesWithConflicts
+      .mockRejectedValueOnce(
+        new ExecError('some error', {
+          code: 2,
+          cmd: 'git --no-pager diff --check',
+          stdout:
+            'conflicting-file.txt:1: leftover conflict marker\nconflicting-file.txt:3: leftover conflict marker\nconflicting-file.txt:5: leftover conflict marker\n',
+          stderr: '',
+        })
+      )
+
+      // mock getUnmergedFiles
+      .mockResolvedValueOnce({ stdout: '', stderr: '' });
+
+    expect(await cherrypick(options, commit)).toEqual({
+      needsResolving: true,
+    });
+  });
+
+  it('should re-throw non-cherrypick errors', async () => {
+    jest
+      .spyOn(childProcess, 'exec')
+
+      // mock git fetch
+      .mockResolvedValueOnce({ stderr: '', stdout: '' })
+
+      // mock cherry pick command
+      .mockRejectedValueOnce(new Error('non-cherrypick error'))
+
+      // getFilesWithConflicts
+      .mockResolvedValueOnce({ stdout: '', stderr: '' })
+
+      // getUnmergedFiles
+      .mockResolvedValueOnce({ stdout: '', stderr: '' });
 
     await expect(
       cherrypick(options, commit)
@@ -199,13 +263,13 @@ describe('cherrypickContinue', () => {
         'error: no cherry-pick or revert in progress\nfatal: cherry-pick failed\n',
     };
 
-    jest.spyOn(childProcess, 'exec').mockRejectedValue(err);
+    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce(err);
     await expect(await cherrypickContinue(options)).toBe(undefined);
   });
 
   it('should re-throw other errors', async () => {
     const err = new Error('non-cherrypick error');
-    jest.spyOn(childProcess, 'exec').mockRejectedValue(err);
+    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce(err);
     expect.assertions(1);
 
     await expect(
