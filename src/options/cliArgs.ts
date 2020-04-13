@@ -75,14 +75,9 @@ export function getOptionsFromCliArgs(
       description: 'Pull request labels for the resulting backport PRs',
       type: 'array',
     })
-    .option('multiple', {
-      default: configOptions.multiple,
-      description: 'Select multiple branches/commits',
-      type: 'boolean',
-    })
     .option('mainline', {
       description:
-        'Parent number of the mainline (https://git-scm.com/docs/git-cherry-pick)',
+        'Parent id of merge commit. Defaults to 1 when supplied without arguments',
       type: 'number',
       coerce: (mainline) => {
         // `--mainline` (default to 1 when no parent is given)
@@ -98,6 +93,11 @@ export function getOptionsFromCliArgs(
         // Invalid value provided
         throw new Error(`--mainline must be an integer. Received: ${mainline}`);
       },
+    })
+    .option('multiple', {
+      default: configOptions.multiple,
+      description: 'Select multiple branches/commits',
+      type: 'boolean',
     })
     .option('multipleCommits', {
       default: configOptions.multipleCommits,
