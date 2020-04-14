@@ -116,7 +116,7 @@ export async function cherrypick(
   } catch (e) {
     if (e.message.includes('is a merge but no -m option was given')) {
       throw new HandledError(
-        'Failed to cherrypick because the selected commit was a merge. Please try again by specifying the mainline:\n\n> backport --mainline <parent-number>\n\nOr refer to the git documentation for more information: https://git-scm.com/docs/git-cherry-pick#Documentation/git-cherry-pick.txt---mainlineparent-number'
+        'Failed to cherrypick because the selected commit was a merge. Please try again by specifying the parent with the `mainline` argument:\n\n> backport --mainline\n\nor:\n\n> backport --mainline <parent-number>\n\nOr refer to the git documentation for more information: https://git-scm.com/docs/git-cherry-pick#Documentation/git-cherry-pick.txt---mainlineparent-number'
       );
     }
 

@@ -313,7 +313,7 @@ function setupExecSpy() {
 
       // cherrypick
       if (cmd === 'git cherry-pick mySha') {
-        throw new ExecError('cherrypick failed', { cmd });
+        throw new ExecError({ cmd });
       }
 
       // getFilesWithConflicts
@@ -323,7 +323,7 @@ function setupExecSpy() {
           return { stderr: '', stdout: '' };
         }
 
-        throw new ExecError('Not all conflicts resolved', {
+        throw new ExecError({
           code: 2,
           cmd,
           stdout: `conflicting-file.txt:1: leftover conflict marker\nconflicting-file.txt:3: leftover conflict marker\nconflicting-file.txt:5: leftover conflict marker\n`,

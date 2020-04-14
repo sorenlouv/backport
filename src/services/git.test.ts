@@ -1,3 +1,4 @@
+import dedent from 'dedent';
 import { BackportOptions } from '../options/options';
 import * as childProcess from '../services/child-process-promisified';
 import {
@@ -196,7 +197,7 @@ describe('cherrypick', () => {
 
       // mock cherry pick command
       .mockRejectedValueOnce(
-        new ExecError('some message', {
+        new ExecError({
           killed: false,
           code: 128,
           cmd: 'git cherry-pick abcd',
@@ -207,7 +208,7 @@ describe('cherrypick', () => {
 
       // mock getFilesWithConflicts
       .mockRejectedValueOnce(
-        new ExecError('some error', {
+        new ExecError({
           code: 2,
           cmd: 'git --no-pager diff --check',
           stdout:
@@ -222,6 +223,38 @@ describe('cherrypick', () => {
     expect(await cherrypick(options, commit)).toEqual({
       needsResolving: true,
     });
+  });
+
+  it('it should let the user know about the "--mainline" argument when cherry-picking a merge commit without specifying it', async () => {
+    jest
+      .spyOn(childProcess, 'exec')
+
+      // mock git fetch
+      .mockResolvedValueOnce({ stderr: '', stdout: '' })
+
+      // mock cherry pick command
+      .mockRejectedValueOnce(
+        new ExecError({
+          killed: false,
+          code: 128,
+          signal: null,
+          cmd: 'git cherry-pick 381c7b604110257437a289b1f1742685eb8d79c5',
+          stdout: '',
+          stderr:
+            'error: commit 381c7b604110257437a289b1f1742685eb8d79c5 is a merge but no -m option was given.\nfatal: cherry-pick failed\n',
+        })
+      );
+
+    await expect(cherrypick(options, commit)).rejects
+      .toThrowError(`Failed to cherrypick because the selected commit was a merge. Please try again by specifying the parent with the \`mainline\` argument:
+
+> backport --mainline
+
+or:
+
+> backport --mainline <parent-number>
+
+Or refer to the git documentation for more information: https://git-scm.com/docs/git-cherry-pick#Documentation/git-cherry-pick.txt---mainlineparent-number`);
   });
 
   it('should re-throw non-cherrypick errors', async () => {
