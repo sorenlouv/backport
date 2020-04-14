@@ -1,4 +1,3 @@
-import dedent from 'dedent';
 import { BackportOptions } from '../options/options';
 import * as childProcess from '../services/child-process-promisified';
 import {
