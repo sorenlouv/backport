@@ -158,12 +158,12 @@ Config:
 
 #### `prTitle`
 
-Pull request title pattern. You can access the base branch (`{baseBranch}`) and commit message (`{commitMessages}`) via the special accessors in quotes.
+Pull request title pattern. You can access the target branch (`{targetBranch}`) and commit message (`{commitMessages}`) via the special accessors in quotes.
 Multiple commits will be concatenated and separated by pipes.
 
-Default: `"[{baseBranch}] {commitMessages}"`
+Default: `"[{targetBranch}] {commitMessages}"`
 
-CLI: `--pr-title "{commitMessages} backport for {baseBranch}"`
+CLI: `--pr-title "{commitMessages} backport for {targetBranch}"`
 
 #### `prDescription`
 

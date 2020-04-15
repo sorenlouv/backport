@@ -47,7 +47,7 @@ describe('cherrypickAndCreatePullRequest', () => {
         fork: true,
         labels: ['backport'],
         prDescription: 'myPrSuffix',
-        prTitle: '[{baseBranch}] {commitMessages}',
+        prTitle: '[{targetBranch}] {commitMessages}',
         repoName: 'kibana',
         repoOwner: 'elastic',
         username: 'sqren',
@@ -56,13 +56,13 @@ describe('cherrypickAndCreatePullRequest', () => {
 
       const commits: CommitSelected[] = [
         {
-          branch: '7.x',
+          sourceBranch: '7.x',
           sha: 'mySha',
           formattedMessage: 'myCommitMessage (#1000)',
           pullNumber: 1000,
         },
         {
-          branch: '7.x',
+          sourceBranch: '7.x',
           sha: 'mySha2',
           formattedMessage: 'myOtherCommitMessage (#2000)',
           pullNumber: 2000,
@@ -72,7 +72,7 @@ describe('cherrypickAndCreatePullRequest', () => {
       await cherrypickAndCreatePullRequest({
         options,
         commits,
-        baseBranch: '6.x',
+        targetBranch: '6.x',
       });
     });
 
@@ -138,7 +138,7 @@ describe('cherrypickAndCreatePullRequest', () => {
         githubApiBaseUrlV3: 'https://api.github.com',
         fork: true,
         labels: ['backport'],
-        prTitle: '[{baseBranch}] {commitMessages}',
+        prTitle: '[{targetBranch}] {commitMessages}',
         repoName: 'kibana',
         repoOwner: 'elastic',
         username: 'sqren',
@@ -148,12 +148,12 @@ describe('cherrypickAndCreatePullRequest', () => {
         options,
         commits: [
           {
-            branch: '7.x',
+            sourceBranch: '7.x',
             sha: 'mySha',
             formattedMessage: 'myCommitMessage (mySha)',
           },
         ],
-        baseBranch: '6.x',
+        targetBranch: '6.x',
       });
     });
 
@@ -195,7 +195,7 @@ describe('cherrypickAndCreatePullRequest', () => {
       const options = {
         fork: true,
         labels: ['backport'],
-        prTitle: '[{baseBranch}] {commitMessages}',
+        prTitle: '[{targetBranch}] {commitMessages}',
         repoName: 'kibana',
         repoOwner: 'elastic',
         username: 'sqren',
@@ -207,12 +207,12 @@ describe('cherrypickAndCreatePullRequest', () => {
           options,
           commits: [
             {
-              branch: '7.x',
+              sourceBranch: '7.x',
               sha: 'mySha',
               formattedMessage: 'myCommitMessage',
             },
           ],
-          baseBranch: '6.x',
+          targetBranch: '6.x',
         })
       );
 

@@ -25,7 +25,7 @@ describe('fetchCommitBySha', () => {
     await expect(
       await fetchCommitBySha({ ...options, sha: commitSha })
     ).toEqual({
-      branch: 'master',
+      sourceBranch: 'master',
       formattedMessage: 'myMessage (sha12345)',
       pullNumber: undefined,
       sha: 'sha123456789',

@@ -51,11 +51,11 @@ describe('yargs', () => {
       `--upstream foo  --username ${username} --accessToken ${accessToken}`
     );
     expect(res).toMatchInlineSnapshot(`
-      "Invalid option \\"branches\\"
+      "Invalid option \\"targetBranches\\"
 
       You can add it with either:
        - Config file: \\".backportrc.json\\". Read more: https://github.com/sqren/backport/blob/434a28b431bb58c9a014d4489a95f561e6bb2769/docs/configuration.md#project-config-backportrcjson
-       - CLI: \\"--branches 6.1\\"
+       - CLI: \\"--targetBranches 6.1\\"
       "
     `);
   });

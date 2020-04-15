@@ -33,7 +33,7 @@ export function getOptionsFromCliArgs(
       description: 'Pull request labels for the original PR',
       type: 'array',
     })
-    .option('branches', {
+    .option('targetBranches', {
       default: [] as string[],
       description: 'Branch(es) to backport to',
       type: 'array',
@@ -170,7 +170,8 @@ export function getOptionsFromCliArgs(
   return {
     ...rest,
     accessToken: cliArgs.accessToken || configOptions.accessToken,
-    branchChoices: configOptions.branchChoices,
+    targetBranchChoices: configOptions.targetBranchChoices, // not available as cli argument
+    branchLabelMapping: configOptions.branchLabelMapping, // not available as cli argument
     multipleBranches: cliArgs.multipleBranches || cliArgs.multiple,
     multipleCommits: cliArgs.multipleCommits || cliArgs.multiple,
   };

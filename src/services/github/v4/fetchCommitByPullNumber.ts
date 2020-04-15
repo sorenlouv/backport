@@ -1,5 +1,7 @@
+import uniq from 'lodash.uniq';
 import { BackportOptions } from '../../../options/options';
 import { CommitSelected } from '../../../types/Commit';
+import { filterEmpty } from '../../../utils/filterEmpty';
 import { HandledError } from '../../HandledError';
 import { getFormattedCommitMessage } from '../commitFormatters';
 import { apiRequestV4 } from './apiRequestV4';
@@ -13,6 +15,7 @@ export async function fetchCommitByPullNumber(
     repoOwner,
     pullNumber,
     accessToken,
+    branchLabelMapping,
   } = options;
   const query = /* GraphQL */ `
     query getCommitbyPullNumber(
@@ -28,6 +31,11 @@ export async function fetchCommitByPullNumber(
           mergeCommit {
             oid
             message
+          }
+          labels(first: 50) {
+            nodes {
+              name
+            }
           }
         }
       }
@@ -49,7 +57,10 @@ export async function fetchCommitByPullNumber(
     throw new HandledError(`The PR #${pullNumber} is not merged`);
   }
 
-  const baseBranch = res.repository.pullRequest.baseRef.name;
+  const labels = res.repository.pullRequest.labels.nodes.map(
+    (label) => label.name
+  );
+  const sourceBranch = res.repository.pullRequest.baseRef.name;
   const sha = res.repository.pullRequest.mergeCommit.oid;
   const formattedMessage = getFormattedCommitMessage({
     message: res.repository.pullRequest.mergeCommit.message,
@@ -57,8 +68,14 @@ export async function fetchCommitByPullNumber(
     pullNumber,
   });
 
+  const targetBranches = getTargetBranchesFromLabels(
+    labels,
+    branchLabelMapping
+  );
+
   return {
-    branch: baseBranch,
+    sourceBranch,
+    targetBranches,
     sha,
     formattedMessage,
     pullNumber,
@@ -75,6 +92,41 @@ interface DataResponse {
         oid: string;
         message: string;
       } | null;
+      labels: {
+        nodes: {
+          name: string;
+        }[];
+      };
     };
   };
+}
+
+export function getTargetBranchesFromLabels(
+  labels: string[],
+  branchLabelMapping?: Record<string, string>
+) {
+  if (!branchLabelMapping) {
+    return [];
+  }
+  const targetBranches = labels
+    .flatMap((label) => {
+      // only get first match
+      const result = Object.entries(branchLabelMapping).find(
+        ([labelPattern]) => {
+          const regex = new RegExp(labelPattern);
+          const isMatch = label.match(regex) !== null;
+          return isMatch;
+        }
+      );
+
+      if (result) {
+        const [labelPattern, targetBranch] = result;
+        const regex = new RegExp(labelPattern);
+        return label.replace(regex, targetBranch);
+      }
+    })
+    .filter((targetBranch) => targetBranch !== '')
+    .filter(filterEmpty);
+
+  return uniq(targetBranches);
 }

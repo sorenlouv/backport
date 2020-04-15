@@ -17,10 +17,13 @@ async function prompt<T = unknown>(options: Question) {
   return promptResult;
 }
 
-export async function promptForCommits(
-  commits: CommitChoice[],
-  isMultipleChoice: boolean
-): Promise<CommitChoice[]> {
+export async function promptForCommits({
+  commits,
+  isMultipleChoice,
+}: {
+  commits: CommitChoice[];
+  isMultipleChoice: boolean;
+}): Promise<CommitChoice[]> {
   const choices = commits.map((c, i) => {
     const backportTags = c.existingBackports
       .map((item) => {
@@ -47,16 +50,19 @@ export async function promptForCommits(
 
   const selectedCommits = Array.isArray(res) ? res.reverse() : [res];
   return isEmpty(selectedCommits)
-    ? promptForCommits(commits, isMultipleChoice)
+    ? promptForCommits({ commits, isMultipleChoice })
     : selectedCommits;
 }
 
-export async function promptForBranches(
-  branchChoices: BranchChoice[],
-  isMultipleChoice: boolean
-): Promise<string[]> {
+export async function promptForTargetBranches({
+  targetBranchChoices,
+  isMultipleChoice,
+}: {
+  targetBranchChoices: BranchChoice[];
+  isMultipleChoice: boolean;
+}): Promise<string[]> {
   const res = await prompt<string | string[]>({
-    choices: branchChoices,
+    choices: targetBranchChoices,
     message: 'Select branch to backport to',
     type: isMultipleChoice ? 'checkbox' : 'list',
   });
@@ -64,7 +70,7 @@ export async function promptForBranches(
   const selectedBranches = Array.isArray(res) ? res : [res];
 
   return isEmpty(selectedBranches)
-    ? promptForBranches(branchChoices, isMultipleChoice)
+    ? promptForTargetBranches({ targetBranchChoices, isMultipleChoice })
     : selectedBranches;
 }
 

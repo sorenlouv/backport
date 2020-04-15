@@ -1,5 +1,6 @@
 import { BackportOptions } from '../../../options/options';
 import { CommitChoice } from '../../../types/Commit';
+import { filterEmpty } from '../../../utils/filterEmpty';
 import { HandledError } from '../../HandledError';
 import {
   getFirstCommitMessageLine,
@@ -125,6 +126,7 @@ export async function fetchCommitsByAuthor(
     const commitMessage = edge.node.message;
     const sha = edge.node.oid;
 
+    // check whether the commit was merged via a pull request
     const associatedPullRequest = isAssociatedPullRequest({
       pullRequestEdge,
       options,
@@ -133,6 +135,7 @@ export async function fetchCommitsByAuthor(
       ? pullRequestEdge
       : undefined;
 
+    // find any existing pull requests
     const existingBackports = getExistingBackportPRs(
       commitMessage,
       associatedPullRequest
@@ -149,7 +152,7 @@ export async function fetchCommitsByAuthor(
     });
 
     return {
-      branch: sourceBranch,
+      sourceBranch,
       sha,
       formattedMessage,
       pullNumber,
@@ -191,7 +194,7 @@ export function getExistingBackportPRs(
 
   const firstMessageLine = getFirstCommitMessageLine(commitMessage);
   return associatedPullRequest.node.timelineItems.edges
-    .filter(notEmpty)
+    .filter(filterEmpty)
     .filter((item) => {
       const { source } = item.node;
 
@@ -228,10 +231,6 @@ export function getExistingBackportPRs(
         state: source.state,
       };
     });
-}
-
-function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
-  return value !== null && value !== undefined;
 }
 
 export interface DataResponse {
