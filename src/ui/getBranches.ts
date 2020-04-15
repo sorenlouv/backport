@@ -1,7 +1,6 @@
 import isEmpty from 'lodash.isempty';
 import { BackportOptions } from '../options/options';
 import { HandledError } from '../services/HandledError';
-import { consoleLog } from '../services/logger';
 import { promptForTargetBranches } from '../services/prompts';
 import { CommitSelected } from '../types/Commit';
 import { filterEmpty } from '../utils/filterEmpty';

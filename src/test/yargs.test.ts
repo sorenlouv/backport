@@ -51,7 +51,7 @@ describe('yargs', () => {
       `--upstream foo  --username ${username} --accessToken ${accessToken}`
     );
     expect(res).toMatchInlineSnapshot(`
-      "You must specify one or more target branches
+      "You must specify a target branch
 
       You can specify it via either:
        - Config file (recommended): \\".backportrc.json\\". Read more: https://github.com/sqren/backport/blob/434a28b431bb58c9a014d4489a95f561e6bb2769/docs/configuration.md#project-config-backportrcjson
