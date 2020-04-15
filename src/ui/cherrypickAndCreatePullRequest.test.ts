@@ -51,7 +51,7 @@ describe('cherrypickAndCreatePullRequest', () => {
         repoName: 'kibana',
         repoOwner: 'elastic',
         username: 'sqren',
-        sourceBranch: 'myDefaultRepoBaseBranch',
+        sourceBranch: 'myDefaultSourceBranch',
       } as BackportOptions;
 
       const commits: CommitSelected[] = [
@@ -199,7 +199,7 @@ describe('cherrypickAndCreatePullRequest', () => {
         repoName: 'kibana',
         repoOwner: 'elastic',
         username: 'sqren',
-        sourceBranch: 'myDefaultRepoBaseBranch',
+        sourceBranch: 'myDefaultSourceBranch',
       } as BackportOptions;
 
       const res = await runTimersUntilResolved(() =>

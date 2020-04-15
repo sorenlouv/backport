@@ -158,17 +158,27 @@ Config:
 
 #### `prTitle`
 
-Pull request title pattern. You can access the target branch (`{targetBranch}`) and commit message (`{commitMessages}`) via the special accessors in quotes.
-Multiple commits will be concatenated and separated by pipes.
+Pull request title pattern.
+Template values:
+
+- `{targetBranch}`: Branch the backport PR will be targeting
+- `{commitMessages}`: Multiple commits will be concatenated and separated by pipes (`|`).
 
 Default: `"[{targetBranch}] {commitMessages}"`
 
 CLI: `--pr-title "{commitMessages} backport for {targetBranch}"`
 
+Config:
+
+```json
+{
+  "prTitle": "{commitMessages} backport for {targetBranch}"
+}
+```
+
 #### `prDescription`
 
-Pull request description.
-Will be added to the end of the pull request description.
+Text that will be appended to the pull request description.
 
 For people who often need to add the same description to PRs they can create a bash alias:
 
@@ -177,6 +187,14 @@ alias backport-skip-ci='backport --prDescription "[skip-ci]"'
 ```
 
 CLI: `--pr-description "skip-ci"`
+
+Config:
+
+```json
+{
+  "prDescription": "skip-ci"
+}
+```
 
 #### `sourceBranch`
 
