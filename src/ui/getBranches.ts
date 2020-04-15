@@ -1,3 +1,4 @@
+import flatMap from 'lodash.flatmap';
 import isEmpty from 'lodash.isempty';
 import { BackportOptions } from '../options/options';
 import { HandledError } from '../services/HandledError';
@@ -15,9 +16,10 @@ export function getTargetBranches(
   }
 
   // combine target branches from all commits
-  const targetBranchesFromLabels = commits
-    .flatMap((commit) => commit.targetBranches)
-    .filter(filterEmpty);
+  const targetBranchesFromLabels = flatMap(
+    commits,
+    (commit) => commit.targetBranches
+  ).filter(filterEmpty);
 
   return promptForTargetBranches({
     targetBranchChoices: getTargetBranchChoices(

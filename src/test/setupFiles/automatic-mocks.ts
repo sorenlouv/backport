@@ -4,7 +4,6 @@
  */
 
 /* eslint-disable @typescript-eslint/no-empty-function */
-import 'ts-polyfill/lib/es2019-array';
 import os from 'os';
 import { last } from 'lodash';
 
