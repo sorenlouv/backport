@@ -43,6 +43,7 @@ export function getOptionsFromCliArgs(
     .option('commitsCount', {
       default: configOptions.commitsCount,
       description: 'Number of commits to choose from',
+      alias: 'count',
       type: 'number',
     })
     .option('editor', {

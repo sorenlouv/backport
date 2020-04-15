@@ -43,7 +43,7 @@ export function validateRequiredOptions({
 
   if (isEmpty(options.targetBranches) && isEmpty(options.targetBranchChoices)) {
     throw new HandledError(
-      `You must specify one or more target branches\n\nYou can specify it via either:\n - Config file (recommended): ".backportrc.json". Read more: ${PROJECT_CONFIG_DOCS_LINK}\n - CLI: "--branch 6.1"`
+      `You must specify a target branch\n\nYou can specify it via either:\n - Config file (recommended): ".backportrc.json". Read more: ${PROJECT_CONFIG_DOCS_LINK}\n - CLI: "--branch 6.1"`
     );
   }
 

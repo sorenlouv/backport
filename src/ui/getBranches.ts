@@ -1,9 +1,10 @@
 import isEmpty from 'lodash.isempty';
 import { BackportOptions } from '../options/options';
+import { HandledError } from '../services/HandledError';
 import { consoleLog } from '../services/logger';
 import { promptForTargetBranches } from '../services/prompts';
 import { CommitSelected } from '../types/Commit';
-import { BranchChoice } from '../types/Config';
+import { filterEmpty } from '../utils/filterEmpty';
 
 export function getTargetBranches(
   options: BackportOptions,
@@ -14,23 +15,39 @@ export function getTargetBranches(
     return options.targetBranches;
   }
 
-  // target branches infered via pull request labels
-  if (
-    options.pullNumber &&
-    commits.length === 1 &&
-    commits[0].targetBranches?.length
-  ) {
-    consoleLog(
-      `\nAutomatically backporting to the following branches based on PR labels: ${commits[0].targetBranches.join(
-        ', '
-      )}`
-    );
-
-    return commits[0].targetBranches;
-  }
+  // combine target branches from all commits
+  const targetBranchesFromLabels = commits
+    .flatMap((commit) => commit.targetBranches)
+    .filter(filterEmpty);
 
   return promptForTargetBranches({
-    targetBranchChoices: options.targetBranchChoices as BranchChoice[],
+    targetBranchChoices: getTargetBranchChoices(
+      options,
+      targetBranchesFromLabels
+    ),
     isMultipleChoice: options.multipleBranches,
+  });
+}
+
+function getTargetBranchChoices(
+  options: BackportOptions,
+  targetBranchesFromLabels: string[]
+) {
+  if (!options.targetBranchChoices) {
+    throw new HandledError('Missing target branch choices');
+  }
+
+  // no labels were found
+  if (isEmpty(targetBranchesFromLabels)) {
+    return options.targetBranchChoices;
+  }
+
+  // automatially check options based on pull request labels
+  return options.targetBranchChoices.map((choice) => {
+    const isChecked = targetBranchesFromLabels.includes(choice.name);
+    return {
+      ...choice,
+      checked: isChecked,
+    };
   });
 }

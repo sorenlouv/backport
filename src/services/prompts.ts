@@ -42,9 +42,9 @@ export async function promptForCommits({
   });
 
   const res = await prompt<CommitChoice[]>({
-    choices,
+    choices: [...choices, new inquirer.Separator()],
     message: 'Select commit to backport',
-    pageSize: Math.min(10, commits.length),
+    pageSize: 15,
     type: isMultipleChoice ? 'checkbox' : 'list',
   });
 
@@ -62,7 +62,8 @@ export async function promptForTargetBranches({
   isMultipleChoice: boolean;
 }): Promise<string[]> {
   const res = await prompt<string | string[]>({
-    choices: targetBranchChoices,
+    pageSize: 15,
+    choices: [...targetBranchChoices, new inquirer.Separator()],
     message: 'Select branch to backport to',
     type: isMultipleChoice ? 'checkbox' : 'list',
   });
@@ -70,7 +71,10 @@ export async function promptForTargetBranches({
   const selectedBranches = Array.isArray(res) ? res : [res];
 
   return isEmpty(selectedBranches)
-    ? promptForTargetBranches({ targetBranchChoices, isMultipleChoice })
+    ? promptForTargetBranches({
+        targetBranchChoices,
+        isMultipleChoice,
+      })
     : selectedBranches;
 }
 

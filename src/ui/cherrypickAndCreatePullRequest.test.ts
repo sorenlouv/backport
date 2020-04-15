@@ -60,12 +60,14 @@ describe('cherrypickAndCreatePullRequest', () => {
           sha: 'mySha',
           formattedMessage: 'myCommitMessage (#1000)',
           pullNumber: 1000,
+          targetBranches: [],
         },
         {
           sourceBranch: '7.x',
           sha: 'mySha2',
           formattedMessage: 'myOtherCommitMessage (#2000)',
           pullNumber: 2000,
+          targetBranches: [],
         },
       ];
 
@@ -151,6 +153,7 @@ describe('cherrypickAndCreatePullRequest', () => {
             sourceBranch: '7.x',
             sha: 'mySha',
             formattedMessage: 'myCommitMessage (mySha)',
+            targetBranches: [],
           },
         ],
         targetBranch: '6.x',
@@ -210,6 +213,7 @@ describe('cherrypickAndCreatePullRequest', () => {
               sourceBranch: '7.x',
               sha: 'mySha',
               formattedMessage: 'myCommitMessage',
+              targetBranches: [],
             },
           ],
           targetBranch: '6.x',

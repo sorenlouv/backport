@@ -1,4 +1,4 @@
-import { getTargetBranchesFromLabels } from './fetchCommitByPullNumber';
+import { getTargetBranchesFromLabels } from './getTargetBranchesFromLabels';
 
 describe('getTargetBranchesFromLabels', () => {
   it(`should support Kibana's label format`, () => {
@@ -32,10 +32,10 @@ describe('getTargetBranchesFromLabels', () => {
       'v7.8.0', // 7.x
       'v8.0.0', // master
     ];
-    const targetBranches = getTargetBranchesFromLabels(
+    const targetBranches = getTargetBranchesFromLabels({
       labels,
-      branchLabelMapping
-    );
+      branchLabelMapping,
+    });
     expect(targetBranches).toEqual([
       '5.4',
       '5.5',
@@ -67,10 +67,10 @@ describe('getTargetBranchesFromLabels', () => {
       'label-(\\d+)': 'branch-$1',
     };
     const labels = ['label-2'];
-    const targetBranches = getTargetBranchesFromLabels(
+    const targetBranches = getTargetBranchesFromLabels({
       labels,
-      branchLabelMapping
-    );
+      branchLabelMapping,
+    });
     expect(targetBranches).toEqual(['branch-b']);
   });
 
@@ -79,10 +79,10 @@ describe('getTargetBranchesFromLabels', () => {
       'label-(\\d+)': 'branch-$1',
     };
     const labels = ['label-1', 'label-2', 'label-2'];
-    const targetBranches = getTargetBranchesFromLabels(
+    const targetBranches = getTargetBranchesFromLabels({
       labels,
-      branchLabelMapping
-    );
+      branchLabelMapping,
+    });
     expect(targetBranches).toEqual(['branch-1', 'branch-2']);
   });
 
@@ -91,10 +91,10 @@ describe('getTargetBranchesFromLabels', () => {
       'label-(\\d+)': 'branch-$1',
     };
     const labels = ['label-1', 'label-2', 'foo', 'bar'];
-    const targetBranches = getTargetBranchesFromLabels(
+    const targetBranches = getTargetBranchesFromLabels({
       labels,
-      branchLabelMapping
-    );
+      branchLabelMapping,
+    });
     expect(targetBranches).toEqual(['branch-1', 'branch-2']);
   });
 
@@ -104,10 +104,10 @@ describe('getTargetBranchesFromLabels', () => {
       'label-(\\d+)': 'branch-$1',
     };
     const labels = ['label-1', 'label-2'];
-    const targetBranches = getTargetBranchesFromLabels(
+    const targetBranches = getTargetBranchesFromLabels({
       labels,
-      branchLabelMapping
-    );
+      branchLabelMapping,
+    });
     expect(targetBranches).toEqual(['branch-1']);
   });
 });

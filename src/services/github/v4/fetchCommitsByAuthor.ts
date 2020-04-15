@@ -8,12 +8,14 @@ import {
 } from '../commitFormatters';
 import { apiRequestV4 } from './apiRequestV4';
 import { fetchAuthorId } from './fetchAuthorId';
+import { getTargetBranchesFromLabels } from './getTargetBranchesFromLabels';
 
 export async function fetchCommitsByAuthor(
   options: BackportOptions
 ): Promise<CommitChoice[]> {
   const {
     accessToken,
+    branchLabelMapping,
     githubApiBaseUrlV4,
     commitsCount,
     path,
@@ -56,6 +58,11 @@ export async function fetchCommitsByAuthor(
                           number
                           mergeCommit {
                             oid
+                          }
+                          labels(first: 50) {
+                            nodes {
+                              name
+                            }
                           }
                           timelineItems(
                             last: 20
@@ -151,8 +158,17 @@ export async function fetchCommitsByAuthor(
       sha,
     });
 
+    const labels = associatedPullRequest?.node.labels.nodes.map(
+      (node) => node.name
+    );
+    const targetBranches = getTargetBranchesFromLabels({
+      labels,
+      branchLabelMapping,
+    });
+
     return {
       sourceBranch,
+      targetBranches,
       sha,
       formattedMessage,
       pullNumber,
@@ -260,6 +276,11 @@ export interface PullRequestEdge {
     number: number;
     mergeCommit: {
       oid: string;
+    };
+    labels: {
+      nodes: {
+        name: string;
+      }[];
     };
     repository: {
       owner: {
