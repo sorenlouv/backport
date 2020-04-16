@@ -18,7 +18,7 @@ import {
 } from '../services/git';
 import { getShortSha } from '../services/github/commitFormatters';
 import { addLabelsToPullRequest } from '../services/github/v3/addLabelsToPullRequest';
-import { createPullRequest } from '../services/github/v3/createPullRequest';
+import { createTargetPullRequest } from '../services/github/v3/createTargetPullRequest';
 import { consoleLog } from '../services/logger';
 import { confirmPrompt } from '../services/prompts';
 import { sequentially } from '../services/sequentially';
@@ -27,7 +27,7 @@ import { withSpinner } from './withSpinner';
 import dedent = require('dedent');
 import isEmpty = require('lodash.isempty');
 
-export async function cherrypickAndCreatePullRequest({
+export async function cherrypickAndCreateTargetPullRequest({
   options,
   commits,
   targetBranch,
@@ -69,10 +69,14 @@ export async function cherrypickAndCreatePullRequest({
 
   return withSpinner({ text: 'Creating pull request' }, async (spinner) => {
     const payload = getPullRequestPayload(options, targetBranch, commits);
-    const pullRequest = await createPullRequest(options, payload);
+    const pullRequest = await createTargetPullRequest(options, payload);
 
-    if (options.labels.length > 0) {
-      await addLabelsToPullRequest(options, pullRequest.number, options.labels);
+    if (options.targetPRLabels.length > 0) {
+      await addLabelsToPullRequest(
+        options,
+        pullRequest.number,
+        options.targetPRLabels
+      );
     }
 
     spinner.text = `Created pull request: ${pullRequest.html_url}`;

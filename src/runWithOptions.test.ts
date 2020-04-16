@@ -4,7 +4,7 @@ import { BackportOptions } from './options/options';
 import { runWithOptions } from './runWithOptions';
 import * as childProcess from './services/child-process-promisified';
 import * as fs from './services/fs-promisified';
-import * as createPullRequest from './services/github/v3/createPullRequest';
+import * as createTargetPullRequest from './services/github/v3/createTargetPullRequest';
 import * as fetchCommitsByAuthor from './services/github/v4/fetchCommitsByAuthor';
 import { commitsWithPullRequestsMock } from './services/github/v4/mocks/commitsByAuthorMock';
 import { SpyHelper } from './types/SpyHelper';
@@ -26,7 +26,7 @@ describe('runWithOptions', () => {
       githubApiBaseUrlV3: 'https://api.github.com',
       githubApiBaseUrlV4: 'https://api.github.com/graphql',
       author: 'sqren',
-      backportCreatedLabels: [],
+      sourcePRLabels: [],
       targetBranches: [],
       targetBranchChoices: [
         { name: '6.x' },
@@ -39,7 +39,7 @@ describe('runWithOptions', () => {
       editor: 'code',
       fork: true,
       gitHostname: 'github.com',
-      labels: [],
+      targetPRLabels: [],
       mainline: undefined,
       multiple: false,
       multipleBranches: false,
@@ -65,7 +65,7 @@ describe('runWithOptions', () => {
     jest.spyOn(fs, 'writeFile').mockResolvedValue(undefined);
 
     jest.spyOn(fetchCommitsByAuthor, 'fetchCommitsByAuthor');
-    jest.spyOn(createPullRequest, 'createPullRequest');
+    jest.spyOn(createTargetPullRequest, 'createTargetPullRequest');
 
     inquirerPromptMock = jest
       .spyOn(inquirer, 'prompt')
@@ -124,8 +124,10 @@ describe('runWithOptions', () => {
     );
   });
 
-  it('createPullRequest should be called with correct args', () => {
-    expect(createPullRequest.createPullRequest).toHaveBeenCalledWith(
+  it('createTargetPullRequest should be called with correct args', () => {
+    expect(
+      createTargetPullRequest.createTargetPullRequest
+    ).toHaveBeenCalledWith(
       expect.objectContaining({
         repoName: 'kibana',
         repoOwner: 'elastic',

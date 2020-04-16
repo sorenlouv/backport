@@ -28,18 +28,6 @@ export function getOptionsFromCliArgs(
       description: 'Show commits by specific author',
       type: 'string',
     })
-    .option('backportCreatedLabels', {
-      default: configOptions.backportCreatedLabels,
-      description: 'Pull request labels for the original PR',
-      type: 'array',
-    })
-    .option('targetBranches', {
-      default: [] as string[],
-      description: 'Branch(es) to backport to',
-      type: 'array',
-      alias: 'branch',
-      string: true, // ensure `6.0` is not coerced to `6`
-    })
     .option('commitsCount', {
       default: configOptions.commitsCount,
       description: 'Number of commits to choose from',
@@ -70,11 +58,6 @@ export function getOptionsFromCliArgs(
       default: configOptions.githubApiBaseUrlV4,
       description: `Base url for Github's GraphQL (v4) API`,
       type: 'string',
-    })
-    .option('labels', {
-      default: configOptions.labels,
-      description: 'Pull request labels for the resulting backport PRs',
-      type: 'array',
     })
     .option('mainline', {
       description:
@@ -140,14 +123,32 @@ export function getOptionsFromCliArgs(
       type: 'string',
       alias: 'commit',
     })
-    .option('upstream', {
-      default: configOptions.upstream,
-      description: 'Name of repository',
-      type: 'string',
+    .option('sourcePRLabels', {
+      default: configOptions.sourcePRLabels,
+      description: 'Add labels to the source (original) PR',
+      type: 'array',
     })
     .option('sourceBranch', {
       default: configOptions.sourceBranch,
       description: `List commits to backport from another branch than master`,
+      type: 'string',
+    })
+    .option('targetBranches', {
+      default: [] as string[],
+      description: 'Branch(es) to backport to',
+      type: 'array',
+      alias: 'branch',
+      string: true, // ensure `6.0` is not coerced to `6`
+    })
+    .option('targetPRLabels', {
+      default: configOptions.targetPRLabels,
+      description: 'Add labels to the target (backport) PR',
+      alias: 'labels',
+      type: 'array',
+    })
+    .option('upstream', {
+      default: configOptions.upstream,
+      description: 'Name of repository',
       type: 'string',
     })
     .option('username', {

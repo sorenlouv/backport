@@ -25,7 +25,7 @@ export async function promptForCommits({
   isMultipleChoice: boolean;
 }): Promise<CommitChoice[]> {
   const choices = commits.map((c, i) => {
-    const backportTags = c.existingBackports
+    const existingPRs = c.existingTargetPullRequests
       .map((item) => {
         const styling = item.state === 'MERGED' ? chalk.green : chalk.gray;
         return styling(item.branch);
@@ -35,7 +35,7 @@ export async function promptForCommits({
     const position = chalk.gray(`${i + 1}.`);
 
     return {
-      name: `${position} ${c.formattedMessage} ${backportTags}`,
+      name: `${position} ${c.formattedMessage} ${existingPRs}`,
       short: c.formattedMessage,
       value: c,
     };

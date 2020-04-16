@@ -3,7 +3,7 @@ import { HandledError } from './services/HandledError';
 import { addLabelsToPullRequest } from './services/github/v3/addLabelsToPullRequest';
 import { logger, consoleLog } from './services/logger';
 import { sequentially } from './services/sequentially';
-import { cherrypickAndCreatePullRequest } from './ui/cherrypickAndCreatePullRequest';
+import { cherrypickAndCreateTargetPullRequest } from './ui/cherrypickAndCreateTargetPullRequest';
 import { getTargetBranches } from './ui/getBranches';
 import { getCommits } from './ui/getCommits';
 import { maybeSetupRepo } from './ui/maybeSetupRepo';
@@ -19,7 +19,7 @@ export async function runWithOptions(options: BackportOptions) {
   await sequentially(targetBranches, async (targetBranch) => {
     logger.info(`Backporting ${JSON.stringify(commits)} to ${targetBranch}`);
     try {
-      await cherrypickAndCreatePullRequest({
+      await cherrypickAndCreateTargetPullRequest({
         options,
         commits,
         targetBranch,
@@ -34,7 +34,7 @@ export async function runWithOptions(options: BackportOptions) {
     }
   });
 
-  if (backportSucceeded && options.backportCreatedLabels.length > 0) {
+  if (backportSucceeded && options.sourcePRLabels.length > 0) {
     await Promise.all(
       commits.map(async ({ pullNumber }) => {
         if (pullNumber) {
@@ -44,7 +44,7 @@ export async function runWithOptions(options: BackportOptions) {
               return addLabelsToPullRequest(
                 options,
                 pullNumber,
-                options.backportCreatedLabels
+                options.sourcePRLabels
               );
             }
           );
