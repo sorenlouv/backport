@@ -19,7 +19,7 @@ export interface Config {
   // both
   all?: boolean;
   author?: string;
-  commitsCount?: number;
+  maxNumber?: number;
   gitHostname?: string;
   githubApiBaseUrlV3?: string;
   githubApiBaseUrlV4?: string;

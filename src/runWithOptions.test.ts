@@ -35,7 +35,7 @@ describe('runWithOptions', () => {
         { name: '5.5' },
         { name: '5.4' },
       ],
-      commitsCount: 10,
+      maxNumber: 10,
       editor: 'code',
       fork: true,
       gitHostname: 'github.com',

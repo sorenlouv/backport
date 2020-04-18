@@ -21,6 +21,7 @@ export function getOptionsFromCliArgs(
     .option('all', {
       default: configOptions.all,
       description: 'List all commits',
+      alias: 'a',
       type: 'boolean',
     })
     .option('author', {
@@ -28,10 +29,10 @@ export function getOptionsFromCliArgs(
       description: 'Show commits by specific author',
       type: 'string',
     })
-    .option('commitsCount', {
-      default: configOptions.commitsCount,
+    .option('maxNumber', {
+      default: configOptions.maxNumber,
       description: 'Number of commits to choose from',
-      alias: 'count',
+      alias: ['number', 'n'],
       type: 'number',
     })
     .option('editor', {
@@ -96,16 +97,19 @@ export function getOptionsFromCliArgs(
     .option('path', {
       default: configOptions.path,
       description: 'Only list commits touching files under the specified path',
+      alias: 'p',
       type: 'string',
     })
     .option('prTitle', {
       default: configOptions.prTitle,
       description: 'Title of pull request',
+      alias: 'title',
       type: 'string',
     })
     .option('prDescription', {
       default: configOptions.prDescription,
       description: 'Description to be added to pull request',
+      alias: 'description',
       type: 'string',
     })
     .option('pullNumber', {
@@ -137,7 +141,7 @@ export function getOptionsFromCliArgs(
       default: [] as string[],
       description: 'Branch(es) to backport to',
       type: 'array',
-      alias: 'branch',
+      alias: ['branch', 'b'],
       string: true, // ensure `6.0` is not coerced to `6`
     })
     .option('targetPRLabels', {
@@ -149,6 +153,7 @@ export function getOptionsFromCliArgs(
     .option('upstream', {
       default: configOptions.upstream,
       description: 'Name of repository',
+      alias: 'up',
       type: 'string',
     })
     .option('username', {

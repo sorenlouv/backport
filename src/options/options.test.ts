@@ -111,7 +111,7 @@ describe('validateRequiredOptions', () => {
     sourcePRLabels: [],
     targetBranchChoices: [],
     targetBranches: ['branchA'],
-    commitsCount: 10,
+    maxNumber: 10,
     editor: 'code',
     fork: true,
     gitHostname: 'github.com',

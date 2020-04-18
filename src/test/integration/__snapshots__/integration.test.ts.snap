@@ -21,7 +21,7 @@ Object {
     query getCommitsByAuthorQuery(
       $repoOwner: String!
       $repoName: String!
-      $commitsCount: Int!
+      $maxNumber: Int!
       $sourceBranch: String!
       $authorId: ID
       $historyPath: String
@@ -31,7 +31,7 @@ Object {
           target {
             ... on Commit {
               history(
-                first: $commitsCount
+                first: $maxNumber
                 author: { id: $authorId }
                 path: $historyPath
               ) {
@@ -99,8 +99,8 @@ Object {
   ",
   "variables": Object {
     "authorId": "sqren_author_id",
-    "commitsCount": 10,
     "historyPath": null,
+    "maxNumber": 10,
     "repoName": "backport-demo",
     "repoOwner": "elastic",
     "sourceBranch": "master",
@@ -217,7 +217,7 @@ Array [
     query getCommitsByAuthorQuery(
       $repoOwner: String!
       $repoName: String!
-      $commitsCount: Int!
+      $maxNumber: Int!
       $sourceBranch: String!
       $authorId: ID
       $historyPath: String
@@ -227,7 +227,7 @@ Array [
           target {
             ... on Commit {
               history(
-                first: $commitsCount
+                first: $maxNumber
                 author: { id: $authorId }
                 path: $historyPath
               ) {
@@ -298,8 +298,8 @@ Array [
     "[VERBOSE] Variables:",
     Object {
       "authorId": "sqren_author_id",
-      "commitsCount": 10,
       "historyPath": null,
+      "maxNumber": 10,
       "repoName": "backport-demo",
       "repoOwner": "elastic",
       "sourceBranch": "master",
@@ -587,7 +587,7 @@ Object {
     query getCommitsByAuthorQuery(
       $repoOwner: String!
       $repoName: String!
-      $commitsCount: Int!
+      $maxNumber: Int!
       $sourceBranch: String!
       $authorId: ID
       $historyPath: String
@@ -597,7 +597,7 @@ Object {
           target {
             ... on Commit {
               history(
-                first: $commitsCount
+                first: $maxNumber
                 author: { id: $authorId }
                 path: $historyPath
               ) {
@@ -665,8 +665,8 @@ Object {
   ",
   "variables": Object {
     "authorId": "sqren_author_id",
-    "commitsCount": 10,
     "historyPath": null,
+    "maxNumber": 10,
     "repoName": "backport-demo",
     "repoOwner": "elastic",
     "sourceBranch": "master",

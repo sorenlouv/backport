@@ -17,7 +17,7 @@ export async function fetchCommitsByAuthor(
     accessToken,
     branchLabelMapping,
     githubApiBaseUrlV4,
-    commitsCount,
+    maxNumber,
     path,
     repoName,
     repoOwner,
@@ -28,7 +28,7 @@ export async function fetchCommitsByAuthor(
     query getCommitsByAuthorQuery(
       $repoOwner: String!
       $repoName: String!
-      $commitsCount: Int!
+      $maxNumber: Int!
       $sourceBranch: String!
       $authorId: ID
       $historyPath: String
@@ -38,7 +38,7 @@ export async function fetchCommitsByAuthor(
           target {
             ... on Commit {
               history(
-                first: $commitsCount
+                first: $maxNumber
                 author: { id: $authorId }
                 path: $historyPath
               ) {
@@ -114,7 +114,7 @@ export async function fetchCommitsByAuthor(
       repoOwner,
       repoName,
       sourceBranch,
-      commitsCount: commitsCount || 10,
+      maxNumber: maxNumber || 10,
       authorId,
       historyPath: path || null,
     },
