@@ -46,6 +46,12 @@ export function getOptionsFromCliArgs(
       alias: 'count',
       type: 'number',
     })
+    .option('dryRun', {
+      default: false,
+      description:
+        'Do not push branch or create PR but show a summary of changes to be pushed',
+      type: 'boolean',
+    })
     .option('editor', {
       default: configOptions.editor,
       description: 'Editor to be opened during conflict resolution',
