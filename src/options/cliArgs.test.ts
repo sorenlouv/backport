@@ -41,6 +41,7 @@ describe('getOptionsFromCliArgs', () => {
       githubApiBaseUrlV3: 'https://api.github.com',
       githubApiBaseUrlV4: 'https://api.github.com/graphql',
       sourcePRLabels: [],
+      dryRun: false,
       targetBranches: ['6.0', '6.1'],
       targetBranchChoices: [],
       fork: true,

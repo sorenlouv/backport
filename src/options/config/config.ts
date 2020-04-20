@@ -20,7 +20,7 @@ export async function getOptionsFromConfigFiles() {
 
   return {
     // defaults
-    sourcePRLabels: [] as string[],
+    sourcePRLabels: [] as string[] | never[],
     fork: true,
     multiple: false,
     multipleCommits: false,
