@@ -108,7 +108,6 @@ Example:
 ```json
 {
   "branchLabelMapping": {
-    "v8.0.0": "",
     "^v7.8.0$": "7.x",
     "^v(\\d+).(\\d+).\\d+$": "$1.$2"
   }
