@@ -127,7 +127,7 @@ export async function cherrypick(
     if (e.message.includes('The previous cherry-pick is now empty')) {
       const shortSha = getShortSha(commit.sha);
       throw new HandledError(
-        `Cherrypick failed because the selected commit (${shortSha}) is empty. This is most likely caused by backporting a commit that was already backported`
+        `Cherrypick failed because the selected commit (${shortSha}) is empty. This is most likely caused by attemping to backporting a commit that was already backported`
       );
     }
 

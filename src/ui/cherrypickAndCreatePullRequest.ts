@@ -80,6 +80,16 @@ export async function cherrypickAndCreatePullRequest({
   }
 
   consoleLog(`View pull request: ${pullRequest.html_url}`);
+
+  // output PR summary in dry run mode
+  if (options.dryRun) {
+    consoleLog(chalk.bold('\nPull request summary:'));
+    consoleLog(`Branch: ${payload.head} -> ${payload.base}`);
+    consoleLog(`Title: ${payload.title}`);
+    consoleLog(`Body: ${payload.body}\n`);
+  }
+
+  return pullRequest;
 }
 
 function getFeatureBranchName(targetBranch: string, commits: CommitSelected[]) {

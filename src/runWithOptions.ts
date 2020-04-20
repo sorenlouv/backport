@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import { BackportOptions } from './options/options';
 import { HandledError } from './services/HandledError';
 import { logger, consoleLog } from './services/logger';
@@ -9,9 +10,7 @@ import { maybeSetupRepo } from './ui/maybeSetupRepo';
 
 export async function runWithOptions(options: BackportOptions) {
   if (options.dryRun) {
-    consoleLog(
-      'Dry run enabled: No branch pushing, PR creation and no label adding will occur\n'
-    );
+    consoleLog(chalk.red('Dry run: Nothing will be pushed to Github\n'));
   }
 
   const commits = await getCommits(options);
