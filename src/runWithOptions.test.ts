@@ -4,7 +4,7 @@ import { BackportOptions } from './options/options';
 import { runWithOptions } from './runWithOptions';
 import * as childProcess from './services/child-process-promisified';
 import * as fs from './services/fs-promisified';
-import * as createTargetPullRequest from './services/github/v3/createTargetPullRequest';
+import * as createPullRequest from './services/github/v3/createPullRequest';
 import * as fetchCommitsByAuthor from './services/github/v4/fetchCommitsByAuthor';
 import { commitsWithPullRequestsMock } from './services/github/v4/mocks/commitsByAuthorMock';
 import { SpyHelper } from './types/SpyHelper';
@@ -66,7 +66,7 @@ describe('runWithOptions', () => {
     jest.spyOn(fs, 'writeFile').mockResolvedValue(undefined);
 
     jest.spyOn(fetchCommitsByAuthor, 'fetchCommitsByAuthor');
-    jest.spyOn(createTargetPullRequest, 'createTargetPullRequest');
+    jest.spyOn(createPullRequest, 'createPullRequest');
 
     inquirerPromptMock = jest
       .spyOn(inquirer, 'prompt')
@@ -125,10 +125,8 @@ describe('runWithOptions', () => {
     );
   });
 
-  it('createTargetPullRequest should be called with correct args', () => {
-    expect(
-      createTargetPullRequest.createTargetPullRequest
-    ).toHaveBeenCalledWith(
+  it('createPullRequest should be called with correct args', () => {
+    expect(createPullRequest.createPullRequest).toHaveBeenCalledWith(
       expect.objectContaining({
         repoName: 'kibana',
         repoOwner: 'elastic',

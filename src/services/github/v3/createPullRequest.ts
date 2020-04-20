@@ -8,7 +8,7 @@ interface GithubIssue {
   number: number;
 }
 
-export async function createTargetPullRequest(
+export async function createPullRequest(
   {
     githubApiBaseUrlV3,
     repoName,

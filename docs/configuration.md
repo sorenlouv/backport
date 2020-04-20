@@ -184,8 +184,6 @@ Default: `false`
 
 Default: `true`
 
-````
-
 #### `prTitle`
 
 Pull request title pattern.
@@ -204,7 +202,7 @@ Config:
 {
   "prTitle": "{commitMessages} backport for {targetBranch}"
 }
-````
+```
 
 #### `prDescription`
 

@@ -17,7 +17,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
     axiosRequestSpy = jest
       .spyOn(axios, 'request')
 
-      // mock: createTargetPullRequest
+      // mock: createPullRequest
       .mockResolvedValueOnce({
         data: {
           number: 1337,
@@ -52,7 +52,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         repoOwner: 'elastic',
         username: 'sqren',
         sourceBranch: 'myDefaultSourceBranch',
-        backportCreatedLabels: [],
+        sourcePRLabels: [],
       } as BackportOptions;
 
       const commits: CommitSelected[] = [
@@ -148,7 +148,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         repoName: 'kibana',
         repoOwner: 'elastic',
         username: 'sqren',
-        backportCreatedLabels: [],
+        sourcePRLabels: [],
       } as BackportOptions;
 
       await cherrypickAndCreateTargetPullRequest({
@@ -208,7 +208,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         repoOwner: 'elastic',
         username: 'sqren',
         sourceBranch: 'myDefaultSourceBranch',
-        backportCreatedLabels: [],
+        sourcePRLabels: [],
       } as BackportOptions;
 
       const res = await runTimersUntilResolved(() =>

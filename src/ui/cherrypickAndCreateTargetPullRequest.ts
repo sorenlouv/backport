@@ -18,7 +18,7 @@ import {
 } from '../services/git';
 import { getShortSha } from '../services/github/commitFormatters';
 import { addLabelsToPullRequest } from '../services/github/v3/addLabelsToPullRequest';
-import { createTargetPullRequest } from '../services/github/v3/createTargetPullRequest';
+import { createPullRequest } from '../services/github/v3/createPullRequest';
 import { consoleLog } from '../services/logger';
 import { confirmPrompt } from '../services/prompts';
 import { sequentially } from '../services/sequentially';
@@ -58,7 +58,7 @@ export async function cherrypickAndCreateTargetPullRequest({
   await deleteFeatureBranch(options, featureBranch);
 
   const payload = getPullRequestPayload(options, targetBranch, commits);
-  const pullRequest = await createTargetPullRequest(options, payload);
+  const pullRequest = await createPullRequest(options, payload);
 
   // add targetPRLabels
   if (options.targetPRLabels.length > 0) {
