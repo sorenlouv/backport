@@ -48,8 +48,7 @@ export function getOptionsFromCliArgs(
     })
     .option('dryRun', {
       default: false,
-      description:
-        'Do not push branch or create PR but show a summary of changes to be pushed',
+      description: 'Perform backport without pushing to Github',
       type: 'boolean',
     })
     .option('editor', {
