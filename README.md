@@ -9,90 +9,51 @@ A simple CLI tool that automates the process of backporting commits on a GitHub 
 
 ![Demonstration gif](https://i.makeagif.com/media/10-05-2017/kEJLqe.gif)
 
-## What is backporting?
-
-> Backporting is the action of taking parts from a newer version of a software system [..] and porting them to an older version of the same software. It forms part of the maintenance step in a software development process, and it is commonly used for fixing security issues in older versions of the software and also for providing new features to older versions.
-
-Source: [https://en.wikipedia.org/wiki/Backporting](https://en.wikipedia.org/wiki/Backporting)
-
-## Who is this tool for?
-
-This tools is for anybody who is working on a codebase where they have to maintain multiple versions. If you manually cherry-pick commits from master and apply them to one or more branches, this tool might save you a lot of time.
-
-`backport` is a CLI tool that will let you backport commit(s) interactively and then cherry-pick and create pull requests automatically. `backport` will always perform the git operation in a temporary folder (`~/.backport/repositories/`) separate from your working directory, thereby never interfering with any unstages changes your might have.
-
-**Features:**
-
-- interactively backport one or more commits to one or more branches with an intuitive UI
-- will never run `git reset --hard` or other git commands in your working directory - all git operations are handled in a separate directory
-- backport a commit by specifying a PR (`backport --pr 1337`)
-- list and backport commits by a particular user (`backport --author john`)
-- list and backport commits by a particular path (`backport --path src/plugins/chatbot`)
-- forward port commits: `backport --sourceBranch 7.x --branch master` (will backport from 7.x to master)
-- backport merge commits (`backport --mainline`)
-- see which commits have been backported and to which branches
-- customize the title, description and labels of the created backport PRs
-
 ## Requirements
 
 - Node 8 or higher
 - git
 
-OR
-
-- Docker
-
-## Install with Node (recommended)
+## Install
 
 ```
 npm install -g backport
+
+# or locally
+npm install backport
 ```
 
 After installation you should update the [global config](https://github.com/sqren/backport/blob/master/docs/configuration.md#global-config-backportconfigjson) in `~/.backport/config.json` with your Github username and a Github access token. See the [documentation](https://github.com/sqren/backport/blob/master/docs/configuration.md#accesstoken-required) for how generate the access token.
 
-## Run via Docker
+## Quick start
 
-If you don't have Node.js or git installed locally, you can run `backport` via Docker.
-
-<details>
-  <summary>Click to expand</summary>
-The easiest way is to add the following snippet to your bash profile:
-
-```sh
-backport() {
-    BACKPORT_CONFIG_DIR=~/.backport
-    GIT_CONFIG_FILE=~/.gitconfig
-
-    docker run -it --rm -v $(pwd):/app:ro -v $BACKPORT_CONFIG_DIR:/root/.backport -v $GIT_CONFIG_FILE:/etc/gitconfig sqren/backport "$@"
+**Project config**
+Add a [project config](https://github.com/sqren/backport/blob/master/docs/configuration.md#project-config-backportrcjson) to the root of your repository:
+```js
+// .backportrc.json
+{
+  "upstream": "elastic/kibana",
+  "branches": [{ "name": "6.x", "checked": true }, "6.3", "6.2", "6.1", "6.0"],
 }
 ```
 
-Where:
-
-- `BACKPORT_CONFIG_DIR`: This can be ANY empty folder on your local machine. Upon running the docker container for the first time, a [`config.json`](https://github.com/sqren/backport/blob/master/docs/configuration.md#global-config-backportconfigjson) will be created automatically. This must be filled out with `username` and `accessToken` or these must be passed as CLI arguments: `backport --username <username> --accessToken <accessToken>`
-- `GIT_CONFIG_FILE`: Must point to a local [`.gitconfig`](https://gist.github.com/sqren/618ab2f77ffb8b5388d675fe705ed6da) file that contains the user's name and email.
-
-You can now use `backport` as if it was installed on the host machine.
-
-</details>
-
-## Usage
-
-Run `backport` in your project folder (must contain a [`.backportrc.json`](https://github.com/sqren/backport/blob/master/docs/configuration.md#project-config-backportrcjson) file):
-
+**Install backport locally**
 ```
-> backport
+npm install backport
 ```
 
-or run this from anywhere (will list commits from `elastic/kibana` and backport the selected commit to 7.x):
-
+**Run backport:**
 ```
-> backport --upstream elastic/kibana --branch 7.x
+> npx backport
 ```
 
 The above commands will start an interactive prompt. You can use the `arrow keys` to choose options, `<space>` to select checkboxes and `<enter>` to proceed.
 
-### CLI arguments
+### Config options
+
+See [configuration.md](https://github.com/sqren/backport/blob/master/docs/configuration.md)
+
+### CLI options
 
 | Option                   | Description                                            | Default                        | Type    |
 | ------------------------ | ------------------------------------------------------ | ------------------------------ | ------- |
@@ -122,7 +83,31 @@ The above commands will start an interactive prompt. You can use the `arrow keys
 | --help                   | Show help                                              |                                |         |
 | -v, --version            | Show version number                                    |                                |         |
 
-All of the CLI arguments can also be configured via the [configuration options](https://github.com/sqren/backport/blob/master/docs/configuration.md) in the config files.
+The CLI options will override the [configuration options](https://github.com/sqren/backport/blob/master/docs/configuration.md).
+
+## What is backporting?
+
+> Backporting is the action of taking parts from a newer version of a software system [..] and porting them to an older version of the same software. It forms part of the maintenance step in a software development process, and it is commonly used for fixing security issues in older versions of the software and also for providing new features to older versions.
+
+Source: [https://en.wikipedia.org/wiki/Backporting](https://en.wikipedia.org/wiki/Backporting)
+
+## Who is this tool for?
+
+This tools is for anybody who is working on a codebase where they have to maintain multiple versions. If you manually cherry-pick commits from master and apply them to one or more branches, this tool might save you a lot of time.
+
+`backport` is a CLI tool that will let you backport commit(s) interactively and then cherry-pick and create pull requests automatically. `backport` will always perform the git operation in a temporary folder (`~/.backport/repositories/`) separate from your working directory, thereby never interfering with any unstages changes your might have.
+
+**Features:**
+
+- interactively backport one or more commits to one or more branches with an intuitive UI
+- will never run `git reset --hard` or other git commands in your working directory - all git operations are handled in a separate directory
+- backport a commit by specifying a PR (`backport --pr 1337`)
+- list and backport commits by a particular user (`backport --author john`)
+- list and backport commits by a particular path (`backport --path src/plugins/chatbot`)
+- forward port commits: `backport --sourceBranch 7.x --branch master` (will backport from 7.x to master)
+- backport merge commits (`backport --mainline`)
+- see which commits have been backported and to which branches
+- customize the title, description and labels of the created backport PRs
 
 ## Contributing
 
