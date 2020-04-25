@@ -45,8 +45,7 @@ Run backport:
 ```
 npx backport
 ```
-
-The above commands will start an interactive prompt. You can use the `arrow keys` to choose options, `<space>` to select checkboxes and `<enter>` to proceed.
+_This will start an interactive prompt. You can use the `arrow keys` to choose options, `<space>` to select checkboxes and `<enter>` to proceed._
 
 ### Config options
 
