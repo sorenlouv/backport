@@ -16,7 +16,7 @@ A simple CLI tool that automates the process of backporting commits on a GitHub 
 
 ## Install
 
-```
+```sh
 npm install -g backport
 
 # or locally
