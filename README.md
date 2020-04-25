@@ -63,9 +63,6 @@ See [configuration.md](https://github.com/sqren/backport/blob/master/docs/config
 | --dry-run                | Perform backport without pushing to Github             | false                          | boolean |
 | --editor                 | Editor (eg. `code`) to open and solve conflicts        |                                | string  |
 | --fork                   | Create backports in fork (true) or origin repo (false) | true                           | boolean |
-| --git-hostname           | Hostname for Git remotes                               | github.com                     | string  |
-| --github-api-base-url-v3 | Base url for Github's Rest (v3) API                    | https://api.github.com         | string  |
-| --github-api-base-url-v4 | Base url for Github's GraphQL (v4) API                 | https://api.github.com/graphql | string  |
 | --labels                 | Pull request labels                                    |                                | string  |
 | --mainline               | Parent id of merge commit                              | 1                              | number  |
 | --multiple               | Select multiple commits/branches                       | false                          | boolean |
