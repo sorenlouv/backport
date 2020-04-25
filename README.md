@@ -11,7 +11,7 @@ A simple CLI tool that automates the process of backporting commits on a GitHub 
 
 ## Requirements
 
-- Node 8 or higher
+- Node 10 or higher
 - git
 
 ## Install
