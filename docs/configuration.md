@@ -101,7 +101,7 @@ CLI: `--all`
 
 #### `branchLabelMapping`
 
-Pre-select branch options based on labels on the source PR.
+Pre-select target branch options based on the source PR labels.
 
 Example:
 
