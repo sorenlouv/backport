@@ -28,6 +28,7 @@ After installation you should update the [global config](https://github.com/sqre
 ## Quick start
 
 **Project config**
+
 Add a [project config](https://github.com/sqren/backport/blob/master/docs/configuration.md#project-config-backportrcjson) to the root of your repository:
 ```js
 // .backportrc.json
@@ -44,7 +45,7 @@ npm install backport
 
 **Run backport:**
 ```
-> npx backport
+npx backport
 ```
 
 The above commands will start an interactive prompt. You can use the `arrow keys` to choose options, `<space>` to select checkboxes and `<enter>` to proceed.
