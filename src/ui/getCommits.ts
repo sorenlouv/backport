@@ -1,9 +1,9 @@
 import { BackportOptions } from '../options/options';
+import { listCommitsPrompt } from '../prompts/listCommitsPrompt';
 import { fetchCommitBySha } from '../services/github/v3/fetchCommitBySha';
 import { fetchCommitByPullNumber } from '../services/github/v4/fetchCommitByPullNumber';
 import { fetchCommitsByAuthor } from '../services/github/v4/fetchCommitsByAuthor';
 import { fetchPullRequestBySearchQuery } from '../services/github/v4/fetchPullRequestBySearchQuery';
-import { promptForCommits } from '../services/prompts';
 
 export async function getCommits(options: BackportOptions) {
   if (options.sha) {
@@ -22,14 +22,14 @@ export async function getCommits(options: BackportOptions) {
   if (options.sourcePRsFilter) {
     const commitChoices = await fetchPullRequestBySearchQuery(options);
 
-    return promptForCommits({
+    return listCommitsPrompt({
       commitChoices,
       isMultipleChoice: options.multipleCommits,
     });
   }
 
   const commitChoices = await fetchCommitsByAuthor(options);
-  return promptForCommits({
+  return listCommitsPrompt({
     commitChoices,
     isMultipleChoice: options.multipleCommits,
   });

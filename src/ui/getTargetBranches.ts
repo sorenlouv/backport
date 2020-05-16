@@ -1,8 +1,8 @@
 import flatMap from 'lodash.flatmap';
 import isEmpty from 'lodash.isempty';
 import { BackportOptions } from '../options/options';
+import { listTargetBranchesPrompt } from '../prompts/listTargetBranchesPrompt';
 import { HandledError } from '../services/HandledError';
-import { promptForTargetBranches } from '../services/prompts';
 import { CommitSelected } from '../types/Commit';
 import { filterEmpty } from '../utils/filterEmpty';
 
@@ -21,11 +21,13 @@ export function getTargetBranches(
     (commit) => commit.selectedTargetBranches
   ).filter(filterEmpty);
 
-  return promptForTargetBranches({
-    targetBranchChoices: getTargetBranchChoices(
-      options,
-      selectedTargetBranches
-    ),
+  const targetBranchChoices = getTargetBranchChoices(
+    options,
+    selectedTargetBranches
+  );
+
+  return listTargetBranchesPrompt({
+    targetBranchChoices,
     isMultipleChoice: options.multipleBranches,
   });
 }

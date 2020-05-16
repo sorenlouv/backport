@@ -60,11 +60,12 @@
     "node": ">=10.0.0"
   },
   "dependencies": {
+    "@sqren/enquirer": "^2.3.5-fix-async-validate.3",
     "axios": "^0.19.2",
+    "cli-spinners": "^2.3.0",
     "dedent": "^0.7.0",
     "del": "^5.1.0",
     "find-up": "^4.1.0",
-    "inquirer": "^7.1.0",
     "lodash.flatmap": "^4.5.0",
     "lodash.isempty": "^4.4.0",
     "lodash.isstring": "^4.0.1",
@@ -79,7 +80,6 @@
   "devDependencies": {
     "@types/core-js": "^2.5.2",
     "@types/dedent": "^0.7.0",
-    "@types/inquirer": "^6.5.0",
     "@types/jest": "^25.2.1",
     "@types/lodash": "^4.14.150",
     "@types/lodash.flatmap": "^4.5.6",

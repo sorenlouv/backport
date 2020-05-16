@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import ora = require('ora');
 import { BackportOptions } from '../options/options';
-import { HandledError } from '../services/HandledError';
+import { enterPrompt } from '../prompts/enterPrompt';
 import { exec } from '../services/child-process-promisified';
 import { getRepoPath } from '../services/env';
 import {
@@ -20,7 +20,6 @@ import { getShortSha } from '../services/github/commitFormatters';
 import { addLabelsToPullRequest } from '../services/github/v3/addLabelsToPullRequest';
 import { createPullRequest } from '../services/github/v3/createPullRequest';
 import { consoleLog } from '../services/logger';
-import { confirmPrompt } from '../services/prompts';
 import { sequentially } from '../services/sequentially';
 import { CommitSelected } from '../types/Commit';
 import dedent = require('dedent');
@@ -155,36 +154,33 @@ async function waitForCherrypick(
 }
 
 async function listConflictingFiles(options: BackportOptions) {
-  const checkForConflicts = async (): Promise<void> => {
-    const filesWithConflicts = await getFilesWithConflicts(options);
+  const getErrorMessage = (files: string[]) => {
+    return dedent(`
+      ${chalk.reset(`Fix the conflicts in ${getRepoPath(options)}:`)}
+      ${chalk.reset(files.join('\n'))}
 
-    if (isEmpty(filesWithConflicts)) {
-      return;
-    }
-
-    consoleLog(''); // linebreak
-    const res = await confirmPrompt(
-      dedent(`
-        ${chalk.reset(
-          `The following files from ${getRepoPath(options)} have conflicts:`
-        )}
-        ${chalk.reset(filesWithConflicts.join('\n'))}
-
-        ${chalk.reset.italic(
-          'You do not need to `git add` or `git commit` the files - simply fix the conflicts.'
-        )}
-
-        Press ENTER when the conflicts are resolved
-      `)
-    );
-    if (!res) {
-      throw new HandledError('Aborted');
-    }
-
-    await checkForConflicts();
+      ${chalk.reset.italic(
+        'You do not need to `git add` or `git commit` the files - simply fix the conflicts.'
+      )}
+    `);
   };
 
-  await checkForConflicts();
+  const filesWithConflicts = await getFilesWithConflicts(options);
+
+  return enterPrompt({
+    message: 'Conflict resolution',
+    errorMessage: getErrorMessage(filesWithConflicts),
+    validate: async () => {
+      const filesWithConflicts = await getFilesWithConflicts(options);
+
+      // return error message
+      if (!isEmpty(filesWithConflicts)) {
+        return getErrorMessage(filesWithConflicts);
+      }
+
+      return true;
+    },
+  });
 }
 
 async function listUnstagedFiles(options: BackportOptions) {
@@ -194,19 +190,15 @@ async function listUnstagedFiles(options: BackportOptions) {
     return;
   }
 
-  consoleLog(''); // linebreak
-  const res = await confirmPrompt(
-    dedent(`
-      ${chalk.reset(`The following files are unstaged:`)}
+  return enterPrompt({
+    message: 'Stage and commit files',
+    errorMessage: dedent(`
+      ${chalk.reset(
+        `The following unstaged files will be staged and committed:`
+      )}
       ${chalk.reset(unmergedFiles.join('\n'))}
-
-      Press ENTER to stage them
-    `)
-  );
-  if (!res) {
-    throw new HandledError('Aborted');
-  }
-  consoleLog(''); // linebreak
+    `),
+  });
 }
 
 function getPullRequestTitle(

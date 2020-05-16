@@ -18,7 +18,8 @@ export async function runWithArgs(args: string[]) {
       // output
       consoleLog('\n');
       consoleLog(chalk.bold('⚠️  Ouch! An unknown error occured 😿'));
-      consoleLog(`Error message: ${e.message}`);
+      consoleLog(`Error message1: ${e.stack}`);
+      consoleLog('\n');
 
       consoleLog(
         'Please open an issue in https://github.com/sqren/backport/issues or contact me directly on https://twitter.com/sorenlouv'
@@ -29,7 +30,7 @@ export async function runWithArgs(args: string[]) {
       );
 
       // log file
-      logger.info('Unknown error:', e);
+      logger.info('Unknown error:', e.stack);
     }
   }
 }
