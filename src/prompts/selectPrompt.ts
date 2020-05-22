@@ -1,49 +1,56 @@
 //@ts-ignore
-import { MultiSelect, Select } from '@sqren/enquirer';
+import { MultiSelect, Select, Prompt } from '@sqren/enquirer';
 import chalk from 'chalk';
 import { HandledError } from '../services/HandledError';
 
-type Choice<T> = {
+type Choice = {
   name: string;
   displayShort: string;
   displayLong: string;
   enabled: boolean | undefined;
-  original: T;
 };
 
-export async function selectPrompt<T>({
+export let _currentPrompt: Prompt;
+
+export async function selectPrompt<T extends Choice>({
   message,
   choices,
   isMultiple,
 }: {
   message: string;
-  choices: Choice<T>[];
+  choices: T[];
   isMultiple: boolean;
-}): Promise<Array<T>> {
-  const promptChoices = choices.map((c) => ({
-    name: c.name,
-    displayLong: c.displayLong,
-    displayShort: c.displayShort,
-    original: c.original,
-  }));
+}): Promise<T[]> {
+  const promptChoices = [
+    ...choices.map((c) => ({
+      ...c,
+      original: c,
+    })),
+    { role: 'separator' } as any,
+  ];
 
   type PromptChoice = typeof promptChoices[0];
 
-  // styles for focues item
-  // blue and bold (instead of cyan and underline)
+  // styles for focused item: bold (instead of underlined)
   const styles = {
     em: chalk.cyan.bold,
   };
 
   if (!isMultiple) {
     const prompt = new Select({
+      limit: 20,
       styles,
       message,
-      choices,
+      choices: promptChoices,
+      format() {
+        return chalk.cyan(this.selected.displayLong);
+      },
       result() {
         return this.selected.original;
       },
     });
+
+    _currentPrompt = prompt;
 
     try {
       const answer: T = await prompt.run();
@@ -57,11 +64,12 @@ export async function selectPrompt<T>({
   }
 
   const prompt = new MultiSelect({
+    limit: 20,
     pointer: `❯ `,
     styles,
     message,
     choices: promptChoices,
-    initial: choices.filter((c) => c.enabled).map((c) => c.name),
+    initial: promptChoices.filter((c) => c.enabled).map((c) => c.name),
     validate(items: PromptChoice[]) {
       if (items.length === 0) {
         return 'Please use <space> to select at least one option';
@@ -93,6 +101,8 @@ export async function selectPrompt<T>({
       return this.selected.map((c: PromptChoice) => c.original);
     },
   });
+
+  _currentPrompt = prompt;
 
   try {
     const answers = await prompt.run();

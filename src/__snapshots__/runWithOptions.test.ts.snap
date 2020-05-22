@@ -81,116 +81,125 @@ Array [
 exports[`runWithOptions prompt calls should match snapshot 1`] = `
 Array [
   Array [
-    Array [
-      Object {
-        "choices": Array [
-          Object {
-            "name": "1. Add 👻 (2e63475c) ",
-            "short": "2e63475c",
-            "value": Object {
-              "existingTargetPullRequests": Array [],
-              "formattedMessage": "Add 👻 (2e63475c)",
-              "pullNumber": undefined,
-              "selectedTargetBranches": Array [],
-              "sha": "2e63475c483f7844b0f2833bc57fdee32095bacb",
-              "sourceBranch": "mySourceBranch",
-            },
+    Object {
+      "choices": Array [
+        Object {
+          "commit": Object {
+            "existingTargetPullRequests": Array [],
+            "formattedMessage": "Add 👻 (2e63475c)",
+            "pullNumber": undefined,
+            "selectedTargetBranches": Array [],
+            "sha": "2e63475c483f7844b0f2833bc57fdee32095bacb",
+            "sourceBranch": "mySourceBranch",
           },
-          Object {
-            "name": "2. Add witch (#85) ",
-            "short": "#85 (f3b618b9)",
-            "value": Object {
-              "existingTargetPullRequests": Array [],
-              "formattedMessage": "Add witch (#85)",
-              "pullNumber": 85,
-              "selectedTargetBranches": Array [],
-              "sha": "f3b618b9421fdecdb36862f907afbdd6344b361d",
-              "sourceBranch": "mySourceBranch",
-            },
+          "displayLong": "Add 👻 (2e63475c)",
+          "displayShort": "2e63475c",
+          "enabled": false,
+          "name": "Add 👻 (2e63475c) ",
+        },
+        Object {
+          "commit": Object {
+            "existingTargetPullRequests": Array [],
+            "formattedMessage": "Add witch (#85)",
+            "pullNumber": 85,
+            "selectedTargetBranches": Array [],
+            "sha": "f3b618b9421fdecdb36862f907afbdd6344b361d",
+            "sourceBranch": "mySourceBranch",
           },
-          Object {
-            "name": "3. Add SF mention (#80) 6.3",
-            "short": "#80 (79cf1845)",
-            "value": Object {
-              "existingTargetPullRequests": Array [
-                Object {
-                  "branch": "6.3",
-                  "state": "MERGED",
-                },
-              ],
-              "formattedMessage": "Add SF mention (#80)",
-              "pullNumber": 80,
-              "selectedTargetBranches": Array [],
-              "sha": "79cf18453ec32a4677009dcbab1c9c8c73fc14fe",
-              "sourceBranch": "mySourceBranch",
-            },
+          "displayLong": "Add witch (#85)",
+          "displayShort": "#85",
+          "enabled": false,
+          "name": "Add witch (#85) ",
+        },
+        Object {
+          "commit": Object {
+            "existingTargetPullRequests": Array [
+              Object {
+                "branch": "6.3",
+                "state": "MERGED",
+              },
+            ],
+            "formattedMessage": "Add SF mention (#80)",
+            "pullNumber": 80,
+            "selectedTargetBranches": Array [],
+            "sha": "79cf18453ec32a4677009dcbab1c9c8c73fc14fe",
+            "sourceBranch": "mySourceBranch",
           },
-          Object {
-            "name": "4. Add backport config (3827bbba) ",
-            "short": "3827bbba",
-            "value": Object {
-              "existingTargetPullRequests": Array [],
-              "formattedMessage": "Add backport config (3827bbba)",
-              "pullNumber": undefined,
-              "selectedTargetBranches": Array [],
-              "sha": "3827bbbaf39914eda4f02f6940189844375fd097",
-              "sourceBranch": "mySourceBranch",
-            },
+          "displayLong": "Add SF mention (#80)",
+          "displayShort": "#80",
+          "enabled": false,
+          "name": "Add SF mention (#80) 6.3",
+        },
+        Object {
+          "commit": Object {
+            "existingTargetPullRequests": Array [],
+            "formattedMessage": "Add backport config (3827bbba)",
+            "pullNumber": undefined,
+            "selectedTargetBranches": Array [],
+            "sha": "3827bbbaf39914eda4f02f6940189844375fd097",
+            "sourceBranch": "mySourceBranch",
           },
-          Object {
-            "name": "5. Initial commit (5ea0da55) ",
-            "short": "5ea0da55",
-            "value": Object {
-              "existingTargetPullRequests": Array [],
-              "formattedMessage": "Initial commit (5ea0da55)",
-              "pullNumber": undefined,
-              "selectedTargetBranches": Array [],
-              "sha": "5ea0da550ac191029459289d67f99ad7d310812b",
-              "sourceBranch": "mySourceBranch",
-            },
+          "displayLong": "Add backport config (3827bbba)",
+          "displayShort": "3827bbba",
+          "enabled": false,
+          "name": "Add backport config (3827bbba) ",
+        },
+        Object {
+          "commit": Object {
+            "existingTargetPullRequests": Array [],
+            "formattedMessage": "Initial commit (5ea0da55)",
+            "pullNumber": undefined,
+            "selectedTargetBranches": Array [],
+            "sha": "5ea0da550ac191029459289d67f99ad7d310812b",
+            "sourceBranch": "mySourceBranch",
           },
-          Separator {
-            "line": "──────────────",
-            "type": "separator",
-          },
-        ],
-        "message": "Select commit",
-        "name": "promptResult",
-        "pageSize": 15,
-        "type": "list",
-      },
-    ],
+          "displayLong": "Initial commit (5ea0da55)",
+          "displayShort": "5ea0da55",
+          "enabled": false,
+          "name": "Initial commit (5ea0da55) ",
+        },
+      ],
+      "isMultiple": false,
+      "message": "Select commit",
+    },
   ],
   Array [
-    Array [
-      Object {
-        "choices": Array [
-          Object {
-            "name": "6.x",
-          },
-          Object {
-            "name": "6.0",
-          },
-          Object {
-            "name": "5.6",
-          },
-          Object {
-            "name": "5.5",
-          },
-          Object {
-            "name": "5.4",
-          },
-          Separator {
-            "line": "──────────────",
-            "type": "separator",
-          },
-        ],
-        "message": "Select branch",
-        "name": "promptResult",
-        "pageSize": 15,
-        "type": "list",
-      },
-    ],
+    Object {
+      "choices": Array [
+        Object {
+          "displayLong": "6.x",
+          "displayShort": "6.x",
+          "enabled": undefined,
+          "name": "6.x",
+        },
+        Object {
+          "displayLong": "6.0",
+          "displayShort": "6.0",
+          "enabled": undefined,
+          "name": "6.0",
+        },
+        Object {
+          "displayLong": "5.6",
+          "displayShort": "5.6",
+          "enabled": undefined,
+          "name": "5.6",
+        },
+        Object {
+          "displayLong": "5.5",
+          "displayShort": "5.5",
+          "enabled": undefined,
+          "name": "5.5",
+        },
+        Object {
+          "displayLong": "5.4",
+          "displayShort": "5.4",
+          "enabled": undefined,
+          "name": "5.4",
+        },
+      ],
+      "isMultiple": false,
+      "message": "Select branch",
+    },
   ],
 ]
 `;

@@ -1,17 +1,17 @@
 import { BackportOptions } from '../options/options';
-import * as prompts from '../services/prompts';
+import * as listTargetBranchesPrompt from '../prompts/listTargetBranchesPrompt';
 import { BranchChoice } from '../types/Config';
 import { SpyHelper } from '../types/SpyHelper';
 import { getTargetBranches } from './getTargetBranches';
 
 describe('getTargetBranches', () => {
-  let promptSpy: SpyHelper<typeof prompts.promptForTargetBranches>;
+  let promptSpy: SpyHelper<typeof listTargetBranchesPrompt.listTargetBranchesPrompt>;
 
   beforeEach(() => {
     jest.clearAllMocks();
 
     promptSpy = jest
-      .spyOn(prompts, 'promptForTargetBranches')
+      .spyOn(listTargetBranchesPrompt, 'listTargetBranchesPrompt')
       .mockResolvedValueOnce(['branchA']);
   });
 

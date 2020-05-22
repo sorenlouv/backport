@@ -45,7 +45,7 @@ class EnterPrompt extends Prompt {
     }
 
     // initiate validation
-    this.inProgressPromise = this._validate();
+    this.inProgressPromise = this._validate('TODO');
 
     // show spinner
     const message = await this.message();
@@ -97,15 +97,22 @@ class EnterPrompt extends Prompt {
   }
 }
 
-interface EnterPromptOptions {
+export interface EnterPromptOptions {
   message: string;
   pressEnterText?: string;
   errorMessage?: string;
   validate?: (value?: string) => boolean | string | Promise<string | boolean>;
 }
 
-export async function enterPrompt(options: EnterPromptOptions): Promise<void> {
+// exposed for testing purposes
+export let _currentPrompt: EnterPrompt;
+
+export async function enterPrompt(
+  options: EnterPromptOptions
+): Promise<undefined> {
   const prompt = new EnterPrompt(options as PromptOptions);
+
+  _currentPrompt = prompt;
   try {
     return await prompt.run();
   } catch (e) {

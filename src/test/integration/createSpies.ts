@@ -1,6 +1,6 @@
 import os from 'os';
 import axios from 'axios';
-import inquirer from 'inquirer';
+import * as selectPrompt from '../../prompts/selectPrompt';
 import { commitsWithPullRequestsMock } from '../../services/github/v4/mocks/commitsByAuthorMock';
 import childProcess = require('child_process');
 import { logger } from '../../services/logger';
@@ -78,19 +78,13 @@ export function createSpies({ commitCount }: { commitCount: number }) {
 
   // mock prompt
   jest
-    .spyOn(inquirer, 'prompt')
-
-    .mockImplementationOnce((async (args: any) => {
-      return {
-        promptResult:
-          commitCount === 2
-            ? [args[0].choices[0].value, args[0].choices[1].value]
-            : args[0].choices[1].value,
-      };
-    }) as any)
-    .mockImplementationOnce((async (args: any) => {
-      return { promptResult: args[0].choices[0].name };
-    }) as any);
+    .spyOn(selectPrompt, 'selectPrompt')
+    .mockImplementationOnce(async ({ choices }) => {
+      return commitCount === 2 ? [choices[0], choices[1]] : [choices[1]];
+    })
+    .mockImplementationOnce(async ({ choices }) => {
+      return [choices[0]];
+    });
 
   return {
     getSpyCalls: () => {

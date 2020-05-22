@@ -14,7 +14,6 @@ export async function listTargetBranchesPrompt({
       displayShort: c.name,
       displayLong: c.name,
       enabled: c.checked,
-      original: c,
     };
   });
 

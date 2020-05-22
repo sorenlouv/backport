@@ -22,16 +22,17 @@ export async function listCommitsPrompt({
       name: `${c.formattedMessage} ${existingPRs}`,
       displayLong: c.formattedMessage,
       displayShort: c.pullNumber ? `#${c.pullNumber}` : getShortSha(c.sha),
-      original: c,
       enabled: false,
+      commit: c,
     };
   });
 
-  const commits = await selectPrompt({
+  const answers = await selectPrompt({
     message: 'Select commit',
     choices: choices,
     isMultiple: isMultipleChoice,
   });
 
-  return commits;
+  // reverse commit order to ensure older commits are applied first
+  return answers.map((answer) => answer.commit).reverse();
 }

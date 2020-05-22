@@ -60,7 +60,7 @@
     "node": ">=10.0.0"
   },
   "dependencies": {
-    "@sqren/enquirer": "^2.3.5-fix-async-validate.3",
+    "@sqren/enquirer": "^2.3.5-fix-async-validate.6",
     "axios": "^0.19.2",
     "cli-spinners": "^2.3.0",
     "dedent": "^0.7.0",

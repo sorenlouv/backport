@@ -1,6 +1,6 @@
 import axios from 'axios';
-import inquirer from 'inquirer';
 import { BackportOptions } from './options/options';
+import * as selectPrompt from './prompts/selectPrompt';
 import { runWithOptions } from './runWithOptions';
 import * as childProcess from './services/child-process-promisified';
 import * as fs from './services/fs-promisified';
@@ -12,7 +12,7 @@ import { SpyHelper } from './types/SpyHelper';
 describe('runWithOptions', () => {
   let rpcExecMock: SpyHelper<typeof childProcess.exec>;
   let rpcExecOriginalMock: SpyHelper<typeof childProcess.execAsCallback>;
-  let inquirerPromptMock: SpyHelper<typeof inquirer.prompt>;
+  let selectPromptSpy: SpyHelper<typeof selectPrompt.selectPrompt>;
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -70,14 +70,10 @@ describe('runWithOptions', () => {
     jest.spyOn(fetchCommitsByAuthor, 'fetchCommitsByAuthor');
     jest.spyOn(createPullRequest, 'createPullRequest');
 
-    inquirerPromptMock = jest
-      .spyOn(inquirer, 'prompt')
-      .mockImplementationOnce((async (args: any) => {
-        return { promptResult: args[0].choices[0].value };
-      }) as any)
-      .mockImplementationOnce((async (args: any) => {
-        return { promptResult: args[0].choices[0].name };
-      }) as any);
+    // mock select first option
+    selectPromptSpy = jest
+      .spyOn(selectPrompt, 'selectPrompt')
+      .mockImplementation(async ({ choices }) => [choices[0]]);
 
     // Mock Github v4 API
     jest
@@ -144,8 +140,8 @@ describe('runWithOptions', () => {
   });
 
   it('prompt calls should match snapshot', () => {
-    expect(inquirer.prompt).toHaveBeenCalledTimes(2);
-    expect(inquirerPromptMock.mock.calls).toMatchSnapshot();
+    expect(selectPromptSpy).toHaveBeenCalledTimes(2);
+    expect(selectPromptSpy.mock.calls).toMatchSnapshot();
   });
 
   it('exec should be called with correct args', () => {

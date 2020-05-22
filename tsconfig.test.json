@@ -2,6 +2,7 @@
   "extends": "./tsconfig.json",
   "exclude": [],
   "compilerOptions": {
+    "target": "ESNext",
     "noEmit": true
   }
 }

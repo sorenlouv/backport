@@ -2,9 +2,9 @@ import axios from 'axios';
 import dedent from 'dedent';
 import ora from 'ora';
 import { BackportOptions } from '../options/options';
+import * as enterPrompt from '../prompts/enterPrompt';
 import * as childProcess from '../services/child-process-promisified';
 import * as logger from '../services/logger';
-import * as prompts from '../services/prompts';
 import { ExecError } from '../test/ExecError';
 import { CommitSelected } from '../types/Commit';
 import { SpyHelper } from '../types/SpyHelper';
@@ -103,7 +103,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
             "Creating pull request",
           ],
           Array [
-            "Adding labels to #1337: backport",
+            "Adding labels to pull request: backport",
           ],
         ]
       `);
@@ -195,9 +195,9 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
   describe('when cherry-picking fails', () => {
     it('should start conflict resolution mode', async () => {
       // spies
-      const promptSpy = jest
-        .spyOn(prompts, 'confirmPrompt')
-        .mockResolvedValue(true);
+      const enterPromptSpy = jest
+        .spyOn(enterPrompt, 'enterPrompt')
+        .mockResolvedValue(undefined);
       const logSpy = jest.spyOn(logger, 'consoleLog');
       const execSpy = setupExecSpy();
 
@@ -232,31 +232,15 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         number: 1337,
       });
 
-      expect(promptSpy.mock.calls).toMatchInlineSnapshot(`
-        Array [
-          Array [
-            "The following files from /myHomeDir/.backport/repositories/elastic/kibana have conflicts:
+      expect(enterPromptSpy.mock.calls[0][0]).toMatchInlineSnapshot(`
+        Object {
+          "errorMessage": "Fix the conflicts in /myHomeDir/.backport/repositories/elastic/kibana:
          - /myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt
 
-        You do not need to \`git add\` or \`git commit\` the files - simply fix the conflicts.
-
-        Press ENTER when the conflicts are resolved",
-          ],
-          Array [
-            "The following files from /myHomeDir/.backport/repositories/elastic/kibana have conflicts:
-         - /myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt
-
-        You do not need to \`git add\` or \`git commit\` the files - simply fix the conflicts.
-
-        Press ENTER when the conflicts are resolved",
-          ],
-          Array [
-            "The following files are unstaged:
-         - /myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt
-
-        Press ENTER to stage them",
-          ],
-        ]
+        You do not need to \`git add\` or \`git commit\` the files - simply fix the conflicts.",
+          "message": "Conflict resolution",
+          "validate": [Function],
+        }
       `);
 
       expect(logSpy.mock.calls).toMatchInlineSnapshot(`
@@ -266,22 +250,11 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         Backporting to 6.x:",
           ],
           Array [
-            "",
-          ],
-          Array [
-            "",
-          ],
-          Array [
-            "",
-          ],
-          Array [
-            "",
-          ],
-          Array [
             "View pull request: myHtmlUrl",
           ],
         ]
       `);
+
       expect((ora as any).mock.calls).toMatchInlineSnapshot(`
         Array [
           Array [
@@ -301,7 +274,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
             "Creating pull request",
           ],
           Array [
-            "Adding labels to #1337: backport",
+            "Adding labels to pull request: backport",
           ],
         ]
       `);

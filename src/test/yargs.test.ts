@@ -110,14 +110,14 @@ describe('yargs', () => {
     ]);
 
     expect(output).toMatchInlineSnapshot(`
-      "? Select commit (Use arrow keys)
-      ❯ 1. Create \\"conflicting-file.txt\\" in master (f8bb8b70)
-        2. Update romeo-and-juliet.txt (91eee967)
-        3. Add 👻 (2e63475c)
-        4. Add witch (#85)
-        5. Add SF mention (#80) 6.3
-        6. Add backport config (3827bbba)
-        ──────────────"
+      "? Select commit … Create \\"conflicting-file.txt\\" in master (f8bb8b70)
+      ❯ Create \\"conflicting-file.txt\\" in master (f8bb8b70)
+        Update romeo-and-juliet.txt (91eee967)
+        Add 👻 (2e63475c)
+        Add witch (#85)
+        Add SF mention (#80) 6.3
+        Add backport config (3827bbba)
+        ─────"
     `);
   });
 
@@ -140,14 +140,14 @@ describe('yargs', () => {
     ]);
 
     expect(output).toMatchInlineSnapshot(`
-      "? Select commit (Use arrow keys)
-      ❯ 1. Change to be forwardported (#181)
-        2. Create \\"conflicting-file.txt\\" in master (72f94e76)
-        3. Update romeo-and-juliet.txt (91eee967)
-        4. Add 👻 (2e63475c)
-        5. Add witch (#85)
-        6. Add SF mention (#80) 6.3
-        ──────────────"
+      "? Select commit … Change to be forwardported (#181)
+      ❯ Change to be forwardported (#181)
+        Create \\"conflicting-file.txt\\" in master (72f94e76)
+        Update romeo-and-juliet.txt (91eee967)
+        Add 👻 (2e63475c)
+        Add witch (#85)
+        Add SF mention (#80) 6.3
+        ─────"
     `);
   });
 });
@@ -169,10 +169,11 @@ function runBackportAsync(options: string[]) {
 
     proc.stdout.on('data', (dataChunk) => {
       data += dataChunk;
-      const output = data.toString();
+
+      // remove ansi codes and whitespace
+      const output = stripAnsi(data.toString()).replace(/\s+$/gm, '');
       if (output.includes('Select commit')) {
-        // remove ansi codes and whitespace
-        resolve(stripAnsi(output).replace(/\s+$/gm, ''));
+        resolve(output);
         proc.kill();
       }
     });

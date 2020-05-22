@@ -1,0 +1,105 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`selectPrompt should return a single answer 1`] = `
+Array [
+  Array [
+    "? Pick ONE color … black as the night
+❯ black
+  yellow
+  red
+  ─────",
+  ],
+  Array [
+    "",
+  ],
+  Array [
+    "? Pick ONE color … yellow as the sun
+  black
+❯ yellow
+  red
+  ─────",
+  ],
+  Array [
+    "",
+  ],
+  Array [
+    "✔ Pick ONE color · yellow as the sun",
+  ],
+  Array [
+    "",
+  ],
+  Array [
+    "",
+  ],
+  Array [
+    "",
+  ],
+]
+`;
+
+exports[`selectPrompt should return multiple answers 1`] = `
+Array [
+  Array [
+    "? Pick one or more colors … 
+❯ ✔ black
+  ✔ yellow
+  ✔ red
+    ─────",
+  ],
+  Array [
+    "",
+  ],
+  Array [
+    "? Pick one or more colors … 
+❯ ✔ black
+  ✔ yellow
+  ✔ red
+    ─────",
+  ],
+  Array [
+    "",
+  ],
+  Array [
+    "? Pick one or more colors … 
+❯ ✔ black
+  ✔ yellow
+  ✔ red
+    ─────",
+  ],
+  Array [
+    "",
+  ],
+  Array [
+    "? Pick one or more colors … 
+  ✔ black
+❯ ✔ yellow
+  ✔ red
+    ─────",
+  ],
+  Array [
+    "",
+  ],
+  Array [
+    "? Pick one or more colors … 
+  ✔ black
+❯ ✔ yellow
+  ✔ red
+    ─────",
+  ],
+  Array [
+    "",
+  ],
+  Array [
+    "✔ Pick one or more colors · b, y",
+  ],
+  Array [
+    "",
+  ],
+  Array [
+    "",
+  ],
+  Array [
+    "",
+  ],
+]
+`;
