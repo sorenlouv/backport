@@ -509,10 +509,10 @@
   dependencies:
     type-detect "4.0.8"
 
-"@sqren/enquirer@^2.3.5-fix-async-validate.6":
-  version "2.3.5-fix-async-validate.6"
-  resolved "https://registry.yarnpkg.com/@sqren/enquirer/-/enquirer-2.3.5-fix-async-validate.6.tgz#c73cbf57c6c2150dbc106125ddb1ef70ba64a67a"
-  integrity sha512-27tq33csBY8pSi4z9GHXxw6pFTP+XcBPs171BPqxFcS7591rSmWW0ZC51pk9SNf/vjdoBUBkErtNCZeGvocFAw==
+"@sqren/enquirer@^2.3.5-fix-async-validate.7":
+  version "2.3.5-fix-async-validate.7"
+  resolved "https://registry.yarnpkg.com/@sqren/enquirer/-/enquirer-2.3.5-fix-async-validate.7.tgz#1344c4669ada24970e64dff49f73b81e6a17006f"
+  integrity sha512-EDY4YuQR6nd9WkJlHF9yvq9kZiRT7qZ5soD+Xb8v8yEa9+8jXU3qJTt4gnaQUUI3nFwUMwjV3seALy8gcr2qXg==
   dependencies:
     ansi-colors "^3.2.1"
     cli-spinners "^2.3.0"
