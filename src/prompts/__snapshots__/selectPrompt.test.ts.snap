@@ -3,7 +3,7 @@
 exports[`selectPrompt should return a single answer 1`] = `
 Array [
   Array [
-    "? Pick ONE color … black as the night
+    "? Pick ONE color … 
 ❯ black
   yellow
   red
@@ -13,7 +13,7 @@ Array [
     "",
   ],
   Array [
-    "? Pick ONE color … yellow as the sun
+    "? Pick ONE color … 
   black
 ❯ yellow
   red

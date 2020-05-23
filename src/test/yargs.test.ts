@@ -110,7 +110,7 @@ describe('yargs', () => {
     ]);
 
     expect(output).toMatchInlineSnapshot(`
-      "? Select commit … Create \\"conflicting-file.txt\\" in master (f8bb8b70)
+      "? Select commit …
       ❯ Create \\"conflicting-file.txt\\" in master (f8bb8b70)
         Update romeo-and-juliet.txt (91eee967)
         Add 👻 (2e63475c)
@@ -140,7 +140,7 @@ describe('yargs', () => {
     ]);
 
     expect(output).toMatchInlineSnapshot(`
-      "? Select commit … Change to be forwardported (#181)
+      "? Select commit …
       ❯ Change to be forwardported (#181)
         Create \\"conflicting-file.txt\\" in master (72f94e76)
         Update romeo-and-juliet.txt (91eee967)

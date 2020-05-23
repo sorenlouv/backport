@@ -39,10 +39,15 @@ export async function selectPrompt<T extends Choice>({
   if (!isMultiple) {
     const prompt = new Select({
       limit: 20,
+      pointer: `❯`,
       styles,
       message,
       choices: promptChoices,
       format() {
+        if (!this.state.submitted) {
+          return '';
+        }
+
         return chalk.cyan(this.selected.displayLong);
       },
       result() {
