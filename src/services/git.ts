@@ -29,6 +29,16 @@ export function repoExists(options: BackportOptions): Promise<boolean> {
   return folderExists(getRepoPath(options));
 }
 
+function verbose(isVerbose: boolean) {
+  return isVerbose ? ' --verbose' : '';
+}
+
+async function execGit(command: string, options: BackportOptions) {
+  return await exec(`git ${command}${verbose(options.verbose)}`, {
+    cwd: getRepoPath(options),
+  });
+}
+
 export function deleteRepo(options: BackportOptions) {
   const repoPath = getRepoPath(options);
   return del(repoPath);
@@ -55,7 +65,10 @@ export function cloneRepo(
     };
 
     const execProcess = execAsCallback(
-      `git clone ${getRemoteUrl(options, options.repoOwner)} --progress`,
+      `git clone ${getRemoteUrl(
+        options,
+        options.repoOwner
+      )} --progress ${verbose(options.verbose)}`,
       { cwd: getRepoOwnerPath(options), maxBuffer: 100 * 1024 * 1024 },
       cb
     );
@@ -78,7 +91,7 @@ export async function deleteRemote(
   remoteName: string
 ) {
   try {
-    await exec(`git remote rm ${remoteName}`, { cwd: getRepoPath(options) });
+    await execGit(`remote rm ${remoteName}`, options);
   } catch (e) {
     const isExecError = e.cmd && e.code === 128;
     // re-throw if error is not an exec related error
@@ -90,9 +103,9 @@ export async function deleteRemote(
 
 export async function addRemote(options: BackportOptions, remoteName: string) {
   try {
-    await exec(
-      `git remote add ${remoteName} ${getRemoteUrl(options, remoteName)}`,
-      { cwd: getRepoPath(options) }
+    await execGit(
+      `remote add ${remoteName} ${getRemoteUrl(options, remoteName)}`,
+      options
     );
   } catch (e) {
     // note: swallowing error
@@ -104,16 +117,16 @@ export async function cherrypick(
   options: BackportOptions,
   commit: CommitSelected
 ) {
-  await exec(
-    `git fetch ${options.repoOwner} ${commit.sourceBranch}:${commit.sourceBranch} --force`,
-    { cwd: getRepoPath(options) }
+  await execGit(
+    `fetch ${options.repoOwner} ${commit.sourceBranch}:${commit.sourceBranch} --force`,
+    options
   );
   const mainline =
     options.mainline != undefined ? ` --mainline ${options.mainline}` : '';
 
-  const cmd = `git cherry-pick${mainline} ${commit.sha}`;
+  const cmd = `cherry-pick${mainline} ${commit.sha}`;
   try {
-    await exec(cmd, { cwd: getRepoPath(options) });
+    await execGit(cmd, options);
     return { needsResolving: false };
   } catch (e) {
     // missing `mainline` option
@@ -148,9 +161,7 @@ export async function finalizeCherrypick(options: BackportOptions) {
   try {
     const noVerify = options.noVerify ? ` --no-verify` : '';
 
-    await exec(`git commit --no-edit${noVerify}`, {
-      cwd: getRepoPath(options),
-    });
+    await execGit(`commit --no-edit${noVerify}`, options);
   } catch (e) {
     const isCommitError = e.stdout?.includes('nothing to commit');
     if (!isCommitError) {
@@ -165,9 +176,8 @@ export async function finalizeCherrypick(options: BackportOptions) {
 }
 
 export async function getFilesWithConflicts(options: BackportOptions) {
-  const repoPath = getRepoPath(options);
   try {
-    await exec(`git --no-pager diff --check`, { cwd: repoPath });
+    await execGit(`--no-pager diff --check`, options);
 
     return [];
   } catch (e) {
@@ -182,7 +192,7 @@ export async function getFilesWithConflicts(options: BackportOptions) {
         .map((line: string) => {
           const posSeparator = line.indexOf(':');
           const filename = line.slice(0, posSeparator).trim();
-          return ` - ${pathResolve(repoPath, filename)}`;
+          return ` - ${pathResolve(getRepoPath(options), filename)}`;
         });
 
       return uniq(files);
@@ -196,9 +206,10 @@ export async function getFilesWithConflicts(options: BackportOptions) {
 // retrieve the list of files that could not be cleanly merged
 export async function getUnmergedFiles(options: BackportOptions) {
   const repoPath = getRepoPath(options);
-  const res = await exec(`git --no-pager diff --name-only --diff-filter=U`, {
-    cwd: repoPath,
-  });
+  const res = await execGit(
+    `--no-pager diff --name-only --diff-filter=U`,
+    options
+  );
   return res.stdout
     .split('\n')
     .filter((file) => !!file)
@@ -211,9 +222,9 @@ export async function setCommitAuthor(
 ) {
   const spinner = ora(`Changing author to "${options.username}"`).start();
   try {
-    const res = await exec(
-      `git commit --amend --no-edit --author "${username} <${username}@users.noreply.github.com>"`,
-      { cwd: getRepoPath(options) }
+    const res = await execGit(
+      `commit --amend --no-edit --author "${username} <${username}@users.noreply.github.com>"`,
+      options
     );
     spinner.succeed();
     return res;
@@ -224,7 +235,7 @@ export async function setCommitAuthor(
 }
 
 export async function addUnstagedFiles(options: BackportOptions) {
-  return exec(`git add --update`, { cwd: getRepoPath(options) });
+  return execGit(`add --update`, options);
 }
 
 export async function createFeatureBranch(
@@ -235,9 +246,9 @@ export async function createFeatureBranch(
   const spinner = ora('Pulling latest changes').start();
 
   try {
-    const res = await exec(
-      `git reset --hard && git clean -d --force && git fetch ${options.repoOwner} ${targetBranch} && git checkout -B ${featureBranch} ${options.repoOwner}/${targetBranch} --no-track`,
-      { cwd: getRepoPath(options) }
+    const res = await execGit(
+      `reset --hard && git clean -d --force && git fetch ${options.repoOwner} ${targetBranch} && git checkout -B ${featureBranch} ${options.repoOwner}/${targetBranch} --no-track`,
+      options
     );
     spinner.succeed();
     return res;
@@ -262,9 +273,9 @@ export function deleteFeatureBranch(
   options: BackportOptions,
   featureBranch: string
 ) {
-  return exec(
-    `git checkout ${options.sourceBranch} && git branch -D ${featureBranch}`,
-    { cwd: getRepoPath(options) }
+  return execGit(
+    `checkout ${options.sourceBranch} && git branch -D ${featureBranch}`,
+    options
   );
 }
 
@@ -290,9 +301,9 @@ export async function pushFeatureBranch({
 
   try {
     const remoteName = getRemoteName(options);
-    const res = await exec(
-      `git push ${remoteName} ${featureBranch}:${featureBranch} --force`,
-      { cwd: getRepoPath(options) }
+    const res = await execGit(
+      `push ${remoteName} ${featureBranch}:${featureBranch} --force`,
+      options
     );
     spinner.succeed();
     return res;
