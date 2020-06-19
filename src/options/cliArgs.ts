@@ -1,6 +1,9 @@
 import yargs from 'yargs';
 import { OptionsFromConfigFiles } from './config/config';
 
+type MaybeString = string | undefined;
+type BranchLabelMapping = Record<string, string> | undefined;
+
 export type OptionsFromCliArgs = ReturnType<typeof getOptionsFromCliArgs>;
 export function getOptionsFromCliArgs(
   configOptions: OptionsFromConfigFiles,
@@ -15,6 +18,7 @@ export function getOptionsFromCliArgs(
     .usage('$0 [args]')
     .wrap(Math.max(100, Math.min(120, yargs.terminalWidth())))
     .option('accessToken', {
+      default: configOptions.accessToken as MaybeString,
       alias: 'accesstoken',
       description: 'Github access token',
       type: 'string',
@@ -26,15 +30,9 @@ export function getOptionsFromCliArgs(
       type: 'boolean',
     })
     .option('author', {
-      default: configOptions.author,
+      default: configOptions.author as MaybeString,
       description: 'Show commits by specific author',
       type: 'string',
-    })
-    .option('maxNumber', {
-      default: configOptions.maxNumber,
-      description: 'Number of commits to choose from',
-      alias: ['number', 'n'],
-      type: 'number',
     })
     .option('dryRun', {
       default: false,
@@ -42,7 +40,7 @@ export function getOptionsFromCliArgs(
       type: 'boolean',
     })
     .option('editor', {
-      default: configOptions.editor,
+      default: configOptions.editor as MaybeString,
       description: 'Editor to be opened during conflict resolution',
       type: 'string',
     })
@@ -88,6 +86,12 @@ export function getOptionsFromCliArgs(
         throw new Error(`--mainline must be an integer. Received: ${mainline}`);
       },
     })
+    .option('maxNumber', {
+      default: configOptions.maxNumber,
+      description: 'Number of commits to choose from',
+      alias: ['number', 'n'],
+      type: 'number',
+    })
     .option('multiple', {
       default: configOptions.multiple,
       description: 'Select multiple branches/commits',
@@ -109,7 +113,7 @@ export function getOptionsFromCliArgs(
       type: 'boolean',
     })
     .option('path', {
-      default: configOptions.path,
+      default: configOptions.path as MaybeString,
       description: 'Only list commits touching files under the specified path',
       alias: 'p',
       type: 'string',
@@ -121,7 +125,7 @@ export function getOptionsFromCliArgs(
       type: 'string',
     })
     .option('prDescription', {
-      default: configOptions.prDescription,
+      default: configOptions.prDescription as MaybeString,
       description: 'Description to be added to pull request',
       alias: 'description',
       type: 'string',
@@ -157,7 +161,7 @@ export function getOptionsFromCliArgs(
       type: 'string',
     })
     .option('sourceBranch', {
-      default: configOptions.sourceBranch,
+      default: configOptions.sourceBranch as MaybeString,
       description: `List commits to backport from another branch than master`,
       type: 'string',
     })
@@ -179,13 +183,13 @@ export function getOptionsFromCliArgs(
       type: 'array',
     })
     .option('upstream', {
-      default: configOptions.upstream,
+      default: configOptions.upstream as MaybeString,
       description: 'Name of repository',
       alias: 'up',
       type: 'string',
     })
     .option('username', {
-      default: configOptions.username,
+      default: configOptions.username as MaybeString,
       description: 'Github username',
       type: 'string',
     })
@@ -206,8 +210,7 @@ export function getOptionsFromCliArgs(
 
   return {
     ...rest,
-    accessToken: cliArgs.accessToken || configOptions.accessToken, // accessToken should not be displayed in yargs help menu
-    branchLabelMapping: configOptions.branchLabelMapping, // not available as cli argument
+    branchLabelMapping: configOptions.branchLabelMapping as BranchLabelMapping, // not available as cli argument
     multipleBranches: cliArgs.multipleBranches || cliArgs.multiple,
     multipleCommits: cliArgs.multipleCommits || cliArgs.multiple,
     noVerify: verify ?? rest.noVerify, // `verify` is a cli-only flag to flip the default of `no-verify`

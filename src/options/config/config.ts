@@ -1,33 +1,34 @@
 import isString from 'lodash.isstring';
-import { Config } from '../../types/Config';
 import { PromiseReturnType } from '../../types/PromiseReturnType';
 import { getGlobalConfig } from './globalConfig';
 import { getProjectConfig } from './projectConfig';
 
+export interface BranchChoice {
+  name: string;
+  checked?: boolean;
+}
+
+type BranchChoiceRaw = string | BranchChoice;
+
 export type OptionsFromConfigFiles = PromiseReturnType<
   typeof getOptionsFromConfigFiles
->;
+> &
+  Record<string, unknown>;
 export async function getOptionsFromConfigFiles() {
   const [projectConfig, globalConfig] = await Promise.all([
     getProjectConfig(),
     getGlobalConfig(),
   ]);
+  // global and project config combined
+  const combinedConfig = { ...globalConfig, ...projectConfig };
 
-  const {
-    // backwards-compatability: `branches` was renamed `targetBranchChoices`
-    targetBranchChoices,
-    branches,
+  // backwards-compatability: `branches` was renamed `targetBranchChoices`
+  const targetBranchChoices = (combinedConfig.targetBranchChoices ??
+    combinedConfig.branches) as BranchChoiceRaw[] | undefined;
 
-    // backwards-compatability: `labels` was renamed `targetPRLabels`
-    targetPRLabels,
-    labels,
-
-    // global and project config combined
-    ...combinedConfig
-  } = {
-    ...globalConfig,
-    ...projectConfig,
-  };
+  // backwards-compatability: `labels` was renamed `targetPRLabels`
+  const targetPRLabels = (combinedConfig.targetPRLabels ??
+    combinedConfig.labels) as string[] | undefined;
 
   return {
     // defaults
@@ -42,24 +43,21 @@ export async function getOptionsFromConfigFiles() {
     multipleCommits: false, // only let user pick a single commit
     noVerify: true,
     prTitle: '[{targetBranch}] {commitMessages}',
-    sourcePRLabels: [] as string[] | never[],
-    targetBranchChoices: getTargetBranchChoicesAsObject(
-      // backwards-compatability: `branches` was renamed `targetBranchChoices`
-      targetBranchChoices || branches
-    ),
-
-    // backwards-compatability: `labels` was renamed `targetPRLabels`
-    targetPRLabels: targetPRLabels || labels || ([] as string[]),
+    sourcePRLabels: [] as string[],
+    targetPRLabels: targetPRLabels || [],
 
     // merge defaults with config values
     ...combinedConfig,
+
+    // overwrite config values
+    targetBranchChoices: getTargetBranchChoicesAsObject(targetBranchChoices),
   };
 }
 
 // in the config `branches` can either be a string or an object.
 // We need to transform it so that it is always treated as an object troughout the application
 function getTargetBranchChoicesAsObject(
-  targetBranchChoices?: Config['targetBranchChoices']
+  targetBranchChoices?: BranchChoiceRaw[]
 ) {
   if (!targetBranchChoices) {
     return;
