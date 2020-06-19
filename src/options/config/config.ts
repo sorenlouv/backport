@@ -38,7 +38,6 @@ export async function getOptionsFromConfigFiles() {
     githubApiBaseUrlV3: 'https://api.github.com',
     githubApiBaseUrlV4: 'https://api.github.com/graphql',
     maxNumber: 10, // display 10 commits to pick from
-    multiple: false,
     multipleBranches: true, // allow user to pick multiple target branches
     multipleCommits: false, // only let user pick a single commit
     noVerify: true,

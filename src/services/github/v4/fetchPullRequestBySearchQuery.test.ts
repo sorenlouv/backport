@@ -18,7 +18,7 @@ describe('fetchPullRequestBySearchQuery', () => {
       repoName: 'kibana',
       repoOwner: 'elastic',
       sourceBranch: 'master',
-      sourcePRsFilter: 'label:Team:apm',
+      prFilter: 'label:Team:apm',
     } as BackportOptions);
 
     expect(spy).toHaveBeenCalledTimes(1);

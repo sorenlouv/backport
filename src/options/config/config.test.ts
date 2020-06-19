@@ -17,7 +17,6 @@ describe('getOptionsFromConfigFiles', () => {
       githubApiBaseUrlV3: 'https://api.github.com',
       githubApiBaseUrlV4: 'https://api.github.com/graphql',
       maxNumber: 10,
-      multiple: false,
       multipleBranches: true,
       multipleCommits: false,
       noVerify: true,
