@@ -1,4 +1,4 @@
-import { BranchChoice } from '../options/config/config';
+import { BranchChoice } from '../options/cliArgs';
 import { BackportOptions } from '../options/options';
 import * as prompts from '../services/prompts';
 import { SpyHelper } from '../types/SpyHelper';

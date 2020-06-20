@@ -93,7 +93,7 @@ Config:
 
 List of target branches the user can select interactively. The array can contain branch names as strings or objects that also contains the field `checked` which indicates whether the branch should be pre-selected. It is useful to pre-select branches you often backport to.
 
-CLI: N/A
+CLI: `target-branch-choice <branch>`
 
 Config:
 
@@ -219,7 +219,7 @@ Number of commits that will be listed for the user to choose from.
 
 Default: 10
 
-CLI: `--maxNumber <number>`, `--number <number>`, `-n <number>`
+CLI: `--max-number <number>`, `--number <number>`, `-n <number>`
 
 Config:
 
@@ -317,13 +317,13 @@ Config:
 
 Backport a pull request by specifying its number
 
-CLI: `--pullNumber "<number>"`, `--pr "<number>"`
+CLI: `--pull-number "<number>"`, `--pr "<number>"`
 
 #### `resetAuthor`
 
 Change the author of the backported commit to the current user
 
-CLI: `--resetAuthor`
+CLI: `--reset-author`
 
 #### `sha`
 
@@ -379,7 +379,7 @@ Config:
 
 Labels that will be added to the target (backport) pull request. This can be useful if you, at a later time, want to find the backport PRs.
 
-CLI: `--labels <label>`, `-l <label>`
+CLI: `--target-pr-labels <label>`, `-l <label>`
 
 Config:
 

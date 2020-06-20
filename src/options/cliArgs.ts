@@ -1,8 +1,14 @@
+import isString from 'lodash.isstring';
 import yargs from 'yargs';
 import { OptionsFromConfigFiles } from './config/config';
 
 type Maybe<T> = T | undefined;
 type BranchLabelMapping = Record<string, string> | undefined;
+export type BranchChoiceRaw = string | BranchChoice;
+export interface BranchChoice {
+  name: string;
+  checked?: boolean;
+}
 
 export type OptionsFromCliArgs = ReturnType<typeof getOptionsFromCliArgs>;
 export function getOptionsFromCliArgs(
@@ -25,8 +31,9 @@ export function getOptionsFromCliArgs(
       type: 'string',
     })
 
+    // show users own commits
     .option('all', {
-      default: configOptions.all,
+      default: (configOptions.all ?? false) as boolean,
       description: 'List all commits',
       alias: 'a',
       type: 'boolean',
@@ -50,29 +57,32 @@ export function getOptionsFromCliArgs(
       type: 'string',
     })
 
+    // push target branch to {username}/{repoName}
     .option('fork', {
-      default: configOptions.fork,
+      default: (configOptions.fork ?? true) as boolean,
       description: 'Create backports in fork or origin repo',
       type: 'boolean',
     })
 
     .option('gitHostname', {
       hidden: true,
-      default: configOptions.gitHostname,
+      default: (configOptions.gitHostname ?? 'github.com') as string,
       description: 'Hostname for Github',
       type: 'string',
     })
 
     .option('githubApiBaseUrlV3', {
       hidden: true,
-      default: configOptions.githubApiBaseUrlV3,
+      default: (configOptions.githubApiBaseUrlV3 ??
+        'https://api.github.com') as string,
       description: `Base url for Github's REST (v3) API`,
       type: 'string',
     })
 
     .option('githubApiBaseUrlV4', {
       hidden: true,
-      default: configOptions.githubApiBaseUrlV4,
+      default: (configOptions.githubApiBaseUrlV4 ??
+        'https://api.github.com/graphql') as string,
       description: `Base url for Github's GraphQL (v4) API`,
       type: 'string',
     })
@@ -97,8 +107,9 @@ export function getOptionsFromCliArgs(
       },
     })
 
+    // display 10 commits to pick from
     .option('maxNumber', {
-      default: configOptions.maxNumber,
+      default: (configOptions.maxNumber ?? 10) as number,
       description: 'Number of commits to choose from',
       alias: ['number', 'n'],
       type: 'number',
@@ -110,20 +121,22 @@ export function getOptionsFromCliArgs(
       type: 'boolean',
     })
 
-    .option('multipleCommits', {
-      default: configOptions.multipleCommits,
-      description: 'Backport multiple commits',
-      type: 'boolean',
-    })
-
+    // allow user to pick multiple target branches
     .option('multipleBranches', {
-      default: configOptions.multipleBranches,
+      default: (configOptions.multipleBranches ?? true) as boolean,
       description: 'Backport to multiple branches',
       type: 'boolean',
     })
 
+    // only let user pick a single commit
+    .option('multipleCommits', {
+      default: (configOptions.multipleCommits ?? false) as boolean,
+      description: 'Backport multiple commits',
+      type: 'boolean',
+    })
+
     .option('noVerify', {
-      default: configOptions.noVerify,
+      default: (configOptions.noVerify ?? true) as boolean,
       description: 'Bypasses the pre-commit and commit-msg hooks',
       type: 'boolean',
     })
@@ -136,7 +149,8 @@ export function getOptionsFromCliArgs(
     })
 
     .option('prTitle', {
-      default: configOptions.prTitle,
+      default: (configOptions.prTitle ??
+        '[{targetBranch}] {commitMessages}') as string,
       description: 'Title of pull request',
       alias: 'title',
       type: 'string',
@@ -186,7 +200,7 @@ export function getOptionsFromCliArgs(
     })
 
     .option('sourcePRLabels', {
-      default: configOptions.sourcePRLabels,
+      default: (configOptions.sourcePRLabels ?? []) as string[],
       description: 'Add labels to the source (original) PR',
       alias: 'sourcePRLabel',
       type: 'array',
@@ -200,8 +214,21 @@ export function getOptionsFromCliArgs(
       string: true, // ensure `6.0` is not coerced to `6`
     })
 
+    .option('targetBranchChoices', {
+      // backwards-compatability: `branches` was renamed `targetBranchChoices`
+      default: (configOptions.targetBranchChoices ??
+        configOptions.branches ??
+        []) as BranchChoiceRaw[],
+      description: 'List branches to backport to',
+      alias: 'targetBranchChoice',
+      type: 'array',
+    })
+
     .option('targetPRLabels', {
-      default: configOptions.targetPRLabels,
+      // backwards-compatability: `labels` was renamed `targetPRLabels`
+      default: (configOptions.targetPRLabels ??
+        configOptions.labels ??
+        []) as string[],
       description: 'Add labels to the target (backport) PR',
       alias: ['labels', 'label', 'l'],
       type: 'array',
@@ -254,7 +281,26 @@ export function getOptionsFromCliArgs(
     // `verify` is a cli-only flag to flip the default of `no-verify`
     noVerify: verify ?? rest.noVerify,
 
-    // `targetBranchChoices` is not available as cli argument
-    targetBranchChoices: configOptions.targetBranchChoices,
+    // convert from array to object
+    targetBranchChoices: getTargetBranchChoicesAsObject(
+      rest.targetBranchChoices
+    ),
   };
+}
+
+// in the config `branches` can either be a string or an object.
+// We need to transform it so that it is always treated as an object troughout the application
+function getTargetBranchChoicesAsObject(
+  targetBranchChoices: BranchChoiceRaw[]
+): BranchChoice[] {
+  return targetBranchChoices.map((choice) => {
+    if (isString(choice)) {
+      return {
+        name: choice,
+        checked: false,
+      };
+    }
+
+    return choice;
+  });
 }
