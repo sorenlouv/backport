@@ -4,8 +4,7 @@ import { getProjectConfig } from './projectConfig';
 
 export type OptionsFromConfigFiles = PromiseReturnType<
   typeof getOptionsFromConfigFiles
-> &
-  Record<string, unknown>;
+>;
 export async function getOptionsFromConfigFiles() {
   const [projectConfig, globalConfig] = await Promise.all([
     getProjectConfig(),
