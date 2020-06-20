@@ -121,14 +121,14 @@ export function getOptionsFromCliArgs(
       type: 'boolean',
     })
 
-    // allow user to pick multiple target branches
+    // allow picking multiple target branches
     .option('multipleBranches', {
       default: (configOptions.multipleBranches ?? true) as boolean,
       description: 'Backport to multiple branches',
       type: 'boolean',
     })
 
-    // only let user pick a single commit
+    // allow picking multiple commits
     .option('multipleCommits', {
       default: (configOptions.multipleCommits ?? false) as boolean,
       description: 'Backport multiple commits',
@@ -281,7 +281,7 @@ export function getOptionsFromCliArgs(
     // `verify` is a cli-only flag to flip the default of `no-verify`
     noVerify: verify ?? rest.noVerify,
 
-    // convert from array to object
+    // convert from array of primitives to array of object
     targetBranchChoices: getTargetBranchChoicesAsObject(
       rest.targetBranchChoices
     ),
