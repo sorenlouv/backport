@@ -4,7 +4,7 @@ import { OptionsFromConfigFiles } from './config/config';
 
 type Maybe<T> = T | undefined;
 type BranchLabelMapping = Record<string, string> | undefined;
-export type BranchChoiceRaw = string | BranchChoice;
+type BranchChoiceRaw = string | BranchChoice;
 export interface BranchChoice {
   name: string;
   checked?: boolean;
