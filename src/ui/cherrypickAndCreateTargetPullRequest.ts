@@ -203,7 +203,9 @@ async function listConflictingFiles(options: BackportOptions) {
         ${chalk.reset(
           `The following files from ${getRepoPath(options)} have conflicts:`
         )}
-        ${chalk.reset(filesWithConflicts.join('\n'))}
+        ${chalk.reset(
+          filesWithConflicts.map((file) => ` - ${file}`).join('\n')
+        )}
 
         ${chalk.reset.italic(
           'You do not need to `git add` or `git commit` the files - simply fix the conflicts.'
@@ -233,7 +235,9 @@ async function listUnstagedFiles(options: BackportOptions) {
   const res = await confirmPrompt(
     dedent(`
       ${chalk.reset(`The following files are unstaged:`)}
-      ${chalk.reset(unmergedFiles.join('\n'))}
+      ${chalk.reset(unmergedFiles.map((file) => ` - ${file}`).join('\n'))}
+
+
 
       Press ENTER to stage them
     `)

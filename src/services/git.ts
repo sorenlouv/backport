@@ -202,7 +202,7 @@ export async function getUnmergedFiles(options: BackportOptions) {
   return res.stdout
     .split('\n')
     .filter((file) => !!file)
-    .map((file) => ` - ${pathResolve(repoPath, file)}`);
+    .map((file) => pathResolve(repoPath, file));
 }
 
 export async function setCommitAuthor(
