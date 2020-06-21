@@ -75,6 +75,7 @@ describe('getOptions', () => {
       accessToken: 'myAccessToken',
       all: false,
       author: 'sqren',
+      assignees: [],
       dryRun: false,
       fork: true,
       gitHostname: 'github.com',
