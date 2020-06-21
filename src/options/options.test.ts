@@ -107,6 +107,7 @@ describe('validateRequiredOptions', () => {
     accessToken: 'myAccessToken',
     all: false,
     author: undefined,
+    assignees: [],
     branchLabelMapping: undefined,
     dryRun: false,
     editor: 'code',
