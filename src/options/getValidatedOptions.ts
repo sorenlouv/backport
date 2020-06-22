@@ -4,10 +4,10 @@ import { getGlobalConfigPath } from '../services/env';
 import { OptionsFromCliArgs } from './cliArgs';
 
 const GLOBAL_CONFIG_DOCS_LINK =
-  'https://github.com/sqren/backport/blob/434a28b431bb58c9a014d4489a95f561e6bb2769/docs/configuration.md#global-config-backportconfigjson';
+  'https://github.com/sqren/backport/blob/e119d71d6dc03cd061f6ad9b9a8b1cd995f98961/docs/configuration.md#global-config-backportconfigjson';
 
 const PROJECT_CONFIG_DOCS_LINK =
-  'https://github.com/sqren/backport/blob/434a28b431bb58c9a014d4489a95f561e6bb2769/docs/configuration.md#project-config-backportrcjson';
+  'https://github.com/sqren/backport/blob/e119d71d6dc03cd061f6ad9b9a8b1cd995f98961/docs/configuration.md#project-config-backportrcjson';
 
 export type ValidatedOptions = ReturnType<typeof getValidatedOptions>;
 export function getValidatedOptions({
