@@ -93,7 +93,7 @@ Config:
 
 List of target branches the user can select interactively. The array can contain branch names as strings or objects that also contains the field `checked` which indicates whether the branch should be pre-selected. It is useful to pre-select branches you often backport to.
 
-CLI: `--branch 6.1 --branch 6.0`
+CLI: `target-branch-choice <branch>`
 
 Config:
 
@@ -109,6 +109,9 @@ Config:
 }
 ```
 
+## General configuration options
+The following options can be used in both the global config, project config, and passed in through CLI.
+
 #### `all`
 
 `true`: list all commits
@@ -117,13 +120,43 @@ Config:
 
 Default: `false`
 
-CLI: `--all`
+CLI: `--all`, `-a`
+
+#### `assignees`
+
+Add assignees to the target pull request
+
+CLI: `--assignees <username>`, `-assign <username>`
+
+Config:
+
+```json
+{
+  "assignees": ["sqren"]
+}
+```
+
+#### `autoAssign`
+
+Automatically add the current user as assignee to the target pull request
+
+CLI: `--auto-assign`
+
+Config:
+
+```json
+{
+  "autoAssign": true
+}
+```
 
 #### `branchLabelMapping`
 
 Pre-select target branch choices based on the source PR labels.
 
-Example:
+CLI: N/A
+
+Config:
 
 ```json
 {
@@ -211,6 +244,22 @@ When backporting a merge commit the parent id must be specified. This is directl
 - Defaults to 1 when no parent id is given: `backport --mainline`
 - Specifying parent id: `backport --mainline 2`
 
+#### maxNumber
+
+Number of commits that will be listed for the user to choose from.
+
+Default: 10
+
+CLI: `--max-number <number>`, `--number <number>`, `-n <number>`
+
+Config:
+
+```json
+{
+  "maxNumber": 20
+}
+```
+
 #### `multipleCommits`
 
 `true`: you will be able to select multiple commits to backport. You will use `<space>` to select, and `<enter>` to confirm you selection.
@@ -227,17 +276,31 @@ Default: `false`
 
 Default: `true`
 
+#### path
+
+Only list commits touching files under the specified path
+
+CLI: `--path <path>`, `-p <path>`
+
+Config:
+
+```json
+{
+  "path": "my/folder"
+}
+```
+
 #### `prTitle`
 
-Pull request title pattern.
+Title for the target pull request
 Template values:
 
 - `{targetBranch}`: Branch the backport PR will be targeting
-- `{commitMessages}`: Multiple commits will be concatenated and separated by pipes (`|`).
+- `{commitMessages}`: Message of backported commit. For multiple commits the messages will be separated by pipes (`|`).
 
 Default: `"[{targetBranch}] {commitMessages}"`
 
-CLI: `--pr-title "{commitMessages} backport for {targetBranch}"`
+CLI: `--pr-title "<title>"`, `--title "<title>"`
 
 Config:
 
@@ -249,7 +312,7 @@ Config:
 
 #### `prDescription`
 
-Text that will be appended to the pull request description.
+Text that will be appended to the description of the target pull request
 
 For people who often need to add the same description to PRs they can create a bash alias:
 
@@ -257,7 +320,7 @@ For people who often need to add the same description to PRs they can create a b
 alias backport-skip-ci='backport --prDescription "[skip-ci]"'
 ```
 
-CLI: `--pr-description "skip-ci"`
+CLI: `--pr-description "<text>"`, `--description "<text>"`
 
 Config:
 
@@ -266,6 +329,38 @@ Config:
   "prDescription": "skip-ci"
 }
 ```
+
+#### `prFilter`
+
+Filter source pull requests by any [Github query](https://help.github.com/en/github/searching-for-information-on-github/understanding-the-search-syntax). Text with whitespace [must contain escaped quotes](https://help.github.com/en/github/searching-for-information-on-github/understanding-the-search-syntax#use-quotation-marks-for-queries-with-whitespace).
+
+CLI: `--pr-filter "<query>"`
+
+Config:
+
+```json
+{
+  "prFilter": "label: \"Backport Needed\""
+}
+```
+
+#### `pullNumber`
+
+Backport a pull request by specifying its number
+
+CLI: `--pull-number "<number>"`, `--pr "<number>"`
+
+#### `resetAuthor`
+
+Change the author of the backported commit to the current user
+
+CLI: `--reset-author`
+
+#### `sha`
+
+Backport a commit by specifying its commit sha
+
+CLI: `--sha "<sha>"`, `--commit "<sha>"`
 
 #### `sourceBranch`
 
@@ -287,7 +382,7 @@ Config:
 
 Labels that will be added to the source (original) pull request. This can be useful if you, at a later time, want to find the PRs that were already backported.
 
-CLI: `--source-pr-labels was-backported`
+CLI: `--source-pr-labels <label>`
 
 Config:
 
@@ -297,11 +392,25 @@ Config:
 }
 ```
 
+#### `targetBranches`
+
+Overrides `targetBranchChoices` so instead of displaying a prompt with target branches to choose from, the selected commit(s) will be backported directly to the branches defined in `targetBranches`
+
+CLI: `--target-branches <branch>`, `--branch <branch>`, `-b <branch>`
+
+Config:
+
+```json
+{
+  "targetBranches": ["7.x", "7.7"]
+}
+```
+
 #### `targetPRLabels`
 
 Labels that will be added to the target (backport) pull request. This can be useful if you, at a later time, want to find the backport PRs.
 
-CLI: `--labels backport --labels apm-team`
+CLI: `--target-pr-labels <label>`, `-l <label>`
 
 Config:
 

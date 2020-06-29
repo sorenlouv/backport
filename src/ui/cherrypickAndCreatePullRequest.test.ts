@@ -43,6 +43,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         .mockResolvedValue({ stdout: '', stderr: '' });
 
       const options = {
+        assignees: [] as string[],
         githubApiBaseUrlV3: 'https://api.github.com',
         fork: true,
         targetPRLabels: ['backport'],
@@ -52,7 +53,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         repoOwner: 'elastic',
         username: 'sqren',
         sourceBranch: 'myDefaultSourceBranch',
-        sourcePRLabels: [],
+        sourcePRLabels: [] as string[],
       } as BackportOptions;
 
       const commits: CommitSelected[] = [
@@ -95,15 +96,15 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
           Array [
             "Cherry-picking: myOtherCommitMessage (#2000)",
           ],
-          Array [],
           Array [
             "Pushing branch \\"sqren:backport/6.x/pr-1000_pr-2000\\"",
           ],
+          Array [],
           Array [
             "Creating pull request",
           ],
           Array [
-            "Adding labels to #1337: backport",
+            "Adding labels: backport",
           ],
         ]
       `);
@@ -142,6 +143,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
   describe('when commit does not have a pull request reference', () => {
     beforeEach(async () => {
       const options = {
+        assignees: [] as string[],
         githubApiBaseUrlV3: 'https://api.github.com',
         fork: true,
         targetPRLabels: ['backport'],
@@ -149,7 +151,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         repoName: 'kibana',
         repoOwner: 'elastic',
         username: 'sqren',
-        sourcePRLabels: [],
+        sourcePRLabels: [] as string[],
       } as BackportOptions;
 
       await cherrypickAndCreateTargetPullRequest({
@@ -202,6 +204,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
       const execSpy = setupExecSpy();
 
       const options = {
+        assignees: [] as string[],
         fork: true,
         targetPRLabels: ['backport'],
         prTitle: '[{targetBranch}] {commitMessages}',
@@ -209,7 +212,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         repoOwner: 'elastic',
         username: 'sqren',
         sourceBranch: 'myDefaultSourceBranch',
-        sourcePRLabels: [],
+        sourcePRLabels: [] as string[],
       } as BackportOptions;
 
       const res = await runTimersUntilResolved(() =>
@@ -254,6 +257,8 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
             "The following files are unstaged:
          - /myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt
 
+
+
         Press ENTER to stage them",
           ],
         ]
@@ -293,15 +298,15 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
           Array [
             "Finalizing cherrypick",
           ],
-          Array [],
           Array [
             "Pushing branch \\"sqren:backport/6.x/commit-mySha\\"",
           ],
+          Array [],
           Array [
             "Creating pull request",
           ],
           Array [
-            "Adding labels to #1337: backport",
+            "Adding labels: backport",
           ],
         ]
       `);
@@ -385,6 +390,8 @@ async function runTimersUntilResolved(fn: () => Promise<any>) {
   const p = fn();
   p.finally(() => (isResolved = true));
 
+  // wont-fix: https://github.com/typescript-eslint/typescript-eslint/issues/1984
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   while (isResolved === false) {
     // tick
     await new Promise((resolve) => setImmediate(resolve));

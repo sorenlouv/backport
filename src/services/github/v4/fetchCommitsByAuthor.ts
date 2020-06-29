@@ -107,7 +107,9 @@ export async function fetchCommitsByAuthor(
     }
   `;
 
-  const spinner = ora('Loading commits...').start();
+  const spinner = ora(
+    `Loading commits from branch "${sourceBranch}"...`
+  ).start();
   let res: DataResponse;
   try {
     const authorId = await fetchAuthorId(options);
@@ -132,7 +134,7 @@ export async function fetchCommitsByAuthor(
 
   if (res.repository.ref === null) {
     throw new HandledError(
-      `The upstream branch "${sourceBranch}" does not exist. Try specifying a different branch with "--sourceBranch <your-branch>"`
+      `The upstream branch "${sourceBranch}" does not exist. Try specifying a different branch with "--source-branch <your-branch>"`
     );
   }
 
@@ -217,8 +219,8 @@ function getSourcePullRequest({
 }) {
   if (
     pullRequestEdge?.node.repository.name === options.repoName &&
-    pullRequestEdge?.node.repository.owner.login === options.repoOwner &&
-    pullRequestEdge?.node.mergeCommit.oid === sha
+    pullRequestEdge.node.repository.owner.login === options.repoOwner &&
+    pullRequestEdge.node.mergeCommit.oid === sha
   ) {
     return pullRequestEdge;
   }
@@ -258,11 +260,7 @@ export function getExistingTargetPullRequests(
         sourcePullRequest.node.number.toString()
       );
 
-      return (
-        isPullRequest &&
-        isMergedOrOpen &&
-        (commitMatch || (prTitleMatch && prNumberMatch))
-      );
+      return commitMatch || (prTitleMatch && prNumberMatch);
     })
     .map((item) => {
       const { source } = item.node;

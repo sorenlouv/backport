@@ -176,6 +176,7 @@ export async function finalizeCherrypick(options: BackportOptions) {
 }
 
 export async function getFilesWithConflicts(options: BackportOptions) {
+  const repoPath = getRepoPath(options);
   try {
     await execGit(`--no-pager diff --check`, options);
 
@@ -192,7 +193,7 @@ export async function getFilesWithConflicts(options: BackportOptions) {
         .map((line: string) => {
           const posSeparator = line.indexOf(':');
           const filename = line.slice(0, posSeparator).trim();
-          return ` - ${pathResolve(getRepoPath(options), filename)}`;
+          return pathResolve(repoPath, filename);
         });
 
       return uniq(files);
@@ -213,7 +214,7 @@ export async function getUnmergedFiles(options: BackportOptions) {
   return res.stdout
     .split('\n')
     .filter((file) => !!file)
-    .map((file) => ` - ${pathResolve(repoPath, file)}`);
+    .map((file) => pathResolve(repoPath, file));
 }
 
 export async function setCommitAuthor(
@@ -238,16 +239,24 @@ export async function addUnstagedFiles(options: BackportOptions) {
   return execGit(`add --update`, options);
 }
 
-export async function createFeatureBranch(
-  options: BackportOptions,
-  targetBranch: string,
-  featureBranch: string
-) {
+// How the commit flows:
+// ${sourceBranch} -> ${backportBranch} -> ${targetBranch}
+// Example:
+// master -> backport/7.x/pr-1234 -> 7.x
+export async function createBackportBranch({
+  options,
+  targetBranch,
+  backportBranch,
+}: {
+  options: BackportOptions;
+  targetBranch: string;
+  backportBranch: string;
+}) {
   const spinner = ora('Pulling latest changes').start();
 
   try {
     const res = await execGit(
-      `reset --hard && git clean -d --force && git fetch ${options.repoOwner} ${targetBranch} && git checkout -B ${featureBranch} ${options.repoOwner}/${targetBranch} --no-track`,
+      `reset --hard && git clean -d --force && git fetch ${options.repoOwner} ${targetBranch} && git checkout -B ${backportBranch} ${options.repoOwner}/${targetBranch} --no-track`,
       options
     );
     spinner.succeed();
@@ -257,7 +266,7 @@ export async function createFeatureBranch(
 
     const isBranchInvalid =
       e.stderr?.toLowerCase().includes(`couldn't find remote ref`) ||
-      e.stderr?.toLowerCase().includes(`Invalid refspec`);
+      e.stderr?.toLowerCase().includes(`invalid refspec`);
 
     if (isBranchInvalid) {
       throw new HandledError(
@@ -269,40 +278,60 @@ export async function createFeatureBranch(
   }
 }
 
-export function deleteFeatureBranch(
-  options: BackportOptions,
-  featureBranch: string
-) {
-  return execGit(
-    `checkout ${options.sourceBranch} && git branch -D ${featureBranch}`,
+export async function deleteBackportBranch({
+  options,
+  backportBranch,
+}: {
+  options: BackportOptions;
+  backportBranch: string;
+}) {
+  const spinner = ora().start();
+
+  await execGit(
+    `git checkout ${options.sourceBranch} && git branch -D ${backportBranch}`,
     options
   );
+
+  spinner.stop();
 }
 
 export function getRemoteName(options: BackportOptions) {
   return options.fork ? options.username : options.repoOwner;
 }
 
-export async function pushFeatureBranch({
+/*
+ * Returns the full name of the backport branch, which includes the upstream
+ *
+ * Example: `sqren:backport/7.x/pr-1234`
+ */
+export function getFullBackportBranch(
+  options: BackportOptions,
+  backportBranch: string
+) {
+  const remoteName = getRemoteName(options);
+  return `${remoteName}:${backportBranch}`;
+}
+
+export async function pushBackportBranch({
   options,
-  featureBranch,
-  headBranchName,
+  backportBranch,
 }: {
   options: BackportOptions;
-  featureBranch: string;
-  headBranchName: string;
+  backportBranch: string;
 }) {
-  const spinner = ora(`Pushing branch "${headBranchName}"`).start();
+  const fullBackportBranch = getFullBackportBranch(options, backportBranch);
+  const spinnerText = `Pushing branch "${fullBackportBranch}"`;
+  const spinner = ora(spinnerText).start();
 
   if (options.dryRun) {
-    spinner.succeed(`Dry run: Pushing branch "${headBranchName}"`);
-    return exec('true', { cwd: getRepoPath(options) });
+    spinner.succeed(`Dry run: ${spinnerText}`);
+    return;
   }
 
   try {
     const remoteName = getRemoteName(options);
     const res = await execGit(
-      `push ${remoteName} ${featureBranch}:${featureBranch} --force`,
+      `push ${remoteName} ${backportBranch}:${backportBranch} --force`,
       options
     );
     spinner.succeed();

@@ -1,8 +1,8 @@
+import childProcess = require('child_process');
 import os from 'os';
 import axios from 'axios';
 import inquirer from 'inquirer';
 import { commitsWithPullRequestsMock } from '../../services/github/v4/mocks/commitsByAuthorMock';
-import childProcess = require('child_process');
 import { logger } from '../../services/logger';
 import { SpyHelper } from '../../types/SpyHelper';
 import {
@@ -112,7 +112,7 @@ export function createSpies({ commitCount }: { commitCount: number }) {
           typeof meta === 'string'
             ? meta
                 // remove commit hash in commit summary
-                .replace?.(/\b[0-9a-f]{5,40}\b/g, '<COMMIT HASH>')
+                .replace(/\b[0-9a-f]{5,40}\b/g, '<COMMIT HASH>')
 
                 // remove author in commit summary (response from `git cherrypick`)
                 .replace(/^\s+Author:.+$\n/gm, '')

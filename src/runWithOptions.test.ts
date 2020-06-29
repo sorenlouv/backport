@@ -13,6 +13,7 @@ describe('runWithOptions', () => {
   let rpcExecMock: SpyHelper<typeof childProcess.exec>;
   let rpcExecOriginalMock: SpyHelper<typeof childProcess.execAsCallback>;
   let inquirerPromptMock: SpyHelper<typeof inquirer.prompt>;
+  let axiosRequestSpy: SpyHelper<typeof axios.request>;
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -22,7 +23,9 @@ describe('runWithOptions', () => {
     const options: BackportOptions = {
       accessToken: 'myAccessToken',
       all: false,
+      assignees: [],
       author: 'sqren',
+      autoFixConflicts: undefined,
       branchLabelMapping: undefined,
       dryRun: false,
       editor: 'code',
@@ -32,7 +35,6 @@ describe('runWithOptions', () => {
       githubApiBaseUrlV4: 'https://api.github.com/graphql',
       mainline: undefined,
       maxNumber: 10,
-      multiple: false,
       multipleBranches: false,
       multipleCommits: false,
       noVerify: true,
@@ -46,7 +48,7 @@ describe('runWithOptions', () => {
       sha: undefined,
       sourceBranch: 'mySourceBranch',
       sourcePRLabels: [],
-      sourcePRsFilter: undefined,
+      prFilter: undefined,
       targetBranches: [],
       targetBranchChoices: [
         { name: '6.x' },
@@ -102,7 +104,7 @@ describe('runWithOptions', () => {
       });
 
     // Mock Github v3 API
-    jest
+    axiosRequestSpy = jest
       .spyOn(axios, 'request')
 
       // mock create pull request
@@ -128,19 +130,39 @@ describe('runWithOptions', () => {
   });
 
   it('createPullRequest should be called with correct args', () => {
-    expect(createPullRequest.createPullRequest).toHaveBeenCalledWith(
-      expect.objectContaining({
+    expect(createPullRequest.createPullRequest).toHaveBeenCalledWith({
+      options: expect.objectContaining({
         repoName: 'kibana',
         repoOwner: 'elastic',
         githubApiBaseUrlV4: 'https://api.github.com/graphql',
       }),
-      {
+      commits: [
+        {
+          existingTargetPullRequests: [],
+          formattedMessage: 'Add 👻 (2e63475c)',
+          pullNumber: undefined,
+          selectedTargetBranches: [],
+          sha: '2e63475c483f7844b0f2833bc57fdee32095bacb',
+          sourceBranch: 'mySourceBranch',
+        },
+      ],
+      targetBranch: '6.x',
+      backportBranch: 'backport/6.x/commit-2e63475c',
+    });
+  });
+
+  it('should make correct request when creating pull request', () => {
+    expect(axiosRequestSpy).toHaveBeenCalledWith({
+      auth: { password: 'myAccessToken', username: 'sqren' },
+      data: {
         base: '6.x',
         body: `Backports the following commits to 6.x:\n - Add 👻 (2e63475c)\n\nmyPrDescription`,
         head: 'sqren:backport/6.x/commit-2e63475c',
         title: 'myPrTitle 6.x Add 👻 (2e63475c)',
-      }
-    );
+      },
+      method: 'post',
+      url: 'https://api.github.com/repos/elastic/kibana/pulls',
+    });
   });
 
   it('prompt calls should match snapshot', () => {

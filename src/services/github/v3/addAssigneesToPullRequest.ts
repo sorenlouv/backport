@@ -3,7 +3,7 @@ import { BackportOptions } from '../../../options/options';
 import { logger } from '../../logger';
 import { apiRequestV3 } from './apiRequestV3';
 
-export async function addLabelsToPullRequest(
+export async function addAssigneesToPullRequest(
   {
     githubApiBaseUrlV3,
     repoName,
@@ -13,9 +13,13 @@ export async function addLabelsToPullRequest(
     dryRun,
   }: BackportOptions,
   pullNumber: number,
-  labels: string[]
+  assignees: string[]
 ): Promise<void> {
-  const text = `Adding labels: ${labels.join(', ')}`;
+  const isSelfAssigning = assignees.length === 1 && assignees[0] === username;
+
+  const text = isSelfAssigning
+    ? `Self-assigning to #${pullNumber}`
+    : `Adding assignees to #${pullNumber}: ${assignees.join(', ')}`;
   logger.info(text);
   const spinner = ora(text).start();
 
@@ -27,8 +31,8 @@ export async function addLabelsToPullRequest(
 
     await apiRequestV3({
       method: 'post',
-      url: `${githubApiBaseUrlV3}/repos/${repoOwner}/${repoName}/issues/${pullNumber}/labels`,
-      data: labels,
+      url: `${githubApiBaseUrlV3}/repos/${repoOwner}/${repoName}/issues/${pullNumber}/assignees`,
+      data: { assignees },
       auth: {
         username: username,
         password: accessToken,
@@ -37,6 +41,6 @@ export async function addLabelsToPullRequest(
     spinner.succeed();
   } catch (e) {
     spinner.fail();
-    logger.info(`Could not add labels to PR ${pullNumber}`, e.stack);
+    logger.info(`Could not add assignees to PR ${pullNumber}`, e.stack);
   }
 }
