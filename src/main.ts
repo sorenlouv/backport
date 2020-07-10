@@ -7,10 +7,7 @@ import { HandledError } from './services/HandledError';
 import { getLogfilePath } from './services/env';
 import { initLogger, consoleLog } from './services/logger';
 
-export async function runWithArgs(
-  argv: string[],
-  optionsFromModule?: ConfigOptions
-) {
+export async function main(argv: string[], optionsFromModule?: ConfigOptions) {
   const globalConfig = await getGlobalConfig();
   const logger = initLogger(globalConfig.accessToken);
 

@@ -1,5 +1,5 @@
+import { main } from './main';
 import { BackportOptions } from './options/options';
-import { runWithArgs } from './runWithArgs';
 
 // this is the entry point when importing backport as module:
 export function run(
@@ -14,5 +14,5 @@ export function run(
   //
   args = []
 ) {
-  return runWithArgs(args, options);
+  return main(args, options);
 }
