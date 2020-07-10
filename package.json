@@ -15,10 +15,10 @@
     "branching"
   ],
   "version": "5.4.8",
-  "main": "./dist/runAsModule.js",
-  "types": "dist/runAsModule.d.ts",
+  "main": "./dist/moduleEntrypoint.js",
+  "types": "dist/moduleEntrypoint.d.ts",
   "bin": {
-    "backport": "./dist/index.js"
+    "backport": "./dist/cliEntrypoint.js"
   },
   "husky": {
     "hooks": {
@@ -34,7 +34,7 @@
     "test": "jest",
     "test-private": "jest --config ./jest.config.private.js",
     "test-all": "yarn test && yarn test-private",
-    "start": "ts-node --transpile-only ./src/index.ts"
+    "start": "ts-node --transpile-only ./src/cliEntrypoint.ts"
   },
   "lint-staged": {
     "*.ts": [
