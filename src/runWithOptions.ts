@@ -41,6 +41,6 @@ export async function runWithOptions(options: BackportOptions) {
     }
   });
 
-  // return the results so consumers can programatically read the outcome
+  // return the results for consumers to programatically read
   return results;
 }

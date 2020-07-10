@@ -44,7 +44,7 @@ describe('handleGithubV3Error', () => {
 
 function getAxiosError(data: any) {
   const error = new Error();
-  //@ts-expect-error-error
+  //@ts-expect-error
   error.response = { data };
   return error as any;
 }
