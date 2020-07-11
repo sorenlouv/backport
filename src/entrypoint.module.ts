@@ -1,9 +1,9 @@
 import { main } from './main';
-import { BackportOptions } from './options/options';
+import { ConfigOptions } from './options/ConfigOptions';
 
 // this is the entry point when importing backport as module:
 export function run(
-  options: Partial<BackportOptions>,
+  options: ConfigOptions,
 
   // cli args will not automatically be forwarded when consumed as a module (required/imported)
   // It is simple to forward args manually via `process.argv`:

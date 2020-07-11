@@ -8,7 +8,7 @@ import { getCommits } from './ui/getCommits';
 import { getTargetBranches } from './ui/getTargetBranches';
 import { maybeSetupRepo } from './ui/maybeSetupRepo';
 
-type Result = {
+export type Result = {
   targetBranch: string;
   success: boolean;
   message?: string;
