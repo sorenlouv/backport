@@ -77,14 +77,14 @@
     "make-dir": "^3.1.0",
     "ora": "^4.0.4",
     "safe-json-stringify": "^1.2.0",
-    "strip-json-comments": "^3.1.0",
+    "strip-json-comments": "^3.1.1",
     "winston": "^3.3.3",
     "yargs": "^15.4.0"
   },
   "devDependencies": {
     "@types/core-js": "^2.5.2",
     "@types/dedent": "^0.7.0",
-    "@types/inquirer": "^6.5.0",
+    "@types/inquirer": "^7.3.0",
     "@types/jest": "^26.0.4",
     "@types/lodash": "^4.14.157",
     "@types/lodash.flatmap": "^4.5.6",
