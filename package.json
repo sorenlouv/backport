@@ -33,7 +33,7 @@
     "prepublishOnly": "tsc --project ./tsconfig.prod.json",
     "test": "jest",
     "test-private": "jest --config ./jest.config.private.js",
-    "test-all": "yarn test && yarn test-private",
+    "test-all": "yarn lint && yarn test && yarn test-private",
     "start": "ts-node --transpile-only ./src/entrypoint.cli.ts"
   },
   "lint-staged": {
@@ -63,11 +63,13 @@
     "node": ">=10.0.0"
   },
   "dependencies": {
+    "@types/lodash.difference": "^4.5.6",
     "axios": "^0.19.2",
     "dedent": "^0.7.0",
     "del": "^5.1.0",
     "find-up": "^4.1.0",
     "inquirer": "^7.3.1",
+    "lodash.difference": "^4.5.0",
     "lodash.flatmap": "^4.5.0",
     "lodash.isempty": "^4.4.0",
     "lodash.isstring": "^4.0.1",
