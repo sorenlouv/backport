@@ -214,32 +214,32 @@ async function listConflictingAndUnstagedFiles(options: BackportOptions) {
       return;
     }
 
+    // add divider between prompts
+    if (retries > 0) {
+      consoleLog('\n----------------------------------------\n');
+    }
+
     // show conflict section if there are conflicting files
     const conflictSection = hasConflictingFiles
-      ? chalk.reset(
-          `The following files have conflicts:\n${conflictingFiles
-            .map((file) => ` - ${file}`)
-            .join('\n')}`
-        )
+      ? `Conflicting files:\n${chalk.reset(
+          conflictingFiles.map((file) => ` - ${file}`).join('\n')
+        )}`
       : '';
 
     const unstagedSection = hasUnstagedFiles
-      ? chalk.reset(
-          `The following files are unstaged:\n${unstagedFiles
-            .map((file) => ` - ${file}`)
-            .join('\n')}`
-        )
+      ? `Unstaged files:\n${chalk.reset(
+          unstagedFiles.map((file) => ` - ${file}`).join('\n')
+        )}`
       : '';
 
-    consoleLog(''); // linebreak
-    const res = await confirmPrompt(`
+    const res = await confirmPrompt(`${chalk.reset(
+      `Please fix the issues in: ${getRepoPath(options)}`
+    )}
+
 ${conflictSection}
 ${unstagedSection}
 
-${chalk.reset(`Repository: ${getRepoPath(options)}`)}
-
-Press ENTER when the conflicts are resolved and files are staged
-`);
+Press ENTER when the conflicts are resolved and files are staged`);
     if (!res) {
       throw new HandledError('Aborted');
     }
