@@ -240,6 +240,7 @@ ${conflictSection}
 ${unstagedSection}
 
 Press ENTER when the conflicts are resolved and files are staged`);
+
     if (!res) {
       throw new HandledError('Aborted');
     }

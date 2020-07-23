@@ -236,37 +236,31 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
       expect(promptSpy.mock.calls).toMatchInlineSnapshot(`
         Array [
           Array [
-            "
-        The following files have conflicts:
+            "Please fix the issues in: /myHomeDir/.backport/repositories/elastic/kibana
+
+        Conflicting files:
          - /myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt
 
 
-        Repository: /myHomeDir/.backport/repositories/elastic/kibana
-
-        Press ENTER when the conflicts are resolved and files are staged
-        ",
+        Press ENTER when the conflicts are resolved and files are staged",
           ],
           Array [
-            "
-        The following files have conflicts:
+            "Please fix the issues in: /myHomeDir/.backport/repositories/elastic/kibana
+
+        Conflicting files:
          - /myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt
 
 
-        Repository: /myHomeDir/.backport/repositories/elastic/kibana
-
-        Press ENTER when the conflicts are resolved and files are staged
-        ",
+        Press ENTER when the conflicts are resolved and files are staged",
           ],
           Array [
-            "
+            "Please fix the issues in: /myHomeDir/.backport/repositories/elastic/kibana
 
-        The following files are unstaged:
+
+        Unstaged files:
          - /myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt
 
-        Repository: /myHomeDir/.backport/repositories/elastic/kibana
-
-        Press ENTER when the conflicts are resolved and files are staged
-        ",
+        Press ENTER when the conflicts are resolved and files are staged",
           ],
         ]
       `);
@@ -278,13 +272,14 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         Backporting to 6.x:",
           ],
           Array [
-            "",
+            "
+        ----------------------------------------
+        ",
           ],
           Array [
-            "",
-          ],
-          Array [
-            "",
+            "
+        ----------------------------------------
+        ",
           ],
           Array [
             "View pull request: myHtmlUrl",
