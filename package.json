@@ -63,6 +63,7 @@
     "node": ">=10.0.0"
   },
   "dependencies": {
+    "@octokit/rest": "^18.0.3",
     "@types/lodash.difference": "^4.5.6",
     "axios": "^0.19.2",
     "dedent": "^0.7.0",
@@ -75,6 +76,7 @@
     "lodash.isstring": "^4.0.1",
     "lodash.uniq": "^4.5.0",
     "make-dir": "^3.1.0",
+    "nock": "^13.0.3",
     "ora": "^4.0.4",
     "safe-json-stringify": "^1.2.0",
     "strip-json-comments": "^3.1.1",
@@ -91,7 +93,7 @@
     "@types/lodash.isempty": "^4.4.6",
     "@types/lodash.isstring": "^4.0.6",
     "@types/lodash.uniq": "^4.5.6",
-    "@types/node": "^14.0.22",
+    "@types/node": "^10.17.28",
     "@types/safe-json-stringify": "^1.1.1",
     "@types/yargs": "^15.0.5",
     "@types/yargs-parser": "^15.0.0",

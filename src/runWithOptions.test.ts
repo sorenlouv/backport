@@ -1,5 +1,6 @@
 import axios from 'axios';
 import inquirer from 'inquirer';
+import nock from 'nock';
 import { BackportOptions } from './options/options';
 import { runWithOptions } from './runWithOptions';
 import * as childProcess from './services/child-process-promisified';
@@ -7,13 +8,14 @@ import * as fs from './services/fs-promisified';
 import * as createPullRequest from './services/github/v3/createPullRequest';
 import * as fetchCommitsByAuthor from './services/github/v4/fetchCommitsByAuthor';
 import { commitsWithPullRequestsMock } from './services/github/v4/mocks/commitsByAuthorMock';
+import { PromiseReturnType } from './types/PromiseReturnType';
 import { SpyHelper } from './types/SpyHelper';
 
 describe('runWithOptions', () => {
   let rpcExecMock: SpyHelper<typeof childProcess.exec>;
   let rpcExecOriginalMock: SpyHelper<typeof childProcess.execAsCallback>;
   let inquirerPromptMock: SpyHelper<typeof inquirer.prompt>;
-  let axiosRequestSpy: SpyHelper<typeof axios.request>;
+  let res: PromiseReturnType<typeof runWithOptions>;
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -104,19 +106,28 @@ describe('runWithOptions', () => {
         },
       });
 
-    // Mock Github v3 API
-    axiosRequestSpy = jest
-      .spyOn(axios, 'request')
+    const scope = nock('https://api.github.com')
+      .post('/repos/elastic/kibana/pulls', {
+        title: 'myPrTitle 6.x Add 👻 (2e63475c)',
+        head: 'sqren:backport/6.x/commit-2e63475c',
+        base: '6.x',
+        body:
+          'Backports the following commits to 6.x:\n - Add 👻 (2e63475c)\n\nmyPrDescription',
+      })
+      .reply(200, { html_url: 'pull request url', number: 1337 });
 
-      // mock create pull request
-      .mockResolvedValueOnce({
-        data: {
-          html_url: 'pull request url',
-          number: 1337,
-        },
-      });
+    res = await runWithOptions(options);
+    scope.done();
+  });
 
-    await runWithOptions(options);
+  it('returns pull request', () => {
+    expect(res).toEqual([
+      {
+        pullRequestUrl: 'pull request url',
+        success: true,
+        targetBranch: '6.x',
+      },
+    ]);
   });
 
   it('getCommit should be called with correct args', () => {
@@ -149,20 +160,6 @@ describe('runWithOptions', () => {
       ],
       targetBranch: '6.x',
       backportBranch: 'backport/6.x/commit-2e63475c',
-    });
-  });
-
-  it('should make correct request when creating pull request', () => {
-    expect(axiosRequestSpy).toHaveBeenCalledWith({
-      auth: { password: 'myAccessToken', username: 'sqren' },
-      data: {
-        base: '6.x',
-        body: `Backports the following commits to 6.x:\n - Add 👻 (2e63475c)\n\nmyPrDescription`,
-        head: 'sqren:backport/6.x/commit-2e63475c',
-        title: 'myPrTitle 6.x Add 👻 (2e63475c)',
-      },
-      method: 'post',
-      url: 'https://api.github.com/repos/elastic/kibana/pulls',
     });
   });
 

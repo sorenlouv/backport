@@ -65,17 +65,6 @@ export function createSpies({ commitCount }: { commitCount: number }) {
       status: 200,
     });
 
-  // mock githb API v3
-  const axiosRequestSpy = jest
-    .spyOn(axios, 'request')
-
-    // mock create pull request
-    .mockResolvedValueOnce({
-      data: {},
-      headers: { 'custom-header': 'foo' },
-      status: 200,
-    });
-
   // mock prompt
   jest
     .spyOn(inquirer, 'prompt')
@@ -100,10 +89,6 @@ export function createSpies({ commitCount }: { commitCount: number }) {
         getCommitsRequestConfig,
       ] = axiosPostSpy.mock.calls.map((call) => call[1]);
 
-      const [createTargetPullRequestPayload] = axiosRequestSpy.mock.calls.map(
-        (call) => call[0].data
-      );
-
       const loggerSpy = (logger as any).spy as SpyHelper<typeof logger.info>;
       const loggerCalls = loggerSpy.mock.calls.map(([msg, meta]) => {
         return [
@@ -126,7 +111,6 @@ export function createSpies({ commitCount }: { commitCount: number }) {
         getDefaultRepoBranchAndPerformStartupChecks,
         getAuthorRequestConfig,
         getCommitsRequestConfig,
-        createTargetPullRequestPayload,
       };
     },
   };

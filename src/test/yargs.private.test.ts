@@ -1,34 +1,18 @@
 import { execSync, spawn } from 'child_process';
 import stripAnsi from 'strip-ansi';
+import { getTestCredentials } from './private/getTestCredentials';
 
-const execOptions = {
-  stdio: 'pipe',
-  encoding: 'utf-8',
-} as const;
-
-// get global config: either from .backport/config.json or via env variables
-function getGlobalConfig() {
-  return JSON.parse(
-    execSync(
-      `./node_modules/.bin/ts-node --transpile-only ./src/test/getGlobalConfig.ts`,
-      execOptions
-    )
-  );
-}
+const execOptions = { stdio: 'pipe', encoding: 'utf-8' } as const;
 
 describe('yargs', () => {
   let accessToken: string;
   let username: string;
 
-  beforeAll(() => {
-    const config = getGlobalConfig();
+  beforeAll(async () => {
+    const config = await getTestCredentials();
 
     accessToken = config.accessToken;
     username = config.username;
-
-    if (!username || !accessToken) {
-      throw new Error('username or accessToken is missing');
-    }
   });
 
   it('--version', () => {

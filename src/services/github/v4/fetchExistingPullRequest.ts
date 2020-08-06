@@ -2,7 +2,7 @@ import { BackportOptions } from '../../../options/options';
 import { getRemoteName } from '../../git';
 import { apiRequestV4 } from './apiRequestV4';
 
-export async function fetchExistingPullNumber({
+export async function fetchExistingPullRequest({
   options,
   targetBranch,
   backportBranch,

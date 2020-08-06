@@ -29,7 +29,7 @@ describe('fetchPullRequestBySearchQuery', () => {
   it('should make request with correct variables', () => {
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy.mock.calls[0][1].variables).toEqual({
-      first: 10,
+      maxNumber: 10,
       query:
         'type:pr is:merged sort:updated-desc repo:elastic/kibana author:sqren label:Team:apm base:master',
     });

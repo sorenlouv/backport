@@ -23,8 +23,10 @@ export async function getOptions(
   // set log level when all config options have been taken into account
   setLogLevel({ verbose: optionsFromCli.verbose });
 
+  // TODO: move `getValidatedOptions` to `getOptionsFromCliArgs`
   const validatedOptions = getValidatedOptions(optionsFromCli);
 
+  // TODO: make `username` optional by defaulting to `currentUsername`
   const { defaultBranch } = await getDefaultRepoBranchAndPerformStartupChecks(
     validatedOptions
   );

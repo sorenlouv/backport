@@ -10,6 +10,7 @@ import {
 import { throwOnInvalidAccessToken } from './throwOnInvalidAccessToken';
 
 export interface DataResponse {
+  viewer: { login: string };
   repository: {
     ref?: { name: string };
     defaultBranchRef: { name: string };
@@ -31,6 +32,9 @@ export async function getDefaultRepoBranchAndPerformStartupChecks({
       $repoOwner: String!
       $repoName: String!
     ) {
+      viewer {
+        login
+      }
       repository(owner: $repoOwner, name: $repoName) {
         # check whether "backport" branch exists
         ref(qualifiedName: "refs/heads/backport") {
