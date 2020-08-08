@@ -1,10 +1,10 @@
 import childProcess = require('child_process');
+import { url } from 'inspector';
 import os from 'os';
-import axios from 'axios';
+import { URL } from 'url';
 import inquirer from 'inquirer';
+import nock from 'nock';
 import { commitsWithPullRequestsMock } from '../../services/github/v4/mocks/commitsByAuthorMock';
-import { logger } from '../../services/logger';
-import { SpyHelper } from '../../types/SpyHelper';
 import {
   HOMEDIR_PATH,
   REMOTE_ORIGIN_REPO_PATH,
@@ -13,11 +13,39 @@ import {
 
 const unmockedExec = childProcess.exec;
 
-export function createSpies({ commitCount }: { commitCount: number }) {
+export function createSpies({
+  commitCount,
+  githubApiBaseUrlV4,
+}: {
+  commitCount: number;
+  githubApiBaseUrlV4: string;
+}) {
   // set alternative homedir
   jest.spyOn(os, 'homedir').mockReturnValue(HOMEDIR_PATH);
 
-  // proxy exec calls and make a few modifications
+  // mock childProcess.exec
+  mockExec();
+
+  // mock inquirer.prompt
+  mockInquirerPrompts(commitCount);
+
+  // mock Github v4 (graphql) requests
+  const graphQLCalls = mockGraphQLRequests(githubApiBaseUrlV4);
+
+  // mock Github v3 (REST) requests
+  const createPullRequestCalls = mockCreatePullRequest();
+
+  return {
+    getSpyCalls: () => {
+      return {
+        graphQLCalls,
+        createPullRequestCalls,
+      };
+    },
+  };
+}
+
+function mockExec() {
   jest.spyOn(childProcess, 'exec').mockImplementation((cmd, options, cb) => {
     const nextCmd = cmd
       .replace(
@@ -31,41 +59,9 @@ export function createSpies({ commitCount }: { commitCount: number }) {
 
     return unmockedExec(nextCmd, options, cb);
   });
+}
 
-  // mock github API v4
-  const axiosPostSpy = jest
-    .spyOn(axios, 'post')
-
-    // mock `getDefaultRepoBranchAndPerformStartupChecks`
-    .mockResolvedValueOnce({
-      data: {
-        data: { repository: { defaultBranchRef: { name: 'master' } } },
-      },
-      headers: { 'custom-header': 'foo' },
-      status: 200,
-    })
-
-    // mock `getIdByLogin`
-    .mockResolvedValueOnce({
-      data: {
-        data: {
-          user: {
-            id: 'sqren_author_id',
-          },
-        },
-      },
-      headers: { 'custom-header': 'foo' },
-      status: 200,
-    })
-
-    // mock `fetchCommitsByAuthor`
-    .mockResolvedValueOnce({
-      data: { data: commitsWithPullRequestsMock },
-      headers: { 'custom-header': 'foo' },
-      status: 200,
-    });
-
-  // mock prompt
+function mockInquirerPrompts(commitCount: number) {
   jest
     .spyOn(inquirer, 'prompt')
 
@@ -80,38 +76,47 @@ export function createSpies({ commitCount }: { commitCount: number }) {
     .mockImplementationOnce((async (args: any) => {
       return { promptResult: args[0].choices[0].name };
     }) as any);
+}
+
+function mockCreatePullRequest() {
+  const scope = nock('https://api.github.com')
+    .post('/repos/elastic/backport-demo/pulls')
+    .reply(200, { number: 1337, html_url: 'myHtmlUrl' });
+
+  return getNockCallsForScope(scope);
+}
+
+function mockGraphQLRequests(githubApiBaseUrlV4: string) {
+  const { origin, pathname } = new URL(githubApiBaseUrlV4);
+
+  // getDefaultRepoBranchAndPerformStartupChecks
+  const getDefaultRepoBranchScope = nock(origin)
+    .post(pathname)
+    .reply(200, {
+      data: { repository: { defaultBranchRef: { name: 'master' } } },
+    });
+
+  // getIdByLogin
+  const getIdByLoginScope = nock(origin)
+    .post(pathname)
+    .reply(200, { data: { user: { id: 'sqren_author_id' } } });
+
+  // fetchCommitsByAuthor
+  const fetchCommitsByAuthorScope = nock(origin)
+    .post(pathname)
+    .reply(200, { data: commitsWithPullRequestsMock });
 
   return {
-    getSpyCalls: () => {
-      const [
-        getDefaultRepoBranchAndPerformStartupChecks,
-        getAuthorRequestConfig,
-        getCommitsRequestConfig,
-      ] = axiosPostSpy.mock.calls.map((call) => call[1]);
-
-      const loggerSpy = (logger as any).spy as SpyHelper<typeof logger.info>;
-      const loggerCalls = loggerSpy.mock.calls.map(([msg, meta]) => {
-        return [
-          msg,
-
-          typeof meta === 'string'
-            ? meta
-                // remove commit hash in commit summary
-                .replace(/\b[0-9a-f]{5,40}\b/g, '<COMMIT HASH>')
-
-                // remove author in commit summary (response from `git cherrypick`)
-                .replace(/^\s+Author:.+$\n/gm, '')
-            : meta,
-        ];
-      });
-
-      return {
-        // all log calls (info, verbose and debug) are al routed to the same spy
-        loggerCalls,
-        getDefaultRepoBranchAndPerformStartupChecks,
-        getAuthorRequestConfig,
-        getCommitsRequestConfig,
-      };
-    },
+    getDefaultRepoBranchCalls: getNockCallsForScope(getDefaultRepoBranchScope),
+    getIdByLoginCalls: getNockCallsForScope(getIdByLoginScope),
+    fetchCommitsByAuthorCalls: getNockCallsForScope(fetchCommitsByAuthorScope),
   };
+}
+
+function getNockCallsForScope(scope: nock.Scope) {
+  const calls: string[] = [];
+  scope.on('request', (req, interceptor, body) => {
+    calls.push(JSON.parse(body));
+  });
+  return calls;
 }

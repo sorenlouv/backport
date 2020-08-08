@@ -1,5 +1,4 @@
 import { once } from 'lodash';
-import nock from 'nock';
 import { getOptions } from '../../options/options';
 import { runWithOptions } from '../../runWithOptions';
 import { PromiseReturnType } from '../../types/PromiseReturnType';
@@ -16,21 +15,21 @@ jest.unmock('del');
 jest.unmock('../../services/child-process-promisified');
 
 describe('when a single commit is backported', () => {
-  let spies: ReturnType<typeof createSpies>;
   let res: PromiseReturnType<typeof runWithOptions>;
+  let spies: ReturnType<typeof createSpies>;
 
   beforeEach(
     once(async () => {
+      // use localhost to avoid CORS issues
+      const githubApiBaseUrlV4 = 'http://localhost/graphql';
+
       jest.clearAllMocks();
-      spies = createSpies({ commitCount: 1 });
+      spies = createSpies({ commitCount: 1, githubApiBaseUrlV4 });
 
       await deleteAndSetupEnvironment();
 
-      const scope = mockCreatePRWithOneCommit({ repoOwner: 'sqren' });
-
-      const options = await getOptions([]);
+      const options = await getOptions([], { githubApiBaseUrlV4 });
       res = await runWithOptions(options);
-      scope.done();
     })
   );
 
@@ -40,16 +39,23 @@ describe('when a single commit is backported', () => {
     ]);
   });
 
-  it('should make correct API requests', () => {
-    const {
-      getDefaultRepoBranchAndPerformStartupChecks,
-      getAuthorRequestConfig,
-      getCommitsRequestConfig,
-    } = spies.getSpyCalls();
+  it('sends the correct http body', () => {
+    const { createPullRequestCalls } = spies.getSpyCalls();
+    expect(createPullRequestCalls).toEqual([
+      {
+        base: '6.0',
+        body: 'Backports the following commits to 6.0:\n - Add witch (#85)',
+        head: 'sqren:backport/6.0/pr-85',
+        title: '[6.0] Add witch (#85)',
+      },
+    ]);
+  });
 
-    expect(getDefaultRepoBranchAndPerformStartupChecks).toMatchSnapshot();
-    expect(getAuthorRequestConfig).toMatchSnapshot();
-    expect(getCommitsRequestConfig).toMatchSnapshot();
+  it('should make correct API requests', () => {
+    const spyCalls = spies.getSpyCalls();
+    expect(spyCalls.graphQLCalls.getDefaultRepoBranchCalls).toMatchSnapshot();
+    expect(spyCalls.graphQLCalls.getIdByLoginCalls).toMatchSnapshot();
+    expect(spyCalls.graphQLCalls.fetchCommitsByAuthorCalls).toMatchSnapshot();
   });
 
   it('should not create new branches in origin (elastic/backport-demo)', async () => {
@@ -91,18 +97,28 @@ describe('when two commits are backported', () => {
   beforeEach(
     once(async () => {
       jest.clearAllMocks();
-      spies = createSpies({ commitCount: 2 });
-
-      // mock create pull request
-      const nockScope = mockCreatePRWithTwoCommits();
+      const githubApiBaseUrlV4 = 'http://localhost/graphql';
+      spies = createSpies({ commitCount: 2, githubApiBaseUrlV4 });
 
       await deleteAndSetupEnvironment();
 
-      const options = await getOptions([]);
+      const options = await getOptions([], { githubApiBaseUrlV4 });
       res = await runWithOptions(options);
-      nockScope.done();
     })
   );
+
+  it('sends the correct http body', () => {
+    const { createPullRequestCalls } = spies.getSpyCalls();
+    expect(createPullRequestCalls).toEqual([
+      {
+        title: '[6.0] Add witch (#85) | Add 👻 (2e63475c)',
+        head: 'sqren:backport/6.0/pr-85_commit-2e63475c',
+        base: '6.0',
+        body:
+          'Backports the following commits to 6.0:\n - Add witch (#85)\n - Add 👻 (2e63475c)',
+      },
+    ]);
+  });
 
   it('returns pull request', () => {
     expect(res).toEqual([
@@ -111,13 +127,10 @@ describe('when two commits are backported', () => {
   });
 
   it('should make correct API requests', () => {
-    const {
-      getAuthorRequestConfig,
-      getCommitsRequestConfig,
-    } = spies.getSpyCalls();
-
-    expect(getAuthorRequestConfig).toMatchSnapshot();
-    expect(getCommitsRequestConfig).toMatchSnapshot();
+    const spyCalls = spies.getSpyCalls();
+    expect(spyCalls.graphQLCalls.getDefaultRepoBranchCalls).toMatchSnapshot();
+    expect(spyCalls.graphQLCalls.getIdByLoginCalls).toMatchSnapshot();
+    expect(spyCalls.graphQLCalls.fetchCommitsByAuthorCalls).toMatchSnapshot();
   });
 
   it('should not create new branches in origin (elastic/backport-demo)', async () => {
@@ -168,19 +181,33 @@ describe('when two commits are backported', () => {
 
 describe('when disabling fork mode', () => {
   let res: PromiseReturnType<typeof runWithOptions>;
+  let spies: ReturnType<typeof createSpies>;
+
   beforeEach(
     once(async () => {
       jest.clearAllMocks();
-      createSpies({ commitCount: 1 });
+      const githubApiBaseUrlV4 = 'http://localhost/graphql';
+      spies = createSpies({ commitCount: 1, githubApiBaseUrlV4 });
       await deleteAndSetupEnvironment();
 
-      const scope = mockCreatePRWithOneCommit({ repoOwner: 'elastic' });
-
-      const options = await getOptions(['--fork=false']);
+      const options = await getOptions(['--fork=false'], {
+        githubApiBaseUrlV4,
+      });
       res = await runWithOptions(options);
-      scope.done();
     })
   );
+
+  it('sends the correct http body', () => {
+    const { createPullRequestCalls } = spies.getSpyCalls();
+    expect(createPullRequestCalls).toEqual([
+      {
+        base: '6.0',
+        body: 'Backports the following commits to 6.0:\n - Add witch (#85)',
+        head: 'elastic:backport/6.0/pr-85',
+        title: '[6.0] Add witch (#85)',
+      },
+    ]);
+  });
 
   it('returns pull request', () => {
     expect(res).toEqual([
@@ -219,26 +246,3 @@ describe('when disabling fork mode', () => {
     `);
   });
 });
-
-function mockCreatePRWithOneCommit({ repoOwner }: { repoOwner: string }) {
-  return nock('https://api.github.com')
-    .post('/repos/elastic/backport-demo/pulls', {
-      title: '[6.0] Add witch (#85)',
-      head: `${repoOwner}:backport/6.0/pr-85`,
-      base: '6.0',
-      body: 'Backports the following commits to 6.0:\n - Add witch (#85)',
-    })
-    .reply(200, { number: 1337, html_url: 'myHtmlUrl' });
-}
-
-function mockCreatePRWithTwoCommits() {
-  return nock('https://api.github.com')
-    .post('/repos/elastic/backport-demo/pulls', {
-      title: '[6.0] Add witch (#85) | Add 👻 (2e63475c)',
-      head: 'sqren:backport/6.0/pr-85_commit-2e63475c',
-      base: '6.0',
-      body:
-        'Backports the following commits to 6.0:\n - Add witch (#85)\n - Add 👻 (2e63475c)',
-    })
-    .reply(200, { number: 1337, html_url: 'myHtmlUrl' });
-}

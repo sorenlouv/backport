@@ -13,10 +13,7 @@ describe('addAssigneesToPullRequest', () => {
       })
       .reply(200, 'some response');
 
-    // for debugging:
-    // nock.recorder.rec();
-
-    await addAssigneesToPullRequest(
+    const res = await addAssigneesToPullRequest(
       {
         githubApiBaseUrlV3: 'https://api.github.com',
         repoName: 'backport-demo',
@@ -29,7 +26,7 @@ describe('addAssigneesToPullRequest', () => {
       assignees
     );
 
-    expect(scope.isDone()).toBe(true);
+    expect(res).toBe(undefined);
     scope.done();
   });
 });

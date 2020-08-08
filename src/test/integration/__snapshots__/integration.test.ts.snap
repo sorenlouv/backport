@@ -1,8 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`when a single commit is backported should make correct API requests 1`] = `
-Object {
-  "query": "
+Array [
+  Object {
+    "query": "
     query getDefaultRepoBranchAndPerformStartupChecks(
       $repoOwner: String!
       $repoName: String!
@@ -23,31 +24,35 @@ Object {
       }
     }
   ",
-  "variables": Object {
-    "repoName": "backport-demo",
-    "repoOwner": "elastic",
+    "variables": Object {
+      "repoName": "backport-demo",
+      "repoOwner": "elastic",
+    },
   },
-}
+]
 `;
 
 exports[`when a single commit is backported should make correct API requests 2`] = `
-Object {
-  "query": "
+Array [
+  Object {
+    "query": "
     query getIdByLogin($login: String!) {
       user(login: $login) {
         id
       }
     }
   ",
-  "variables": Object {
-    "login": "sqren",
+    "variables": Object {
+      "login": "sqren",
+    },
   },
-}
+]
 `;
 
 exports[`when a single commit is backported should make correct API requests 3`] = `
-Object {
-  "query": "
+Array [
+  Object {
+    "query": "
     query getCommitsByAuthorQuery(
       $repoOwner: String!
       $repoName: String!
@@ -127,35 +132,71 @@ Object {
       }
     }
   ",
-  "variables": Object {
-    "authorId": "sqren_author_id",
-    "historyPath": null,
-    "maxNumber": 10,
-    "repoName": "backport-demo",
-    "repoOwner": "elastic",
-    "sourceBranch": "master",
+    "variables": Object {
+      "authorId": "sqren_author_id",
+      "historyPath": null,
+      "maxNumber": 10,
+      "repoName": "backport-demo",
+      "repoOwner": "elastic",
+      "sourceBranch": "master",
+    },
   },
-}
+]
 `;
 
 exports[`when two commits are backported should make correct API requests 1`] = `
-Object {
-  "query": "
+Array [
+  Object {
+    "query": "
+    query getDefaultRepoBranchAndPerformStartupChecks(
+      $repoOwner: String!
+      $repoName: String!
+    ) {
+      viewer {
+        login
+      }
+      repository(owner: $repoOwner, name: $repoName) {
+        # check whether \\"backport\\" branch exists
+        ref(qualifiedName: \\"refs/heads/backport\\") {
+          name
+        }
+
+        # get default branch
+        defaultBranchRef {
+          name
+        }
+      }
+    }
+  ",
+    "variables": Object {
+      "repoName": "backport-demo",
+      "repoOwner": "elastic",
+    },
+  },
+]
+`;
+
+exports[`when two commits are backported should make correct API requests 2`] = `
+Array [
+  Object {
+    "query": "
     query getIdByLogin($login: String!) {
       user(login: $login) {
         id
       }
     }
   ",
-  "variables": Object {
-    "login": "sqren",
+    "variables": Object {
+      "login": "sqren",
+    },
   },
-}
+]
 `;
 
-exports[`when two commits are backported should make correct API requests 2`] = `
-Object {
-  "query": "
+exports[`when two commits are backported should make correct API requests 3`] = `
+Array [
+  Object {
+    "query": "
     query getCommitsByAuthorQuery(
       $repoOwner: String!
       $repoName: String!
@@ -235,13 +276,14 @@ Object {
       }
     }
   ",
-  "variables": Object {
-    "authorId": "sqren_author_id",
-    "historyPath": null,
-    "maxNumber": 10,
-    "repoName": "backport-demo",
-    "repoOwner": "elastic",
-    "sourceBranch": "master",
+    "variables": Object {
+      "authorId": "sqren_author_id",
+      "historyPath": null,
+      "maxNumber": 10,
+      "repoName": "backport-demo",
+      "repoOwner": "elastic",
+      "sourceBranch": "master",
+    },
   },
-}
+]
 `;
