@@ -23,7 +23,7 @@ export async function fetchPullRequestBySearchQuery(
     sourceBranch,
   } = options;
   const query = /* GraphQL */ `
-    query getPullRequestBySearchQuery($query: String!, $maxNumber: Int!) {
+    query PullRequestBySearchQuery($query: String!, $maxNumber: Int!) {
       search(query: $query, type: ISSUE, first: $maxNumber) {
         nodes {
           ... on PullRequest {

@@ -52,8 +52,8 @@ describe('when a single commit is backported', () => {
 
   it('should make correct API requests', () => {
     expect(spies.getDefaultRepoBranchCalls).toMatchSnapshot();
-    expect(spies.getAuthorIdCalls).toMatchSnapshot();
-    expect(spies.getCommitsByAuthorCalls).toMatchSnapshot();
+    expect(spies.authorIdCalls).toMatchSnapshot();
+    expect(spies.commitsByAuthorCalls).toMatchSnapshot();
   });
 
   it('should not create new branches in origin (elastic/backport-demo)', async () => {
@@ -127,8 +127,8 @@ describe('when two commits are backported', () => {
 
   it('should make correct API requests', () => {
     expect(spies.getDefaultRepoBranchCalls).toMatchSnapshot();
-    expect(spies.getAuthorIdCalls).toMatchSnapshot();
-    expect(spies.getCommitsByAuthorCalls).toMatchSnapshot();
+    expect(spies.authorIdCalls).toMatchSnapshot();
+    expect(spies.commitsByAuthorCalls).toMatchSnapshot();
   });
 
   it('should not create new branches in origin (elastic/backport-demo)', async () => {

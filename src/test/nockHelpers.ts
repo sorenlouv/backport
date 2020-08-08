@@ -1,21 +1,28 @@
+import { URL } from 'url';
 import gql from 'graphql-tag';
 import nock from 'nock';
 
 export function mockGqlRequest({
   name,
   statusCode,
-  data,
+  body,
   headers,
+  apiBaseUrl,
 }: {
   name: string;
   statusCode: number;
-  data?: any;
+  body?: any;
   headers?: any;
+  apiBaseUrl?: string;
 }) {
-  // use localhost as host to avoid CORS issues
-  const scope = nock('http://localhost')
-    .post('/graphql', (body) => getGqlName(body.query) === name)
-    .reply(statusCode, { data }, headers);
+  const { origin, pathname } = new URL(
+    // default to localhost as host to avoid CORS issues
+    apiBaseUrl ?? 'http://localhost/graphql'
+  );
+
+  const scope = nock(origin)
+    .post(pathname, (body) => getGqlName(body.query) === name)
+    .reply(statusCode, body, headers);
 
   return getNockCallsForScope(scope) as { query: string; variables: string }[];
 }

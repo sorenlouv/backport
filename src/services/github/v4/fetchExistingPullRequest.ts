@@ -13,7 +13,7 @@ export async function fetchExistingPullRequest({
 }) {
   const { githubApiBaseUrlV4, repoName, accessToken } = options;
   const query = /* GraphQL */ `
-    query getExistingPullRequest(
+    query ExistingPullRequest(
       $repoOwner: String!
       $repoName: String!
       $targetBranch: String!

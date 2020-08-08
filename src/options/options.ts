@@ -1,4 +1,4 @@
-import { getDefaultRepoBranchAndPerformStartupChecks } from '../services/github/v4/getDefaultRepoBranchAndPerformStartupChecks';
+import { fetchDefaultRepoBranchAndPerformStartupChecks } from '../services/github/v4/fetchDefaultRepoBranchAndPerformStartupChecks';
 import { PromiseReturnType } from '../types/PromiseReturnType';
 import { setLogLevel, setRedactedAccessToken } from './../services/logger';
 import { ConfigOptions } from './ConfigOptions';
@@ -27,7 +27,7 @@ export async function getOptions(
   const validatedOptions = getValidatedOptions(optionsFromCli);
 
   // TODO: make `username` optional by defaulting to `currentUsername`
-  const { defaultBranch } = await getDefaultRepoBranchAndPerformStartupChecks(
+  const { defaultBranch } = await fetchDefaultRepoBranchAndPerformStartupChecks(
     validatedOptions
   );
 

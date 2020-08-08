@@ -23,29 +23,29 @@ export function createSpies({ commitCount }: { commitCount: number }) {
   mockInquirerPrompts(commitCount);
 
   const getDefaultRepoBranchCalls = mockGqlRequest({
-    name: 'getDefaultRepoBranchAndPerformStartupChecks',
+    name: 'DefaultRepoBranch',
     statusCode: 200,
-    data: { repository: { defaultBranchRef: { name: 'master' } } },
+    body: { data: { repository: { defaultBranchRef: { name: 'master' } } } },
   });
 
-  const getAuthorIdCalls = mockGqlRequest({
-    name: 'getAuthorId',
+  const authorIdCalls = mockGqlRequest({
+    name: 'AuthorId',
     statusCode: 200,
-    data: { user: { id: 'sqren_author_id' } },
+    body: { data: { user: { id: 'sqren_author_id' } } },
   });
 
-  const getCommitsByAuthorCalls = mockGqlRequest({
-    name: 'getCommitsByAuthor',
+  const commitsByAuthorCalls = mockGqlRequest({
+    name: 'CommitsByAuthor',
     statusCode: 200,
-    data: commitsWithPullRequestsMock,
+    body: { data: commitsWithPullRequestsMock },
   });
 
   const createPullRequestCalls = mockCreatePullRequest();
 
   return {
     getDefaultRepoBranchCalls,
-    getAuthorIdCalls,
-    getCommitsByAuthorCalls,
+    authorIdCalls,
+    commitsByAuthorCalls,
     createPullRequestCalls,
   };
 }

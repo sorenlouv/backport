@@ -12,7 +12,7 @@ export async function fetchAuthorId(options: BackportOptions) {
   }
 
   const query = /* GraphQL */ `
-    query getAuthorId($login: String!) {
+    query AuthorId($login: String!) {
       user(login: $login) {
         id
       }

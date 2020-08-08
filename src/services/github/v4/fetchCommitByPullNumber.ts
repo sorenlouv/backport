@@ -19,7 +19,7 @@ export async function fetchCommitByPullNumber(
     repoOwner,
   } = options;
   const query = /* GraphQL */ `
-    query getCommitbyPullNumber(
+    query CommitByPullNumber(
       $repoOwner: String!
       $repoName: String!
       $pullNumber: Int!

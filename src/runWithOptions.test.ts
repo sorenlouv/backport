@@ -15,8 +15,8 @@ describe('runWithOptions', () => {
   let inquirerPromptMock: SpyHelper<typeof inquirer.prompt>;
   let res: PromiseReturnType<typeof runWithOptions>;
   let createPullRequestCalls: unknown[];
-  let getCommitsByAuthorCalls: ReturnType<typeof mockGqlRequest>;
-  let getAuthorIdCalls: ReturnType<typeof mockGqlRequest>;
+  let commitsByAuthorCalls: ReturnType<typeof mockGqlRequest>;
+  let authorIdCalls: ReturnType<typeof mockGqlRequest>;
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -82,16 +82,16 @@ describe('runWithOptions', () => {
         return { promptResult: args[0].choices[0].name };
       }) as any);
 
-    getAuthorIdCalls = mockGqlRequest({
-      name: 'getAuthorId',
+    authorIdCalls = mockGqlRequest({
+      name: 'AuthorId',
       statusCode: 200,
-      data: { user: { id: 'sqren_author_id' } },
+      body: { data: { user: { id: 'sqren_author_id' } } },
     });
 
-    getCommitsByAuthorCalls = mockGqlRequest({
-      name: 'getCommitsByAuthor',
+    commitsByAuthorCalls = mockGqlRequest({
+      name: 'CommitsByAuthor',
       statusCode: 200,
-      data: commitsWithPullRequestsMock,
+      body: { data: commitsWithPullRequestsMock },
     });
 
     const scope = nock('https://api.github.com')
@@ -126,11 +126,11 @@ describe('runWithOptions', () => {
   });
 
   it('it retrieves author id', () => {
-    expect(getAuthorIdCalls).toMatchInlineSnapshot(`
+    expect(authorIdCalls).toMatchInlineSnapshot(`
       Array [
         Object {
           "query": "
-          query getAuthorId($login: String!) {
+          query AuthorId($login: String!) {
             user(login: $login) {
               id
             }
@@ -145,7 +145,7 @@ describe('runWithOptions', () => {
   });
 
   it('it retrieves commits by author', () => {
-    expect(getCommitsByAuthorCalls.map((body) => body.variables)).toEqual([
+    expect(commitsByAuthorCalls.map((body) => body.variables)).toEqual([
       {
         authorId: 'sqren_author_id',
         historyPath: null,

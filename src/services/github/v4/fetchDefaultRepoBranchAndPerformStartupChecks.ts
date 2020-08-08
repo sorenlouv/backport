@@ -21,17 +21,14 @@ export interface DataResponse {
 // startup checks:
 // - verify the access token
 // - ensure no branch named "backport" exists
-export async function getDefaultRepoBranchAndPerformStartupChecks({
+export async function fetchDefaultRepoBranchAndPerformStartupChecks({
   accessToken,
   githubApiBaseUrlV4,
   repoName,
   repoOwner,
 }: ValidatedOptions) {
   const query = /* GraphQL */ `
-    query getDefaultRepoBranchAndPerformStartupChecks(
-      $repoOwner: String!
-      $repoName: String!
-    ) {
+    query DefaultRepoBranch($repoOwner: String!, $repoName: String!) {
       viewer {
         login
       }

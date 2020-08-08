@@ -10,12 +10,14 @@ function mockGetDefaultRepoBranch({
   refName?: 'backport';
 }) {
   return mockGqlRequest({
-    name: 'getDefaultRepoBranchAndPerformStartupChecks',
+    name: 'DefaultRepoBranch',
     statusCode: 200,
-    data: {
-      repository: {
-        ref: { name: refName },
-        defaultBranchRef: { name: defaultBranch },
+    body: {
+      data: {
+        repository: {
+          ref: { name: refName },
+          defaultBranchRef: { name: defaultBranch },
+        },
       },
     },
   });

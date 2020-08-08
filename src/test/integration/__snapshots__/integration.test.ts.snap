@@ -4,10 +4,7 @@ exports[`when a single commit is backported should make correct API requests 1`]
 Array [
   Object {
     "query": "
-    query getDefaultRepoBranchAndPerformStartupChecks(
-      $repoOwner: String!
-      $repoName: String!
-    ) {
+    query DefaultRepoBranch($repoOwner: String!, $repoName: String!) {
       viewer {
         login
       }
@@ -36,7 +33,7 @@ exports[`when a single commit is backported should make correct API requests 2`]
 Array [
   Object {
     "query": "
-    query getAuthorId($login: String!) {
+    query AuthorId($login: String!) {
       user(login: $login) {
         id
       }
@@ -53,7 +50,7 @@ exports[`when a single commit is backported should make correct API requests 3`]
 Array [
   Object {
     "query": "
-    query getCommitsByAuthor(
+    query CommitsByAuthor(
       $repoOwner: String!
       $repoName: String!
       $maxNumber: Int!
@@ -148,10 +145,7 @@ exports[`when two commits are backported should make correct API requests 1`] = 
 Array [
   Object {
     "query": "
-    query getDefaultRepoBranchAndPerformStartupChecks(
-      $repoOwner: String!
-      $repoName: String!
-    ) {
+    query DefaultRepoBranch($repoOwner: String!, $repoName: String!) {
       viewer {
         login
       }
@@ -180,7 +174,7 @@ exports[`when two commits are backported should make correct API requests 2`] = 
 Array [
   Object {
     "query": "
-    query getAuthorId($login: String!) {
+    query AuthorId($login: String!) {
       user(login: $login) {
         id
       }
@@ -197,7 +191,7 @@ exports[`when two commits are backported should make correct API requests 3`] = 
 Array [
   Object {
     "query": "
-    query getCommitsByAuthor(
+    query CommitsByAuthor(
       $repoOwner: String!
       $repoName: String!
       $maxNumber: Int!

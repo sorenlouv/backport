@@ -1,8 +1,8 @@
 import { BackportOptions } from '../../../options/options';
 import { getTestCredentials } from '../../../test/private/getTestCredentials';
-import { getDefaultRepoBranchAndPerformStartupChecks } from './getDefaultRepoBranchAndPerformStartupChecks';
+import { fetchDefaultRepoBranchAndPerformStartupChecks } from './fetchDefaultRepoBranchAndPerformStartupChecks';
 
-describe('getDefaultRepoBranchAndPerformStartupChecks', () => {
+describe('fetchDefaultRepoBranchAndPerformStartupChecks', () => {
   let accessToken: string;
 
   beforeAll(async () => {
@@ -20,7 +20,7 @@ describe('getDefaultRepoBranchAndPerformStartupChecks', () => {
       } as BackportOptions;
 
       await expect(
-        getDefaultRepoBranchAndPerformStartupChecks(options)
+        fetchDefaultRepoBranchAndPerformStartupChecks(options)
       ).rejects.toThrowError(
         'Please check your access token and make sure it is valid.\nConfig: /myHomeDir/.backport/config.json'
       );
@@ -37,7 +37,7 @@ describe('getDefaultRepoBranchAndPerformStartupChecks', () => {
       } as BackportOptions;
 
       expect(
-        await getDefaultRepoBranchAndPerformStartupChecks(options)
+        await fetchDefaultRepoBranchAndPerformStartupChecks(options)
       ).toEqual({ defaultBranch: 'master' });
     });
   });

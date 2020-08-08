@@ -10,9 +10,9 @@ describe('fetchPullRequestBySearchQuery', () => {
 
   beforeEach(async () => {
     mockCalls = mockGqlRequest({
-      name: 'getPullRequestBySearchQuery',
+      name: 'PullRequestBySearchQuery',
       statusCode: 200,
-      data: fetchPullRequestBySearchQueryMock.data,
+      body: fetchPullRequestBySearchQueryMock,
     });
 
     res = await fetchPullRequestBySearchQuery({
