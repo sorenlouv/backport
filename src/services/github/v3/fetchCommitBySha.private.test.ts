@@ -1,15 +1,14 @@
 import { BackportOptions } from '../../../options/options';
-import { getTestCredentials } from '../../../test/private/getTestCredentials';
-import { PromiseReturnType } from '../../../types/PromiseReturnType';
+import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
 import { fetchCommitBySha } from './fetchCommitBySha';
 
 type BackportOptionsWithSha = BackportOptions & { sha: string };
 
 describe('fetchCommitBySha', () => {
-  let config: PromiseReturnType<typeof getTestCredentials>;
+  let devAccessToken: string;
 
   beforeEach(async () => {
-    config = await getTestCredentials();
+    devAccessToken = await getDevAccessToken();
   });
 
   it('should return single commit with pull request', async () => {
@@ -17,7 +16,7 @@ describe('fetchCommitBySha', () => {
       await fetchCommitBySha({
         repoOwner: 'elastic',
         repoName: 'kibana',
-        accessToken: config.accessToken,
+        accessToken: devAccessToken,
         sha: 'cb6fbc0',
         githubApiBaseUrlV3: 'https://api.github.com',
       } as BackportOptionsWithSha)
@@ -35,7 +34,7 @@ describe('fetchCommitBySha', () => {
       fetchCommitBySha({
         repoOwner: 'elastic',
         repoName: 'kibana',
-        accessToken: config.accessToken,
+        accessToken: devAccessToken,
         sha: 'fc22f59',
         githubApiBaseUrlV3: 'https://api.github.com',
       } as BackportOptionsWithSha)
@@ -47,7 +46,7 @@ describe('fetchCommitBySha', () => {
       fetchCommitBySha({
         repoOwner: 'elastic',
         repoName: 'kibana',
-        accessToken: config.accessToken,
+        accessToken: devAccessToken,
         sha: 'myCommitSha',
         githubApiBaseUrlV3: 'https://api.github.com',
       } as BackportOptions & { sha: string })

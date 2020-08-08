@@ -1,19 +1,18 @@
 import { BackportOptions } from '../../../options/options';
-import { getTestCredentials } from '../../../test/private/getTestCredentials';
+import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
 import { fetchAuthorId } from './fetchAuthorId';
 
 describe('fetchAuthorId', () => {
-  let accessToken: string;
+  let devAccessToken: string;
 
   beforeAll(async () => {
-    const config = await getTestCredentials();
-    accessToken = config.accessToken;
+    devAccessToken = await getDevAccessToken();
   });
 
   describe('all = true', () => {
     it('returns null', async () => {
       const options = {
-        accessToken: accessToken,
+        accessToken: devAccessToken,
         githubApiBaseUrlV4: 'https://api.github.com/graphql',
         all: true,
       } as BackportOptions;
@@ -25,7 +24,7 @@ describe('fetchAuthorId', () => {
   describe('all = false', () => {
     it('returns author id', async () => {
       const options = {
-        accessToken: accessToken,
+        accessToken: devAccessToken,
         githubApiBaseUrlV4: 'https://api.github.com/graphql',
         all: false,
         author: 'sqren',

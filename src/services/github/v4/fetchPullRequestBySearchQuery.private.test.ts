@@ -1,19 +1,18 @@
 import { BackportOptions } from '../../../options/options';
-import { getTestCredentials } from '../../../test/private/getTestCredentials';
+import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
 import { fetchPullRequestBySearchQuery } from './fetchPullRequestBySearchQuery';
 
 describe('fetchPullRequestBySearchQuery', () => {
-  let accessToken: string;
+  let devAccessToken: string;
 
   beforeAll(async () => {
-    const config = await getTestCredentials();
-    accessToken = config.accessToken;
+    devAccessToken = await getDevAccessToken();
   });
 
   describe('when filter does not match any PRs', () => {
     it('throws an error', async () => {
       const options = {
-        accessToken: accessToken,
+        accessToken: devAccessToken,
         all: false,
         author: 'sqren',
         githubApiBaseUrlV4: 'https://api.github.com/graphql',
@@ -33,7 +32,7 @@ describe('fetchPullRequestBySearchQuery', () => {
   describe('when filter matches at least one PR', () => {
     it('throws an error', async () => {
       const options = {
-        accessToken: accessToken,
+        accessToken: devAccessToken,
         all: false,
         author: 'sqren',
         githubApiBaseUrlV4: 'https://api.github.com/graphql',

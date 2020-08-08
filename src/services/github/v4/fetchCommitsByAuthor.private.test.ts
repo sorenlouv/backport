@@ -1,14 +1,13 @@
 import { BackportOptions } from '../../../options/options';
-import { getTestCredentials } from '../../../test/private/getTestCredentials';
+import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
 import { CommitChoice } from '../../../types/Commit';
 import { fetchCommitsByAuthor } from './fetchCommitsByAuthor';
 
 describe('fetchCommitsByAuthor', () => {
-  let accessToken: string;
+  let devAccessToken: string;
 
   beforeAll(async () => {
-    const config = await getTestCredentials();
-    accessToken = config.accessToken;
+    devAccessToken = await getDevAccessToken();
   });
 
   describe('when commit has an associated pull request', () => {
@@ -17,7 +16,7 @@ describe('fetchCommitsByAuthor', () => {
         repoOwner: 'sqren',
         repoName: 'backport-demo',
         sourceBranch: 'master',
-        accessToken: accessToken,
+        accessToken: devAccessToken,
         username: 'sqren',
         author: 'sqren',
         maxNumber: 10,

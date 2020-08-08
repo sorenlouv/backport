@@ -1,19 +1,18 @@
 import { BackportOptions } from '../../../options/options';
-import { getTestCredentials } from '../../../test/private/getTestCredentials';
+import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
 import { fetchCommitByPullNumber } from './fetchCommitByPullNumber';
 
 describe('fetchCommitByPullNumber', () => {
-  let accessToken: string;
+  let devAccessToken: string;
 
   beforeAll(async () => {
-    const config = await getTestCredentials();
-    accessToken = config.accessToken;
+    devAccessToken = await getDevAccessToken();
   });
 
   describe('when PR exists', () => {
     it('throws an error', async () => {
       const options = {
-        accessToken: accessToken,
+        accessToken: devAccessToken,
         githubApiBaseUrlV4: 'https://api.github.com/graphql',
         pullNumber: 85,
         repoName: 'backport-demo',
@@ -33,7 +32,7 @@ describe('fetchCommitByPullNumber', () => {
   describe('when PR has not been merged', () => {
     it('throws an error', async () => {
       const options = {
-        accessToken: accessToken,
+        accessToken: devAccessToken,
         githubApiBaseUrlV4: 'https://api.github.com/graphql',
         pullNumber: 123,
         repoName: 'backport-demo',
@@ -49,7 +48,7 @@ describe('fetchCommitByPullNumber', () => {
   describe('when PR does not exist', () => {
     it('throws an error', async () => {
       const options = {
-        accessToken: accessToken,
+        accessToken: devAccessToken,
         githubApiBaseUrlV4: 'https://api.github.com/graphql',
         pullNumber: 9999999999999,
         repoName: 'backport-demo',

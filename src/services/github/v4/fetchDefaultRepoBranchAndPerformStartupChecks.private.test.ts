@@ -1,13 +1,12 @@
 import { BackportOptions } from '../../../options/options';
-import { getTestCredentials } from '../../../test/private/getTestCredentials';
+import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
 import { fetchDefaultRepoBranchAndPerformStartupChecks } from './fetchDefaultRepoBranchAndPerformStartupChecks';
 
 describe('fetchDefaultRepoBranchAndPerformStartupChecks', () => {
-  let accessToken: string;
+  let devAccessToken: string;
 
   beforeAll(async () => {
-    const config = await getTestCredentials();
-    accessToken = config.accessToken;
+    devAccessToken = await getDevAccessToken();
   });
 
   describe('accessToken is invalid', () => {
@@ -30,7 +29,7 @@ describe('fetchDefaultRepoBranchAndPerformStartupChecks', () => {
   describe('accessToken is valid', () => {
     it('returns the default branch', async () => {
       const options = {
-        accessToken: accessToken,
+        accessToken: devAccessToken,
         githubApiBaseUrlV4: 'https://api.github.com/graphql',
         repoName: 'backport-demo',
         repoOwner: 'sqren',

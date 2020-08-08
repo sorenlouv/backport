@@ -1,13 +1,12 @@
 import { BackportOptions } from '../../../options/options';
-import { getTestCredentials } from '../../../test/private/getTestCredentials';
+import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
 import { fetchExistingPullRequest } from './fetchExistingPullRequest';
 
 describe('fetchExistingPullRequest', () => {
-  let accessToken: string;
+  let devAccessToken: string;
 
   beforeAll(async () => {
-    const config = await getTestCredentials();
-    accessToken = config.accessToken;
+    devAccessToken = await getDevAccessToken();
   });
 
   describe('when PR does not exist', () => {
@@ -15,7 +14,7 @@ describe('fetchExistingPullRequest', () => {
       const options = {
         repoOwner: 'sqren',
         repoName: 'backport-demo',
-        accessToken: accessToken,
+        accessToken: devAccessToken,
         githubApiBaseUrlV4: 'https://api.github.com/graphql',
       } as BackportOptions;
       const res = await fetchExistingPullRequest({
@@ -35,7 +34,7 @@ describe('fetchExistingPullRequest', () => {
       const options = {
         repoOwner: 'sqren',
         repoName: 'backport-demo',
-        accessToken: accessToken,
+        accessToken: devAccessToken,
         githubApiBaseUrlV4: 'https://api.github.com/graphql',
       } as BackportOptions;
       const res = await fetchExistingPullRequest({
