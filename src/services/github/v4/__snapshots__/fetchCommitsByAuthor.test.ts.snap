@@ -5,7 +5,7 @@ Array [
   "https://api.github.com/graphql",
   Object {
     "query": "
-    query getIdByLogin($login: String!) {
+    query getAuthorId($login: String!) {
       user(login: $login) {
         id
       }

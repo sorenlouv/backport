@@ -36,7 +36,7 @@ exports[`when a single commit is backported should make correct API requests 2`]
 Array [
   Object {
     "query": "
-    query getIdByLogin($login: String!) {
+    query getAuthorId($login: String!) {
       user(login: $login) {
         id
       }
@@ -180,7 +180,7 @@ exports[`when two commits are backported should make correct API requests 2`] = 
 Array [
   Object {
     "query": "
-    query getIdByLogin($login: String!) {
+    query getAuthorId($login: String!) {
       user(login: $login) {
         id
       }

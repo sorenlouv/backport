@@ -1,10 +1,9 @@
 import childProcess = require('child_process');
 import os from 'os';
-import { URL } from 'url';
-import gql from 'graphql-tag';
 import inquirer from 'inquirer';
 import nock from 'nock';
 import { commitsWithPullRequestsMock } from '../../services/github/v4/mocks/commitsByAuthorMock';
+import { mockGqlRequest, getNockCallsForScope } from '../nockHelpers';
 import {
   HOMEDIR_PATH,
   REMOTE_ORIGIN_REPO_PATH,
@@ -13,13 +12,7 @@ import {
 
 const unmockedExec = childProcess.exec;
 
-export function createSpies({
-  commitCount,
-  githubApiBaseUrlV4,
-}: {
-  commitCount: number;
-  githubApiBaseUrlV4: string;
-}) {
+export function createSpies({ commitCount }: { commitCount: number }) {
   // set alternative homedir
   jest.spyOn(os, 'homedir').mockReturnValue(HOMEDIR_PATH);
 
@@ -29,36 +22,29 @@ export function createSpies({
   // mock inquirer.prompt
   mockInquirerPrompts(commitCount);
 
-  // getDefaultRepoBranchAndPerformStartupChecks
   const getDefaultRepoBranchCalls = mockGqlRequest({
-    githubApiBaseUrlV4,
     name: 'getDefaultRepoBranchAndPerformStartupChecks',
     statusCode: 200,
     body: { repository: { defaultBranchRef: { name: 'master' } } },
   });
 
-  // getIdByLogin
-  const getIdByLoginCalls = mockGqlRequest({
-    githubApiBaseUrlV4,
-    name: 'getIdByLogin',
+  const getAuthorIdCalls = mockGqlRequest({
+    name: 'getAuthorId',
     statusCode: 200,
     body: { user: { id: 'sqren_author_id' } },
   });
 
-  // getCommitsByAuthor
   const getCommitsByAuthorCalls = mockGqlRequest({
-    githubApiBaseUrlV4,
     name: 'getCommitsByAuthor',
     statusCode: 200,
     body: commitsWithPullRequestsMock,
   });
 
-  // mock Github v3 (REST) requests
   const createPullRequestCalls = mockCreatePullRequest();
 
   return {
     getDefaultRepoBranchCalls,
-    getIdByLoginCalls,
+    getAuthorIdCalls,
     getCommitsByAuthorCalls,
     createPullRequestCalls,
   };
@@ -103,43 +89,4 @@ function mockCreatePullRequest() {
     .reply(200, { number: 1337, html_url: 'myHtmlUrl' });
 
   return getNockCallsForScope(scope);
-}
-
-function mockGqlRequest({
-  githubApiBaseUrlV4,
-  name,
-  statusCode,
-  body,
-  headers,
-}: {
-  githubApiBaseUrlV4: string;
-  name: string;
-  statusCode: number;
-  body?: any;
-  headers?: any;
-}) {
-  const { origin, pathname } = new URL(githubApiBaseUrlV4);
-
-  const scope = nock(origin)
-    .post(pathname, (body) => getGqlName(body.query) === name)
-    .reply(statusCode, { data: body }, headers);
-
-  return getNockCallsForScope(scope);
-}
-
-function getGqlName(query: string) {
-  const obj = gql`
-    ${query}
-  `;
-
-  // @ts-expect-error
-  return obj.definitions[0].name.value;
-}
-
-function getNockCallsForScope(scope: nock.Scope) {
-  const calls: string[] = [];
-  scope.on('request', (req, interceptor, body) => {
-    calls.push(JSON.parse(body));
-  });
-  return calls;
 }

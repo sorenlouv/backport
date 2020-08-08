@@ -20,15 +20,15 @@ describe('when a single commit is backported', () => {
 
   beforeEach(
     once(async () => {
-      // use localhost to avoid CORS issues
-      const githubApiBaseUrlV4 = 'http://localhost/graphql';
-
       jest.clearAllMocks();
-      spies = createSpies({ commitCount: 1, githubApiBaseUrlV4 });
+      spies = createSpies({ commitCount: 1 });
 
       await deleteAndSetupEnvironment();
 
-      const options = await getOptions([], { githubApiBaseUrlV4 });
+      const options = await getOptions([], {
+        // use localhost to avoid CORS issues
+        githubApiBaseUrlV4: 'http://localhost/graphql',
+      });
       res = await runWithOptions(options);
     })
   );
@@ -52,7 +52,7 @@ describe('when a single commit is backported', () => {
 
   it('should make correct API requests', () => {
     expect(spies.getDefaultRepoBranchCalls).toMatchSnapshot();
-    expect(spies.getIdByLoginCalls).toMatchSnapshot();
+    expect(spies.getAuthorIdCalls).toMatchSnapshot();
     expect(spies.getCommitsByAuthorCalls).toMatchSnapshot();
   });
 
@@ -95,12 +95,14 @@ describe('when two commits are backported', () => {
   beforeEach(
     once(async () => {
       jest.clearAllMocks();
-      const githubApiBaseUrlV4 = 'http://localhost/graphql';
-      spies = createSpies({ commitCount: 2, githubApiBaseUrlV4 });
+      spies = createSpies({ commitCount: 2 });
 
       await deleteAndSetupEnvironment();
 
-      const options = await getOptions([], { githubApiBaseUrlV4 });
+      const options = await getOptions([], {
+        // use localhost to avoid CORS issues
+        githubApiBaseUrlV4: 'http://localhost/graphql',
+      });
       res = await runWithOptions(options);
     })
   );
@@ -125,7 +127,7 @@ describe('when two commits are backported', () => {
 
   it('should make correct API requests', () => {
     expect(spies.getDefaultRepoBranchCalls).toMatchSnapshot();
-    expect(spies.getIdByLoginCalls).toMatchSnapshot();
+    expect(spies.getAuthorIdCalls).toMatchSnapshot();
     expect(spies.getCommitsByAuthorCalls).toMatchSnapshot();
   });
 
@@ -182,12 +184,13 @@ describe('when disabling fork mode', () => {
   beforeEach(
     once(async () => {
       jest.clearAllMocks();
-      const githubApiBaseUrlV4 = 'http://localhost/graphql';
-      spies = createSpies({ commitCount: 1, githubApiBaseUrlV4 });
+
+      spies = createSpies({ commitCount: 1 });
       await deleteAndSetupEnvironment();
 
       const options = await getOptions(['--fork=false'], {
-        githubApiBaseUrlV4,
+        // use localhost to avoid CORS issues
+        githubApiBaseUrlV4: 'http://localhost/graphql',
       });
       res = await runWithOptions(options);
     })
