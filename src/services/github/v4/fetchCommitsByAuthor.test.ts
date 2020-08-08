@@ -9,7 +9,7 @@ import { commitsWithPullRequestsMock } from './mocks/commitsByAuthorMock';
 import { getCommitsByAuthorMock } from './mocks/getCommitsByAuthorMock';
 import { getPullRequestEdgeMock } from './mocks/getPullRequestEdgeMock';
 
-const currentUserMock = { user: { id: 'myUserId' } } as const;
+const authorIdMockData = { user: { id: 'myUserId' } } as const;
 
 describe('fetchCommitsByAuthor', () => {
   beforeEach(() => {
@@ -25,7 +25,7 @@ describe('fetchCommitsByAuthor', () => {
       authorIdCalls = mockGqlRequest({
         name: 'AuthorId',
         statusCode: 200,
-        body: { data: currentUserMock },
+        body: { data: authorIdMockData },
       });
 
       commitsByAuthorCalls = mockGqlRequest({
@@ -127,7 +127,7 @@ describe('fetchCommitsByAuthor', () => {
       const authorIdCalls = mockGqlRequest({
         name: 'AuthorId',
         statusCode: 200,
-        body: { data: currentUserMock },
+        body: { data: authorIdMockData },
         apiBaseUrl: 'http://localhost/my-custom-api',
       });
 
@@ -240,7 +240,7 @@ async function getExistingBackportsByRepoName(
   mockGqlRequest({
     name: 'AuthorId',
     statusCode: 200,
-    body: { data: currentUserMock },
+    body: { data: authorIdMockData },
   });
 
   mockGqlRequest({
