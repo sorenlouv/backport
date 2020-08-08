@@ -39,9 +39,8 @@ describe('when a single commit is backported', () => {
     ]);
   });
 
-  it('sends the correct http body', () => {
-    const { createPullRequestCalls } = spies.getSpyCalls();
-    expect(createPullRequestCalls).toEqual([
+  it('sends the correct http body when creating pull request', () => {
+    expect(spies.createPullRequestCalls).toEqual([
       {
         base: '6.0',
         body: 'Backports the following commits to 6.0:\n - Add witch (#85)',
@@ -52,10 +51,9 @@ describe('when a single commit is backported', () => {
   });
 
   it('should make correct API requests', () => {
-    const spyCalls = spies.getSpyCalls();
-    expect(spyCalls.graphQLCalls.getDefaultRepoBranchCalls).toMatchSnapshot();
-    expect(spyCalls.graphQLCalls.getIdByLoginCalls).toMatchSnapshot();
-    expect(spyCalls.graphQLCalls.fetchCommitsByAuthorCalls).toMatchSnapshot();
+    expect(spies.getDefaultRepoBranchCalls).toMatchSnapshot();
+    expect(spies.getIdByLoginCalls).toMatchSnapshot();
+    expect(spies.getCommitsByAuthorCalls).toMatchSnapshot();
   });
 
   it('should not create new branches in origin (elastic/backport-demo)', async () => {
@@ -107,9 +105,8 @@ describe('when two commits are backported', () => {
     })
   );
 
-  it('sends the correct http body', () => {
-    const { createPullRequestCalls } = spies.getSpyCalls();
-    expect(createPullRequestCalls).toEqual([
+  it('sends the correct http body when creating pull request', () => {
+    expect(spies.createPullRequestCalls).toEqual([
       {
         title: '[6.0] Add witch (#85) | Add 👻 (2e63475c)',
         head: 'sqren:backport/6.0/pr-85_commit-2e63475c',
@@ -127,10 +124,9 @@ describe('when two commits are backported', () => {
   });
 
   it('should make correct API requests', () => {
-    const spyCalls = spies.getSpyCalls();
-    expect(spyCalls.graphQLCalls.getDefaultRepoBranchCalls).toMatchSnapshot();
-    expect(spyCalls.graphQLCalls.getIdByLoginCalls).toMatchSnapshot();
-    expect(spyCalls.graphQLCalls.fetchCommitsByAuthorCalls).toMatchSnapshot();
+    expect(spies.getDefaultRepoBranchCalls).toMatchSnapshot();
+    expect(spies.getIdByLoginCalls).toMatchSnapshot();
+    expect(spies.getCommitsByAuthorCalls).toMatchSnapshot();
   });
 
   it('should not create new branches in origin (elastic/backport-demo)', async () => {
@@ -197,9 +193,8 @@ describe('when disabling fork mode', () => {
     })
   );
 
-  it('sends the correct http body', () => {
-    const { createPullRequestCalls } = spies.getSpyCalls();
-    expect(createPullRequestCalls).toEqual([
+  it('sends the correct http body when creating pull request', () => {
+    expect(spies.createPullRequestCalls).toEqual([
       {
         base: '6.0',
         body: 'Backports the following commits to 6.0:\n - Add witch (#85)',

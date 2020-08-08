@@ -27,7 +27,7 @@ export async function fetchCommitsByAuthor(
   } = options;
 
   const query = /* GraphQL */ `
-    query getCommitsByAuthorQuery(
+    query getCommitsByAuthor(
       $repoOwner: String!
       $repoName: String!
       $maxNumber: Int!

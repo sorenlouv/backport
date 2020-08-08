@@ -29,7 +29,7 @@ Array [
   "https://api.github.com/graphql",
   Object {
     "query": "
-    query getCommitsByAuthorQuery(
+    query getCommitsByAuthor(
       $repoOwner: String!
       $repoName: String!
       $maxNumber: Int!

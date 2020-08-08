@@ -1,7 +1,7 @@
 import childProcess = require('child_process');
-import { url } from 'inspector';
 import os from 'os';
 import { URL } from 'url';
+import gql from 'graphql-tag';
 import inquirer from 'inquirer';
 import nock from 'nock';
 import { commitsWithPullRequestsMock } from '../../services/github/v4/mocks/commitsByAuthorMock';
@@ -29,19 +29,38 @@ export function createSpies({
   // mock inquirer.prompt
   mockInquirerPrompts(commitCount);
 
-  // mock Github v4 (graphql) requests
-  const graphQLCalls = mockGraphQLRequests(githubApiBaseUrlV4);
+  // getDefaultRepoBranchAndPerformStartupChecks
+  const getDefaultRepoBranchCalls = mockGqlRequest({
+    githubApiBaseUrlV4,
+    name: 'getDefaultRepoBranchAndPerformStartupChecks',
+    statusCode: 200,
+    body: { repository: { defaultBranchRef: { name: 'master' } } },
+  });
+
+  // getIdByLogin
+  const getIdByLoginCalls = mockGqlRequest({
+    githubApiBaseUrlV4,
+    name: 'getIdByLogin',
+    statusCode: 200,
+    body: { user: { id: 'sqren_author_id' } },
+  });
+
+  // getCommitsByAuthor
+  const getCommitsByAuthorCalls = mockGqlRequest({
+    githubApiBaseUrlV4,
+    name: 'getCommitsByAuthor',
+    statusCode: 200,
+    body: commitsWithPullRequestsMock,
+  });
 
   // mock Github v3 (REST) requests
   const createPullRequestCalls = mockCreatePullRequest();
 
   return {
-    getSpyCalls: () => {
-      return {
-        graphQLCalls,
-        createPullRequestCalls,
-      };
-    },
+    getDefaultRepoBranchCalls,
+    getIdByLoginCalls,
+    getCommitsByAuthorCalls,
+    createPullRequestCalls,
   };
 }
 
@@ -86,31 +105,35 @@ function mockCreatePullRequest() {
   return getNockCallsForScope(scope);
 }
 
-function mockGraphQLRequests(githubApiBaseUrlV4: string) {
+function mockGqlRequest({
+  githubApiBaseUrlV4,
+  name,
+  statusCode,
+  body,
+  headers,
+}: {
+  githubApiBaseUrlV4: string;
+  name: string;
+  statusCode: number;
+  body?: any;
+  headers?: any;
+}) {
   const { origin, pathname } = new URL(githubApiBaseUrlV4);
 
-  // getDefaultRepoBranchAndPerformStartupChecks
-  const getDefaultRepoBranchScope = nock(origin)
-    .post(pathname)
-    .reply(200, {
-      data: { repository: { defaultBranchRef: { name: 'master' } } },
-    });
+  const scope = nock(origin)
+    .post(pathname, (body) => getGqlName(body.query) === name)
+    .reply(statusCode, { data: body }, headers);
 
-  // getIdByLogin
-  const getIdByLoginScope = nock(origin)
-    .post(pathname)
-    .reply(200, { data: { user: { id: 'sqren_author_id' } } });
+  return getNockCallsForScope(scope);
+}
 
-  // fetchCommitsByAuthor
-  const fetchCommitsByAuthorScope = nock(origin)
-    .post(pathname)
-    .reply(200, { data: commitsWithPullRequestsMock });
+function getGqlName(query: string) {
+  const obj = gql`
+    ${query}
+  `;
 
-  return {
-    getDefaultRepoBranchCalls: getNockCallsForScope(getDefaultRepoBranchScope),
-    getIdByLoginCalls: getNockCallsForScope(getIdByLoginScope),
-    fetchCommitsByAuthorCalls: getNockCallsForScope(fetchCommitsByAuthorScope),
-  };
+  // @ts-expect-error
+  return obj.definitions[0].name.value;
 }
 
 function getNockCallsForScope(scope: nock.Scope) {

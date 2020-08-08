@@ -53,7 +53,7 @@ exports[`when a single commit is backported should make correct API requests 3`]
 Array [
   Object {
     "query": "
-    query getCommitsByAuthorQuery(
+    query getCommitsByAuthor(
       $repoOwner: String!
       $repoName: String!
       $maxNumber: Int!
@@ -197,7 +197,7 @@ exports[`when two commits are backported should make correct API requests 3`] = 
 Array [
   Object {
     "query": "
-    query getCommitsByAuthorQuery(
+    query getCommitsByAuthor(
       $repoOwner: String!
       $repoName: String!
       $maxNumber: Int!
