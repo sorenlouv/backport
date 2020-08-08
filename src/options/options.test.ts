@@ -12,7 +12,7 @@ function mockGetDefaultRepoBranch({
   return mockGqlRequest({
     name: 'getDefaultRepoBranchAndPerformStartupChecks',
     statusCode: 200,
-    body: {
+    data: {
       repository: {
         ref: { name: refName },
         defaultBranchRef: { name: defaultBranch },

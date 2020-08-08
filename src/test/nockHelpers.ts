@@ -4,18 +4,18 @@ import nock from 'nock';
 export function mockGqlRequest({
   name,
   statusCode,
-  body,
+  data,
   headers,
 }: {
   name: string;
   statusCode: number;
-  body?: any;
+  data?: any;
   headers?: any;
 }) {
   // use localhost as host to avoid CORS issues
   const scope = nock('http://localhost')
     .post('/graphql', (body) => getGqlName(body.query) === name)
-    .reply(statusCode, { data: body }, headers);
+    .reply(statusCode, { data }, headers);
 
   return getNockCallsForScope(scope) as { query: string; variables: string }[];
 }

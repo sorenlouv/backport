@@ -85,13 +85,13 @@ describe('runWithOptions', () => {
     getAuthorIdCalls = mockGqlRequest({
       name: 'getAuthorId',
       statusCode: 200,
-      body: { user: { id: 'sqren_author_id' } },
+      data: { user: { id: 'sqren_author_id' } },
     });
 
     getCommitsByAuthorCalls = mockGqlRequest({
       name: 'getCommitsByAuthor',
       statusCode: 200,
-      body: commitsWithPullRequestsMock,
+      data: commitsWithPullRequestsMock,
     });
 
     const scope = nock('https://api.github.com')
