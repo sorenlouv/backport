@@ -1,4 +1,7 @@
 {
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
   "name": "backport",
   "description": "A CLI tool that automates the process of backporting commits",
   "keywords": [
@@ -14,7 +17,7 @@
     "branches",
     "branching"
   ],
-  "version": "5.5.3",
+  "version": "5.5.4",
   "main": "./dist/entrypoint.module.js",
   "types": "dist/entrypoint.module.d.ts",
   "bin": {
