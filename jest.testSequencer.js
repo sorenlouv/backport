@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const Sequencer = require('@jest/test-sequencer').default;
 
 class RandomSequencer extends Sequencer {
