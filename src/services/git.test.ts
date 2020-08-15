@@ -423,19 +423,15 @@ describe('pushBackportBranch', () => {
   const backportBranch = 'backport/7.x/pr-2';
 
   it('should handle missing fork error', async () => {
-    jest
-      .spyOn(childProcess, 'exec')
-
-      // mock git fetch
-      .mockRejectedValueOnce({
-        killed: false,
-        code: 128,
-        signal: null,
-        cmd: 'git push sqren backport/7.x/pr-2:backport/7.x/pr-2 --force',
-        stdout: '',
-        stderr:
-          "remote: Repository not found.\nfatal: repository 'https://github.com/sqren/kibana.git/' not found\n",
-      });
+    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce({
+      killed: false,
+      code: 128,
+      signal: null,
+      cmd: 'git push sqren backport/7.x/pr-2:backport/7.x/pr-2 --force',
+      stdout: '',
+      stderr:
+        "remote: Repository not found.\nfatal: repository 'https://github.com/sqren/kibana.git/' not found\n",
+    });
 
     await expect(
       pushBackportBranch({ options, backportBranch })
