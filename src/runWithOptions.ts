@@ -36,12 +36,16 @@ export async function runWithOptions(options: BackportOptions) {
   await sequentially(targetBranches, async (targetBranch) => {
     logger.info(`Backporting ${JSON.stringify(commits)} to ${targetBranch}`);
     try {
-      const { html_url } = await cherrypickAndCreateTargetPullRequest({
+      const pullRequest = await cherrypickAndCreateTargetPullRequest({
         options,
         commits,
         targetBranch,
       });
-      results.push({ targetBranch, success: true, pullRequestUrl: html_url });
+      results.push({
+        targetBranch,
+        success: true,
+        pullRequestUrl: pullRequest.url,
+      });
     } catch (e) {
       const isHandledError = e instanceof HandledError;
       const errorMessage = isHandledError
