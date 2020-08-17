@@ -15,17 +15,17 @@ describe('fetchExistingPullRequest', () => {
         accessToken: devAccessToken,
         githubApiBaseUrlV4: 'https://api.github.com/graphql',
       } as BackportOptions;
-      const res = await fetchExistingPullRequest({
-        options,
-        prPayload: {
-          owner: 'backport-org',
-          repo: 'backport-e2e',
-          title: 'My PR title',
-          body: 'My PR body',
-          head: 'sqren:backport/7.8/pr-foo',
-          base: '7.8',
-        },
-      });
+
+      const prPayload = {
+        owner: 'backport-org',
+        repo: 'backport-e2e',
+        title: 'My PR title',
+        body: 'My PR body',
+        head: 'sqren:backport/7.8/pr-foo',
+        base: '7.8',
+      };
+
+      const res = await fetchExistingPullRequest({ options, prPayload });
 
       expect(res).toBe(undefined);
     });
@@ -37,17 +37,16 @@ describe('fetchExistingPullRequest', () => {
         accessToken: devAccessToken,
         githubApiBaseUrlV4: 'https://api.github.com/graphql',
       } as BackportOptions;
-      const res = await fetchExistingPullRequest({
-        options,
-        prPayload: {
-          owner: 'backport-org',
-          repo: 'backport-e2e',
-          title: 'My PR title',
-          body: 'My PR body',
-          head: 'sqren:backport/7.8/pr-9',
-          base: '7.8',
-        },
-      });
+
+      const prPayload = {
+        owner: 'backport-org',
+        repo: 'backport-e2e',
+        title: 'My PR title',
+        body: 'My PR body',
+        head: 'sqren:backport/7.8/pr-9',
+        base: '7.8',
+      };
+      const res = await fetchExistingPullRequest({ options, prPayload });
 
       expect(res).toEqual({
         url: 'https://github.com/backport-org/backport-e2e/pull/10',

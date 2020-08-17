@@ -15,6 +15,7 @@ export interface PullRequestPayload {
   body: string;
   head: string;
   base: string;
+  [key: string]: unknown;
 }
 
 export async function createPullRequest({
@@ -50,7 +51,7 @@ export async function createPullRequest({
       log: logger,
     });
 
-    const res = await octokit.pulls.create({ ...prPayload });
+    const res = await octokit.pulls.create(prPayload);
 
     spinner.succeed();
 
