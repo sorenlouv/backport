@@ -28,6 +28,10 @@ import {
   getBody,
   PullRequestPayload,
 } from '../services/github/v3/createPullRequest';
+import {
+  splitHead,
+  fetchExistingPullRequest,
+} from '../services/github/v4/fetchExistingPullRequest';
 import { consoleLog, logger } from '../services/logger';
 import { confirmPrompt } from '../services/prompts';
 import { sequentially } from '../services/sequentially';
@@ -74,7 +78,7 @@ export async function cherrypickAndCreateTargetPullRequest({
     !options.resetAuthor
       ? await backportViaGithubApi({
           options,
-          prPayload: { ...prPayload, head: backportBranch },
+          prPayload,
           pullNumber: sourcePullNumber,
         })
       : await backportViaFilesystem({
@@ -143,14 +147,33 @@ async function backportViaGithubApi({
 
   let number;
   try {
+    const { head } = splitHead(prPayload);
     number = await backportPullRequest({
       octokit,
       pullRequestNumber: pullNumber,
       ...prPayload,
+      head,
     });
     spinner.succeed();
   } catch (e) {
     spinner.fail();
+
+    // PR already exists
+    if (
+      e.name === 'HttpError' &&
+      e.message.includes('Reference already exists')
+    ) {
+      const res = await fetchExistingPullRequest({ options, prPayload });
+      throw new HandledError(`Pull request already exists: ${res?.url}`);
+    }
+
+    // merge conflict
+    if (e.message.includes('could not be cherry-picked on top of')) {
+      throw new HandledError(
+        'Commit could not be cherrypicked due to conflicts'
+      );
+    }
+
     throw e;
   }
 

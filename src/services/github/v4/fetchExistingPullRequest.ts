@@ -39,7 +39,7 @@ export async function fetchExistingPullRequest({
     }
   `;
 
-  const [repoForkOwner, head] = prPayload.head.split(':');
+  const { repoForkOwner, head } = splitHead(prPayload);
 
   const res = await apiRequestV4<DataResponse>({
     githubApiBaseUrlV4,
@@ -81,4 +81,9 @@ interface DataResponse {
       };
     } | null;
   };
+}
+
+export function splitHead(prPayload: PullRequestPayload) {
+  const [repoForkOwner, head] = prPayload.head.split(':');
+  return { repoForkOwner, head };
 }

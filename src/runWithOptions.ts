@@ -53,11 +53,7 @@ export async function runWithOptions(options: BackportOptions) {
         : 'An unhandled error occurred. Please consult the logs';
       results.push({ targetBranch, success: false, errorMessage, error: e });
 
-      if (isHandledError) {
-        consoleLog(e.message);
-      } else {
-        throw e;
-      }
+      consoleLog(errorMessage);
     }
   });
 
