@@ -108,6 +108,10 @@ export function initLogger() {
   return logger;
 }
 
+export function addConsoleTransport() {
+  winstonInstance.add(new winston.transports.Console());
+}
+
 // log levels:
 // - error
 // - warn
