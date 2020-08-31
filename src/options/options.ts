@@ -1,6 +1,10 @@
 import { fetchDefaultRepoBranchAndPerformStartupChecks } from '../services/github/v4/fetchDefaultRepoBranchAndPerformStartupChecks';
 import { PromiseReturnType } from '../types/PromiseReturnType';
-import { setLogLevel, setRedactedAccessToken } from './../services/logger';
+import {
+  setLogLevel,
+  setRedactedAccessToken,
+  addConsoleTransport,
+} from './../services/logger';
 import { ConfigOptions } from './ConfigOptions';
 import { getOptionsFromCliArgs } from './cliArgs';
 import { getOptionsFromConfigFiles } from './config/config';
@@ -22,6 +26,10 @@ export async function getOptions(
 
   // set log level when all config options have been taken into account
   setLogLevel({ verbose: optionsFromCli.verbose });
+
+  if (optionsFromCli.ci) {
+    addConsoleTransport();
+  }
 
   // TODO: move `getValidatedOptions` to `getOptionsFromCliArgs`
   const validatedOptions = getValidatedOptions(optionsFromCli);

@@ -36,6 +36,7 @@ import { consoleLog, logger } from '../services/logger';
 import { confirmPrompt } from '../services/prompts';
 import { sequentially } from '../services/sequentially';
 import { CommitSelected } from '../types/Commit';
+import { shouldBackportViaApi } from './shouldBackportViaApi';
 
 export async function cherrypickAndCreateTargetPullRequest({
   options,
@@ -59,35 +60,20 @@ export async function cherrypickAndCreateTargetPullRequest({
     base: targetBranch, // eg. 7.x
   };
 
-  const sourcePullNumber =
-    commits.length === 1 ? commits[0].pullNumber : undefined;
-
   // backport using Github API
-  const targetPullRequest =
-    // fork mode not supported via API
-    (options.username === options.repoName || !options.fork) &&
-    // only enable for ci mode until fork-mode is supported
-    options.ci &&
-    // has exactly 1 PR to backport
-    sourcePullNumber != undefined &&
-    // `autoFixConflicts` is not supported via API
-    !options.autoFixConflicts &&
-    // `mainline` (merge commits) is not supported via API
-    !options.mainline &&
-    // `resetAuthor` is not supported via API
-    !options.resetAuthor
-      ? await backportViaGithubApi({
-          options,
-          prPayload,
-          pullNumber: sourcePullNumber,
-        })
-      : await backportViaFilesystem({
-          options,
-          prPayload,
-          targetBranch,
-          backportBranch,
-          commits,
-        });
+  const targetPullRequest = shouldBackportViaApi(options, commits)
+    ? await backportViaGithubApi({
+        options,
+        prPayload,
+        commits,
+      })
+    : await backportViaFilesystem({
+        options,
+        prPayload,
+        targetBranch,
+        backportBranch,
+        commits,
+      });
 
   // add assignees to target pull request
   if (options.assignees.length > 0) {
@@ -129,12 +115,17 @@ export async function cherrypickAndCreateTargetPullRequest({
 async function backportViaGithubApi({
   options,
   prPayload,
-  pullNumber,
+  commits,
 }: {
   options: BackportOptions;
   prPayload: PullRequestPayload;
-  pullNumber: number;
+  commits: CommitSelected[];
 }) {
+  const { pullNumber } = commits[0];
+  if (!pullNumber) {
+    throw new Error('Cannot backup via API without pull number');
+  }
+
   logger.info('Backporting via api');
 
   const spinner = ora(`Performing backport via Github API...`).start();

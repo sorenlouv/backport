@@ -7,6 +7,7 @@ import { cherrypickAndCreateTargetPullRequest } from './ui/cherrypickAndCreateTa
 import { getCommits } from './ui/getCommits';
 import { getTargetBranches } from './ui/getTargetBranches';
 import { maybeSetupRepo } from './ui/maybeSetupRepo';
+import { shouldBackportViaApi } from './ui/shouldBackportViaApi';
 
 export type Result =
   | {
@@ -30,7 +31,11 @@ export async function runWithOptions(options: BackportOptions) {
   const commits = await getCommits(options);
   const targetBranches = await getTargetBranches(options, commits);
 
-  await maybeSetupRepo(options);
+  // only clone repo if backporting via filesystem (and not API)
+  const backportingViaApi = shouldBackportViaApi(options, commits);
+  if (!backportingViaApi) {
+    await maybeSetupRepo(options);
+  }
 
   const results = [] as Result[];
   await sequentially(targetBranches, async (targetBranch) => {
