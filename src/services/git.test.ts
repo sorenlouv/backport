@@ -308,6 +308,51 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
     );
   });
 
+  it('it should gracefully handle missing git info', async () => {
+    jest
+      .spyOn(childProcess, 'exec')
+
+      // mock git fetch
+      .mockResolvedValueOnce({ stderr: '', stdout: '' })
+
+      // mock cherry pick command
+      .mockRejectedValueOnce(
+        new ExecError({
+          killed: false,
+          code: 128,
+          signal: null,
+          cmd: 'git cherry-pick 83ad852b6ba1a64c8047f07201018eb6fb020db8',
+          stdout: '',
+          stderr:
+            '\n*** Please tell me who you are.\n\nRun\n\n  git config --global user.email "you@example.com"\n  git config --global user.name "Your Name"\n\nto set your account\'s default identity.\nOmit --global to set the identity only in this repository.\n\nfatal: empty ident name (for <runner@fv-az40.ayh1iyn3zmsehf4wcd4usluype.bx.internal.cloudapp.net>) not allowed\n',
+        })
+      );
+
+    // try {
+    //   await cherrypick(options, commit);
+    // } catch (e) {
+    //   console.log(e);
+    // }
+
+    await expect(cherrypick(options, commit)).rejects
+      .toThrowErrorMatchingInlineSnapshot(`
+            "Cherrypick failed because you haven't configured git properly:
+
+            *** Please tell me who you are.
+
+            Run
+
+              git config --global user.email \\"you@example.com\\"
+              git config --global user.name \\"Your Name\\"
+
+            to set your account's default identity.
+            Omit --global to set the identity only in this repository.
+
+            fatal: empty ident name (for <runner@fv-az40.ayh1iyn3zmsehf4wcd4usluype.bx.internal.cloudapp.net>) not allowed
+            "
+          `);
+  });
+
   it('should re-throw non-cherrypick errors', async () => {
     jest
       .spyOn(childProcess, 'exec')
@@ -429,7 +474,7 @@ describe('addRemote', () => {
     return expect(
       spy
     ).toHaveBeenCalledWith(
-      'git remote add elastic https://myAccessToken@github.com/elastic/kibana.git',
+      'git remote add elastic https://x-access-token:myAccessToken@github.com/elastic/kibana.git',
       { cwd: '/myHomeDir/.backport/repositories/elastic/kibana' }
     );
   });
@@ -443,7 +488,7 @@ describe('addRemote', () => {
     return expect(
       spy
     ).toHaveBeenCalledWith(
-      'git remote add sqren https://myAccessToken@github.com/sqren/kibana.git',
+      'git remote add sqren https://x-access-token:myAccessToken@github.com/sqren/kibana.git',
       { cwd: '/myHomeDir/.backport/repositories/elastic/kibana' }
     );
   });
@@ -460,7 +505,7 @@ describe('addRemote', () => {
     return expect(
       spy
     ).toHaveBeenCalledWith(
-      'git remote add sqren https://myAccessToken@github.my-company.com/sqren/kibana.git',
+      'git remote add sqren https://x-access-token:myAccessToken@github.my-company.com/sqren/kibana.git',
       { cwd: '/myHomeDir/.backport/repositories/elastic/kibana' }
     );
   });

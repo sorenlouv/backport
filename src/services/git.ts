@@ -38,7 +38,7 @@ export function getRemoteUrl(
   { repoName, accessToken, gitHostname }: BackportOptions,
   repoOwner: string
 ) {
-  return `https://${accessToken}@${gitHostname}/${repoOwner}/${repoName}.git`;
+  return `https://x-access-token:${accessToken}@${gitHostname}/${repoOwner}/${repoName}.git`;
 }
 
 export function cloneRepo(
@@ -126,6 +126,13 @@ export async function cherrypick(options: BackportOptions, commit: Commit) {
       const shortSha = getShortSha(commit.sha);
       throw new HandledError(
         `Cherrypick failed because the selected commit (${shortSha}) is empty. Did you already backport this commit?`
+      );
+    }
+
+    // git info missing
+    if (e.message.includes('Please tell me who you are')) {
+      throw new HandledError(
+        `Cherrypick failed because you haven't configured git properly:\n${e.message}`
       );
     }
 
