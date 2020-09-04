@@ -131,14 +131,12 @@ export async function cherrypick(options: BackportOptions, commit: Commit) {
 
     // git info missing
     if (e.message.includes('Please tell me who you are')) {
-      throw new HandledError(
-        `Cherrypick failed because you haven't configured git properly:\n${e.message}`
-      );
+      throw new HandledError(`Cherrypick failed:\n${e.message}`);
     }
 
     if (e.message.includes(`bad object ${commit.sha}`)) {
       throw new HandledError(
-        `Backport failed because commit "${commit.sha}" was not found`
+        `Cherrypick failed because commit "${commit.sha}" was not found`
       );
     }
 

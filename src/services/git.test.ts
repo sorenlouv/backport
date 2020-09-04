@@ -328,12 +328,6 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
         })
       );
 
-    // try {
-    //   await cherrypick(options, commit);
-    // } catch (e) {
-    //   console.log(e);
-    // }
-
     await expect(cherrypick(options, commit)).rejects
       .toThrowErrorMatchingInlineSnapshot(`
             "Cherrypick failed because you haven't configured git properly:
