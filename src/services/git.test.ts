@@ -330,7 +330,7 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
 
     await expect(cherrypick(options, commit)).rejects
       .toThrowErrorMatchingInlineSnapshot(`
-            "Cherrypick failed because you haven't configured git properly:
+            "Cherrypick failed:
 
             *** Please tell me who you are.
 
