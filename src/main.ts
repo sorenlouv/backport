@@ -53,12 +53,14 @@ export async function main(
       logger.info('Unknown error:', e);
     }
 
+    const errorMessage = redact(e.message);
+
     return {
       success: false,
       results: [],
       errorMessage: isHandledError
-        ? redact(e.message)
-        : 'An unhandled error occurred. Please see the logs for additional details',
+        ? errorMessage
+        : `An unhandled error occurred: ${errorMessage}`,
       error: e,
     };
   }
