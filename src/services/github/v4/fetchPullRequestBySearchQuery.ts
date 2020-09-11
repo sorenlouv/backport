@@ -64,7 +64,8 @@ export async function fetchPullRequestBySearchQuery(
   }
 
   const commits = res.search.nodes.map((pullRequestNode) => {
-    // this should never happen
+    // this should never happen since we are searching for merged PR (is:merged) in the first place
+    // but typescript doesn't know about this
     if (pullRequestNode.mergeCommit == null) {
       throw new Error('Pull Request is not merged');
     }
