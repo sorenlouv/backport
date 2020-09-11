@@ -29,9 +29,7 @@ export const fetchPullRequestBySearchQueryMock: DataResponse = {
             },
           ],
         },
-        baseRef: {
-          name: 'master',
-        },
+        baseRefName: 'master',
         timelineItems: {
           edges: [
             {
@@ -85,9 +83,7 @@ export const fetchPullRequestBySearchQueryMock: DataResponse = {
             },
           ],
         },
-        baseRef: {
-          name: 'master',
-        },
+        baseRefName: 'master',
         timelineItems: {
           edges: [
             {
@@ -145,9 +141,7 @@ export const fetchPullRequestBySearchQueryMock: DataResponse = {
             },
           ],
         },
-        baseRef: {
-          name: 'master',
-        },
+        baseRefName: 'master',
         timelineItems: {
           edges: [
             {
@@ -242,9 +236,7 @@ export const fetchPullRequestBySearchQueryMock: DataResponse = {
             },
           ],
         },
-        baseRef: {
-          name: 'master',
-        },
+        baseRefName: 'master',
         timelineItems: {
           edges: [],
         },
@@ -277,9 +269,7 @@ export const fetchPullRequestBySearchQueryMock: DataResponse = {
             },
           ],
         },
-        baseRef: {
-          name: 'master',
-        },
+        baseRefName: 'master',
         timelineItems: {
           edges: [
             {
@@ -358,9 +348,7 @@ export const fetchPullRequestBySearchQueryMock: DataResponse = {
             },
           ],
         },
-        baseRef: {
-          name: 'master',
-        },
+        baseRefName: 'master',
         timelineItems: {
           edges: [
             {
@@ -420,9 +408,7 @@ export const fetchPullRequestBySearchQueryMock: DataResponse = {
             },
           ],
         },
-        baseRef: {
-          name: 'master',
-        },
+        baseRefName: 'master',
         timelineItems: {
           edges: [
             {
@@ -478,9 +464,7 @@ export const fetchPullRequestBySearchQueryMock: DataResponse = {
             },
           ],
         },
-        baseRef: {
-          name: 'master',
-        },
+        baseRefName: 'master',
         timelineItems: {
           edges: [
             {
@@ -567,9 +551,7 @@ export const fetchPullRequestBySearchQueryMock: DataResponse = {
             },
           ],
         },
-        baseRef: {
-          name: 'master',
-        },
+        baseRefName: 'master',
         timelineItems: {
           edges: [
             {
@@ -711,9 +693,7 @@ export const fetchPullRequestBySearchQueryMock: DataResponse = {
             },
           ],
         },
-        baseRef: {
-          name: 'master',
-        },
+        baseRefName: 'master',
         timelineItems: {
           edges: [
             {

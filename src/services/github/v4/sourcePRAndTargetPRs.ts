@@ -21,9 +21,7 @@ export const pullRequestFragment = /* GraphQL */ `
         name
       }
     }
-    baseRef {
-      name
-    }
+    baseRefName
     timelineItems(last: 20, itemTypes: CROSS_REFERENCED_EVENT) {
       edges {
         node {
@@ -55,9 +53,7 @@ export const pullRequestFragment = /* GraphQL */ `
 `;
 
 export interface PullRequestNode {
-  baseRef: {
-    name: string;
-  };
+  baseRefName: string;
   number: number;
   mergeCommit: {
     oid: string;

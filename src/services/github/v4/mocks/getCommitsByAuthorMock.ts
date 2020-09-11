@@ -15,9 +15,7 @@ export const getCommitsByAuthorMock = (repoName: string): DataResponse => ({
                   edges: [
                     {
                       node: {
-                        baseRef: {
-                          name: 'master',
-                        },
+                        baseRefName: 'master',
                         labels: {
                           nodes: [{ name: 'my-label-a' }],
                         },

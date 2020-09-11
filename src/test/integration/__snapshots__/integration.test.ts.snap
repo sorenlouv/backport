@@ -106,9 +106,7 @@ Array [
         name
       }
     }
-    baseRef {
-      name
-    }
+    baseRefName
     timelineItems(last: 20, itemTypes: CROSS_REFERENCED_EVENT) {
       edges {
         node {
@@ -257,9 +255,7 @@ Array [
         name
       }
     }
-    baseRef {
-      name
-    }
+    baseRefName
     timelineItems(last: 20, itemTypes: CROSS_REFERENCED_EVENT) {
       edges {
         node {

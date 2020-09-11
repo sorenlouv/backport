@@ -24,9 +24,7 @@ export function getPullRequestNode({
         login: 'elastic',
       },
     },
-    baseRef: {
-      name: 'master',
-    },
+    baseRefName: 'master',
     number: pullRequestNumber,
     timelineItems: {
       edges: [

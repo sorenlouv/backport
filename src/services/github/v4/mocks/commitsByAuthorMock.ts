@@ -23,7 +23,7 @@ export const commitsWithPullRequestsMock: DataResponse = {
                   edges: [
                     {
                       node: {
-                        baseRef: { name: 'master' },
+                        baseRefName: 'master',
                         labels: {
                           nodes: [{ name: 'my-label-b' }],
                         },
@@ -70,9 +70,7 @@ export const commitsWithPullRequestsMock: DataResponse = {
                             login: 'elastic',
                           },
                         },
-                        baseRef: {
-                          name: 'master',
-                        },
+                        baseRefName: 'master',
                         number: 80,
                         timelineItems: {
                           edges: [
