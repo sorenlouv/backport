@@ -9,7 +9,7 @@ describe('fetchCommitByPullNumber', () => {
     devAccessToken = await getDevAccessToken();
   });
 
-  describe('when PR exists and has been merged', () => {
+  describe('when PR was merged', () => {
     it('is returned', async () => {
       const options = {
         accessToken: devAccessToken,
@@ -34,7 +34,7 @@ describe('fetchCommitByPullNumber', () => {
     });
   });
 
-  describe('when PR has not been merged', () => {
+  describe('when PR is still open', () => {
     it('throws an error', async () => {
       const options = {
         accessToken: devAccessToken,
