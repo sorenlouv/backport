@@ -308,7 +308,7 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
     );
   });
 
-  it('it should gracefully handle missing git info', async () => {
+  it('gracefully handles missing git info', async () => {
     jest
       .spyOn(childProcess, 'exec')
 

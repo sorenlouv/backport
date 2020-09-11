@@ -1,6 +1,4 @@
-import { Octokit } from '@octokit/rest';
 import chalk from 'chalk';
-import { backportPullRequest } from 'github-backport';
 import difference from 'lodash.difference';
 import isEmpty from 'lodash.isempty';
 import ora = require('ora');
@@ -28,15 +26,10 @@ import {
   getBody,
   PullRequestPayload,
 } from '../services/github/v3/createPullRequest';
-import {
-  splitHead,
-  fetchExistingPullRequest,
-} from '../services/github/v4/fetchExistingPullRequest';
 import { consoleLog, logger } from '../services/logger';
 import { confirmPrompt } from '../services/prompts';
 import { sequentially } from '../services/sequentially';
 import { Commit } from '../types/Commit';
-import { shouldBackportViaApi } from './shouldBackportViaApi';
 
 export async function cherrypickAndCreateTargetPullRequest({
   options,
@@ -60,20 +53,13 @@ export async function cherrypickAndCreateTargetPullRequest({
     base: targetBranch, // eg. 7.x
   };
 
-  // backport using Github API
-  const targetPullRequest = shouldBackportViaApi(options, commits)
-    ? await backportViaGithubApi({
-        options,
-        prPayload,
-        commits,
-      })
-    : await backportViaFilesystem({
-        options,
-        prPayload,
-        targetBranch,
-        backportBranch,
-        commits,
-      });
+  const targetPullRequest = await backportViaFilesystem({
+    options,
+    prPayload,
+    targetBranch,
+    backportBranch,
+    commits,
+  });
 
   // add assignees to target pull request
   if (options.assignees.length > 0) {
@@ -110,66 +96,6 @@ export async function cherrypickAndCreateTargetPullRequest({
   consoleLog(`View pull request: ${targetPullRequest.url}`);
 
   return targetPullRequest;
-}
-
-async function backportViaGithubApi({
-  options,
-  prPayload,
-  commits,
-}: {
-  options: BackportOptions;
-  prPayload: PullRequestPayload;
-  commits: Commit[];
-}) {
-  const { pullNumber } = commits[0];
-  if (!pullNumber) {
-    throw new Error('Cannot backup via API without pull number');
-  }
-
-  logger.info('Backporting via api');
-
-  const spinner = ora(`Performing backport via Github API...`).start();
-
-  const octokit = new Octokit({
-    auth: options.accessToken,
-    baseUrl: options.githubApiBaseUrlV3,
-    log: logger,
-  });
-
-  let number;
-  try {
-    const { head } = splitHead(prPayload);
-    number = await backportPullRequest({
-      octokit,
-      pullRequestNumber: pullNumber,
-      ...prPayload,
-      head,
-    });
-    spinner.succeed();
-  } catch (e) {
-    spinner.fail();
-
-    // PR already exists
-    if (
-      e.name === 'HttpError' &&
-      e.message.includes('Reference already exists')
-    ) {
-      const res = await fetchExistingPullRequest({ options, prPayload });
-      throw new HandledError(`Pull request already exists: ${res?.url}`);
-    }
-
-    // merge conflict
-    if (e.message.includes('could not be cherry-picked on top of')) {
-      throw new HandledError(
-        'Commit could not be cherrypicked due to conflicts'
-      );
-    }
-
-    throw e;
-  }
-
-  const url = `https://github.com/${options.repoOwner}/${options.repoName}/pull/${number}`;
-  return { number, url };
 }
 
 async function backportViaFilesystem({
