@@ -27,17 +27,17 @@ export async function getCommits(options: BackportOptions) {
   }
 
   if (options.prFilter) {
-    const CommitSelecteds = await fetchPullRequestBySearchQuery(options);
+    const commitChoices = await fetchPullRequestBySearchQuery(options);
 
     return promptForCommits({
-      CommitSelecteds,
+      commitChoices,
       isMultipleChoice: options.multipleCommits,
     });
   }
 
-  const CommitSelecteds = await fetchCommitsByAuthor(options);
+  const commitChoices = await fetchCommitsByAuthor(options);
   return promptForCommits({
-    CommitSelecteds,
+    commitChoices,
     isMultipleChoice: options.multipleCommits,
   });
 }
