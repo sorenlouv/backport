@@ -3,7 +3,10 @@ import ora from 'ora';
 import { BackportOptions } from '../../../options/options';
 import { CommitSelected } from '../../../types/Commit';
 import { HandledError } from '../../HandledError';
-import { getFormattedCommitMessage } from '../commitFormatters';
+import {
+  getFormattedCommitMessage,
+  getPullNumberFromMessage,
+} from '../commitFormatters';
 import { apiRequestV4 } from './apiRequestV4';
 import { fetchAuthorId } from './fetchAuthorId';
 import { getTargetBranchesFromLabels } from './getTargetBranchesFromLabels';
@@ -173,13 +176,6 @@ export async function fetchCommitsByAuthor(
   }
 
   return commits;
-}
-
-function getPullNumberFromMessage(firstMessageLine: string) {
-  const matches = firstMessageLine.match(/\(#(\d+)\)/);
-  if (matches) {
-    return parseInt(matches[1], 10);
-  }
 }
 
 function isSourcePullRequest({

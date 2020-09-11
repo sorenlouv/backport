@@ -18,27 +18,28 @@ describe('fetchCommitBySha', () => {
         repoName: 'kibana',
         accessToken: devAccessToken,
         sha: 'cb6fbc0',
-        githubApiBaseUrlV3: 'https://api.github.com',
+        githubApiBaseUrlV4: 'https://api.github.com/graphql',
         sourceBranch: 'master',
       } as BackportOptionsWithSha)
     ).toEqual({
       formattedMessage: '[APM] Add API tests (#70740)',
       originalMessage: '[APM] Add API tests (#70740)',
-      pullNumber: undefined,
+      pullNumber: 70740,
       sha: 'cb6fbc0e1b406675724181a3e9f59459b5f8f892',
       sourceBranch: 'master',
       targetBranchesFromLabels: [],
+      existingTargetPullRequests: [{ branch: '7.x', state: 'MERGED' }],
     });
   });
 
-  it('should throw error if sha does not exist', async () => {
+  it('throws if sha does not exist', async () => {
     await expect(
       fetchCommitBySha({
         repoOwner: 'elastic',
         repoName: 'kibana',
         accessToken: devAccessToken,
         sha: 'fc22f59',
-        githubApiBaseUrlV3: 'https://api.github.com',
+        githubApiBaseUrlV4: 'https://api.github.com/graphql',
         sourceBranch: 'main',
       } as BackportOptionsWithSha)
     ).rejects.toThrowError(
@@ -46,17 +47,18 @@ describe('fetchCommitBySha', () => {
     );
   });
 
-  it('should throw error if sha is invalid', async () => {
+  it('throws if sha is invalid', async () => {
     await expect(
       fetchCommitBySha({
         repoOwner: 'elastic',
         repoName: 'kibana',
         accessToken: devAccessToken,
         sha: 'myCommitSha',
-        githubApiBaseUrlV3: 'https://api.github.com',
+        githubApiBaseUrlV4: 'https://api.github.com/graphql',
+        sourceBranch: 'main',
       } as BackportOptions & { sha: string })
     ).rejects.toThrowError(
-      'The given commit SHA is not in a recognized format (Github v3)'
+      'No commit found on branch "main" with sha "myCommitSha"'
     );
   });
 });
