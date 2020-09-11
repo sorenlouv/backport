@@ -4,7 +4,7 @@ import { BackportOptions } from '../options/options';
 import { HandledError } from '../services/HandledError';
 import { promptForTargetBranches } from '../services/prompts';
 import { CommitSelected } from '../types/Commit';
-import { filterEmpty } from '../utils/filterEmpty';
+import { filterNil } from '../utils/filterEmpty';
 
 export function getTargetBranches(
   options: BackportOptions,
@@ -18,7 +18,7 @@ export function getTargetBranches(
   // intersection of target branches from the selected commits
   const targetBranchesFromLabels = intersection(
     ...commits.map((commit) => commit.targetBranchesFromLabels)
-  ).filter(filterEmpty);
+  ).filter(filterNil);
 
   // automatically backport to specified target branches
   if (options.ci) {

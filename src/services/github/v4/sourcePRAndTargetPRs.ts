@@ -1,4 +1,4 @@
-import { filterEmpty } from '../../../utils/filterEmpty';
+import { filterNil } from '../../../utils/filterEmpty';
 import { getFirstCommitMessageLine } from '../commitFormatters';
 
 export const pullRequestFragmentName = 'SourcePRAndTargetPRs';
@@ -111,12 +111,13 @@ interface CommitEdge {
   };
 }
 
-export function getSourcePullRequestLabels(
-  sourcePullRequest?: PullRequestNode
-) {
-  return sourcePullRequest?.labels.nodes.map((label) => label.name);
+export function getPullRequestLabels(pullRequestNode?: PullRequestNode) {
+  return pullRequestNode?.labels.nodes.map((label) => label.name);
 }
 
+export type ExistingTargetPullRequests = ReturnType<
+  typeof getExistingTargetPullRequests
+>;
 export function getExistingTargetPullRequests(
   commitMessage: string,
   sourcePullRequest?: PullRequestNode
@@ -127,7 +128,7 @@ export function getExistingTargetPullRequests(
 
   const firstMessageLine = getFirstCommitMessageLine(commitMessage);
   return sourcePullRequest.timelineItems.edges
-    .filter(filterEmpty)
+    .filter(filterNil)
     .filter(filterPullRequests)
     .filter((item) => {
       const { source } = item.node;

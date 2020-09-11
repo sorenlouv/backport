@@ -1,18 +1,23 @@
 import flatMap from 'lodash.flatmap';
 import uniq from 'lodash.uniq';
 import { BackportOptions } from '../../../options/options';
-import { filterEmpty } from '../../../utils/filterEmpty';
+import { filterNil } from '../../../utils/filterEmpty';
+import { ExistingTargetPullRequests } from './sourcePRAndTargetPRs';
 
 export function getTargetBranchesFromLabels({
+  existingTargetPullRequests,
   branchLabelMapping,
   labels,
 }: {
+  existingTargetPullRequests: ExistingTargetPullRequests;
   branchLabelMapping: BackportOptions['branchLabelMapping'];
   labels?: string[];
 }) {
   if (!branchLabelMapping || !labels) {
     return [];
   }
+
+  const existingBranches = existingTargetPullRequests.map((pr) => pr.branch);
 
   const targetBranches = flatMap(labels, (label) => {
     // only get first match
@@ -29,7 +34,8 @@ export function getTargetBranchesFromLabels({
     }
   })
     .filter((targetBranch) => targetBranch !== '')
-    .filter(filterEmpty);
+    .filter(filterNil)
+    .filter((targetBranch) => !existingBranches.includes(targetBranch));
 
   return uniq(targetBranches);
 }

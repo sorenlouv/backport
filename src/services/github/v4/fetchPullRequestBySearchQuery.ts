@@ -11,7 +11,7 @@ import {
   pullRequestFragmentName,
   PullRequestNode,
   getExistingTargetPullRequests,
-  getSourcePullRequestLabels,
+  getPullRequestLabels,
 } from './sourcePRAndTargetPRs';
 
 export async function fetchPullRequestBySearchQuery(
@@ -84,8 +84,9 @@ export async function fetchPullRequestBySearchQuery(
     );
 
     const targetBranchesFromLabels = getTargetBranchesFromLabels({
+      existingTargetPullRequests,
       branchLabelMapping: options.branchLabelMapping,
-      labels: getSourcePullRequestLabels(pullRequestNode),
+      labels: getPullRequestLabels(pullRequestNode),
     });
 
     const choice: CommitSelected = {

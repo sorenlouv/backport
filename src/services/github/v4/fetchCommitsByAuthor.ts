@@ -12,7 +12,7 @@ import {
   pullRequestFragmentName,
   PullRequestNode,
   getExistingTargetPullRequests,
-  getSourcePullRequestLabels,
+  getPullRequestLabels,
 } from './sourcePRAndTargetPRs';
 
 export async function fetchCommitsByAuthor(
@@ -143,8 +143,9 @@ export async function fetchCommitsByAuthor(
     );
 
     const targetBranchesFromLabels = getTargetBranchesFromLabels({
+      existingTargetPullRequests,
       branchLabelMapping: options.branchLabelMapping,
-      labels: getSourcePullRequestLabels(pullRequestNode),
+      labels: getPullRequestLabels(pullRequestNode),
     });
 
     return {
