@@ -1,22 +1,22 @@
 import isEmpty from 'lodash.isempty';
 import ora from 'ora';
 import { BackportOptions } from '../../../options/options';
-import { BackportCommit } from '../../../types/Commit';
+import { Commit } from '../../../types/Commit';
 import { HandledError } from '../../HandledError';
 import { getFormattedCommitMessage } from '../commitFormatters';
 import { apiRequestV4 } from './apiRequestV4';
-import { getTargetBranchesFromLabels } from './getTargetBranchesFromLabels';
 import {
   pullRequestFragment,
   pullRequestFragmentName,
   PullRequestNode,
   getExistingTargetPullRequests,
   getPullRequestLabels,
-} from './sourcePRAndTargetPRs';
+} from './getExistingTargetPullRequests';
+import { getTargetBranchesFromLabels } from './getTargetBranchesFromLabels';
 
 export async function fetchPullRequestBySearchQuery(
   options: BackportOptions
-): Promise<BackportCommit[]> {
+): Promise<Commit[]> {
   const {
     accessToken,
     all,
@@ -89,7 +89,7 @@ export async function fetchPullRequestBySearchQuery(
       labels: getPullRequestLabels(pullRequestNode),
     });
 
-    const choice: BackportCommit = {
+    const choice: Commit = {
       sourceBranch,
       targetBranchesFromLabels,
       sha,

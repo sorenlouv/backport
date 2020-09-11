@@ -1,7 +1,7 @@
 import { BranchChoice } from '../options/ConfigOptions';
 import { BackportOptions } from '../options/options';
 import * as prompts from '../services/prompts';
-import { BackportCommit } from '../types/Commit';
+import { Commit } from '../types/Commit';
 import { SpyHelper } from '../types/SpyHelper';
 import { getTargetBranches, getTargetBranchChoices } from './getTargetBranches';
 
@@ -123,7 +123,7 @@ describe('getTargetBranches', () => {
         multipleBranches: false,
       } as unknown) as BackportOptions;
 
-      const commits: BackportCommit[] = [
+      const commits: Commit[] = [
         {
           formattedMessage: 'hey',
           originalMessage: 'hey',

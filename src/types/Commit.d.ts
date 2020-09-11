@@ -1,4 +1,4 @@
-export interface BackportCommit {
+export interface Commit {
   sourceBranch: string;
   targetBranchesFromLabels: string[];
   sha: string;

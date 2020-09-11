@@ -1,6 +1,6 @@
-import { PullRequestNode } from '../sourcePRAndTargetPRs';
+import { PullRequestNode } from '../getExistingTargetPullRequests';
 
-export function getPullRequestNode({
+export function getPullRequestNodeMock({
   pullRequestNumber,
   timelinePullRequest,
 }: {

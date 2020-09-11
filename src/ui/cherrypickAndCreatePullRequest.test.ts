@@ -5,7 +5,7 @@ import * as childProcess from '../services/child-process-promisified';
 import * as logger from '../services/logger';
 import * as prompts from '../services/prompts';
 import { ExecError } from '../test/ExecError';
-import { BackportCommit } from '../types/Commit';
+import { Commit } from '../types/Commit';
 import { PromiseReturnType } from '../types/PromiseReturnType';
 import { SpyHelper } from '../types/SpyHelper';
 import { cherrypickAndCreateTargetPullRequest } from './cherrypickAndCreateTargetPullRequest';
@@ -56,7 +56,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         sourcePRLabels: [] as string[],
       } as BackportOptions;
 
-      const commits: BackportCommit[] = [
+      const commits: Commit[] = [
         {
           sourceBranch: '7.x',
           sha: 'mySha',

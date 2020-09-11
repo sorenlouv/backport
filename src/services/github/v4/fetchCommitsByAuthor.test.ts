@@ -1,12 +1,12 @@
 import nock from 'nock';
 import { BackportOptions } from '../../../options/options';
 import { mockGqlRequest } from '../../../test/nockHelpers';
-import { BackportCommit } from '../../../types/Commit';
+import { Commit } from '../../../types/Commit';
 import { fetchCommitsByAuthor } from './fetchCommitsByAuthor';
+import { getExistingTargetPullRequests } from './getExistingTargetPullRequests';
 import { commitsWithPullRequestsMock } from './mocks/commitsByAuthorMock';
 import { getCommitsByAuthorMock } from './mocks/getCommitsByAuthorMock';
-import { getPullRequestNode } from './mocks/getPullRequestNodeMock';
-import { getExistingTargetPullRequests } from './sourcePRAndTargetPRs';
+import { getPullRequestNodeMock } from './mocks/getPullRequestNodeMock';
 
 const defaultOptions = {
   repoOwner: 'elastic',
@@ -32,7 +32,7 @@ describe('fetchCommitsByAuthor', () => {
   });
 
   describe('when commit has an associated pull request', () => {
-    let res: BackportCommit[];
+    let res: Commit[];
     let authorIdCalls: ReturnType<typeof mockGqlRequest>;
     let commitsByAuthorCalls: ReturnType<typeof mockGqlRequest>;
 
@@ -53,7 +53,7 @@ describe('fetchCommitsByAuthor', () => {
     });
 
     it('Should return a list of commits with pullNumber and existing backports', () => {
-      const expectedCommits: BackportCommit[] = [
+      const expectedCommits: Commit[] = [
         {
           sha: '2e63475c483f7844b0f2833bc57fdee32095bacb',
           formattedMessage: 'Add 👻 (2e63475c)',
@@ -113,7 +113,7 @@ describe('fetchCommitsByAuthor', () => {
   describe('existingTargetPullRequests', () => {
     it('should return existingTargetPullRequests when repoNames match', async () => {
       const res = await getExistingBackportsByRepoName('kibana', 'kibana');
-      const expectedCommits: BackportCommit[] = [
+      const expectedCommits: Commit[] = [
         {
           existingTargetPullRequests: [{ branch: '6.3', state: 'MERGED' }],
           formattedMessage: 'Add SF mention (#80)',
@@ -130,7 +130,7 @@ describe('fetchCommitsByAuthor', () => {
 
     it('should not return existingTargetPullRequests when repoNames does not match', async () => {
       const res = await getExistingBackportsByRepoName('kibana', 'kibana2');
-      const expectedCommits: BackportCommit[] = [
+      const expectedCommits: Commit[] = [
         {
           existingTargetPullRequests: [],
           formattedMessage: 'Add SF mention (#80)',
@@ -180,7 +180,7 @@ describe('getExistingTargetPullRequests', () => {
 
   it('should return a result when commit messages match', () => {
     const commitMessage = 'my message (#1234)';
-    const pullRequestNode = getPullRequestNode({
+    const pullRequestNode = getPullRequestNodeMock({
       pullRequestNumber: 1234,
       timelinePullRequest: {
         title: 'a pr title',
@@ -196,7 +196,7 @@ describe('getExistingTargetPullRequests', () => {
 
   it('should not return a result when commit messages do not match', () => {
     const commitMessage = 'my message1 (#1234)';
-    const pullRequestNode = getPullRequestNode({
+    const pullRequestNode = getPullRequestNodeMock({
       pullRequestNumber: 1234,
       timelinePullRequest: {
         title: 'a pr title',
@@ -212,7 +212,7 @@ describe('getExistingTargetPullRequests', () => {
 
   it('should return a result when commit message matches pull request title and number', () => {
     const commitMessage = 'my message (#1234)';
-    const pullRequestNode = getPullRequestNode({
+    const pullRequestNode = getPullRequestNodeMock({
       pullRequestNumber: 1234,
       timelinePullRequest: {
         title: 'my message (#1234)',
@@ -228,7 +228,7 @@ describe('getExistingTargetPullRequests', () => {
 
   it('should not return a result when only pull request title (and not pull number) matches', () => {
     const commitMessage = 'my message (#1234)';
-    const pullRequestNode = getPullRequestNode({
+    const pullRequestNode = getPullRequestNodeMock({
       pullRequestNumber: 1234,
       timelinePullRequest: {
         title: 'my message (#1235)',
@@ -244,7 +244,7 @@ describe('getExistingTargetPullRequests', () => {
 
   it('should return a result when first line of a multiline commit message matches', () => {
     const commitMessage = 'my message (#1234)';
-    const pullRequestNode = getPullRequestNode({
+    const pullRequestNode = getPullRequestNodeMock({
       pullRequestNumber: 1234,
       timelinePullRequest: {
         title: 'a pr title',

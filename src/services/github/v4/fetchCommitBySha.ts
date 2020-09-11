@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import ora from 'ora';
 import { BackportOptions } from '../../../options/options';
-import { BackportCommit } from '../../../types/Commit';
+import { Commit } from '../../../types/Commit';
 import { HandledError } from '../../HandledError';
 import {
   getFormattedCommitMessage,
@@ -9,18 +9,18 @@ import {
   getPullNumberFromMessage,
 } from '../commitFormatters';
 import { apiRequestV4 } from './apiRequestV4';
-import { getTargetBranchesFromLabels } from './getTargetBranchesFromLabels';
 import {
   PullRequestNode,
   pullRequestFragment,
   pullRequestFragmentName,
   getExistingTargetPullRequests,
   getPullRequestLabels,
-} from './sourcePRAndTargetPRs';
+} from './getExistingTargetPullRequests';
+import { getTargetBranchesFromLabels } from './getTargetBranchesFromLabels';
 
 export async function fetchCommitBySha(
   options: BackportOptions & { sha: string }
-): Promise<BackportCommit> {
+): Promise<Commit> {
   const { accessToken, githubApiBaseUrlV4, repoName, repoOwner } = options;
 
   const query = /* GraphQL */ `

@@ -1,22 +1,22 @@
 import chalk from 'chalk';
 import ora from 'ora';
 import { BackportOptions } from '../../../options/options';
-import { BackportCommit } from '../../../types/Commit';
+import { Commit } from '../../../types/Commit';
 import { HandledError } from '../../HandledError';
 import { getFormattedCommitMessage } from '../commitFormatters';
 import { apiRequestV4 } from './apiRequestV4';
-import { getTargetBranchesFromLabels } from './getTargetBranchesFromLabels';
 import {
   PullRequestNode,
   pullRequestFragment,
   pullRequestFragmentName,
   getExistingTargetPullRequests,
   getPullRequestLabels,
-} from './sourcePRAndTargetPRs';
+} from './getExistingTargetPullRequests';
+import { getTargetBranchesFromLabels } from './getTargetBranchesFromLabels';
 
 export async function fetchCommitByPullNumber(
   options: BackportOptions & { pullNumber: number }
-): Promise<BackportCommit> {
+): Promise<Commit> {
   const {
     accessToken,
     githubApiBaseUrlV4,

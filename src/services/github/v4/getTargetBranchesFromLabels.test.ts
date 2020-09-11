@@ -1,5 +1,5 @@
+import { ExistingTargetPullRequests } from './getExistingTargetPullRequests';
 import { getTargetBranchesFromLabels } from './getTargetBranchesFromLabels';
-import { ExistingTargetPullRequests } from './sourcePRAndTargetPRs';
 
 describe('getTargetBranchesFromLabels', () => {
   it(`should support Kibana's label format`, () => {

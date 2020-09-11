@@ -2,7 +2,7 @@ import flatMap from 'lodash.flatmap';
 import uniq from 'lodash.uniq';
 import { BackportOptions } from '../../../options/options';
 import { filterNil } from '../../../utils/filterEmpty';
-import { ExistingTargetPullRequests } from './sourcePRAndTargetPRs';
+import { ExistingTargetPullRequests } from './getExistingTargetPullRequests';
 
 export function getTargetBranchesFromLabels({
   existingTargetPullRequests,

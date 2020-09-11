@@ -6,7 +6,7 @@ import inquirer, {
 } from 'inquirer';
 import isEmpty from 'lodash.isempty';
 import { BranchChoice } from '../options/ConfigOptions';
-import { BackportCommit } from '../types/Commit';
+import { Commit } from '../types/Commit';
 import { getShortSha } from './github/commitFormatters';
 
 type Question = CheckboxQuestion | ListQuestion | ConfirmQuestion;
@@ -22,9 +22,9 @@ export async function promptForCommits({
   CommitSelecteds,
   isMultipleChoice,
 }: {
-  CommitSelecteds: BackportCommit[];
+  CommitSelecteds: Commit[];
   isMultipleChoice: boolean;
-}): Promise<BackportCommit[]> {
+}): Promise<Commit[]> {
   const choices = CommitSelecteds.map((c, i) => {
     const existingPRs = c.existingTargetPullRequests
       .map((item) => {
@@ -44,7 +44,7 @@ export async function promptForCommits({
     };
   });
 
-  const res = await prompt<BackportCommit[]>({
+  const res = await prompt<Commit[]>({
     loop: false,
     pageSize: 15,
     choices: choices,
