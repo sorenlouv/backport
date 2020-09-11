@@ -1,7 +1,7 @@
 import isEmpty from 'lodash.isempty';
 import ora from 'ora';
 import { BackportOptions } from '../../../options/options';
-import { CommitSelected } from '../../../types/Commit';
+import { BackportCommit } from '../../../types/Commit';
 import { HandledError } from '../../HandledError';
 import { getFormattedCommitMessage } from '../commitFormatters';
 import { apiRequestV4 } from './apiRequestV4';
@@ -16,7 +16,7 @@ import {
 
 export async function fetchPullRequestBySearchQuery(
   options: BackportOptions
-): Promise<CommitSelected[]> {
+): Promise<BackportCommit[]> {
   const {
     accessToken,
     all,
@@ -89,7 +89,7 @@ export async function fetchPullRequestBySearchQuery(
       labels: getPullRequestLabels(pullRequestNode),
     });
 
-    const choice: CommitSelected = {
+    const choice: BackportCommit = {
       sourceBranch,
       targetBranchesFromLabels,
       sha,

@@ -1,7 +1,7 @@
 import nock from 'nock';
 import { BackportOptions } from '../../../options/options';
 import { mockGqlRequest } from '../../../test/nockHelpers';
-import { CommitSelected } from '../../../types/Commit';
+import { BackportCommit } from '../../../types/Commit';
 import { fetchCommitsByAuthor } from './fetchCommitsByAuthor';
 import { commitsWithPullRequestsMock } from './mocks/commitsByAuthorMock';
 import { getCommitsByAuthorMock } from './mocks/getCommitsByAuthorMock';
@@ -32,7 +32,7 @@ describe('fetchCommitsByAuthor', () => {
   });
 
   describe('when commit has an associated pull request', () => {
-    let res: CommitSelected[];
+    let res: BackportCommit[];
     let authorIdCalls: ReturnType<typeof mockGqlRequest>;
     let commitsByAuthorCalls: ReturnType<typeof mockGqlRequest>;
 
@@ -53,7 +53,7 @@ describe('fetchCommitsByAuthor', () => {
     });
 
     it('Should return a list of commits with pullNumber and existing backports', () => {
-      const expectedCommits: CommitSelected[] = [
+      const expectedCommits: BackportCommit[] = [
         {
           sha: '2e63475c483f7844b0f2833bc57fdee32095bacb',
           formattedMessage: 'Add 👻 (2e63475c)',
@@ -113,7 +113,7 @@ describe('fetchCommitsByAuthor', () => {
   describe('existingTargetPullRequests', () => {
     it('should return existingTargetPullRequests when repoNames match', async () => {
       const res = await getExistingBackportsByRepoName('kibana', 'kibana');
-      const expectedCommits: CommitSelected[] = [
+      const expectedCommits: BackportCommit[] = [
         {
           existingTargetPullRequests: [{ branch: '6.3', state: 'MERGED' }],
           formattedMessage: 'Add SF mention (#80)',
@@ -130,7 +130,7 @@ describe('fetchCommitsByAuthor', () => {
 
     it('should not return existingTargetPullRequests when repoNames does not match', async () => {
       const res = await getExistingBackportsByRepoName('kibana', 'kibana2');
-      const expectedCommits: CommitSelected[] = [
+      const expectedCommits: BackportCommit[] = [
         {
           existingTargetPullRequests: [],
           formattedMessage: 'Add SF mention (#80)',

@@ -3,12 +3,12 @@ import isEmpty from 'lodash.isempty';
 import { BackportOptions } from '../options/options';
 import { HandledError } from '../services/HandledError';
 import { promptForTargetBranches } from '../services/prompts';
-import { CommitSelected } from '../types/Commit';
+import { BackportCommit } from '../types/Commit';
 import { filterNil } from '../utils/filterEmpty';
 
 export function getTargetBranches(
   options: BackportOptions,
-  commits: CommitSelected[]
+  commits: BackportCommit[]
 ) {
   // target branches already specified (in contrast to letting the user choose from a list)
   if (!isEmpty(options.targetBranches)) {

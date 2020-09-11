@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import ora from 'ora';
 import { BackportOptions } from '../../../options/options';
-import { CommitSelected } from '../../../types/Commit';
+import { BackportCommit } from '../../../types/Commit';
 import { HandledError } from '../../HandledError';
 import { getFormattedCommitMessage } from '../commitFormatters';
 import { apiRequestV4 } from './apiRequestV4';
@@ -16,7 +16,7 @@ import {
 
 export async function fetchCommitByPullNumber(
   options: BackportOptions & { pullNumber: number }
-): Promise<CommitSelected> {
+): Promise<BackportCommit> {
   const {
     accessToken,
     githubApiBaseUrlV4,

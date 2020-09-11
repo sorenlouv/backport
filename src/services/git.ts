@@ -4,7 +4,7 @@ import isEmpty from 'lodash.isempty';
 import uniq from 'lodash.uniq';
 import ora from 'ora';
 import { BackportOptions } from '../options/options';
-import { CommitSelected } from '../types/Commit';
+import { BackportCommit } from '../types/Commit';
 import { HandledError } from './HandledError';
 import { execAsCallback, exec } from './child-process-promisified';
 import { getRepoOwnerPath, getRepoPath } from './env';
@@ -103,7 +103,7 @@ export async function addRemote(options: BackportOptions, remoteName: string) {
 
 export async function cherrypick(
   options: BackportOptions,
-  commit: CommitSelected
+  commit: BackportCommit
 ) {
   await exec(
     `git fetch ${options.repoOwner} ${commit.sourceBranch}:${commit.sourceBranch} --force`,
@@ -152,7 +152,7 @@ export async function cherrypick(
 }
 
 export async function commitChanges(
-  commit: CommitSelected,
+  commit: BackportCommit,
   options: BackportOptions
 ) {
   const noVerify = options.noVerify ? ` --no-verify` : '';

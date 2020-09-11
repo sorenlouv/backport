@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import ora from 'ora';
 import { BackportOptions } from '../../../options/options';
-import { CommitSelected } from '../../../types/Commit';
+import { BackportCommit } from '../../../types/Commit';
 import { HandledError } from '../../HandledError';
 import {
   getFormattedCommitMessage,
@@ -20,7 +20,7 @@ import {
 
 export async function fetchCommitBySha(
   options: BackportOptions & { sha: string }
-): Promise<CommitSelected> {
+): Promise<BackportCommit> {
   const { accessToken, githubApiBaseUrlV4, repoName, repoOwner } = options;
 
   const query = /* GraphQL */ `

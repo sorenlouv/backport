@@ -1,7 +1,7 @@
 import { BranchChoice } from '../options/ConfigOptions';
 import { BackportOptions } from '../options/options';
 import * as prompts from '../services/prompts';
-import { CommitSelected } from '../types/Commit';
+import { BackportCommit } from '../types/Commit';
 import { SpyHelper } from '../types/SpyHelper';
 import { getTargetBranches, getTargetBranchChoices } from './getTargetBranches';
 
@@ -123,7 +123,7 @@ describe('getTargetBranches', () => {
         multipleBranches: false,
       } as unknown) as BackportOptions;
 
-      const commits: CommitSelected[] = [
+      const commits: BackportCommit[] = [
         {
           formattedMessage: 'hey',
           originalMessage: 'hey',
@@ -131,6 +131,7 @@ describe('getTargetBranches', () => {
           sha: 'abcd',
           sourceBranch: '7.x',
           pullNumber: 1337,
+          existingTargetPullRequests: [],
         },
       ];
 

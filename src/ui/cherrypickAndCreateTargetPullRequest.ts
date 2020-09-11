@@ -35,7 +35,7 @@ import {
 import { consoleLog, logger } from '../services/logger';
 import { confirmPrompt } from '../services/prompts';
 import { sequentially } from '../services/sequentially';
-import { CommitSelected } from '../types/Commit';
+import { BackportCommit } from '../types/Commit';
 
 export async function cherrypickAndCreateTargetPullRequest({
   options,
@@ -43,7 +43,7 @@ export async function cherrypickAndCreateTargetPullRequest({
   targetBranch,
 }: {
   options: BackportOptions;
-  commits: CommitSelected[];
+  commits: BackportCommit[];
   targetBranch: string;
 }) {
   const backportBranch = getBackportBranchName(targetBranch, commits);
@@ -190,7 +190,7 @@ async function backportViaFilesystem({
 }: {
   options: BackportOptions;
   prPayload: PullRequestPayload;
-  commits: CommitSelected[];
+  commits: BackportCommit[];
   targetBranch: string;
   backportBranch: string;
 }) {
@@ -221,7 +221,7 @@ async function backportViaFilesystem({
  */
 export function getBackportBranchName(
   targetBranch: string,
-  commits: CommitSelected[]
+  commits: BackportCommit[]
 ) {
   const refValues = commits
     .map((commit) =>
@@ -236,7 +236,7 @@ export function getBackportBranchName(
 
 async function waitForCherrypick(
   options: BackportOptions,
-  commit: CommitSelected,
+  commit: BackportCommit,
   targetBranch: string
 ) {
   const spinnerText = `Cherry-picking: ${chalk.greenBright(

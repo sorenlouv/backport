@@ -11,7 +11,7 @@ import {
   pushBackportBranch,
 } from '../services/git';
 import { ExecError } from '../test/ExecError';
-import { CommitSelected } from '../types/Commit';
+import { BackportCommit } from '../types/Commit';
 import { SpyHelper } from '../types/SpyHelper';
 
 beforeEach(() => {
@@ -174,12 +174,13 @@ describe('cherrypick', () => {
     repoName: 'kibana',
   } as BackportOptions;
 
-  const commit = {
+  const commit: BackportCommit = {
     sourceBranch: '7.x',
     formattedMessage: '',
     originalMessage: '',
     sha: 'abcd',
     targetBranchesFromLabels: [],
+    existingTargetPullRequests: [],
   };
 
   it('should return `needsResolving: false` when no errors are encountered', async () => {
@@ -337,7 +338,7 @@ describe('commitChanges', () => {
 
   const commit = {
     originalMessage: 'The original commit message',
-  } as CommitSelected;
+  } as BackportCommit;
 
   it('should return when changes committed successfully', async () => {
     jest

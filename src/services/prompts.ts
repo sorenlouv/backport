@@ -6,7 +6,7 @@ import inquirer, {
 } from 'inquirer';
 import isEmpty from 'lodash.isempty';
 import { BranchChoice } from '../options/ConfigOptions';
-import { CommitSelected } from '../types/Commit';
+import { BackportCommit } from '../types/Commit';
 import { getShortSha } from './github/commitFormatters';
 
 type Question = CheckboxQuestion | ListQuestion | ConfirmQuestion;
@@ -22,12 +22,12 @@ export async function promptForCommits({
   CommitSelecteds,
   isMultipleChoice,
 }: {
-  CommitSelecteds: CommitSelected[];
+  CommitSelecteds: BackportCommit[];
   isMultipleChoice: boolean;
-}): Promise<CommitSelected[]> {
+}): Promise<BackportCommit[]> {
   const choices = CommitSelecteds.map((c, i) => {
     const existingPRs = c.existingTargetPullRequests
-      ?.map((item) => {
+      .map((item) => {
         const styling = item.state === 'MERGED' ? chalk.green : chalk.gray;
         return styling(item.branch);
       })
@@ -36,7 +36,7 @@ export async function promptForCommits({
     const position = chalk.gray(`${i + 1}.`);
 
     return {
-      name: `${position} ${c.formattedMessage} ${existingPRs || ''}`,
+      name: `${position} ${c.formattedMessage} ${existingPRs}`,
       short: c.pullNumber
         ? `#${c.pullNumber} (${getShortSha(c.sha)})`
         : getShortSha(c.sha),
@@ -44,7 +44,7 @@ export async function promptForCommits({
     };
   });
 
-  const res = await prompt<CommitSelected[]>({
+  const res = await prompt<BackportCommit[]>({
     loop: false,
     pageSize: 15,
     choices: choices,
