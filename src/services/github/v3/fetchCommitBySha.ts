@@ -37,9 +37,11 @@ export async function fetchCommitBySha(
     );
   }
 
-  // TODO: it should be possible to backport from other branches than master
+  // TODO: it should be possible to backport from other branches than the default branch
   if (isEmpty(res.data.items)) {
-    throw new HandledError(`No commit found on master with sha "${sha}"`);
+    throw new HandledError(
+      `No commit found on branch "${options.sourceBranch}" with sha "${sha}"`
+    );
   }
 
   const commitRes = res.data.items[0];
@@ -58,7 +60,7 @@ export async function fetchCommitBySha(
   });
 
   return {
-    sourceBranch: 'master',
+    sourceBranch: options.sourceBranch,
     targetBranchesFromLabels: [],
     formattedMessage,
     originalMessage: commitMessage,

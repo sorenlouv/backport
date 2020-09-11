@@ -1,14 +1,19 @@
 import flatMap from 'lodash.flatmap';
 import uniq from 'lodash.uniq';
+import { BackportOptions } from '../../../options/options';
 import { filterEmpty } from '../../../utils/filterEmpty';
 
 export function getTargetBranchesFromLabels({
-  labels,
   branchLabelMapping,
-}: { labels?: string[]; branchLabelMapping?: Record<string, string> } = {}) {
+  labels,
+}: {
+  branchLabelMapping: BackportOptions['branchLabelMapping'];
+  labels?: string[];
+}) {
   if (!branchLabelMapping || !labels) {
     return [];
   }
+
   const targetBranches = flatMap(labels, (label) => {
     // only get first match
     const result = Object.entries(branchLabelMapping).find(([labelPattern]) => {

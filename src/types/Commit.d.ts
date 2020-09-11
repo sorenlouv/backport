@@ -6,11 +6,7 @@ export interface CommitSelected {
   formattedMessage: string;
   originalMessage: string;
   pullNumber?: number;
-}
-
-// commit object displayed in list of prompt choices
-export interface CommitChoice extends CommitSelected {
-  existingTargetPullRequests: {
+  existingTargetPullRequests?: {
     branch: string;
     state: 'OPEN' | 'CLOSED' | 'MERGED';
   }[];

@@ -33,8 +33,8 @@ describe('getTargetBranchesFromLabels', () => {
       'v8.0.0', // master
     ];
     const targetBranches = getTargetBranchesFromLabels({
-      labels,
       branchLabelMapping,
+      labels,
     });
     expect(targetBranches).toEqual([
       '5.4',

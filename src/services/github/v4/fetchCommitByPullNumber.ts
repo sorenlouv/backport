@@ -6,13 +6,19 @@ import { HandledError } from '../../HandledError';
 import { getFormattedCommitMessage } from '../commitFormatters';
 import { apiRequestV4 } from './apiRequestV4';
 import { getTargetBranchesFromLabels } from './getTargetBranchesFromLabels';
+import {
+  PullRequestNode,
+  pullRequestFragment,
+  pullRequestFragmentName,
+  getExistingTargetPullRequests,
+  getSourcePullRequestLabels,
+} from './sourcePRAndTargetPRs';
 
 export async function fetchCommitByPullNumber(
   options: BackportOptions & { pullNumber: number }
 ): Promise<CommitSelected> {
   const {
     accessToken,
-    branchLabelMapping,
     githubApiBaseUrlV4,
     pullNumber,
     repoName,
@@ -26,21 +32,12 @@ export async function fetchCommitByPullNumber(
     ) {
       repository(owner: $repoOwner, name: $repoName) {
         pullRequest(number: $pullNumber) {
-          baseRef {
-            name
-          }
-          mergeCommit {
-            oid
-            message
-          }
-          labels(first: 50) {
-            nodes {
-              name
-            }
-          }
+          ...${pullRequestFragmentName}
         }
       }
     }
+
+    ${pullRequestFragment}
   `;
 
   const spinner = ora(
@@ -65,13 +62,15 @@ export async function fetchCommitByPullNumber(
     throw e;
   }
 
-  if (res.repository.pullRequest.mergeCommit === null) {
+  const pullRequestNode = res.repository.pullRequest;
+
+  if (pullRequestNode.mergeCommit === null) {
     throw new HandledError(`The PR #${pullNumber} is not merged`);
   }
 
-  const sourceBranch = res.repository.pullRequest.baseRef.name;
-  const sha = res.repository.pullRequest.mergeCommit.oid;
-  const commitMessage = res.repository.pullRequest.mergeCommit.message;
+  const sourceBranch = pullRequestNode.baseRef.name;
+  const sha = pullRequestNode.mergeCommit.oid;
+  const commitMessage = pullRequestNode.mergeCommit.message;
   const formattedMessage = getFormattedCommitMessage({
     message: commitMessage,
     sha,
@@ -86,12 +85,14 @@ export async function fetchCommitByPullNumber(
     )}`,
   });
 
-  const labels = res.repository.pullRequest.labels.nodes.map(
-    (label) => label.name
+  const existingTargetPullRequests = getExistingTargetPullRequests(
+    commitMessage,
+    pullRequestNode
   );
+
   const targetBranchesFromLabels = getTargetBranchesFromLabels({
-    labels,
-    branchLabelMapping,
+    branchLabelMapping: options.branchLabelMapping,
+    labels: getSourcePullRequestLabels(pullRequestNode),
   });
 
   return {
@@ -101,24 +102,12 @@ export async function fetchCommitByPullNumber(
     formattedMessage,
     originalMessage: commitMessage,
     pullNumber,
+    existingTargetPullRequests,
   };
 }
 
 interface DataResponse {
   repository: {
-    pullRequest: {
-      baseRef: {
-        name: string;
-      };
-      mergeCommit: {
-        oid: string;
-        message: string;
-      } | null;
-      labels: {
-        nodes: {
-          name: string;
-        }[];
-      };
-    };
+    pullRequest: PullRequestNode;
   };
 }

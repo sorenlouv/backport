@@ -13,6 +13,7 @@ describe('fetchCommitBySha', () => {
 
   it('should return single commit with pull request', async () => {
     const options = {
+      sourceBranch: 'master',
       repoOwner: 'elastic',
       repoName: 'kibana',
       sha: 'sha123456789',
@@ -58,10 +59,11 @@ describe('fetchCommitBySha', () => {
       repoName: 'kibana',
       sha: 'myCommitSha',
       githubApiBaseUrlV3: 'https://api.github.com',
+      sourceBranch: 'custom-branch',
     } as BackportOptions & { sha: string });
 
     const expectedCommit: CommitSelected = {
-      sourceBranch: 'master',
+      sourceBranch: 'custom-branch',
       formattedMessage:
         '[Chrome] Bootstrap Angular into document.body (myCommit)',
       originalMessage: '[Chrome] Bootstrap Angular into document.body',
@@ -89,8 +91,11 @@ describe('fetchCommitBySha', () => {
         repoName: 'kibana',
         sha: 'myCommitSha',
         githubApiBaseUrlV3: 'https://api.github.com',
+        sourceBranch: 'custom-branch',
       } as BackportOptions & { sha: string })
-    ).rejects.toThrowError('No commit found on master with sha "myCommitSha"');
+    ).rejects.toThrowError(
+      'No commit found on branch "custom-branch" with sha "myCommitSha"'
+    );
 
     scope.done();
   });

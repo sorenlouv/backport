@@ -19,6 +19,7 @@ describe('fetchCommitBySha', () => {
         accessToken: devAccessToken,
         sha: 'cb6fbc0',
         githubApiBaseUrlV3: 'https://api.github.com',
+        sourceBranch: 'master',
       } as BackportOptionsWithSha)
     ).toEqual({
       formattedMessage: '[APM] Add API tests (#70740)',
@@ -38,8 +39,11 @@ describe('fetchCommitBySha', () => {
         accessToken: devAccessToken,
         sha: 'fc22f59',
         githubApiBaseUrlV3: 'https://api.github.com',
+        sourceBranch: 'main',
       } as BackportOptionsWithSha)
-    ).rejects.toThrowError('No commit found on master with sha "fc22f59"');
+    ).rejects.toThrowError(
+      'No commit found on branch "main" with sha "fc22f59"'
+    );
   });
 
   it('should throw error if sha is invalid', async () => {

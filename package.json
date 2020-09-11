@@ -65,6 +65,7 @@
   "dependencies": {
     "@octokit/rest": "^18.0.3",
     "@types/lodash.difference": "^4.5.6",
+    "@types/lodash.intersection": "^4.4.6",
     "axios": "^0.19.2",
     "dedent": "^0.7.0",
     "del": "^5.1.0",
@@ -73,6 +74,7 @@
     "inquirer": "^7.3.3",
     "lodash.difference": "^4.5.0",
     "lodash.flatmap": "^4.5.0",
+    "lodash.intersection": "^4.4.0",
     "lodash.isempty": "^4.4.0",
     "lodash.isstring": "^4.0.1",
     "lodash.uniq": "^4.5.0",

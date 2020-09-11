@@ -203,7 +203,7 @@ export function getOptionsFromCliArgs(
 
     .option('sourceBranch', {
       default: configOptions.sourceBranch,
-      description: `List commits to backport from another branch than master`,
+      description: `List commits to backport from another branch than the default branch (normally "master")`,
       type: 'string',
     })
 
