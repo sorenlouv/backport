@@ -2,6 +2,7 @@ import flatMap from 'lodash.flatmap';
 import uniq from 'lodash.uniq';
 import { BackportOptions } from '../../../options/options';
 import { filterNil } from '../../../utils/filterEmpty';
+import { logger } from '../../logger';
 import { ExistingTargetPullRequests } from './getExistingTargetPullRequests';
 
 export function getTargetBranchesFromLabels({
@@ -36,6 +37,14 @@ export function getTargetBranchesFromLabels({
     .filter((targetBranch) => targetBranch !== '')
     .filter(filterNil)
     .filter((targetBranch) => !existingBranches.includes(targetBranch));
+
+  logger.info('Inputs when calculating target branches:', {
+    labels,
+    branchLabelMapping,
+    existingTargetPullRequests,
+  });
+
+  logger.info('Target branches inferred from labels:', targetBranches);
 
   return uniq(targetBranches);
 }
