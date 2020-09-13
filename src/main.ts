@@ -6,17 +6,12 @@ import { HandledError } from './services/HandledError';
 import { getLogfilePath } from './services/env';
 import { initLogger, consoleLog, redact } from './services/logger';
 
-export type BackportResponse =
-  | {
-      success: boolean;
-      results: Result[];
-    }
-  | {
-      success: false;
-      results: Result[];
-      errorMessage: string;
-      error: Error;
-    };
+export type BackportResponse = {
+  success: boolean;
+  results: Result[];
+  errorMessage?: string;
+  error?: Error;
+};
 
 export async function main(
   argv: string[],

@@ -1,9 +1,29 @@
-import flatMap from 'lodash.flatmap';
 import uniq from 'lodash.uniq';
 import { BackportOptions } from '../../../options/options';
 import { filterNil } from '../../../utils/filterEmpty';
 import { logger } from '../../logger';
 import { ExistingTargetPullRequests } from './getExistingTargetPullRequests';
+
+export function getTargetBranchForLabel({
+  branchLabelMapping,
+  label,
+}: {
+  branchLabelMapping: NonNullable<BackportOptions['branchLabelMapping']>;
+  label: string;
+}) {
+  // only get first match
+  const result = Object.entries(branchLabelMapping).find(([labelPattern]) => {
+    const regex = new RegExp(labelPattern);
+    const isMatch = label.match(regex) !== null;
+    return isMatch;
+  });
+
+  if (result) {
+    const [labelPattern, targetBranch] = result;
+    const regex = new RegExp(labelPattern);
+    return label.replace(regex, targetBranch);
+  }
+}
 
 export function getTargetBranchesFromLabels({
   existingTargetPullRequests,
@@ -20,20 +40,8 @@ export function getTargetBranchesFromLabels({
 
   const existingBranches = existingTargetPullRequests.map((pr) => pr.branch);
 
-  const targetBranches = flatMap(labels, (label) => {
-    // only get first match
-    const result = Object.entries(branchLabelMapping).find(([labelPattern]) => {
-      const regex = new RegExp(labelPattern);
-      const isMatch = label.match(regex) !== null;
-      return isMatch;
-    });
-
-    if (result) {
-      const [labelPattern, targetBranch] = result;
-      const regex = new RegExp(labelPattern);
-      return label.replace(regex, targetBranch);
-    }
-  })
+  const targetBranches = labels
+    .map((label) => getTargetBranchForLabel({ branchLabelMapping, label }))
     .filter((targetBranch) => targetBranch !== '')
     .filter(filterNil)
     .filter((targetBranch) => !existingBranches.includes(targetBranch));

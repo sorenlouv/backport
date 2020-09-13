@@ -8,18 +8,13 @@ import { getCommits } from './ui/getCommits';
 import { getTargetBranches } from './ui/getTargetBranches';
 import { maybeSetupRepo } from './ui/maybeSetupRepo';
 
-export type Result =
-  | {
-      success: true;
-      targetBranch: string;
-      pullRequestUrl: string;
-    }
-  | {
-      success: false;
-      targetBranch: string;
-      errorMessage: string;
-      error: Error;
-    };
+export type Result = {
+  success: boolean;
+  targetBranch: string;
+  pullRequestUrl?: string;
+  errorMessage?: string;
+  error?: Error;
+};
 
 export async function runWithOptions(options: BackportOptions) {
   logger.verbose('Backport options', options);

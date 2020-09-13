@@ -16,3 +16,8 @@ export function run(
 ) {
   return main(args, options);
 }
+
+// public API
+export { BackportResponse } from './main';
+export { ConfigOptions } from './options/ConfigOptions';
+export { getTargetBranchForLabel } from './services/github/v4/getTargetBranchesFromLabels';
