@@ -1,5 +1,5 @@
 import nock from 'nock';
-import { BackportOptions } from '../../../options/options';
+import { ValidConfigOptions } from '../../../options/options';
 import { mockGqlRequest } from '../../../test/nockHelpers';
 import { Commit } from '../../../types/Commit';
 import { fetchCommitsByAuthor } from './fetchCommitsByAuthor';
@@ -18,7 +18,7 @@ const defaultOptions = {
   maxNumber: 10,
   githubApiBaseUrlV3: 'https://api.github.com',
   githubApiBaseUrlV4: 'http://localhost/graphql',
-} as BackportOptions;
+} as ValidConfigOptions;
 
 const authorIdMockData = { user: { id: 'myUserId' } } as const;
 

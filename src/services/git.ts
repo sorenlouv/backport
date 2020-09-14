@@ -3,7 +3,7 @@ import del from 'del';
 import isEmpty from 'lodash.isempty';
 import uniq from 'lodash.uniq';
 import ora from 'ora';
-import { BackportOptions } from '../options/options';
+import { ValidConfigOptions } from '../options/options';
 import { Commit } from '../types/Commit';
 import { HandledError } from './HandledError';
 import { execAsCallback, exec } from './child-process-promisified';
@@ -25,24 +25,24 @@ async function folderExists(path: string): Promise<boolean> {
   }
 }
 
-export function repoExists(options: BackportOptions): Promise<boolean> {
+export function repoExists(options: ValidConfigOptions): Promise<boolean> {
   return folderExists(getRepoPath(options));
 }
 
-export function deleteRepo(options: BackportOptions) {
+export function deleteRepo(options: ValidConfigOptions) {
   const repoPath = getRepoPath(options);
   return del(repoPath);
 }
 
 export function getRemoteUrl(
-  { repoName, accessToken, gitHostname }: BackportOptions,
+  { repoName, accessToken, gitHostname }: ValidConfigOptions,
   repoOwner: string
 ) {
   return `https://x-access-token:${accessToken}@${gitHostname}/${repoOwner}/${repoName}.git`;
 }
 
 export function cloneRepo(
-  options: BackportOptions,
+  options: ValidConfigOptions,
   callback: (progress: string) => void
 ) {
   return new Promise((resolve, reject) => {
@@ -75,7 +75,7 @@ export function cloneRepo(
 }
 
 export async function deleteRemote(
-  options: BackportOptions,
+  options: ValidConfigOptions,
   remoteName: string
 ) {
   try {
@@ -89,7 +89,10 @@ export async function deleteRemote(
   }
 }
 
-export async function addRemote(options: BackportOptions, remoteName: string) {
+export async function addRemote(
+  options: ValidConfigOptions,
+  remoteName: string
+) {
   try {
     await exec(
       `git remote add ${remoteName} ${getRemoteUrl(options, remoteName)}`,
@@ -101,7 +104,7 @@ export async function addRemote(options: BackportOptions, remoteName: string) {
   }
 }
 
-export async function cherrypick(options: BackportOptions, commit: Commit) {
+export async function cherrypick(options: ValidConfigOptions, commit: Commit) {
   await exec(
     `git fetch ${options.repoOwner} ${commit.sourceBranch}:${commit.sourceBranch} --force`,
     { cwd: getRepoPath(options) }
@@ -153,7 +156,10 @@ export async function cherrypick(options: BackportOptions, commit: Commit) {
   }
 }
 
-export async function commitChanges(commit: Commit, options: BackportOptions) {
+export async function commitChanges(
+  commit: Commit,
+  options: ValidConfigOptions
+) {
   const noVerify = options.noVerify ? ` --no-verify` : '';
 
   try {
@@ -183,7 +189,7 @@ export async function commitChanges(commit: Commit, options: BackportOptions) {
   }
 }
 
-export async function getConflictingFiles(options: BackportOptions) {
+export async function getConflictingFiles(options: ValidConfigOptions) {
   const repoPath = getRepoPath(options);
   try {
     await exec(`git --no-pager diff --check`, { cwd: repoPath });
@@ -213,7 +219,7 @@ export async function getConflictingFiles(options: BackportOptions) {
 }
 
 // retrieve the list of files that could not be cleanly merged
-export async function getUnstagedFiles(options: BackportOptions) {
+export async function getUnstagedFiles(options: ValidConfigOptions) {
   const repoPath = getRepoPath(options);
   const res = await exec(`git --no-pager diff --name-only`, {
     cwd: repoPath,
@@ -227,7 +233,7 @@ export async function getUnstagedFiles(options: BackportOptions) {
 }
 
 export async function setCommitAuthor(
-  options: BackportOptions,
+  options: ValidConfigOptions,
   username: string
 ) {
   const spinner = ora(`Changing author to "${options.username}"`).start();
@@ -252,7 +258,7 @@ export async function createBackportBranch({
   targetBranch,
   backportBranch,
 }: {
-  options: BackportOptions;
+  options: ValidConfigOptions;
   targetBranch: string;
   backportBranch: string;
 }) {
@@ -286,7 +292,7 @@ export async function deleteBackportBranch({
   options,
   backportBranch,
 }: {
-  options: BackportOptions;
+  options: ValidConfigOptions;
   backportBranch: string;
 }) {
   const spinner = ora().start();
@@ -302,7 +308,7 @@ export async function deleteBackportBranch({
 /*
  * Returns the repo owner of the forked repo or the source repo
  */
-export function getRepoForkOwner(options: BackportOptions) {
+export function getRepoForkOwner(options: ValidConfigOptions) {
   return options.fork ? options.username : options.repoOwner;
 }
 
@@ -310,7 +316,7 @@ export async function pushBackportBranch({
   options,
   backportBranch,
 }: {
-  options: BackportOptions;
+  options: ValidConfigOptions;
   backportBranch: string;
 }) {
   const repoForkOwner = getRepoForkOwner(options);

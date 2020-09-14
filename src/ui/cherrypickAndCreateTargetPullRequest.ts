@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import difference from 'lodash.difference';
 import isEmpty from 'lodash.isempty';
 import ora = require('ora');
-import { BackportOptions } from '../options/options';
+import { ValidConfigOptions } from '../options/options';
 import { HandledError } from '../services/HandledError';
 import { exec } from '../services/child-process-promisified';
 import { getRepoPath } from '../services/env';
@@ -36,7 +36,7 @@ export async function cherrypickAndCreateTargetPullRequest({
   commits,
   targetBranch,
 }: {
-  options: BackportOptions;
+  options: ValidConfigOptions;
   commits: Commit[];
   targetBranch: string;
 }) {
@@ -105,7 +105,7 @@ async function backportViaFilesystem({
   targetBranch,
   backportBranch,
 }: {
-  options: BackportOptions;
+  options: ValidConfigOptions;
   prPayload: PullRequestPayload;
   commits: Commit[];
   targetBranch: string;
@@ -149,7 +149,7 @@ export function getBackportBranchName(targetBranch: string, commits: Commit[]) {
 }
 
 async function waitForCherrypick(
-  options: BackportOptions,
+  options: ValidConfigOptions,
   commit: Commit,
   targetBranch: string
 ) {
@@ -230,7 +230,7 @@ async function waitForCherrypick(
   }
 }
 
-async function listConflictingAndUnstagedFiles(options: BackportOptions) {
+async function listConflictingAndUnstagedFiles(options: ValidConfigOptions) {
   const checkForProblems = async (retries = 0): Promise<void> => {
     const [conflictingFiles, _unstagedFiles] = await Promise.all([
       getConflictingFiles(options),

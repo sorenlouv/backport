@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { BackportOptions } from './options/options';
+import { ValidConfigOptions } from './options/options';
 import { HandledError } from './services/HandledError';
 import { logger, consoleLog, redact } from './services/logger';
 import { sequentially } from './services/sequentially';
@@ -16,7 +16,7 @@ export type Result = {
   error?: Error;
 };
 
-export async function runWithOptions(options: BackportOptions) {
+export async function runWithOptions(options: ValidConfigOptions) {
   logger.verbose('Backport options', options);
   if (options.dryRun) {
     consoleLog(chalk.red('Dry run: Nothing will be pushed to Github\n'));

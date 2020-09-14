@@ -1,6 +1,6 @@
 import isEmpty from 'lodash.isempty';
 import ora from 'ora';
-import { BackportOptions } from '../../../options/options';
+import { ValidConfigOptions } from '../../../options/options';
 import { Commit } from '../../../types/Commit';
 import { HandledError } from '../../HandledError';
 import { getFormattedCommitMessage } from '../commitFormatters';
@@ -15,7 +15,7 @@ import {
 import { getTargetBranchesFromLabels } from './getTargetBranchesFromLabels';
 
 export async function fetchPullRequestBySearchQuery(
-  options: BackportOptions
+  options: ValidConfigOptions
 ): Promise<Commit[]> {
   const {
     accessToken,

@@ -1,6 +1,6 @@
 import isEmpty from 'lodash.isempty';
 import ora from 'ora';
-import { BackportOptions } from '../../../options/options';
+import { ValidConfigOptions } from '../../../options/options';
 import { Commit } from '../../../types/Commit';
 import { HandledError } from '../../HandledError';
 import {
@@ -19,7 +19,7 @@ import {
 import { getTargetBranchesFromLabels } from './getTargetBranchesFromLabels';
 
 export async function fetchCommitsByAuthor(
-  options: BackportOptions
+  options: ValidConfigOptions
 ): Promise<Commit[]> {
   const {
     accessToken,
@@ -184,7 +184,7 @@ function isSourcePullRequest({
   sha,
 }: {
   pullRequestNode: PullRequestNode | undefined;
-  options: BackportOptions;
+  options: ValidConfigOptions;
   sha: string;
 }) {
   return (

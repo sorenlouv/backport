@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import ora from 'ora';
-import { BackportOptions } from '../../../options/options';
+import { ValidConfigOptions } from '../../../options/options';
 import { Commit } from '../../../types/Commit';
 import { HandledError } from '../../HandledError';
 import {
@@ -19,7 +19,7 @@ import {
 import { getTargetBranchesFromLabels } from './getTargetBranchesFromLabels';
 
 export async function fetchCommitBySha(
-  options: BackportOptions & { sha: string }
+  options: ValidConfigOptions & { sha: string }
 ): Promise<Commit> {
   const { accessToken, githubApiBaseUrlV4, repoName, repoOwner } = options;
 

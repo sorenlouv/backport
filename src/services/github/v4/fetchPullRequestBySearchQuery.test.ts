@@ -1,5 +1,5 @@
 import nock from 'nock';
-import { BackportOptions } from '../../../options/options';
+import { ValidConfigOptions } from '../../../options/options';
 import { mockGqlRequest } from '../../../test/nockHelpers';
 import { PromiseReturnType } from '../../../types/PromiseReturnType';
 import { fetchPullRequestBySearchQuery } from './fetchPullRequestBySearchQuery';
@@ -26,7 +26,7 @@ describe('fetchPullRequestBySearchQuery', () => {
       repoOwner: 'elastic',
       sourceBranch: 'master',
       prFilter: 'label:Team:apm',
-    } as BackportOptions);
+    } as ValidConfigOptions);
   });
 
   afterEach(() => {

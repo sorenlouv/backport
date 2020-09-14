@@ -1,8 +1,8 @@
-import { BackportOptions } from '../../../options/options';
+import { ValidConfigOptions } from '../../../options/options';
 import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
 import { fetchCommitBySha } from './fetchCommitBySha';
 
-type BackportOptionsWithSha = BackportOptions & { sha: string };
+type BackportOptionsWithSha = ValidConfigOptions & { sha: string };
 
 describe('fetchCommitBySha', () => {
   let devAccessToken: string;
@@ -56,7 +56,7 @@ describe('fetchCommitBySha', () => {
         sha: 'myCommitSha',
         githubApiBaseUrlV4: 'https://api.github.com/graphql',
         sourceBranch: 'main',
-      } as BackportOptions & { sha: string })
+      } as ValidConfigOptions & { sha: string })
     ).rejects.toThrowError(
       'No commit found on branch "main" with sha "myCommitSha"'
     );

@@ -1,4 +1,4 @@
-import { BackportOptions } from '../options/options';
+import { ValidConfigOptions } from '../options/options';
 import * as childProcess from '../services/child-process-promisified';
 import {
   addRemote,
@@ -28,7 +28,7 @@ describe('getUnstagedFiles', () => {
     const options = {
       repoOwner: 'elastic',
       repoName: 'kibana',
-    } as BackportOptions;
+    } as ValidConfigOptions;
 
     await expect(await getUnstagedFiles(options)).toEqual([
       '/myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt',
@@ -45,7 +45,7 @@ describe('getUnstagedFiles', () => {
     const options = {
       repoOwner: 'elastic',
       repoName: 'kibana',
-    } as BackportOptions;
+    } as ValidConfigOptions;
 
     await expect(await getUnstagedFiles(options)).toEqual([]);
   });
@@ -67,7 +67,7 @@ describe('getConflictingFiles', () => {
     const options = {
       repoOwner: 'elastic',
       repoName: 'kibana',
-    } as BackportOptions;
+    } as ValidConfigOptions;
 
     expect(await getConflictingFiles(options)).toEqual([
       '/myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt',
@@ -79,7 +79,7 @@ describe('createFeatureBranch', () => {
   const options = {
     repoOwner: 'elastic',
     repoName: 'kibana',
-  } as BackportOptions;
+  } as ValidConfigOptions;
 
   const targetBranch = '4.x';
   const backportBranch = 'backport/4.x/commit-72f94e76';
@@ -141,7 +141,7 @@ describe('deleteRemote', () => {
   const options = {
     repoOwner: 'elastic',
     repoName: 'kibana',
-  } as BackportOptions;
+  } as ValidConfigOptions;
 
   it('should swallow exec error', async () => {
     const err = {
@@ -172,7 +172,7 @@ describe('cherrypick', () => {
   const options = {
     repoOwner: 'elastic',
     repoName: 'kibana',
-  } as BackportOptions;
+  } as ValidConfigOptions;
 
   const commit: Commit = {
     sourceBranch: '7.x',
@@ -373,7 +373,7 @@ describe('commitChanges', () => {
   const options = {
     repoOwner: 'elastic',
     repoName: 'kibana',
-  } as BackportOptions;
+  } as ValidConfigOptions;
 
   const commit = {
     originalMessage: 'The original commit message',
@@ -457,7 +457,7 @@ describe('addRemote', () => {
     repoOwner: 'elastic',
     repoName: 'kibana',
     gitHostname: 'github.com',
-  } as BackportOptions;
+  } as ValidConfigOptions;
 
   it('add correct origin remote', async () => {
     const spy = jest
@@ -511,7 +511,7 @@ describe('pushBackportBranch', () => {
     username: 'sqren',
     repoOwner: 'elastic',
     repoName: 'kibana',
-  } as BackportOptions;
+  } as ValidConfigOptions;
 
   const backportBranch = 'backport/7.x/pr-2';
 

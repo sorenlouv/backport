@@ -1,4 +1,4 @@
-import { BackportOptions } from '../../../options/options';
+import { ValidConfigOptions } from '../../../options/options';
 import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
 import { PromiseReturnType } from '../../../types/PromiseReturnType';
 import { fetchCommitsByAuthor } from './fetchCommitsByAuthor';
@@ -22,7 +22,7 @@ describe('fetchCommitsByAuthor', () => {
         author: 'sqren',
         maxNumber: 10,
         githubApiBaseUrlV4: 'https://api.github.com/graphql',
-      } as BackportOptions);
+      } as ValidConfigOptions);
     });
 
     it('returns related OPEN PRs', async () => {

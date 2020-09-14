@@ -1,5 +1,5 @@
 import uniq from 'lodash.uniq';
-import { BackportOptions } from '../../../options/options';
+import { ValidConfigOptions } from '../../../options/options';
 import { filterNil } from '../../../utils/filterEmpty';
 import { logger } from '../../logger';
 import { ExistingTargetPullRequests } from './getExistingTargetPullRequests';
@@ -8,7 +8,7 @@ export function getTargetBranchForLabel({
   branchLabelMapping,
   label,
 }: {
-  branchLabelMapping: NonNullable<BackportOptions['branchLabelMapping']>;
+  branchLabelMapping: NonNullable<ValidConfigOptions['branchLabelMapping']>;
   label: string;
 }) {
   // only get first match
@@ -31,7 +31,7 @@ export function getTargetBranchesFromLabels({
   labels,
 }: {
   existingTargetPullRequests: ExistingTargetPullRequests;
-  branchLabelMapping: BackportOptions['branchLabelMapping'];
+  branchLabelMapping: ValidConfigOptions['branchLabelMapping'];
   labels?: string[];
 }) {
   if (!branchLabelMapping || !labels) {

@@ -1,6 +1,6 @@
 import makeDir from 'make-dir';
 import ora = require('ora');
-import { BackportOptions } from '../options/options';
+import { ValidConfigOptions } from '../options/options';
 import { getRepoOwnerPath } from '../services/env';
 import {
   addRemote,
@@ -10,7 +10,7 @@ import {
   repoExists,
 } from '../services/git';
 
-export async function maybeSetupRepo(options: BackportOptions) {
+export async function maybeSetupRepo(options: ValidConfigOptions) {
   const isAlreadyCloned = await repoExists(options);
 
   // clone repo if folder does not already exists

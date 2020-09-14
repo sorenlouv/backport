@@ -6,7 +6,7 @@ import { getOptionsFromCliArgs } from './cliArgs';
 import { getOptionsFromConfigFiles } from './config/config';
 import { getValidatedOptions } from './getValidatedOptions';
 
-export type BackportOptions = Readonly<PromiseReturnType<typeof getOptions>>;
+export type ValidConfigOptions = Readonly<PromiseReturnType<typeof getOptions>>;
 export async function getOptions(
   argv: string[],
   optionsFromModule?: ConfigOptions
