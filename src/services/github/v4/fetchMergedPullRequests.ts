@@ -70,7 +70,7 @@ export async function fetchMergedPullRequests(
     )
     .map((commitEdge) => {
       const pullRequestNode =
-        commitEdge.node.associatedPullRequests.edges[0]?.node;
+        commitEdge.node.associatedPullRequests.edges[0].node;
 
       const existingTargetPullRequests = getExistingTargetPullRequests(
         pullRequestNode
