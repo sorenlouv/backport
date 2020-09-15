@@ -93,15 +93,17 @@ export async function fetchCommitBySha(
   });
 
   const existingTargetPullRequests = getExistingTargetPullRequests(
-    commitMessage,
     pullRequestNode
   );
 
-  const targetBranchesFromLabels = getTargetBranchesFromLabels({
-    existingTargetPullRequests,
-    branchLabelMapping: options.branchLabelMapping,
-    labels: getPullRequestLabels(pullRequestNode),
-  });
+  const targetBranchesFromLabels = pullRequestNode
+    ? getTargetBranchesFromLabels({
+        sourceBranch: pullRequestNode.baseRefName,
+        existingTargetPullRequests,
+        branchLabelMapping: options.branchLabelMapping,
+        labels: getPullRequestLabels(pullRequestNode),
+      })
+    : [];
 
   return {
     sourceBranch,

@@ -80,11 +80,11 @@ export async function fetchPullRequestBySearchQuery(
     });
 
     const existingTargetPullRequests = getExistingTargetPullRequests(
-      commitMessage,
       pullRequestNode
     );
 
     const targetBranchesFromLabels = getTargetBranchesFromLabels({
+      sourceBranch: pullRequestNode.baseRefName,
       existingTargetPullRequests,
       branchLabelMapping: options.branchLabelMapping,
       labels: getPullRequestLabels(pullRequestNode),

@@ -117,6 +117,7 @@ Array [
               "existingTargetPullRequests": Array [
                 Object {
                   "branch": "6.3",
+                  "number": 99,
                   "state": "MERGED",
                 },
               ],

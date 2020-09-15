@@ -141,11 +141,11 @@ export async function fetchCommitsByAuthor(
     });
 
     const existingTargetPullRequests = getExistingTargetPullRequests(
-      commitMessage,
       pullRequestNode
     );
 
     const targetBranchesFromLabels = getTargetBranchesFromLabels({
+      sourceBranch: pullRequestNode.baseRefName,
       existingTargetPullRequests,
       branchLabelMapping: options.branchLabelMapping,
       labels: getPullRequestLabels(pullRequestNode),
@@ -211,11 +211,9 @@ interface HistoryEdge {
     oid: string;
     message: string;
     associatedPullRequests: {
-      edges: PullRequestEdge[];
+      edges: {
+        node: PullRequestNode;
+      }[];
     };
   };
-}
-
-export interface PullRequestEdge {
-  node: PullRequestNode;
 }

@@ -19,17 +19,22 @@ export function getTargetBranchForLabel({
   });
 
   if (result) {
-    const [labelPattern, targetBranch] = result;
+    const [labelPattern, targetBranchPattern] = result;
     const regex = new RegExp(labelPattern);
-    return label.replace(regex, targetBranch);
+    const targetBranch = label.replace(regex, targetBranchPattern);
+    if (targetBranch) {
+      return targetBranch;
+    }
   }
 }
 
 export function getTargetBranchesFromLabels({
+  sourceBranch,
   existingTargetPullRequests,
   branchLabelMapping,
   labels,
 }: {
+  sourceBranch: string;
   existingTargetPullRequests: ExistingTargetPullRequests;
   branchLabelMapping: ValidConfigOptions['branchLabelMapping'];
   labels?: string[];
@@ -42,9 +47,9 @@ export function getTargetBranchesFromLabels({
 
   const targetBranches = labels
     .map((label) => getTargetBranchForLabel({ branchLabelMapping, label }))
-    .filter((targetBranch) => targetBranch !== '')
     .filter(filterNil)
-    .filter((targetBranch) => !existingBranches.includes(targetBranch));
+    .filter((targetBranch) => !existingBranches.includes(targetBranch))
+    .filter((targetBranch) => targetBranch !== sourceBranch);
 
   logger.info('Inputs when calculating target branches:', {
     labels,

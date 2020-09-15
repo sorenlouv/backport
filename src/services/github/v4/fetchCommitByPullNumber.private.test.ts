@@ -27,8 +27,8 @@ describe('fetchCommitByPullNumber', () => {
         sourceBranch: 'master',
         targetBranchesFromLabels: [],
         existingTargetPullRequests: [
-          { branch: '7.x', state: 'MERGED' },
-          { branch: '7.8', state: 'MERGED' },
+          { branch: '7.x', state: 'MERGED', number: 6 },
+          { branch: '7.8', state: 'MERGED', number: 7 },
         ],
       });
     });

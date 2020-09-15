@@ -49,6 +49,7 @@ describe('fetchPullRequestBySearchQuery', () => {
           "existingTargetPullRequests": Array [
             Object {
               "branch": "7.x",
+              "number": 99,
               "state": "MERGED",
             },
           ],
@@ -65,6 +66,7 @@ describe('fetchPullRequestBySearchQuery', () => {
           "existingTargetPullRequests": Array [
             Object {
               "branch": "7.x",
+              "number": 99,
               "state": "MERGED",
             },
           ],
@@ -81,10 +83,12 @@ describe('fetchPullRequestBySearchQuery', () => {
           "existingTargetPullRequests": Array [
             Object {
               "branch": "7.x",
+              "number": 99,
               "state": "MERGED",
             },
             Object {
               "branch": "7.9",
+              "number": 99,
               "state": "MERGED",
             },
           ],
@@ -116,10 +120,12 @@ describe('fetchPullRequestBySearchQuery', () => {
           "existingTargetPullRequests": Array [
             Object {
               "branch": "7.x",
+              "number": 99,
               "state": "MERGED",
             },
             Object {
               "branch": "7.9",
+              "number": 99,
               "state": "MERGED",
             },
           ],
@@ -134,6 +140,7 @@ describe('fetchPullRequestBySearchQuery', () => {
           "existingTargetPullRequests": Array [
             Object {
               "branch": "7.x",
+              "number": 99,
               "state": "MERGED",
             },
           ],
@@ -148,6 +155,7 @@ describe('fetchPullRequestBySearchQuery', () => {
           "existingTargetPullRequests": Array [
             Object {
               "branch": "7.x",
+              "number": 99,
               "state": "MERGED",
             },
           ],
@@ -162,10 +170,12 @@ describe('fetchPullRequestBySearchQuery', () => {
           "existingTargetPullRequests": Array [
             Object {
               "branch": "7.x",
+              "number": 99,
               "state": "MERGED",
             },
             Object {
               "branch": "7.9",
+              "number": 99,
               "state": "MERGED",
             },
           ],
@@ -180,10 +190,12 @@ describe('fetchPullRequestBySearchQuery', () => {
           "existingTargetPullRequests": Array [
             Object {
               "branch": "7.x",
+              "number": 99,
               "state": "MERGED",
             },
             Object {
               "branch": "7.9",
+              "number": 99,
               "state": "MERGED",
             },
           ],
@@ -198,10 +210,12 @@ describe('fetchPullRequestBySearchQuery', () => {
           "existingTargetPullRequests": Array [
             Object {
               "branch": "7.9",
+              "number": 99,
               "state": "MERGED",
             },
             Object {
               "branch": "7.x",
+              "number": 99,
               "state": "MERGED",
             },
           ],

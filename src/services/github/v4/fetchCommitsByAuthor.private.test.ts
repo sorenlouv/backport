@@ -28,15 +28,15 @@ describe('fetchCommitsByAuthor', () => {
     it('returns related OPEN PRs', async () => {
       const commitWithOpenPR = res.find((commit) => commit.pullNumber === 9);
       expect(commitWithOpenPR?.existingTargetPullRequests).toEqual([
-        { branch: '7.8', state: 'OPEN' },
+        { branch: '7.8', state: 'OPEN', number: 10 },
       ]);
     });
 
     it('returns related MERGED PRs', async () => {
       const commitWithMergedPRs = res.find((commit) => commit.pullNumber === 5);
       expect(commitWithMergedPRs?.existingTargetPullRequests).toEqual([
-        { branch: '7.x', state: 'MERGED' },
-        { branch: '7.8', state: 'MERGED' },
+        { branch: '7.x', state: 'MERGED', number: 6 },
+        { branch: '7.8', state: 'MERGED', number: 7 },
       ]);
     });
 
