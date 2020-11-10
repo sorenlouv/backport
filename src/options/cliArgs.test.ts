@@ -84,18 +84,27 @@ describe('getOptionsFromCliArgs', () => {
     const configOptions: ConfigOptions = {};
     const argv = [
       '--sourcePRLabels',
-      'first label',
+      'label a',
       '--sourcePrLabels',
-      'second label',
+      'label b',
       '--source-pr-labels',
-      'third label',
+      'label c',
+      '--sourcePRLabel',
+      'label d',
+      '--sourcePrLabel',
+      'label e',
+      '--source-pr-label',
+      'label f',
     ];
 
     const res = getOptionsFromCliArgs(configOptions, argv);
     expect(res.sourcePRLabels).toEqual([
-      'first label',
-      'second label',
-      'third label',
+      'label a',
+      'label b',
+      'label c',
+      'label d',
+      'label e',
+      'label f',
     ]);
   });
 
