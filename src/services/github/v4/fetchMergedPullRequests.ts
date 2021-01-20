@@ -48,6 +48,7 @@ export async function fetchMergedPullRequests(
     ${pullRequestFragment}
   `;
 
+  // TODO: It should be possible to delete this since defaultBranch is already fetched during startup
   const defaultBranch = await fetchDefaultBranch(options);
 
   const res = await apiRequestV4<DataResponse>({

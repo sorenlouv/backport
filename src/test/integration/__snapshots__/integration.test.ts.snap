@@ -4,7 +4,7 @@ exports[`integration when a single commit is backported should make correct API 
 Array [
   Object {
     "query": "
-    query DefaultRepoBranch($repoOwner: String!, $repoName: String!) {
+    query GithubConfigOptions($repoOwner: String!, $repoName: String!) {
       viewer {
         login
       }
@@ -87,7 +87,7 @@ Array [
       }
     }
 
-    
+
   fragment ExistingTargetPullRequests on PullRequest {
     # Source PR
     number
@@ -154,7 +154,7 @@ exports[`integration when two commits are backported should make correct API req
 Array [
   Object {
     "query": "
-    query DefaultRepoBranch($repoOwner: String!, $repoName: String!) {
+    query GithubConfigOptions($repoOwner: String!, $repoName: String!) {
       viewer {
         login
       }
@@ -237,7 +237,7 @@ Array [
       }
     }
 
-    
+
   fragment ExistingTargetPullRequests on PullRequest {
     # Source PR
     number

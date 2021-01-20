@@ -50,6 +50,7 @@ export interface ConfigOptions {
   targetBranches?: string[];
   targetPRLabels?: string[];
   upstream?: string;
+  useLocalConfig?: boolean;
   username?: string;
   verbose?: boolean;
 
