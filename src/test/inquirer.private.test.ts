@@ -26,7 +26,7 @@ describe('inquirer cli', () => {
 
   it('should return error when branch is missing', async () => {
     const res = await runBackportAsync([
-      '--use-local-config',
+      '--force-local-config',
       '--upstream',
       'backport-org/backport-e2e',
       '--username',
@@ -44,7 +44,7 @@ describe('inquirer cli', () => {
 
   it('should return error when upstream is missing', async () => {
     const res = await runBackportAsync([
-      '--use-local-config',
+      '--force-local-config',
       '--branch',
       'foo',
       '--upstream',

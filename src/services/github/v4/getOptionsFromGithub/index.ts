@@ -92,9 +92,9 @@ async function getRemoteConfigFile(
   options: OptionsFromCliArgs,
   remoteConfig?: RemoteConfig
 ) {
-  if (options.useLocalConfig) {
+  if (options.forceLocalConfig) {
     logger.info(
-      'Skipping remote config: `--use-local-config` specified via config file or cli'
+      'Skipping remote config: `--force-local-config` specified via config file or cli'
     );
     return;
   }

@@ -57,6 +57,12 @@ export function getOptionsFromCliArgs(argv: readonly string[]) {
       type: 'string',
     })
 
+    .option('forceLocalConfig', {
+      description:
+        'Use local .backportrc.json config instead of loading from Github',
+      type: 'boolean',
+    })
+
     // push target branch to {username}/{repoName}
     .option('fork', {
       description: 'Create backports in fork or origin repo',
@@ -223,12 +229,6 @@ export function getOptionsFromCliArgs(argv: readonly string[]) {
     .option('username', {
       description: 'Github username',
       type: 'string',
-    })
-
-    .option('useLocalConfig', {
-      description:
-        'Use local .backportrc.json config instead of loading from Github',
-      type: 'boolean',
     })
 
     .option('verbose', {

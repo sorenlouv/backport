@@ -37,6 +37,7 @@ describe('runWithOptions', () => {
       ci: false,
       dryRun: false,
       editor: 'code',
+      forceLocalConfig: undefined,
       fork: true,
       gitHostname: 'github.com',
       githubApiBaseUrlV3: 'https://api.github.com',
@@ -67,7 +68,6 @@ describe('runWithOptions', () => {
         { name: '5.4' },
       ],
       targetPRLabels: [],
-      useLocalConfig: undefined,
       username: 'sqren',
       verbose: false,
     };
