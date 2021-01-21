@@ -266,7 +266,6 @@ export function getOptionsFromCliArgs(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   const { $0, _, verify, multiple, ...rest } = yargsInstance.argv;
 
-  // TODO: add test
   return excludeUndefined({
     ...rest,
 

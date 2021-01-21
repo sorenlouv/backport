@@ -1,46 +1,78 @@
 import { getOptionsFromCliArgs } from './cliArgs';
 
 describe('getOptionsFromCliArgs', () => {
-  it('should accept both camel-case and dashed-case and convert them to camel cased', () => {
-    const argv = [
-      '--access-token',
-      'my access token',
-      '--githubApiBaseUrlV3',
-      'my api hostname',
-    ];
+  describe('yargs settings', () => {
+    it('should accept both camel-case and dashed-case and convert them to camel cased', () => {
+      const argv = [
+        '--access-token',
+        'my access token',
+        '--githubApiBaseUrlV3',
+        'my api hostname',
+      ];
 
-    const res = getOptionsFromCliArgs(argv);
-    expect(res.accessToken).toEqual('my access token');
-    expect('access-token' in res).toEqual(false);
-    expect(res.githubApiBaseUrlV3).toEqual('my api hostname');
-    expect('api-hostname' in res).toEqual(false);
+      const res = getOptionsFromCliArgs(argv);
+      expect(res.accessToken).toEqual('my access token');
+      expect('access-token' in res).toEqual(false);
+      expect(res.githubApiBaseUrlV3).toEqual('my api hostname');
+      expect('api-hostname' in res).toEqual(false);
+    });
+
+    it('strips undefined values from the object', () => {
+      const argv = [
+        '--access-token',
+        'my access token',
+        '--username',
+        'sqren',
+        '--upstream',
+        'elastic/kibana',
+      ];
+      const res = getOptionsFromCliArgs(argv);
+      expect(res).toEqual({
+        accessToken: 'my access token',
+        upstream: 'elastic/kibana',
+        username: 'sqren',
+      });
+    });
   });
 
-  it('should support all variations of --source-pr-labels', () => {
-    const argv = [
-      '--sourcePRLabels',
-      'label a',
-      '--sourcePrLabels',
-      'label b',
-      '--source-pr-labels',
-      'label c',
-      '--sourcePRLabel',
-      'label d',
-      '--sourcePrLabel',
-      'label e',
-      '--source-pr-label',
-      'label f',
-    ];
+  // blocked by: https://github.com/yargs/yargs/issues/1853
+  describe('help', () => {
+    // eslint-disable-next-line jest/no-commented-out-tests
+    //   it('should output help', () => {
+    //     const argv = ['--help'];
+    //     expect(() =>
+    //       getOptionsFromCliArgs(argv, { exitOnError: false, returnHelp: true })
+    //     ).toThrow('asa');
+    //   });
+  });
 
-    const res = getOptionsFromCliArgs(argv);
-    expect(res.sourcePRLabels).toEqual([
-      'label a',
-      'label b',
-      'label c',
-      'label d',
-      'label e',
-      'label f',
-    ]);
+  describe('sourcePRLabels', () => {
+    it('should handle all variations', () => {
+      const argv = [
+        '--sourcePRLabels',
+        'label a',
+        '--sourcePrLabels',
+        'label b',
+        '--source-pr-labels',
+        'label c',
+        '--sourcePRLabel',
+        'label d',
+        '--sourcePrLabel',
+        'label e',
+        '--source-pr-label',
+        'label f',
+      ];
+
+      const res = getOptionsFromCliArgs(argv);
+      expect(res.sourcePRLabels).toEqual([
+        'label a',
+        'label b',
+        'label c',
+        'label d',
+        'label e',
+        'label f',
+      ]);
+    });
   });
 
   describe('pullNumber', () => {
@@ -54,17 +86,6 @@ describe('getOptionsFromCliArgs', () => {
       //@ts-expect-error
       expect(res.pr).toBe(undefined);
     });
-  });
-
-  // blocked by: https://github.com/yargs/yargs/issues/1853
-  describe('help', () => {
-    // eslint-disable-next-line jest/no-commented-out-tests
-    //   it('should output help', () => {
-    //     const argv = ['--help'];
-    //     expect(() =>
-    //       getOptionsFromCliArgs(argv, { exitOnError: false, returnHelp: true })
-    //     ).toThrow('asa');
-    //   });
   });
 
   describe('assignees', () => {

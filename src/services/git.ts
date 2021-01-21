@@ -81,7 +81,10 @@ export async function getLocalConfigFileCommitDate() {
       {}
     );
 
-    return Date.parse(stdout);
+    const timestamp = Date.parse(stdout);
+    if (timestamp > 0) {
+      return timestamp;
+    }
   } catch (e) {
     return;
   }
