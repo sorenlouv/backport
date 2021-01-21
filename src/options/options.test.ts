@@ -88,13 +88,6 @@ describe('getOptions', () => {
     );
   });
 
-  it('should omit upstream', async () => {
-    mockGetGithubConfigOptions({ defaultBranch: 'my-default-branch' });
-    const options = await getOptions(defaultArgs);
-    //@ts-expect-error
-    expect(options.upstream).toBe(undefined);
-  });
-
   it('should merge config options and module options', async () => {
     mockGetGithubConfigOptions({ defaultBranch: 'my-default-branch' });
     const myFn = async () => true;
@@ -140,6 +133,7 @@ describe('getOptions', () => {
       ],
       targetBranches: ['6.0', '6.1'],
       targetPRLabels: [],
+      upstream: 'elastic/kibana',
       username: 'sqren',
       verbose: false,
     });

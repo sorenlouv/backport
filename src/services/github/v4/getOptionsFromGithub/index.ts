@@ -3,9 +3,9 @@ import ora from 'ora';
 import { ConfigOptions } from '../../../../options/ConfigOptions';
 import { OptionsFromCliArgs } from '../../../../options/cliArgs';
 import { OptionsFromConfigFiles } from '../../../../options/config/config';
+import { getRequiredOptions } from '../../../../options/parseRequiredOptions';
 import { PromiseReturnType } from '../../../../types/PromiseReturnType';
 import { HandledError } from '../../../HandledError';
-import { getGlobalConfigPath } from '../../../env';
 import {
   getLocalConfigFileCommitDate,
   isLocalConfigFileUntracked,
@@ -19,12 +19,6 @@ import {
 } from '../apiRequestV4';
 import { throwOnInvalidAccessToken } from '../throwOnInvalidAccessToken';
 import { GithubConfigOptionsResponse, query, RemoteConfig } from './query';
-
-const PROJECT_CONFIG_DOCS_LINK =
-  'https://github.com/sqren/backport/blob/e119d71d6dc03cd061f6ad9b9a8b1cd995f98961/docs/configuration.md#project-config-backportrcjson';
-
-const GLOBAL_CONFIG_DOCS_LINK =
-  'https://github.com/sqren/backport/blob/e119d71d6dc03cd061f6ad9b9a8b1cd995f98961/docs/configuration.md#global-config-backportconfigjson';
 
 // fetches the default source branch for the repo (normally "master")
 // startup checks:
@@ -41,23 +35,8 @@ export async function getOptionsFromGithub(
     ...optionsFromCliArgs,
   } as OptionsFromCliArgs & OptionsFromConfigFiles;
 
-  const { username, accessToken, githubApiBaseUrlV4, upstream } = options;
-
-  // accessToken and username must be supplied in config or via cli args
-  if (!accessToken || !username) {
-    const globalConfigPath = getGlobalConfigPath();
-    throw new HandledError(
-      `Please update your config file: ${globalConfigPath}.\nIt must contain a valid "username" and "accessToken".\n\nRead more: ${GLOBAL_CONFIG_DOCS_LINK}`
-    );
-  }
-
-  // upstream must be specified via config or cli args
-  const [repoOwner, repoName] = (upstream ?? '').split('/');
-  if (!repoOwner || !repoName) {
-    throw new HandledError(
-      `You must specify a valid Github repository\n\nYou can specify it via either:\n - Config file (recommended): ".backportrc.json". Read more: ${PROJECT_CONFIG_DOCS_LINK}\n - CLI: "--upstream elastic/kibana"`
-    );
-  }
+  const { githubApiBaseUrlV4 } = options;
+  const { accessToken, repoName, repoOwner } = getRequiredOptions(options);
 
   let res: GithubConfigOptionsResponse;
   const spinner = ora().start('Initializing...');

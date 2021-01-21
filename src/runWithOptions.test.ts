@@ -50,6 +50,7 @@ describe('runWithOptions', () => {
       prDescription: 'myPrDescription',
       prTitle: 'myPrTitle {targetBranch} {commitMessages}',
       pullNumber: undefined,
+      upstream: 'elastic/kibana',
       repoName: 'kibana',
       repoOwner: 'elastic',
       resetAuthor: false,
