@@ -1,8 +1,11 @@
 import yargs from 'yargs';
 
 export type OptionsFromCliArgs = ReturnType<typeof getOptionsFromCliArgs>;
-export function getOptionsFromCliArgs(argv: readonly string[]) {
-  const cliArgs = yargs(argv)
+export function getOptionsFromCliArgs(
+  argv: readonly string[],
+  { exitOnError = true }: { exitOnError?: boolean } = {}
+) {
+  const yargsInstance = yargs(argv)
     .parserConfiguration({
       'strip-dashed': true,
       'strip-aliased': true,
@@ -92,7 +95,6 @@ export function getOptionsFromCliArgs(argv: readonly string[]) {
       description:
         'Parent id of merge commit. Defaults to 1 when supplied without arguments',
       type: 'number',
-      // TODO: add test
       coerce: (mainline) => {
         // `--mainline` (default to 1 when no parent is given)
         if (mainline === undefined) {
@@ -239,26 +241,41 @@ export function getOptionsFromCliArgs(argv: readonly string[]) {
       description: 'Show additional debug information',
       type: 'boolean',
     })
+
     .alias('version', 'v')
     .alias('version', 'V')
     .help()
+
     .epilogue(
       'For bugs, feature requests or questions: https://github.com/sqren/backport/issues\nOr contact me directly: https://twitter.com/sorenlouv'
-    ).argv;
+    );
+
+  // don't kill process upon error
+  // and don't log error to console
+  if (!exitOnError) {
+    yargsInstance.fail((msg, err) => {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (err) {
+        throw err;
+      }
+
+      throw new Error(msg);
+    });
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-  const { $0, _, verify, multiple, ...rest } = cliArgs;
+  const { $0, _, verify, multiple, ...rest } = yargsInstance.argv;
 
   // TODO: add test
   return excludeUndefined({
     ...rest,
 
     // `multiple` is a cli-only flag to override `multipleBranches` and `multipleCommits`
-    multipleBranches: multiple ?? cliArgs.multipleBranches,
-    multipleCommits: multiple ?? cliArgs.multipleCommits,
+    multipleBranches: multiple ?? yargsInstance.argv.multipleBranches,
+    multipleCommits: multiple ?? yargsInstance.argv.multipleCommits,
 
     // `verify` is a cli-only flag to flip the default of `no-verify`
-    noVerify: verify ?? cliArgs.noVerify,
+    noVerify: verify ?? yargsInstance.argv.noVerify,
   });
 }
 

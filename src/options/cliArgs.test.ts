@@ -56,6 +56,17 @@ describe('getOptionsFromCliArgs', () => {
     });
   });
 
+  // blocked by: https://github.com/yargs/yargs/issues/1853
+  describe('help', () => {
+    // eslint-disable-next-line jest/no-commented-out-tests
+    //   it('should output help', () => {
+    //     const argv = ['--help'];
+    //     expect(() =>
+    //       getOptionsFromCliArgs(argv, { exitOnError: false, returnHelp: true })
+    //     ).toThrow('asa');
+    //   });
+  });
+
   describe('assignees', () => {
     it('should set assignees', () => {
       const argv = ['--assignees', 'john'];
@@ -87,6 +98,14 @@ describe('getOptionsFromCliArgs', () => {
       const argv = ['--multiple'];
       const res = getOptionsFromCliArgs(argv);
       expect(res.multipleBranches).toBe(true);
+    });
+
+    it('should conflict when using both', () => {
+      const argv = ['--multiple', '--multiple-branches', 'false'];
+
+      expect(() => getOptionsFromCliArgs(argv, { exitOnError: false })).toThrow(
+        'Arguments multiple and multipleBranches are mutually exclusive'
+      );
     });
   });
 
@@ -127,6 +146,13 @@ describe('getOptionsFromCliArgs', () => {
       const argv = ['--mainline', '2'];
       const res = getOptionsFromCliArgs(argv);
       expect(res.mainline).toEqual(2);
+    });
+
+    it('should throw on invalid values', () => {
+      const argv = ['--mainline', 'foo'];
+      expect(() =>
+        getOptionsFromCliArgs(argv, { exitOnError: false })
+      ).toThrowError('--mainline must be an integer. Received: NaN');
     });
   });
 
