@@ -51,6 +51,11 @@ describe('getUnstagedFiles', () => {
   });
 });
 
+describe('getLocalConfigFileCommitDate', () => {});
+describe('isLocalConfigFileUntracked', () => {});
+describe('isLocalConfigFileModified', () => {});
+describe('getUpstreamFromGitRemote', () => {});
+
 describe('getConflictingFiles', () => {
   it('should split by linebreak and remove empty and duplicate items', async () => {
     const err = {

@@ -17,7 +17,7 @@ export async function getOptions(
   const optionsFromCliArgs = getOptionsFromCliArgs(argv);
 
   // update logger
-  updateLogger(optionsFromCliArgs);
+  updateLogger({ ...optionsFromConfigFiles, ...optionsFromCliArgs });
 
   // TODO: make `username` optional by defaulting to `currentUsername`
   const optionsFromGithub = await getOptionsFromGithub(

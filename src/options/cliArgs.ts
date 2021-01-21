@@ -33,6 +33,7 @@ export function getOptionsFromCliArgs(argv: readonly string[]) {
       description: 'Add assignees to the target pull request',
       alias: ['assignee', 'assign'],
       type: 'array',
+      string: true,
       conflicts: ['autoAssign'],
     })
 
@@ -193,6 +194,7 @@ export function getOptionsFromCliArgs(argv: readonly string[]) {
       description: 'Add labels to the source (original) PR',
       alias: ['sourcePRLabel', 'sourcePrLabel', 'sourcePrLabels'],
       type: 'array',
+      string: true,
     })
 
     .option('targetBranches', {
@@ -206,12 +208,14 @@ export function getOptionsFromCliArgs(argv: readonly string[]) {
       description: 'List branches to backport to',
       alias: 'targetBranchChoice',
       type: 'array',
+      string: true,
     })
 
     .option('targetPRLabels', {
       description: 'Add labels to the target (backport) PR',
       alias: ['labels', 'label', 'l'],
       type: 'array',
+      string: true,
     })
 
     // cli-only
