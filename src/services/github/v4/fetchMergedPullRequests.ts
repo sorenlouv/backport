@@ -51,7 +51,7 @@ export async function fetchMergedPullRequests(
   // TODO: It should be possible to delete this since defaultBranch is already fetched during startup
   const defaultBranch = await fetchDefaultBranch(options);
 
-  const res = await apiRequestV4<DataResponse>({
+  const res = await apiRequestV4<CommitsSinceDateResponse>({
     githubApiBaseUrlV4,
     accessToken,
     query,
@@ -105,7 +105,7 @@ export async function fetchMergedPullRequests(
     });
 }
 
-export interface DataResponse {
+export interface CommitsSinceDateResponse {
   repository: {
     ref: {
       target: {

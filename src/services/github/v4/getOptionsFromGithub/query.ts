@@ -13,16 +13,24 @@ type DefaultBranchRef = {
 
 export interface GithubConfigOptionsResponse {
   repository: {
-    isFork: boolean;
     ref: Ref;
-    defaultBranchRef: DefaultBranchRef;
-    parent: {
-      id: string;
-      ref: Ref;
-      defaultBranchRef: DefaultBranchRef;
-      owner: { login: string };
-    } | null;
-  };
+  } & (
+    | {
+        isFork: true;
+        defaultBranchRef: null;
+        parent: {
+          id: string;
+          ref: Ref;
+          defaultBranchRef: DefaultBranchRef;
+          owner: { login: string };
+        };
+      }
+    | {
+        isFork: false;
+        defaultBranchRef: DefaultBranchRef;
+        parent: null;
+      }
+  );
 }
 
 export const query = /* GraphQL */ `
@@ -48,7 +56,6 @@ export const query = /* GraphQL */ `
       name
       target {
         ...JSONConfigFile
-        ...JSConfigFile
       }
     }
   }
@@ -59,25 +66,6 @@ export const query = /* GraphQL */ `
         config: node {
           committedDate
           file(path: ".backportrc.json") {
-            ... on TreeEntry {
-              object {
-                ... on Blob {
-                  text
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  fragment JSConfigFile on Commit {
-    jsConfigFile: history(first: 1, path: ".backportrc.js") {
-      edges {
-        config: node {
-          committedDate
-          file(path: ".backportrc.js") {
             ... on TreeEntry {
               object {
                 ... on Blob {

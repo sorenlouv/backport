@@ -20,7 +20,6 @@ export const defaultConfigOptions = {
   noVerify: true,
   prTitle: '[{targetBranch}] {commitMessages}',
   resetAuthor: false,
-  sourceBranch: 'master',
   sourcePRLabels: [],
   targetBranches: [],
   targetBranchChoices: [],

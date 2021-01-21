@@ -20,6 +20,9 @@ import {
 import { throwOnInvalidAccessToken } from '../throwOnInvalidAccessToken';
 import { GithubConfigOptionsResponse, query, RemoteConfig } from './query';
 
+const PROJECT_CONFIG_DOCS_LINK =
+  'https://github.com/sqren/backport/blob/e119d71d6dc03cd061f6ad9b9a8b1cd995f98961/docs/configuration.md#project-config-backportrcjson';
+
 const GLOBAL_CONFIG_DOCS_LINK =
   'https://github.com/sqren/backport/blob/e119d71d6dc03cd061f6ad9b9a8b1cd995f98961/docs/configuration.md#global-config-backportconfigjson';
 
@@ -38,14 +41,21 @@ export async function getOptionsFromGithub(
     ...optionsFromCliArgs,
   } as OptionsFromCliArgs & OptionsFromConfigFiles;
 
-  const { accessToken, githubApiBaseUrlV4, upstream } = options;
-  const [repoOwner, repoName] = (upstream ?? '').split('/');
+  const { username, accessToken, githubApiBaseUrlV4, upstream } = options;
 
-  // accessToken must be supplied
-  if (!accessToken) {
+  // accessToken and username must be supplied in config or via cli args
+  if (!accessToken || !username) {
     const globalConfigPath = getGlobalConfigPath();
     throw new HandledError(
-      `Please update your config file: ${globalConfigPath}.\nIt must contain a valid "accessToken".\n\nRead more: ${GLOBAL_CONFIG_DOCS_LINK}`
+      `Please update your config file: ${globalConfigPath}.\nIt must contain a valid "username" and "accessToken".\n\nRead more: ${GLOBAL_CONFIG_DOCS_LINK}`
+    );
+  }
+
+  // upstream must be specified via config or cli args
+  const [repoOwner, repoName] = (upstream ?? '').split('/');
+  if (!repoOwner || !repoName) {
+    throw new HandledError(
+      `You must specify a valid Github repository\n\nYou can specify it via either:\n - Config file (recommended): ".backportrc.json". Read more: ${PROJECT_CONFIG_DOCS_LINK}\n - CLI: "--upstream elastic/kibana"`
     );
   }
 
@@ -77,43 +87,26 @@ export async function getOptionsFromGithub(
   const repo = res.repository.isFork ? res.repository.parent : res.repository;
 
   // it is not possible to have a branch named "backport"
-  if (repo?.ref?.name === 'backport') {
+  if (repo.ref?.name === 'backport') {
     throw new HandledError(
       'You must delete the branch "backport" to continue. See https://github.com/sqren/backport/issues/155 for details'
     );
   }
 
   const remoteConfig =
-    repo?.defaultBranchRef.target.jsonConfigFile.edges[0]?.config;
+    repo.defaultBranchRef.target.jsonConfigFile.edges[0]?.config;
   const remoteConfigFile = await getRemoteConfigFile(options, remoteConfig);
-  const defaultBranch = repo?.defaultBranchRef.name;
-  const sourceBranch = getSourceBranch(
-    defaultBranch,
-    options,
-    remoteConfigFile
-  );
-  logger.info(`Using Sourcebranch: "${sourceBranch}"`);
+  const defaultBranch = repo.defaultBranchRef.name;
+
+  // if no sourceBranch is given, use the `defaultBranch` (normally "master")
+  const sourceBranch = options.sourceBranch
+    ? options.sourceBranch
+    : defaultBranch;
 
   return {
-    ...remoteConfigFile,
     sourceBranch,
+    ...remoteConfigFile,
   };
-}
-
-function getSourceBranch(
-  defaultBranch: string | undefined,
-  options: ConfigOptions,
-  remoteConfigFile?: ConfigOptions
-) {
-  const sourceBranch = options.sourceBranch ?? remoteConfigFile?.sourceBranch;
-
-  // `sourceBranch` has already been specified via config file or cli
-  if (sourceBranch) {
-    return sourceBranch;
-  }
-
-  // use the default branch (normally "master" or "main") as source branch
-  return defaultBranch;
 }
 
 async function getRemoteConfigFile(
