@@ -20,19 +20,19 @@ export type Logger = typeof logger;
 
 export const logger = {
   error: (message: string, meta?: unknown) => {
-    winstonInstance.error(message, null, meta);
+    winstonInstance.error(message, null, { meta });
   },
   warn: (message: string, meta?: unknown) => {
-    winstonInstance.warn(message, null, meta);
+    winstonInstance.warn(message, null, { meta });
   },
   info: (message: string, meta?: unknown) => {
-    winstonInstance.info(message, null, meta);
+    winstonInstance.info(message, null, { meta });
   },
   verbose: (message: string, meta?: unknown) => {
-    winstonInstance.verbose(message, null, meta);
+    winstonInstance.verbose(message, null, { meta });
   },
   debug: (message: string, meta?: unknown) => {
-    winstonInstance.debug(message, null, meta);
+    winstonInstance.debug(message, null, { meta });
   },
 };
 
@@ -73,20 +73,22 @@ export function initLogger() {
 
           format.printf((info) => {
             // format without metadata
-            if (!info.metadata) {
+            if (!info.metadata.meta) {
               return redact(`${info.timestamp}: ${info.message}`);
             }
 
             // format when metadata is a string
-            if (isString(info.metadata)) {
+            if (isString(info.metadata.meta)) {
               return redact(
-                `${info.timestamp}: ${info.message}\n${dedent(info.metadata)}\n`
+                `${info.timestamp}: ${info.message}\n${dedent(
+                  info.metadata.meta
+                )}\n`
               );
             }
 
-            if (info.metadata.stack) {
+            if (info.metadata.meta.stack) {
               return redact(
-                `${info.timestamp}: ${info.message}\n${info.metadata.stack}\n`
+                `${info.timestamp}: ${info.message}\n${info.metadata.meta.stack}\n`
               );
             }
 
@@ -94,7 +96,7 @@ export function initLogger() {
 
             return redact(
               `${info.timestamp}: ${info.message}\n${safeJsonStringify(
-                info.metadata,
+                info.metadata.meta,
                 null,
                 2
               )}\n`
