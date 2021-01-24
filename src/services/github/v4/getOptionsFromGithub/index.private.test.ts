@@ -30,7 +30,7 @@ describe('getOptionsFromGithub', () => {
     });
 
     describe('is valid', () => {
-      it('returns the default branch', async () => {
+      it('returns the options', async () => {
         const optionsFromConfigFiles = {
           username: 'sqren',
           accessToken: devAccessToken,
