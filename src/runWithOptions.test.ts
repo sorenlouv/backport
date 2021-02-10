@@ -33,6 +33,8 @@ describe('runWithOptions', () => {
       author: 'sqren',
       autoAssign: false,
       autoFixConflicts: undefined,
+      autoMerge: undefined,
+      autoMergeMethod: undefined,
       branchLabelMapping: undefined,
       ci: false,
       dryRun: false,
