@@ -71,7 +71,10 @@ export async function enablePullRequestAutoMerge(options: ValidConfigOptions) {
     githubApiBaseUrlV4,
     accessToken,
     query,
-    variables: { pullRequestId, mergeMethod: autoMergeMethod.toUpperCase() },
+    variables: {
+      pullRequestId,
+      mergeMethod: (autoMergeMethod || 'merge').toUpperCase(),
+    },
   });
 
   return res.enablePullRequestAutoMerge.pullRequest.number;

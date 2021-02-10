@@ -52,10 +52,10 @@ export function getOptionsFromCliArgs(
     })
 
     .option('autoMergeMethod', {
-      description: 'Sets auto-merge method when using --auto-merge',
+      description:
+        'Sets auto-merge method when using --auto-merge. Default: merge',
       type: 'string',
       choices: ['merge', 'rebase', 'squash'],
-      default: 'merge',
     })
 
     .option('ci', {
