@@ -73,7 +73,7 @@ export async function enablePullRequestAutoMerge(options: ValidConfigOptions) {
     query,
     variables: {
       pullRequestId,
-      mergeMethod: (autoMergeMethod || 'merge').toUpperCase(),
+      mergeMethod: autoMergeMethod.toUpperCase(),
     },
   });
 
