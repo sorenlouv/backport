@@ -8,17 +8,16 @@ export interface PullRequestResponse {
 }
 
 export interface PullRequestAutoMergeResponse {
-  enablePullRequestAutoMerge: { pullRequest?: { number: number } };
+  disablePullRequestAutoMerge: { pullRequest?: { number: number } };
 }
 
-export async function enablePullRequestAutoMerge(options: ValidConfigOptions) {
+export async function disablePullRequestAutoMerge(options: ValidConfigOptions) {
   const {
     accessToken,
     githubApiBaseUrlV4,
     pullNumber,
     repoName,
     repoOwner,
-    autoMergeMethod,
   } = options;
 
   if (!pullNumber) {
@@ -53,13 +52,8 @@ export async function enablePullRequestAutoMerge(options: ValidConfigOptions) {
   const pullRequestId = prResponse.repository.pullRequest.id;
 
   const query = /* GraphQL */ `
-    mutation EnablePullRequestAutoMerge(
-      $pullRequestId: ID!
-      $mergeMethod: PullRequestMergeMethod!
-    ) {
-      enablePullRequestAutoMerge(
-        input: { pullRequestId: $pullRequestId, mergeMethod: $mergeMethod }
-      ) {
+    mutation DisablePullRequestAutoMerge($pullRequestId: ID!) {
+      disablePullRequestAutoMerge(input: { pullRequestId: $pullRequestId }) {
         pullRequest {
           number
         }
@@ -73,9 +67,8 @@ export async function enablePullRequestAutoMerge(options: ValidConfigOptions) {
     query,
     variables: {
       pullRequestId,
-      mergeMethod: autoMergeMethod.toUpperCase(),
     },
   });
 
-  return res.enablePullRequestAutoMerge.pullRequest?.number;
+  return res.disablePullRequestAutoMerge.pullRequest?.number;
 }
