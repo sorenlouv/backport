@@ -79,7 +79,7 @@ export function handleGithubV4Error(e: AxiosError<GithubV4Response<unknown>>) {
   const errorMessages = e.response.data.errors?.map((error) => error.message);
   if (errorMessages) {
     return new HandledError(
-      `Unhandled Github (v4) error: ${errorMessages.join(', ')}`
+      `${errorMessages.join(', ')} (Unhandled Github v4 error)`
     );
   }
 
