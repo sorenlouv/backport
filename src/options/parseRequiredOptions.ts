@@ -31,12 +31,7 @@ export function parseRequiredOptions(
   } as OptionsFromCliArgs & OptionsFromConfigFiles & OptionsFromGithub;
 
   // ensure `targetBranches` or `targetBranchChoices` are given
-  if (
-    isEmpty(options.targetBranches) &&
-    isEmpty(options.targetBranchChoices) &&
-    // this is primarily necessary on CI where `targetBranches` and `targetBranchChoices` and not given
-    isEmpty(options.branchLabelMapping)
-  ) {
+  if (isEmpty(options.targetBranches) && isEmpty(options.targetBranchChoices)) {
     throw new HandledError(
       `You must specify a target branch\n\nYou can specify it via either:\n - Config file (recommended): ".backportrc.json". Read more: ${PROJECT_CONFIG_DOCS_LINK}\n - CLI: "--branch 6.1"`
     );
@@ -77,10 +72,7 @@ function getTargetBranchChoicesAsObject(
 ): BranchChoice[] {
   return targetBranchChoices.map((choice) => {
     if (isString(choice)) {
-      return {
-        name: choice,
-        checked: false,
-      };
+      return { name: choice };
     }
 
     return choice;

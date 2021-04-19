@@ -1,9 +1,10 @@
 import { Logger } from '../services/logger';
 
-export interface BranchChoice {
+export type BranchChoice = {
   name: string;
   checked?: boolean;
-}
+  sourcePRLabels?: string[];
+};
 export type BranchChoiceRaw = string | BranchChoice;
 
 type AutoFixConflictsHandler = ({
@@ -27,7 +28,6 @@ export type ConfigOptions = Partial<{
   autoMerge: boolean;
   autoMergeMethod: string;
   autoFixConflicts: AutoFixConflictsHandler;
-  branchLabelMapping: Record<string, string>;
   ci: boolean;
   editor: string;
   forceLocalConfig: boolean;

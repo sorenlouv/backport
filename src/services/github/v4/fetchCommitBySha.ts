@@ -16,7 +16,6 @@ import {
   getExistingTargetPullRequests,
   getPullRequestLabels,
 } from './getExistingTargetPullRequests';
-import { getTargetBranchesFromLabels } from './getTargetBranchesFromLabels';
 
 export async function fetchCommitBySha(
   options: ValidConfigOptions & { sha: string }
@@ -96,18 +95,9 @@ export async function fetchCommitBySha(
     pullRequestNode
   );
 
-  const targetBranchesFromLabels = pullRequestNode
-    ? getTargetBranchesFromLabels({
-        sourceBranch: pullRequestNode.baseRefName,
-        existingTargetPullRequests,
-        branchLabelMapping: options.branchLabelMapping,
-        labels: getPullRequestLabels(pullRequestNode),
-      })
-    : [];
-
   return {
     sourceBranch,
-    targetBranchesFromLabels,
+    sourcePRLabels: getPullRequestLabels(pullRequestNode),
     sha,
     formattedMessage,
     originalMessage: commitMessage,

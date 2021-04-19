@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`parseRequiredOptions should throw when \`targetBranches\`, \`targetBranchChoices\` and \`branchLabelMapping\` are all empty 1`] = `
+exports[`parseRequiredOptions should throw when \`targetBranches\` and \`targetBranchChoices\` are empty 1`] = `
 "You must specify a target branch
 
 You can specify it via either:

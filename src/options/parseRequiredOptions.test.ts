@@ -31,7 +31,7 @@ describe('parseRequiredOptions', () => {
         parseRequiredOptions(
           {
             ...optionsFromConfigFiles,
-            targetBranchChoices: [{ name: 'branchA' }],
+            targetBranchChoices: [{ name: 'branchA', checked: true }],
             targetBranches: [],
           },
           optionsFromCliArgs,
@@ -70,7 +70,7 @@ describe('parseRequiredOptions', () => {
     });
 
     describe('targetBranchChoices', () => {
-      it('should convert primitives', () => {
+      it('should convert string choices to objects', () => {
         const options = parseRequiredOptions(
           {
             ...optionsFromConfigFiles,
@@ -80,8 +80,8 @@ describe('parseRequiredOptions', () => {
           optionsFromGithub
         );
         expect(options.targetBranchChoices).toEqual([
-          { name: 'choice 1', checked: false },
-          { name: 'choice 2', checked: false },
+          { name: 'choice 1' },
+          { name: 'choice 2' },
         ]);
       });
 
@@ -132,14 +132,13 @@ describe('parseRequiredOptions', () => {
       ).toThrowErrorMatchingSnapshot();
     });
 
-    it('when `targetBranches`, `targetBranchChoices` and `branchLabelMapping` are all empty', () => {
+    it('when `targetBranches` and `targetBranchChoices` are empty', () => {
       expect(() =>
         parseRequiredOptions(
           {
             ...optionsFromConfigFiles,
             targetBranchChoices: [],
             targetBranches: [],
-            branchLabelMapping: {},
           },
           optionsFromCliArgs,
           optionsFromGithub

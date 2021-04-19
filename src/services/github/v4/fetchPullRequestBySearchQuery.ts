@@ -12,7 +12,6 @@ import {
   getExistingTargetPullRequests,
   getPullRequestLabels,
 } from './getExistingTargetPullRequests';
-import { getTargetBranchesFromLabels } from './getTargetBranchesFromLabels';
 
 export async function fetchPullRequestBySearchQuery(
   options: ValidConfigOptions
@@ -83,16 +82,9 @@ export async function fetchPullRequestBySearchQuery(
       pullRequestNode
     );
 
-    const targetBranchesFromLabels = getTargetBranchesFromLabels({
-      sourceBranch: pullRequestNode.baseRefName,
-      existingTargetPullRequests,
-      branchLabelMapping: options.branchLabelMapping,
-      labels: getPullRequestLabels(pullRequestNode),
-    });
-
     const choice: Commit = {
       sourceBranch,
-      targetBranchesFromLabels,
+      sourcePRLabels: getPullRequestLabels(pullRequestNode),
       sha,
       formattedMessage,
       originalMessage: commitMessage,

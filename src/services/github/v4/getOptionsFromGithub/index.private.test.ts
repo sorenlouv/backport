@@ -42,11 +42,6 @@ describe('getOptionsFromGithub', () => {
         expect(
           await getOptionsFromGithub(optionsFromConfigFiles, optionsFromCliArgs)
         ).toEqual({
-          branchLabelMapping: {
-            '^v(\\d+).(\\d+).\\d+$': '$1.$2',
-            '^v7.9.0$': '7.x',
-            '^v8.0.0$': 'master',
-          },
           sourceBranch: 'master',
           targetBranchChoices: [
             { checked: true, name: 'master' },

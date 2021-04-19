@@ -63,7 +63,7 @@ describe('fetchCommitsByAuthor', () => {
           formattedMessage: 'Add 👻 (2e63475c)',
           originalMessage: 'Add 👻',
           existingTargetPullRequests: [],
-          targetBranchesFromLabels: [],
+          sourcePRLabels: [],
           sourceBranch: 'master',
         },
         {
@@ -72,7 +72,7 @@ describe('fetchCommitsByAuthor', () => {
           originalMessage: 'Add witch (#85)',
           pullNumber: 85,
           existingTargetPullRequests: [],
-          targetBranchesFromLabels: [],
+          sourcePRLabels: ['my-label-b'],
           sourceBranch: 'master',
         },
         {
@@ -84,7 +84,7 @@ describe('fetchCommitsByAuthor', () => {
           existingTargetPullRequests: [
             { branch: '6.3', state: 'MERGED', number: 99 },
           ],
-          targetBranchesFromLabels: [],
+          sourcePRLabels: ['my-label-a'],
           sourceBranch: 'master',
         },
         {
@@ -92,7 +92,7 @@ describe('fetchCommitsByAuthor', () => {
           formattedMessage: 'Add backport config (3827bbba)',
           originalMessage: 'Add backport config',
           existingTargetPullRequests: [],
-          targetBranchesFromLabels: [],
+          sourcePRLabels: [],
           sourceBranch: 'master',
         },
         {
@@ -100,7 +100,7 @@ describe('fetchCommitsByAuthor', () => {
           formattedMessage: 'Initial commit (5ea0da55)',
           originalMessage: 'Initial commit',
           existingTargetPullRequests: [],
-          targetBranchesFromLabels: [],
+          sourcePRLabels: [],
           sourceBranch: 'master',
         },
       ];
@@ -130,7 +130,7 @@ describe('fetchCommitsByAuthor', () => {
           pullNumber: 80,
           sha: '79cf18453ec32a4677009dcbab1c9c8c73fc14fe',
           sourceBranch: 'master',
-          targetBranchesFromLabels: [],
+          sourcePRLabels: ['my-label-a'],
         },
       ];
       expect(res).toEqual(expectedCommits);
@@ -147,7 +147,7 @@ describe('fetchCommitsByAuthor', () => {
           pullNumber: 80,
           sha: '79cf18453ec32a4677009dcbab1c9c8c73fc14fe',
           sourceBranch: 'master',
-          targetBranchesFromLabels: [],
+          sourcePRLabels: ['my-label-a'],
         },
       ];
       expect(res).toEqual(expectedCommits);

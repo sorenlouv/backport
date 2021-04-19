@@ -110,6 +110,7 @@ Config:
 ```
 
 ## General configuration options
+
 The following options can be used in both the global config, project config, and passed in through CLI.
 
 #### `all`
@@ -147,23 +148,6 @@ Config:
 ```json
 {
   "autoAssign": true
-}
-```
-
-#### `branchLabelMapping`
-
-Pre-select target branch choices based on the source PR labels.
-
-CLI: N/A
-
-Config:
-
-```json
-{
-  "branchLabelMapping": {
-    "^v7.8.0$": "7.x",
-    "^v(\\d+).(\\d+).\\d+$": "$1.$2"
-  }
 }
 ```
 

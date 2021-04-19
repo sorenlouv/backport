@@ -35,7 +35,6 @@ describe('runWithOptions', () => {
       autoFixConflicts: undefined,
       autoMerge: false,
       autoMergeMethod: 'merge',
-      branchLabelMapping: undefined,
       ci: false,
       dryRun: false,
       editor: 'code',

@@ -53,7 +53,7 @@ describe('fetchPullRequestBySearchQuery', () => {
           pullNumber: 9,
           sha: 'eebf165c82a4b718d95c11b3877e365b1949ff28',
           sourceBranch: 'master',
-          targetBranchesFromLabels: [],
+          sourcePRLabels: ['v7.8.0'],
         },
         {
           existingTargetPullRequests: [
@@ -65,7 +65,7 @@ describe('fetchPullRequestBySearchQuery', () => {
           pullNumber: 5,
           sha: 'ee8c492334cef1ca077a56addb79a26f79821d2f',
           sourceBranch: 'master',
-          targetBranchesFromLabels: [],
+          sourcePRLabels: ['v7.8.0', 'v7.9.0', 'v8.0.0'],
         },
       ]);
     });

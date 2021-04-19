@@ -16,7 +16,6 @@ import {
   getExistingTargetPullRequests,
   getPullRequestLabels,
 } from './getExistingTargetPullRequests';
-import { getTargetBranchesFromLabels } from './getTargetBranchesFromLabels';
 
 export async function fetchCommitsByAuthor(
   options: ValidConfigOptions
@@ -111,6 +110,7 @@ export async function fetchCommitsByAuthor(
     // it is assumed that there can only be a single PR associated with a commit
     // that assumption might not hold true forever but for now it works out
     const pullRequestNode = edge.node.associatedPullRequests.edges[0]?.node;
+    const sourcePRLabels = getPullRequestLabels(pullRequestNode);
 
     // the source pull request for the commit cannot be retrieved
     // This happens if the commits was pushed directly to a branch (not merging via a PR)
@@ -124,7 +124,7 @@ export async function fetchCommitsByAuthor(
 
       return {
         sourceBranch,
-        targetBranchesFromLabels: [],
+        sourcePRLabels,
         sha,
         formattedMessage,
         originalMessage: commitMessage,
@@ -144,16 +144,9 @@ export async function fetchCommitsByAuthor(
       pullRequestNode
     );
 
-    const targetBranchesFromLabels = getTargetBranchesFromLabels({
-      sourceBranch: pullRequestNode.baseRefName,
-      existingTargetPullRequests,
-      branchLabelMapping: options.branchLabelMapping,
-      labels: getPullRequestLabels(pullRequestNode),
-    });
-
     return {
       sourceBranch,
-      targetBranchesFromLabels,
+      sourcePRLabels,
       sha,
       formattedMessage,
       originalMessage: commitMessage,

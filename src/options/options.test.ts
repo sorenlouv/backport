@@ -129,10 +129,7 @@ describe('getOptions', () => {
       resetAuthor: false,
       sourceBranch: 'some-branch-name',
       sourcePRLabels: [],
-      targetBranchChoices: [
-        { checked: false, name: '6.0' },
-        { checked: false, name: '5.9' },
-      ],
+      targetBranchChoices: [{ name: '6.0' }, { name: '5.9' }],
       targetBranches: ['6.0', '6.1'],
       targetPRLabels: [],
       upstream: 'elastic/kibana',

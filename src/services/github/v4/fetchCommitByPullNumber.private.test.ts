@@ -25,7 +25,7 @@ describe('fetchCommitByPullNumber', () => {
         pullNumber: 5,
         sha: 'ee8c492334cef1ca077a56addb79a26f79821d2f',
         sourceBranch: 'master',
-        targetBranchesFromLabels: [],
+        sourcePRLabels: ['v7.8.0', 'v7.9.0', 'v8.0.0'],
         existingTargetPullRequests: [
           { branch: '7.x', state: 'MERGED', number: 6 },
           { branch: '7.8', state: 'MERGED', number: 7 },

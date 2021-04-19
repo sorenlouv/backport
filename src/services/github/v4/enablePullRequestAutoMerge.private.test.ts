@@ -51,7 +51,8 @@ describe.skip('enablePullRequestAutoMerge', () => {
     expect(autoMergeMethod).toBe('MERGE');
   });
 
-  it('should enable auto-merge via rebase', async () => {
+  // Repo settings: https://github.com/backport-org/repo-with-auto-merge-enabled/settings
+  it('should not be possible to enable auto-merge via rebase because it is disabled in repo settings', async () => {
     await enablePullRequestAutoMerge(
       { ...options, autoMergeMethod: 'rebase' },
       TEST_PULL_NUMBER
@@ -64,7 +65,7 @@ describe.skip('enablePullRequestAutoMerge', () => {
       options,
       TEST_PULL_NUMBER
     );
-    expect(autoMergeMethod).toBe('REBASE');
+    expect(autoMergeMethod).toBe(undefined);
   });
 
   it('should enable auto-merge via squash', async () => {

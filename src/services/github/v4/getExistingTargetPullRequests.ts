@@ -110,7 +110,7 @@ interface CommitEdge {
 }
 
 export function getPullRequestLabels(pullRequestNode?: PullRequestNode) {
-  return pullRequestNode?.labels.nodes.map((label) => label.name);
+  return pullRequestNode?.labels.nodes.map((label) => label.name) ?? [];
 }
 
 export type ExistingTargetPullRequests = ReturnType<

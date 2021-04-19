@@ -2,7 +2,7 @@ import { ExistingTargetPullRequests } from '../services/github/v4/getExistingTar
 
 export interface Commit {
   sourceBranch: string;
-  targetBranchesFromLabels: string[];
+  sourcePRLabels?: string[];
   sha: string;
   formattedMessage: string;
   originalMessage: string;
