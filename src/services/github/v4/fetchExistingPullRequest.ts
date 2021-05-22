@@ -47,7 +47,7 @@ export async function fetchExistingPullRequest({
     query,
     variables: {
       repoOwner: repoForkOwner,
-      repoName: prPayload.repo,
+      repoName: options.repoName,
       base: prPayload.base,
       head: head,
     },

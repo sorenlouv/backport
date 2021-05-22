@@ -12,13 +12,13 @@ describe('fetchExistingPullRequest', () => {
   describe('when PR does not exist', () => {
     it('returns undefined', async () => {
       const options = {
+        repoOwner: 'backport-org',
+        repoName: 'backport-e2e',
         accessToken: devAccessToken,
         githubApiBaseUrlV4: 'https://api.github.com/graphql',
       } as ValidConfigOptions;
 
       const prPayload = {
-        owner: 'backport-org',
-        repo: 'backport-e2e',
         title: 'My PR title',
         body: 'My PR body',
         head: 'sqren:backport/7.8/pr-foo',
@@ -34,13 +34,13 @@ describe('fetchExistingPullRequest', () => {
   describe('when PR exists', () => {
     it('returns the PR number and url', async () => {
       const options = {
+        repoOwner: 'backport-org',
+        repoName: 'backport-e2e',
         accessToken: devAccessToken,
         githubApiBaseUrlV4: 'https://api.github.com/graphql',
       } as ValidConfigOptions;
 
       const prPayload = {
-        owner: 'backport-org',
-        repo: 'backport-e2e',
         title: 'My PR title',
         body: 'My PR body',
         head: 'sqren:backport/7.8/pr-9',

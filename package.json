@@ -33,7 +33,7 @@
     "prepublishOnly": "tsc --project ./tsconfig.prod.json",
     "test": "jest",
     "test-private": "jest --config ./jest.config.private.js",
-    "test-all": "yarn lint && jest --config ./jest.config.all.js",
+    "test-all": "yarn lint && jest --config ./jest.config.all.js --all",
     "start": "ts-node --transpile-only ./src/entrypoint.cli.ts"
   },
   "lint-staged": {
@@ -115,7 +115,7 @@
     "lodash": "^4.17.21",
     "nock": "^13.0.11",
     "prettier": "^2.2.0",
-    "strip-ansi": "^7.0.0",
+    "strip-ansi": "^6.0.0",
     "ts-jest": "^26.5.6",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4"

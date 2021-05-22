@@ -1,100 +1,101 @@
-import nock from 'nock';
+import nock, { RequestBodyMatcher } from 'nock';
 import ora from 'ora';
+import { TargetBranchChoice } from '../options/ConfigOptions';
 import { ValidConfigOptions } from '../options/options';
 import * as childProcess from '../services/child-process-promisified';
 import * as logger from '../services/logger';
 import * as prompts from '../services/prompts';
 import { ExecError } from '../test/ExecError';
-import { Commit } from '../types/Commit';
 import { PromiseReturnType } from '../types/PromiseReturnType';
 import { SpyHelper } from '../types/SpyHelper';
 import { cherrypickAndCreateTargetPullRequest } from './cherrypickAndCreateTargetPullRequest';
 
 describe('cherrypickAndCreateTargetPullRequest', () => {
-  let execSpy: SpyHelper<typeof childProcess.exec>;
-  let addLabelsScope: ReturnType<typeof nock>;
   let consoleLogSpy: SpyHelper<typeof logger['consoleLog']>;
 
   beforeEach(() => {
-    execSpy = jest
-      .spyOn(childProcess, 'exec')
-
-      // mock all exec commands to respond without errors
-      .mockResolvedValue({ stdout: '', stderr: '' });
-
     consoleLogSpy = jest.spyOn(logger, 'consoleLog');
-
-    // ensure labels are added
-    addLabelsScope = nock('https://api.github.com')
-      .post('/repos/elastic/kibana/issues/1337/labels', {
-        labels: ['backport'],
-      })
-      .reply(200);
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
-    addLabelsScope.done();
-    nock.cleanAll();
+    consoleLogSpy.mockClear();
   });
 
   describe('when commit has a pull request reference', () => {
     let res: PromiseReturnType<typeof cherrypickAndCreateTargetPullRequest>;
+    let execSpy: SpyHelper<typeof childProcess.exec>;
 
     beforeEach(async () => {
-      const options = {
-        assignees: [] as string[],
-        githubApiBaseUrlV3: 'https://api.github.com',
-        fork: true,
-        targetPRLabels: ['backport'],
-        prDescription: 'myPrSuffix',
-        prTitle: '[{targetBranch}] {commitMessages}',
-        repoName: 'kibana',
-        repoOwner: 'elastic',
-        username: 'sqren',
-        sourceBranch: 'myDefaultSourceBranch',
-        sourcePRLabels: [] as string[],
-      } as ValidConfigOptions;
+      execSpy = jest
+        .spyOn(childProcess, 'exec')
 
-      const commits: Commit[] = [
-        {
-          sourceBranch: '7.x',
-          sha: 'mySha',
-          formattedMessage: 'myCommitMessage (#1000)',
-          originalMessage: 'My original commit message',
-          pullNumber: 1000,
-          sourcePRLabels: [],
-          existingTargetPullRequests: [],
-        },
-        {
-          sourceBranch: '7.x',
-          sha: 'mySha2',
-          formattedMessage: 'myOtherCommitMessage (#2000)',
-          originalMessage: 'My original commit message',
-          pullNumber: 2000,
-          sourcePRLabels: [],
-          existingTargetPullRequests: [],
-        },
-      ];
+        // mock all exec commands to respond without errors
+        .mockResolvedValue({ stdout: '', stderr: '' });
 
-      const scope = nock('https://api.github.com')
-        .post('/repos/elastic/kibana/pulls', {
-          title: '[6.x] myCommitMessage (#1000) | myOtherCommitMessage (#2000)',
-          head: 'sqren:backport/6.x/pr-1000_pr-2000',
-          base: '6.x',
-          body:
-            'Backports the following commits to 6.x:\n - myCommitMessage (#1000)\n - myOtherCommitMessage (#2000)\n\nmyPrSuffix',
+      // ensure labels are added
+      const addLabelsScope = nock('https://api.github.com')
+        .post('/repos/elastic/kibana/issues/1337/labels', {
+          labels: ['backport'],
         })
-        .reply(200, { number: 1337, html_url: 'myHtmlUrl' });
+        .reply(200);
+
+      const createPullRequestScope = mockCreatePullRequestCall({
+        title: '[6.x] myCommitMessage (#1000) | myOtherCommitMessage (#2000)',
+        head: 'sqren:backport/6.x/pr-1000_pr-2000',
+        base: '6.x',
+        body:
+          'Backports the following commits to 6.x:\n - myCommitMessage (#1000)\n - myOtherCommitMessage (#2000)\n\nmyPrSuffix',
+      });
 
       res = await cherrypickAndCreateTargetPullRequest({
-        options,
-        commits,
+        options: {
+          assignees: [] as string[],
+          githubApiBaseUrlV3: 'https://api.github.com',
+          fork: true,
+          targetPRLabels: ['backport'],
+          prDescription: 'myPrSuffix',
+          prTitle: '[{targetBranch}] {commitMessages}',
+          repoName: 'kibana',
+          repoOwner: 'elastic',
+          username: 'sqren',
+          sourceBranch: 'myDefaultSourceBranch',
+          sourcePRLabels: [] as string[],
+          targetBranchChoices: [] as TargetBranchChoice[],
+        } as ValidConfigOptions,
+        commits: [
+          {
+            sourceBranch: '7.x',
+            sha: 'mySha',
+            formattedMessage: 'myCommitMessage (#1000)',
+            originalMessage: 'My original commit message',
+            pullNumber: 1000,
+            sourcePRLabels: [],
+            existingTargetPullRequests: [],
+          },
+          {
+            sourceBranch: '7.x',
+            sha: 'mySha2',
+            formattedMessage: 'myOtherCommitMessage (#2000)',
+            originalMessage: 'My original commit message',
+            pullNumber: 2000,
+            sourcePRLabels: [],
+            existingTargetPullRequests: [],
+          },
+        ],
         targetBranch: '6.x',
       });
 
-      scope.done();
-      nock.cleanAll();
+      // ensure pull request is created
+      createPullRequestScope.done();
+
+      // ensure labels are added
+      addLabelsScope.done();
+    });
+
+    afterEach(() => {
+      execSpy.mockClear();
+      //@ts-expect-error
+      ora.mockClear();
     });
 
     it('returns the expected response', () => {
@@ -145,17 +146,16 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         repoOwner: 'elastic',
         username: 'sqren',
         sourcePRLabels: [] as string[],
+        targetBranchChoices: [] as TargetBranchChoice[],
       } as ValidConfigOptions;
 
-      const scope = nock('https://api.github.com')
-        .post('/repos/elastic/kibana/pulls', {
-          title: '[6.x] myCommitMessage (mySha)',
-          head: 'sqren:backport/6.x/commit-mySha',
-          base: '6.x',
-          body:
-            'Backports the following commits to 6.x:\n - myCommitMessage (mySha)',
-        })
-        .reply(200, { number: 1337, html_url: 'myHtmlUrl' });
+      const scope = mockCreatePullRequestCall({
+        title: '[6.x] myCommitMessage (mySha)',
+        head: 'sqren:backport/6.x/commit-mySha',
+        base: '6.x',
+        body:
+          'Backports the following commits to 6.x:\n - myCommitMessage (mySha)',
+      });
 
       res = await cherrypickAndCreateTargetPullRequest({
         options,
@@ -171,8 +171,8 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         ],
         targetBranch: '6.x',
       });
+
       scope.done();
-      nock.cleanAll();
     });
 
     it('returns the expected response', () => {
@@ -199,16 +199,16 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         username: 'sqren',
         sourceBranch: 'myDefaultSourceBranch',
         sourcePRLabels: [] as string[],
+        targetBranchChoices: [] as TargetBranchChoice[],
       } as ValidConfigOptions;
 
-      const scope = nock('https://api.github.com')
-        .post('/repos/elastic/kibana/pulls', {
-          title: '[6.x] myCommitMessage',
-          head: 'sqren:backport/6.x/commit-mySha',
-          base: '6.x',
-          body: 'Backports the following commits to 6.x:\n - myCommitMessage',
-        })
-        .reply(200, { html_url: 'myHtmlUrl', number: 1337 });
+      const scope = mockCreatePullRequestCall({
+        title: '[6.x] myCommitMessage (mySha)',
+        head: 'sqren:backport/6.x/commit-mySha',
+        base: '6.x',
+        body:
+          'Backports the following commits to 6.x:\n - myCommitMessage (mySha)',
+      });
 
       res = await cherrypickAndCreateTargetPullRequest({
         options,
@@ -216,7 +216,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
           {
             sourceBranch: '7.x',
             sha: 'mySha',
-            formattedMessage: 'myCommitMessage',
+            formattedMessage: 'myCommitMessage (mySha)',
             originalMessage: 'My original commit message',
             sourcePRLabels: [],
             existingTargetPullRequests: [],
@@ -226,7 +226,13 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
       });
 
       scope.done();
-      nock.cleanAll();
+    });
+
+    afterEach(() => {
+      promptSpy.mockClear();
+      execSpy.mockClear();
+      //@ts-expect-error
+      ora.mockClear();
     });
 
     it('creates pull request', () => {
@@ -276,7 +282,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         .toMatchInlineSnapshot(`
         Array [
           "Pulling latest changes",
-          "Cherry-picking: myCommitMessage",
+          "Cherry-picking: myCommitMessage (mySha)",
           "Finalizing cherrypick",
           "Pushing branch \\"sqren:backport/6.x/commit-mySha\\"",
           undefined,
@@ -375,4 +381,10 @@ function setupExecSpy() {
 
       throw new Error(`Missing mock for "${cmd}"`);
     });
+}
+
+function mockCreatePullRequestCall(body: RequestBodyMatcher) {
+  return nock('https://api.github.com')
+    .post('/repos/elastic/kibana/pulls', body)
+    .reply(200, { html_url: 'myHtmlUrl', number: 1337 });
 }

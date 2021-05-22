@@ -9,13 +9,10 @@ import { fetchExistingPullRequest } from '../v4/fetchExistingPullRequest';
 import { getGithubV3ErrorMessage } from './getGithubV3ErrorMessage';
 
 export interface PullRequestPayload {
-  owner: string;
-  repo: string;
   title: string;
   body: string;
   head: string;
   base: string;
-  [key: string]: unknown;
 }
 
 export async function createPullRequest({
@@ -51,7 +48,11 @@ export async function createPullRequest({
       log: logger,
     });
 
-    const res = await octokit.pulls.create(prPayload);
+    const res = await octokit.pulls.create({
+      owner: options.repoOwner,
+      repo: options.repoName,
+      ...prPayload,
+    });
 
     spinner.succeed();
 
@@ -62,10 +63,7 @@ export async function createPullRequest({
   } catch (e) {
     // retrieve url for existing
     try {
-      const existingPR = await fetchExistingPullRequest({
-        options,
-        prPayload,
-      });
+      const existingPR = await fetchExistingPullRequest({ options, prPayload });
 
       if (existingPR) {
         spinner.succeed('Updating existing pull request');

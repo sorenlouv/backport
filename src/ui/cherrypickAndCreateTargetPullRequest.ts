@@ -46,8 +46,6 @@ export async function cherrypickAndCreateTargetPullRequest({
   consoleLog(`\n${chalk.bold(`Backporting to ${targetBranch}:`)}`);
 
   const prPayload: PullRequestPayload = {
-    owner: options.repoOwner,
-    repo: options.repoName,
     title: getTitle({ options, commits, targetBranch }),
     body: getBody({ options, commits, targetBranch }),
     head: `${repoForkOwner}:${backportBranch}`, // eg. sqren:backport/7.x/pr-75007
@@ -80,23 +78,29 @@ export async function cherrypickAndCreateTargetPullRequest({
     );
   }
 
+  const targetBranchChoice = options.targetBranchChoices.find(
+    (choice) => choice.name === targetBranch
+  );
+
+  // add labels to source pull requests
+  const promises = commits.map((commit) => {
+    const labels = [
+      // labels applicable to any target branch
+      ...options.sourcePRLabels,
+
+      // target branch specific labels
+      ...(targetBranchChoice?.sourcePRLabels ?? []),
+    ];
+
+    if (commit.pullNumber && labels.length > 0) {
+      return addLabelsToPullRequest(options, commit.pullNumber, labels);
+    }
+  });
+  await Promise.all(promises);
+
   // make PR auto mergable
   if (options.autoMerge) {
     await enablePullRequestAutoMerge(options, targetPullRequest.number);
-  }
-
-  // add labels to source pull requests
-  if (options.sourcePRLabels.length > 0) {
-    const promises = commits.map((commit) => {
-      if (commit.pullNumber) {
-        return addLabelsToPullRequest(
-          options,
-          commit.pullNumber,
-          options.sourcePRLabels
-        );
-      }
-    });
-    await Promise.all(promises);
   }
 
   consoleLog(`View pull request: ${targetPullRequest.url}`);

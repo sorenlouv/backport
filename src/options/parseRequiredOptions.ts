@@ -3,7 +3,11 @@ import isString from 'lodash.isstring';
 import { HandledError } from '../services/HandledError';
 import { getGlobalConfigPath } from '../services/env';
 import { OptionsFromGithub } from '../services/github/v4/getOptionsFromGithub';
-import { BranchChoiceRaw, BranchChoice, ConfigOptions } from './ConfigOptions';
+import {
+  TargetBranchChoiceOrString,
+  TargetBranchChoice,
+  ConfigOptions,
+} from './ConfigOptions';
 import { OptionsFromCliArgs } from './cliArgs';
 import { OptionsFromConfigFiles } from './config/config';
 
@@ -68,8 +72,8 @@ export function parseRequiredOptions(
 // `branches` can either be a string or an object.
 // It must be transformed so it is always treated as an object troughout the application
 function getTargetBranchChoicesAsObject(
-  targetBranchChoices: BranchChoiceRaw[]
-): BranchChoice[] {
+  targetBranchChoices: TargetBranchChoiceOrString[]
+): TargetBranchChoice[] {
   return targetBranchChoices.map((choice) => {
     if (isString(choice)) {
       return { name: choice };
