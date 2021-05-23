@@ -30,7 +30,11 @@ describe('getOptionsFromGithub', () => {
     });
 
     describe('is valid', () => {
-      it('returns the options', async () => {
+      // skip test until the following file has been updated:
+      // https://github.com/backport-org/backport-e2e/blob/master/.backportrc.json
+      //
+      // eslint-disable-next-line jest/no-disabled-tests
+      it.skip('returns the options', async () => {
         const optionsFromConfigFiles = {
           username: 'sqren',
           accessToken: devAccessToken,
@@ -44,9 +48,9 @@ describe('getOptionsFromGithub', () => {
         ).toEqual({
           sourceBranch: 'master',
           targetBranchChoices: [
-            { checked: true, name: 'master' },
-            { checked: true, name: '7.x' },
-            '7.8',
+            { name: 'master', sourcePRLabels: ['8.0.0'] },
+            { name: '7.x', sourcePRLabels: ['7.9.*'] },
+            { name: '7.8', sourcePRLabels: ['7.8.*'] },
           ],
           targetPRLabels: ['backport'],
           upstream: 'backport-org/backport-e2e',

@@ -37,17 +37,17 @@ describe('fetchCommitsByAuthor', () => {
 
   describe('when commit has an associated pull request', () => {
     let res: Commit[];
-    let authorIdCalls: ReturnType<typeof mockGqlRequest>;
-    let commitsByAuthorCalls: ReturnType<typeof mockGqlRequest>;
+    let getAuthorIdCalls: ReturnType<typeof mockGqlRequest>;
+    let getCommitsByAuthorCalls: ReturnType<typeof mockGqlRequest>;
 
     beforeEach(async () => {
-      authorIdCalls = mockGqlRequest<AuthorIdResponse>({
+      getAuthorIdCalls = mockGqlRequest<AuthorIdResponse>({
         name: 'AuthorId',
         statusCode: 200,
         body: { data: authorIdMockData },
       });
 
-      commitsByAuthorCalls = mockGqlRequest<CommitByAuthorResponse>({
+      getCommitsByAuthorCalls = mockGqlRequest<CommitByAuthorResponse>({
         name: 'CommitsByAuthor',
         statusCode: 200,
         body: { data: commitsWithPullRequestsMock },
@@ -108,11 +108,11 @@ describe('fetchCommitsByAuthor', () => {
     });
 
     it('should call with correct args to fetch author id', () => {
-      expect(authorIdCalls).toMatchSnapshot();
+      expect(getAuthorIdCalls()).toMatchSnapshot();
     });
 
     it('should call with correct args to fetch commits', () => {
-      expect(commitsByAuthorCalls).toMatchSnapshot();
+      expect(getCommitsByAuthorCalls()).toMatchSnapshot();
     });
   });
 
@@ -156,14 +156,14 @@ describe('fetchCommitsByAuthor', () => {
 
   describe('when a custom github api hostname is supplied', () => {
     it('should be used in gql requests', async () => {
-      const authorIdCalls = mockGqlRequest<AuthorIdResponse>({
+      const getAuthorIdCalls = mockGqlRequest<AuthorIdResponse>({
         name: 'AuthorId',
         statusCode: 200,
         body: { data: authorIdMockData },
         apiBaseUrl: 'http://localhost/my-custom-api',
       });
 
-      const commitsByAuthorCalls = mockGqlRequest<CommitByAuthorResponse>({
+      const getCommitsByAuthorCalls = mockGqlRequest<CommitByAuthorResponse>({
         name: 'CommitsByAuthor',
         statusCode: 200,
         body: { data: commitsWithPullRequestsMock },
@@ -175,8 +175,8 @@ describe('fetchCommitsByAuthor', () => {
         githubApiBaseUrlV4: 'http://localhost/my-custom-api',
       });
 
-      expect(authorIdCalls.length).toBe(1);
-      expect(commitsByAuthorCalls.length).toBe(1);
+      expect(getAuthorIdCalls().length).toBe(1);
+      expect(getCommitsByAuthorCalls().length).toBe(1);
     });
   });
 });

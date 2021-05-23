@@ -10,10 +10,10 @@ import { fetchPullRequestBySearchQueryMock } from './mocks/fetchPullRequestBySea
 
 describe('fetchPullRequestBySearchQuery', () => {
   let res: PromiseReturnType<typeof fetchPullRequestBySearchQuery>;
-  let mockCalls: ReturnType<typeof mockGqlRequest>;
+  let getMockCalls: ReturnType<typeof mockGqlRequest>;
 
   beforeEach(async () => {
-    mockCalls = mockGqlRequest<PullRequestBySearchQueryResponse>({
+    getMockCalls = mockGqlRequest<PullRequestBySearchQueryResponse>({
       name: 'PullRequestBySearchQuery',
       statusCode: 200,
       body: { data: fetchPullRequestBySearchQueryMock },
@@ -37,6 +37,7 @@ describe('fetchPullRequestBySearchQuery', () => {
   });
 
   it('should make request with correct variables', () => {
+    const mockCalls = getMockCalls();
     expect(mockCalls.length).toBe(1);
     expect(mockCalls[0].variables).toEqual({
       maxNumber: 10,

@@ -1,5 +1,6 @@
 import nock from 'nock';
 import { ValidConfigOptions } from '../../../options/options';
+import { createNockListener } from '../../../test/nockHelpers';
 import { addAssigneesToPullRequest } from './addAssigneesToPullRequest';
 
 describe('addAssigneesToPullRequest', () => {
@@ -7,11 +8,11 @@ describe('addAssigneesToPullRequest', () => {
     const pullNumber = 216;
     const assignees = ['sqren'];
 
-    const scope = nock('https://api.github.com')
-      .post('/repos/backport-org/backport-demo/issues/216/assignees', {
-        assignees: ['sqren'],
-      })
-      .reply(200, 'some response');
+    const getMockCalls = createNockListener(
+      nock('https://api.github.com')
+        .post('/repos/backport-org/backport-demo/issues/216/assignees')
+        .reply(200, 'some response')
+    );
 
     const res = await addAssigneesToPullRequest(
       {
@@ -27,7 +28,8 @@ describe('addAssigneesToPullRequest', () => {
     );
 
     expect(res).toBe(undefined);
-    scope.done();
+    expect(getMockCalls()).toEqual([{ assignees: ['sqren'] }]);
+
     nock.cleanAll();
   });
 });

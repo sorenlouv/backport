@@ -78,25 +78,8 @@ export async function cherrypickAndCreateTargetPullRequest({
     );
   }
 
-  const targetBranchChoice = options.targetBranchChoices.find(
-    (choice) => choice.name === targetBranch
-  );
-
   // add labels to source pull requests
-  const promises = commits.map((commit) => {
-    const labels = [
-      // labels applicable to any target branch
-      ...options.sourcePRLabels,
-
-      // target branch specific labels
-      ...(targetBranchChoice?.sourcePRLabels ?? []),
-    ];
-
-    if (commit.pullNumber && labels.length > 0) {
-      return addLabelsToPullRequest(options, commit.pullNumber, labels);
-    }
-  });
-  await Promise.all(promises);
+  await addLabelsToSourcePullRequest({ options, commits, targetBranch });
 
   // make PR auto mergable
   if (options.autoMerge) {
@@ -294,4 +277,38 @@ Press ENTER when the conflicts are resolved and files are staged`);
   };
 
   await checkForProblems();
+}
+
+async function addLabelsToSourcePullRequest({
+  options,
+  commits,
+  targetBranch,
+}: {
+  options: ValidConfigOptions;
+  commits: Commit[];
+  targetBranch: string;
+}) {
+  const selectedTargetBranchChoice = options.targetBranchChoices.find(
+    (choice) => choice.name === targetBranch
+  );
+  const sourcePRLabelsForTargetBranch =
+    selectedTargetBranchChoice?.sourcePRLabels?.filter(
+      (l) => !l.includes('*')
+    ) ?? [];
+
+  const promises = commits.map((commit) => {
+    const labels = [
+      // labels applicable to any target branch
+      ...options.sourcePRLabels,
+
+      // labels specific for the selected target branch
+      ...sourcePRLabelsForTargetBranch,
+    ];
+
+    if (commit.pullNumber && labels.length > 0) {
+      return addLabelsToPullRequest(options, commit.pullNumber, labels);
+    }
+  });
+
+  await Promise.all(promises);
 }

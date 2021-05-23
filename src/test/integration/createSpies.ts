@@ -6,7 +6,7 @@ import { AuthorIdResponse } from '../../services/github/v4/fetchAuthorId';
 import { CommitByAuthorResponse } from '../../services/github/v4/fetchCommitsByAuthor';
 import { GithubConfigOptionsResponse } from '../../services/github/v4/getOptionsFromGithub/query';
 import { commitsWithPullRequestsMock } from '../../services/github/v4/mocks/commitsByAuthorMock';
-import { mockGqlRequest, getNockCallsForScope } from '../nockHelpers';
+import { mockGqlRequest, createNockListener } from '../nockHelpers';
 import {
   HOMEDIR_PATH,
   REMOTE_ORIGIN_REPO_PATH,
@@ -45,25 +45,25 @@ export function createSpies({ commitCount }: { commitCount: number }) {
     }
   );
 
-  const authorIdCalls = mockGqlRequest<AuthorIdResponse>({
+  const getAuthorIdCalls = mockGqlRequest<AuthorIdResponse>({
     name: 'AuthorId',
     statusCode: 200,
     body: { data: { user: { id: 'sqren_author_id' } } },
   });
 
-  const commitsByAuthorCalls = mockGqlRequest<CommitByAuthorResponse>({
+  const getCommitsByAuthorCalls = mockGqlRequest<CommitByAuthorResponse>({
     name: 'CommitsByAuthor',
     statusCode: 200,
     body: { data: commitsWithPullRequestsMock },
   });
 
-  const createPullRequestCalls = mockCreatePullRequest();
+  const getCreatePullRequestCalls = mockCreatePullRequest();
 
   return {
     getGithubConfigOptionsCalls,
-    authorIdCalls,
-    commitsByAuthorCalls,
-    createPullRequestCalls,
+    getAuthorIdCalls,
+    getCommitsByAuthorCalls,
+    getCreatePullRequestCalls,
   };
 }
 
@@ -105,5 +105,5 @@ function mockCreatePullRequest() {
     .post('/repos/backport-org/backport-demo/pulls')
     .reply(200, { number: 1337, html_url: 'myHtmlUrl' });
 
-  return getNockCallsForScope(scope);
+  return createNockListener(scope);
 }

@@ -7,7 +7,7 @@ import * as fs from './services/fs-promisified';
 import { AuthorIdResponse } from './services/github/v4/fetchAuthorId';
 import { CommitByAuthorResponse } from './services/github/v4/fetchCommitsByAuthor';
 import { commitsWithPullRequestsMock } from './services/github/v4/mocks/commitsByAuthorMock';
-import { mockGqlRequest, getNockCallsForScope } from './test/nockHelpers';
+import { mockGqlRequest, createNockListener } from './test/nockHelpers';
 import { PromiseReturnType } from './types/PromiseReturnType';
 import { SpyHelper } from './types/SpyHelper';
 
@@ -16,9 +16,9 @@ describe('runWithOptions', () => {
   let rpcExecOriginalMock: SpyHelper<typeof childProcess.execAsCallback>;
   let inquirerPromptMock: SpyHelper<typeof inquirer.prompt>;
   let res: PromiseReturnType<typeof runWithOptions>;
-  let createPullRequestCalls: unknown[];
-  let commitsByAuthorCalls: ReturnType<typeof mockGqlRequest>;
-  let authorIdCalls: ReturnType<typeof mockGqlRequest>;
+  let getCreatePullRequestCalls: () => unknown[];
+  let getCommitsByAuthorCalls: ReturnType<typeof mockGqlRequest>;
+  let getAuthorIdCalls: ReturnType<typeof mockGqlRequest>;
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -89,25 +89,25 @@ describe('runWithOptions', () => {
         return { promptResult: args[0].choices[0].name };
       }) as any);
 
-    authorIdCalls = mockGqlRequest<AuthorIdResponse>({
+    getAuthorIdCalls = mockGqlRequest<AuthorIdResponse>({
       name: 'AuthorId',
       statusCode: 200,
       body: { data: { user: { id: 'sqren_author_id' } } },
     });
 
-    commitsByAuthorCalls = mockGqlRequest<CommitByAuthorResponse>({
+    getCommitsByAuthorCalls = mockGqlRequest<CommitByAuthorResponse>({
       name: 'CommitsByAuthor',
       statusCode: 200,
       body: { data: commitsWithPullRequestsMock },
     });
 
-    const scope = nock('https://api.github.com')
-      .post('/repos/elastic/kibana/pulls')
-      .reply(200, { html_url: 'pull request url', number: 1337 });
-    createPullRequestCalls = getNockCallsForScope(scope);
+    getCreatePullRequestCalls = createNockListener(
+      nock('https://api.github.com')
+        .post('/repos/elastic/kibana/pulls')
+        .reply(200, { html_url: 'pull request url', number: 1337 })
+    );
 
     res = await runWithOptions(options);
-    scope.done();
   });
 
   it('returns pull request', () => {
@@ -121,7 +121,7 @@ describe('runWithOptions', () => {
   });
 
   it('creates pull request', () => {
-    expect(createPullRequestCalls).toEqual([
+    expect(getCreatePullRequestCalls()).toEqual([
       {
         base: '6.x',
         body:
@@ -133,7 +133,7 @@ describe('runWithOptions', () => {
   });
 
   it('retrieves author id', () => {
-    expect(authorIdCalls).toMatchInlineSnapshot(`
+    expect(getAuthorIdCalls()).toMatchInlineSnapshot(`
       Array [
         Object {
           "query": "
@@ -152,7 +152,7 @@ describe('runWithOptions', () => {
   });
 
   it('retrieves commits by author', () => {
-    expect(commitsByAuthorCalls.map((body) => body.variables)).toEqual([
+    expect(getCommitsByAuthorCalls().map((body) => body.variables)).toEqual([
       {
         authorId: 'sqren_author_id',
         historyPath: null,

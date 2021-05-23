@@ -50,11 +50,13 @@ describe('getOptions', () => {
   });
 
   it('should use the default repository branch as sourceBranch', async () => {
-    const mockCalls = mockGetGithubConfigOptions({
+    const getMockCalls = mockGetGithubConfigOptions({
       defaultBranch: 'my-default-branch',
     });
+
     const options = await getOptions(defaultArgs);
-    expect(mockCalls.length).toBe(1);
+
+    expect(getMockCalls().length).toBe(1);
     expect(options.sourceBranch).toBe('my-default-branch');
   });
 
