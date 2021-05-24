@@ -22,7 +22,6 @@ describe('runWithOptions', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-    nock.cleanAll();
   });
 
   beforeEach(async () => {

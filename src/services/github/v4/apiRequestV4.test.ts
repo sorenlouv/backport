@@ -1,13 +1,8 @@
-import nock from 'nock';
 import { mockGqlRequest } from '../../../test/nockHelpers';
 import { HandledError } from '../../HandledError';
 import { apiRequestV4 } from './apiRequestV4';
 
 describe('apiRequestV4', () => {
-  afterEach(() => {
-    nock.cleanAll();
-  });
-
   describe('when request succeeds', () => {
     let res: unknown;
     let getCommitsByAuthorCalls: ReturnType<typeof mockGqlRequest>;

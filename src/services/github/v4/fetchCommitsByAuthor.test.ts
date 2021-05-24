@@ -1,4 +1,3 @@
-import nock from 'nock';
 import { ValidConfigOptions } from '../../../options/options';
 import { mockGqlRequest } from '../../../test/nockHelpers';
 import { Commit } from '../../../types/Commit';
@@ -29,10 +28,6 @@ const authorIdMockData = { user: { id: 'myUserId' } } as const;
 describe('fetchCommitsByAuthor', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-
-  afterEach(() => {
-    nock.cleanAll();
   });
 
   describe('when commit has an associated pull request', () => {
@@ -182,10 +177,6 @@ describe('fetchCommitsByAuthor', () => {
 });
 
 describe('getExistingTargetPullRequests', () => {
-  afterEach(() => {
-    nock.cleanAll();
-  });
-
   it('should return a result when commit messages match', () => {
     const pullRequestNode = getPullRequestNodeMock({
       sourcePullRequest: {

@@ -1,4 +1,3 @@
-import nock from 'nock';
 import { ValidConfigOptions } from '../../../options/options';
 import { mockGqlRequest } from '../../../test/nockHelpers';
 import { PromiseReturnType } from '../../../types/PromiseReturnType';
@@ -30,10 +29,6 @@ describe('fetchPullRequestBySearchQuery', () => {
       sourceBranch: 'master',
       prFilter: 'label:Team:apm',
     } as ValidConfigOptions);
-  });
-
-  afterEach(() => {
-    nock.cleanAll();
   });
 
   it('should make request with correct variables', () => {

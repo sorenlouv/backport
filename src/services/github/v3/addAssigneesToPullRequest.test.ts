@@ -29,7 +29,5 @@ describe('addAssigneesToPullRequest', () => {
 
     expect(res).toBe(undefined);
     expect(getMockCalls()).toEqual([{ assignees: ['sqren'] }]);
-
-    nock.cleanAll();
   });
 });

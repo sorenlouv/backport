@@ -1,5 +1,4 @@
 import { once } from 'lodash';
-import nock from 'nock';
 import { getOptions } from '../../options/options';
 import { runWithOptions } from '../../runWithOptions';
 import { PromiseReturnType } from '../../types/PromiseReturnType';
@@ -16,10 +15,6 @@ jest.unmock('del');
 jest.unmock('../../services/child-process-promisified');
 
 describe('integration', () => {
-  afterAll(() => {
-    nock.cleanAll();
-  });
-
   describe('when a single commit is backported', () => {
     let res: PromiseReturnType<typeof runWithOptions>;
     let spies: ReturnType<typeof createSpies>;
