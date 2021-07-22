@@ -20,15 +20,10 @@
   "bin": {
     "backport": "./dist/entrypoint.cli.js"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-push": "yarn lint"
-    }
-  },
   "license": "MIT",
   "scripts": {
     "lint": "tsc --project ./tsconfig.test.json && eslint './**/*.{ts,js}'",
+    "prepare": "husky install",
     "postinstall": "test -f ./dist/scripts/runPostinstall.js && node ./dist/scripts/runPostinstall.js || echo 'Dist folder missing'",
     "prepublishOnly": "tsc --project ./tsconfig.prod.json",
     "test": "jest",
