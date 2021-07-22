@@ -19,7 +19,7 @@ describe('getTargetBranches', () => {
   describe('when `targetBranchesFromLabels=["7.x"]`', () => {
     let targetBranchChoices: BranchChoice[];
     beforeEach(async () => {
-      const options = ({
+      const options = {
         targetBranches: [],
         multipleBranches: true,
         targetBranchChoices: [
@@ -31,7 +31,7 @@ describe('getTargetBranches', () => {
         ] as BranchChoice[],
         branchLabelMapping: {},
         sourceBranch: 'master',
-      } as unknown) as ValidConfigOptions;
+      } as unknown as ValidConfigOptions;
 
       const commits = [
         {
@@ -75,7 +75,7 @@ describe('getTargetBranches', () => {
   describe('when `targetBranchesFromLabels=["8.0.0"]`', () => {
     let targetBranchChoices: BranchChoice[];
     beforeEach(async () => {
-      const options = ({
+      const options = {
         targetBranches: [],
         multipleBranches: true,
         targetBranchChoices: [
@@ -85,7 +85,7 @@ describe('getTargetBranches', () => {
           { name: '7.5' },
         ] as BranchChoice[],
         sourceBranch: 'master',
-      } as unknown) as ValidConfigOptions;
+      } as unknown as ValidConfigOptions;
 
       const commits = [
         {
@@ -117,11 +117,11 @@ describe('getTargetBranches', () => {
     let branches: ReturnType<typeof getTargetBranches>;
 
     beforeEach(async () => {
-      const options = ({
+      const options = {
         targetBranches: [],
         targetBranchChoices: [{ name: 'branchA' }, { name: 'branchB' }],
         multipleBranches: false,
-      } as unknown) as ValidConfigOptions;
+      } as unknown as ValidConfigOptions;
 
       const commits: Commit[] = [
         {
@@ -155,11 +155,11 @@ describe('getTargetBranches', () => {
 
     beforeEach(() => {
       branches = getTargetBranches(
-        ({
+        {
           targetBranches: ['branchA', 'branchB'],
           targetBranchChoices: [],
           multipleBranches: false,
-        } as unknown) as ValidConfigOptions,
+        } as unknown as ValidConfigOptions,
         []
       );
     });
@@ -175,7 +175,7 @@ describe('getTargetBranches', () => {
 });
 
 describe('getTargetBranchChoices', () => {
-  const options = ({
+  const options = {
     ci: false,
     targetBranchChoices: [
       { name: 'master', checked: true },
@@ -184,7 +184,7 @@ describe('getTargetBranchChoices', () => {
       { name: '7.7', checked: false },
     ],
     branchLabelMapping: {},
-  } as unknown) as ValidConfigOptions;
+  } as unknown as ValidConfigOptions;
 
   const sourceBranch = 'master';
 

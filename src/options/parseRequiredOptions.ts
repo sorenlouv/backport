@@ -42,9 +42,8 @@ export function parseRequiredOptions(
     );
   }
 
-  const { accessToken, username, repoName, repoOwner } = getRequiredOptions(
-    options
-  );
+  const { accessToken, username, repoName, repoOwner } =
+    getRequiredOptions(options);
 
   return {
     ...options,
