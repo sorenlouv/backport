@@ -288,7 +288,7 @@ export function getOptionsFromCliArgs(
     ...restOptions
   } = yargsInstance.parseSync();
 
-  const ret = excludeUndefined({
+  return excludeUndefined({
     ...restOptions,
 
     // `multiple` is a cli-only flag to override `multipleBranches` and `multipleCommits`
@@ -298,8 +298,6 @@ export function getOptionsFromCliArgs(
     // `verify` is a cli-only flag to flip the default of `no-verify`
     noVerify: verify ?? noVerify,
   });
-
-  return ret;
 }
 
 function excludeUndefined<T extends Record<string, unknown>>(obj: T): T {
