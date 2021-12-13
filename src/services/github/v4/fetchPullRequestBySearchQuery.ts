@@ -7,7 +7,6 @@ import { getFormattedCommitMessage } from '../commitFormatters';
 import { apiRequestV4 } from './apiRequestV4';
 import {
   pullRequestFragment,
-  pullRequestFragmentName,
   PullRequestNode,
   getExistingTargetPullRequests,
   getPullRequestLabels,
@@ -33,13 +32,13 @@ export async function fetchPullRequestBySearchQuery(
       search(query: $query, type: ISSUE, first: $maxNumber) {
         nodes {
           ... on PullRequest {
-            ...${pullRequestFragmentName}
+            ...${pullRequestFragment.name}
           }
         }
       }
     }
 
-    ${pullRequestFragment}
+    ${pullRequestFragment.source}
   `;
 
   const authorFilter = all ? '' : `author:${author}`;

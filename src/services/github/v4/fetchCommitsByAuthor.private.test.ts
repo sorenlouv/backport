@@ -22,6 +22,7 @@ describe('fetchCommitsByAuthor', () => {
         author: 'sqren',
         maxNumber: 10,
         githubApiBaseUrlV4: 'https://api.github.com/graphql',
+        commitPaths: [] as Array<string>,
       } as ValidConfigOptions);
     });
 

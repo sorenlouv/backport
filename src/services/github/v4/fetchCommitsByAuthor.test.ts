@@ -22,6 +22,7 @@ const defaultOptions = {
   maxNumber: 10,
   githubApiBaseUrlV3: 'https://api.github.com',
   githubApiBaseUrlV4: 'http://localhost/graphql',
+  commitPaths: [] as Array<string>,
 } as ValidConfigOptions;
 
 const authorIdMockData = { user: { id: 'myUserId' } } as const;

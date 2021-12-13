@@ -12,7 +12,6 @@ import { apiRequestV4 } from './apiRequestV4';
 import {
   PullRequestNode,
   pullRequestFragment,
-  pullRequestFragmentName,
   getExistingTargetPullRequests,
   getPullRequestLabels,
 } from './getExistingTargetPullRequests';
@@ -33,7 +32,7 @@ export async function fetchCommitBySha(
           associatedPullRequests(first: 1) {
             edges {
               node {
-                ...${pullRequestFragmentName}
+                ...${pullRequestFragment.name}
               }
             }
           }
@@ -42,7 +41,7 @@ export async function fetchCommitBySha(
     }
   }
 
-    ${pullRequestFragment}
+    ${pullRequestFragment.source}
   `;
 
   const spinner = ora(`Loading commit "${getShortSha(options.sha)}"`).start();

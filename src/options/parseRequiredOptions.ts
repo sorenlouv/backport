@@ -63,9 +63,10 @@ export function parseRequiredOptions(
     repoOwner,
 
     // auto-assign the current user or default to the specified assignees
-    assignees: options.autoAssign
-      ? [options.username as string]
-      : options.assignees,
+    assignees:
+      options.autoAssign && options.username
+        ? [options.username]
+        : options.assignees,
 
     author: options.author || username,
     all: options.author ? false : options.all,

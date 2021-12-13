@@ -8,7 +8,6 @@ import { apiRequestV4 } from './apiRequestV4';
 import {
   PullRequestNode,
   pullRequestFragment,
-  pullRequestFragmentName,
   getExistingTargetPullRequests,
   getPullRequestLabels,
 } from './getExistingTargetPullRequests';
@@ -27,12 +26,12 @@ export async function fetchCommitByPullNumber(
     ) {
       repository(owner: $repoOwner, name: $repoName) {
         pullRequest(number: $pullNumber) {
-          ...${pullRequestFragmentName}
+          ...${pullRequestFragment.name}
         }
       }
     }
 
-    ${pullRequestFragment}
+    ${pullRequestFragment.source}
   `;
 
   const spinner = ora(

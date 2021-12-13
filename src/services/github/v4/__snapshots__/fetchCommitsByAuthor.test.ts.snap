@@ -27,31 +27,31 @@ Array [
       $maxNumber: Int!
       $sourceBranch: String!
       $authorId: ID
-      $historyPath: String
     ) {
       repository(owner: $repoOwner, name: $repoName) {
         ref(qualifiedName: $sourceBranch) {
           target {
             ... on Commit {
-              history(
-                first: $maxNumber
-                author: { id: $authorId }
-                path: $historyPath
-              ) {
-                edges {
-                  node {
-                    oid
-                    message
-                    associatedPullRequests(first: 1) {
-                      edges {
-                        node {
-                          ...ExistingTargetPullRequests
-                        }
-                      }
-                    }
-                  }
-                }
-              }
+              
+  noPath: history(
+    first: $maxNumber
+    author: { id: $authorId }
+    path: null
+  ) {
+    edges {
+      node {
+        oid
+        message
+        associatedPullRequests(first: 1) {
+          edges {
+            node {
+              ...ExistingTargetPullRequests
+            }
+          }
+        }
+      }
+    }
+  }
             }
           }
         }
@@ -107,11 +107,9 @@ Array [
       }
     }
   }
-
   ",
     "variables": Object {
       "authorId": "myUserId",
-      "historyPath": null,
       "maxNumber": 10,
       "repoName": "kibana",
       "repoOwner": "elastic",
