@@ -27,6 +27,7 @@ export async function fetchCommitBySha(
     repository(owner: $repoOwner, name: $repoName) {
       object(expression: $oid) {
         ... on Commit {
+          committedDate
           message
           oid
           associatedPullRequests(first: 1) {
@@ -70,6 +71,7 @@ export async function fetchCommitBySha(
     );
   }
 
+  const committedDate = res.repository.object.committedDate;
   const sha = res.repository.object.oid;
   const commitMessage = res.repository.object.message;
   const pullRequestNode =
@@ -104,6 +106,7 @@ export async function fetchCommitBySha(
     : [];
 
   return {
+    committedDate,
     sourceBranch,
     targetBranchesFromLabels,
     sha,
@@ -117,6 +120,7 @@ export async function fetchCommitBySha(
 interface CommitsByShaResponse {
   repository: {
     object: {
+      committedDate: string;
       message: string;
       oid: string;
       associatedPullRequests: {

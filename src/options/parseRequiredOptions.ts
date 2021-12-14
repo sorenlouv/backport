@@ -1,5 +1,4 @@
-import isEmpty from 'lodash.isempty';
-import isString from 'lodash.isstring';
+import { isEmpty, isString } from 'lodash';
 import { HandledError } from '../services/HandledError';
 import { getGlobalConfigPath } from '../services/env';
 import { OptionsFromGithub } from '../services/github/v4/getOptionsFromGithub';

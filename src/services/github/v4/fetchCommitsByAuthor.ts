@@ -1,5 +1,4 @@
-import isEmpty from 'lodash.isempty';
-import uniqBy from 'lodash.uniqby';
+import { isEmpty, uniqBy, orderBy } from 'lodash';
 import ora from 'ora';
 import { ValidConfigOptions } from '../../../options/options';
 import { Commit } from '../../../types/Commit';
@@ -18,17 +17,18 @@ import {
 } from './getExistingTargetPullRequests';
 import { getTargetBranchesFromLabels } from './getTargetBranchesFromLabels';
 
-function getCommitHistoryFragment(commitPath: string | null) {
+function getCommitHistoryFragment(commitPath: string | null, index = 0) {
   return /* GraphQL */ `
-  ${commitPath ?? 'noPath'}: history(
+  _${index}: history(
     first: $maxNumber
     author: { id: $authorId }
-    path: ${commitPath}
+    ${commitPath ? `path: "${commitPath}"` : ''}
   ) {
     edges {
       node {
         oid
         message
+        committedDate
         associatedPullRequests(first: 1) {
           edges {
             node {
@@ -117,6 +117,7 @@ export async function fetchCommitsByAuthor(
       return historyResponse.edges.map((edge) => {
         const commitMessage = edge.node.message;
         const sha = edge.node.oid;
+        const committedDate = edge.node.committedDate;
 
         // it is assumed that there can only be a single PR associated with a commit
         // that assumption might not hold true forever but for now it works out
@@ -133,6 +134,7 @@ export async function fetchCommitsByAuthor(
           });
 
           return {
+            committedDate,
             sourceBranch,
             targetBranchesFromLabels: [],
             sha,
@@ -161,6 +163,7 @@ export async function fetchCommitsByAuthor(
         });
 
         return {
+          committedDate,
           sourceBranch,
           targetBranchesFromLabels,
           sha,
@@ -187,7 +190,9 @@ export async function fetchCommitsByAuthor(
     throw new HandledError(errorText);
   }
 
-  return uniqBy(commits, 'sha');
+  const commitsUnique = uniqBy(commits, 'sha');
+  const commitsSorted = orderBy(commitsUnique, 'committedDate', 'desc');
+  return commitsSorted;
 }
 
 function isSourcePullRequest({
@@ -222,6 +227,7 @@ interface HistoryEdge {
   node: {
     oid: string;
     message: string;
+    committedDate: string;
     associatedPullRequests: {
       edges: {
         node: PullRequestNode;

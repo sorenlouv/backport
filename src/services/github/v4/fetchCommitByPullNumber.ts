@@ -62,6 +62,7 @@ export async function fetchCommitByPullNumber(
     throw new HandledError(`The PR #${pullNumber} is not merged`);
   }
 
+  const committedDate = pullRequestNode.mergeCommit.committedDate;
   const sourceBranch = pullRequestNode.baseRefName;
   const sha = pullRequestNode.mergeCommit.oid;
   const commitMessage = pullRequestNode.mergeCommit.message;
@@ -90,6 +91,7 @@ export async function fetchCommitByPullNumber(
   });
 
   return {
+    committedDate,
     sourceBranch,
     targetBranchesFromLabels,
     sha,

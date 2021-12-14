@@ -1,4 +1,4 @@
-import difference from 'lodash.difference';
+import { difference } from 'lodash';
 import { ValidConfigOptions } from '../../../options/options';
 import { apiRequestV4 } from './apiRequestV4';
 import { fetchDefaultBranch } from './fetchDefaultBranch';

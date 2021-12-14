@@ -87,15 +87,16 @@ Array [
           target {
             ... on Commit {
               
-  noPath: history(
+  _0: history(
     first: $maxNumber
     author: { id: $authorId }
-    path: null
+    
   ) {
     edges {
       node {
         oid
         message
+        committedDate
         associatedPullRequests(first: 1) {
           edges {
             node {
@@ -123,6 +124,7 @@ Array [
       }
     }
     mergeCommit {
+      committedDate
       oid
       message
     }
@@ -260,15 +262,16 @@ Array [
           target {
             ... on Commit {
               
-  noPath: history(
+  _0: history(
     first: $maxNumber
     author: { id: $authorId }
-    path: null
+    
   ) {
     edges {
       node {
         oid
         message
+        committedDate
         associatedPullRequests(first: 1) {
           edges {
             node {
@@ -296,6 +299,7 @@ Array [
       }
     }
     mergeCommit {
+      committedDate
       oid
       message
     }

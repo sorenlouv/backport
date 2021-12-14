@@ -15,6 +15,7 @@ export const pullRequestFragment = {
       }
     }
     mergeCommit {
+      committedDate
       oid
       message
     }
@@ -59,6 +60,7 @@ export interface PullRequestNode {
   baseRefName: string;
   number: number;
   mergeCommit: {
+    committedDate: string;
     oid: string;
     message: string;
   } | null;
