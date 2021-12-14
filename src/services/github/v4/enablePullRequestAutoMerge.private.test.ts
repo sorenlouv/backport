@@ -12,7 +12,10 @@ import { fetchPullRequestAutoMergeMethod } from './fetchPullRequestAutoMergeMeth
 // otherwise it will be merged when auto-merge is turned on
 const TEST_REPO_OWNER = 'backport-org';
 const TEST_REPO_NAME = 'repo-with-auto-merge-enabled';
-const COMMIT_SHA = 'e5aac78e2d0f8cd6ef968fd63f32388010d22d1b';
+
+// commit to create new branch from
+// https://github.com/backport-org/repo-with-auto-merge-enabled/commit/1a88d210f90a22e2a06253c5760909833dc820e9
+const COMMIT_SHA = '1a88d210f90a22e2a06253c5760909833dc820e9';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
