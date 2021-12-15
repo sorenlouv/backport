@@ -2,7 +2,7 @@ import { Octokit } from '@octokit/rest';
 import chalk from 'chalk';
 import ora from 'ora';
 import { ValidConfigOptions } from '../../../options/options';
-import { Commit } from '../../../types/Commit';
+import { Commit } from '../../../types/commitWithAssociatedPullRequests';
 import { HandledError } from '../../HandledError';
 import { logger, consoleLog } from '../../logger';
 import { fetchExistingPullRequest } from '../v4/fetchExistingPullRequest';

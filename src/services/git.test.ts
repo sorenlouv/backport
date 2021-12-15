@@ -15,8 +15,8 @@ import {
   getUpstreamFromGitRemote,
 } from '../services/git';
 import { ExecError } from '../test/ExecError';
-import { Commit } from '../types/Commit';
 import { SpyHelper } from '../types/SpyHelper';
+import { Commit } from '../types/commitWithAssociatedPullRequests';
 
 beforeEach(() => {
   jest.clearAllMocks();

@@ -1,5 +1,5 @@
-import { ValidConfigOptions } from '../../../options/options';
-import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
+import { ValidConfigOptions } from '../../../../options/options';
+import { getDevAccessToken } from '../../../../test/private/getDevAccessToken';
 import { fetchCommitBySha } from './fetchCommitBySha';
 
 type BackportOptionsWithSha = ValidConfigOptions & { sha: string };

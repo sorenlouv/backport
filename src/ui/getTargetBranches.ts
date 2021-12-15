@@ -2,7 +2,7 @@ import { isEmpty, intersection } from 'lodash';
 import { ValidConfigOptions } from '../options/options';
 import { HandledError } from '../services/HandledError';
 import { promptForTargetBranches } from '../services/prompts';
-import { Commit } from '../types/Commit';
+import { Commit } from '../types/commitWithAssociatedPullRequests';
 import { filterNil } from '../utils/filterEmpty';
 
 export function getTargetBranches(

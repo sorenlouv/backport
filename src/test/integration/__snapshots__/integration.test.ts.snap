@@ -94,16 +94,7 @@ Array [
   ) {
     edges {
       node {
-        oid
-        message
-        committedDate
-        associatedPullRequests(first: 1) {
-          edges {
-            node {
-              ...ExistingTargetPullRequests
-            }
-          }
-        }
+       ...CommitWithAssociatedPullRequests
       }
     }
   }
@@ -114,44 +105,52 @@ Array [
     }
 
     
-  fragment ExistingTargetPullRequests on PullRequest {
-    # Source PR
-    number
-    repository {
-      name
-      owner {
-        login
+    fragment InnerCommitNode on Commit {
+      repository {
+        name
+        owner {
+          login
+        }
       }
-    }
-    mergeCommit {
-      committedDate
       oid
       message
     }
-    labels(first: 50) {
-      nodes {
-        name
-      }
-    }
-    baseRefName
-    timelineItems(last: 20, itemTypes: CROSS_REFERENCED_EVENT) {
-      edges {
-        node {
-          ... on CrossReferencedEvent {
-            source {
-              __typename
 
-              # Target PRs
-              ... on PullRequest {
-                title
-                state
-                baseRefName
-                number
-                commits(first: 20) {
-                  edges {
-                    node {
-                      commit {
-                        message
+    fragment CommitWithAssociatedPullRequests on Commit {
+      ...InnerCommitNode
+      associatedPullRequests(first: 1) {
+        edges {
+          node {
+            # Source PR
+            number
+            labels(first: 50) {
+              nodes {
+                name
+              }
+            }
+            baseRefName
+            timelineItems(last: 20, itemTypes: CROSS_REFERENCED_EVENT) {
+              edges {
+                node {
+                  ... on CrossReferencedEvent {
+                    targetPullRequest: source {
+                      __typename
+
+                      # Target PRs
+                      ... on PullRequest {
+                        title
+                        state
+                        baseRefName
+                        number
+                        commits(first: 20) {
+                          edges {
+                            node {
+                              targetCommit: commit {
+                                ...InnerCommitNode
+                              }
+                            }
+                          }
+                        }
                       }
                     }
                   }
@@ -162,7 +161,7 @@ Array [
         }
       }
     }
-  }
+  
   ",
     "variables": Object {
       "authorId": "sqren_author_id",
@@ -269,16 +268,7 @@ Array [
   ) {
     edges {
       node {
-        oid
-        message
-        committedDate
-        associatedPullRequests(first: 1) {
-          edges {
-            node {
-              ...ExistingTargetPullRequests
-            }
-          }
-        }
+       ...CommitWithAssociatedPullRequests
       }
     }
   }
@@ -289,44 +279,52 @@ Array [
     }
 
     
-  fragment ExistingTargetPullRequests on PullRequest {
-    # Source PR
-    number
-    repository {
-      name
-      owner {
-        login
+    fragment InnerCommitNode on Commit {
+      repository {
+        name
+        owner {
+          login
+        }
       }
-    }
-    mergeCommit {
-      committedDate
       oid
       message
     }
-    labels(first: 50) {
-      nodes {
-        name
-      }
-    }
-    baseRefName
-    timelineItems(last: 20, itemTypes: CROSS_REFERENCED_EVENT) {
-      edges {
-        node {
-          ... on CrossReferencedEvent {
-            source {
-              __typename
 
-              # Target PRs
-              ... on PullRequest {
-                title
-                state
-                baseRefName
-                number
-                commits(first: 20) {
-                  edges {
-                    node {
-                      commit {
-                        message
+    fragment CommitWithAssociatedPullRequests on Commit {
+      ...InnerCommitNode
+      associatedPullRequests(first: 1) {
+        edges {
+          node {
+            # Source PR
+            number
+            labels(first: 50) {
+              nodes {
+                name
+              }
+            }
+            baseRefName
+            timelineItems(last: 20, itemTypes: CROSS_REFERENCED_EVENT) {
+              edges {
+                node {
+                  ... on CrossReferencedEvent {
+                    targetPullRequest: source {
+                      __typename
+
+                      # Target PRs
+                      ... on PullRequest {
+                        title
+                        state
+                        baseRefName
+                        number
+                        commits(first: 20) {
+                          edges {
+                            node {
+                              targetCommit: commit {
+                                ...InnerCommitNode
+                              }
+                            }
+                          }
+                        }
                       }
                     }
                   }
@@ -337,7 +335,7 @@ Array [
         }
       }
     }
-  }
+  
   ",
     "variables": Object {
       "authorId": "sqren_author_id",

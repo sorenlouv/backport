@@ -3,7 +3,7 @@ import del from 'del';
 import { uniq, isEmpty } from 'lodash';
 import ora from 'ora';
 import { ValidConfigOptions } from '../options/options';
-import { Commit } from '../types/Commit';
+import { Commit } from '../types/commitWithAssociatedPullRequests';
 import { HandledError } from './HandledError';
 import { execAsCallback, exec } from './child-process-promisified';
 import { getRepoOwnerPath, getRepoPath } from './env';
@@ -127,6 +127,20 @@ export async function getUpstreamFromGitRemote() {
     return;
   }
 }
+
+// export async function isCommitInBranch(
+//   options: ValidConfigOptions,
+//   commitSha: string
+// ) {
+//   try {
+//     await exec(`git merge-base --is-ancestor ${commitSha} HEAD`, {
+//       cwd: getRepoPath(options),
+//     });
+//   } catch (e) {
+//     // TODO
+//     console.log(e);
+//   }
+// }
 
 export async function deleteRemote(
   options: ValidConfigOptions,

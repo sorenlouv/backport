@@ -1,5 +1,5 @@
-import { ValidConfigOptions } from '../../../options/options';
-import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
+import { ValidConfigOptions } from '../../../../options/options';
+import { getDevAccessToken } from '../../../../test/private/getDevAccessToken';
 import { fetchCommitByPullNumber } from './fetchCommitByPullNumber';
 
 describe('fetchCommitByPullNumber', () => {

@@ -6,7 +6,7 @@ import inquirer, {
 } from 'inquirer';
 import { isEmpty } from 'lodash';
 import { TargetBranchChoice } from '../options/ConfigOptions';
-import { Commit } from '../types/Commit';
+import { Commit } from '../types/commitWithAssociatedPullRequests';
 import { getShortSha } from './github/commitFormatters';
 
 type Question = CheckboxQuestion | ListQuestion | ConfirmQuestion;
