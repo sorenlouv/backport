@@ -28,7 +28,7 @@ describe('fetchCommitBySha', () => {
       pullNumber: 70740,
       sha: 'cb6fbc0e1b406675724181a3e9f59459b5f8f892',
       sourceBranch: 'master',
-      targetBranchesFromLabels: [],
+      targetBranchesFromLabels: { expected: [], missing: [], unmerged: [] },
       existingTargetPullRequests: [
         { branch: '7.x', state: 'MERGED', number: 71014 },
       ],

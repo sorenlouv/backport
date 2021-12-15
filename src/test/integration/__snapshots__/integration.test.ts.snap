@@ -94,7 +94,7 @@ Array [
   ) {
     edges {
       node {
-       ...CommitWithAssociatedPullRequests
+       ...SourceCommitWithTargetPullRequest
       }
     }
   }
@@ -114,9 +114,10 @@ Array [
       }
       oid
       message
+      committedDate
     }
 
-    fragment CommitWithAssociatedPullRequests on Commit {
+    fragment SourceCommitWithTargetPullRequest on Commit {
       ...InnerCommitNode
       associatedPullRequests(first: 1) {
         edges {
@@ -268,7 +269,7 @@ Array [
   ) {
     edges {
       node {
-       ...CommitWithAssociatedPullRequests
+       ...SourceCommitWithTargetPullRequest
       }
     }
   }
@@ -288,9 +289,10 @@ Array [
       }
       oid
       message
+      committedDate
     }
 
-    fragment CommitWithAssociatedPullRequests on Commit {
+    fragment SourceCommitWithTargetPullRequest on Commit {
       ...InnerCommitNode
       associatedPullRequests(first: 1) {
         edges {

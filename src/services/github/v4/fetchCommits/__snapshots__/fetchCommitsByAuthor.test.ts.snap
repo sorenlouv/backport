@@ -40,7 +40,7 @@ Array [
   ) {
     edges {
       node {
-       ...CommitWithAssociatedPullRequests
+       ...SourceCommitWithTargetPullRequest
       }
     }
   }
@@ -60,9 +60,10 @@ Array [
       }
       oid
       message
+      committedDate
     }
 
-    fragment CommitWithAssociatedPullRequests on Commit {
+    fragment SourceCommitWithTargetPullRequest on Commit {
       ...InnerCommitNode
       associatedPullRequests(first: 1) {
         edges {
@@ -114,7 +115,7 @@ Array [
       "maxNumber": 10,
       "repoName": "kibana",
       "repoOwner": "elastic",
-      "sourceBranch": "master",
+      "sourceBranch": "source-branch-from-options",
     },
   },
 ]

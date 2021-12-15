@@ -12,7 +12,7 @@ import {
 const defaultOptions = {
   repoOwner: 'elastic',
   repoName: 'kibana',
-  sourceBranch: 'master',
+  sourceBranch: 'source-branch-from-options',
   accessToken: 'myAccessToken',
   username: 'sqren',
   author: 'sqren',
@@ -63,7 +63,7 @@ describe('fetchCommitsByAuthor', () => {
           originalMessage: 'Add 👻',
           existingTargetPullRequests: [],
           targetBranchesFromLabels: { expected: [], missing: [], unmerged: [] },
-          sourceBranch: 'master',
+          sourceBranch: 'source-branch-from-options',
         },
         {
           committedDate: '2021-12-23T00:00:00Z',
@@ -95,7 +95,7 @@ describe('fetchCommitsByAuthor', () => {
           originalMessage: 'Add backport config',
           existingTargetPullRequests: [],
           targetBranchesFromLabels: { expected: [], missing: [], unmerged: [] },
-          sourceBranch: 'master',
+          sourceBranch: 'source-branch-from-options',
         },
         {
           committedDate: '2021-12-20T00:00:00Z',
@@ -104,7 +104,7 @@ describe('fetchCommitsByAuthor', () => {
           originalMessage: 'Initial commit',
           existingTargetPullRequests: [],
           targetBranchesFromLabels: { expected: [], missing: [], unmerged: [] },
-          sourceBranch: 'master',
+          sourceBranch: 'source-branch-from-options',
         },
       ];
       expect(res).toEqual(expectedCommits);

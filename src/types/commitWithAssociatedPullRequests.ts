@@ -68,7 +68,7 @@ type InnerCommitNode = {
   committedDate: string;
 };
 
-export type CommitWithAssociatedPullRequests = InnerCommitNode & {
+export type SourceCommitWithTargetPullRequest = InnerCommitNode & {
   associatedPullRequests: {
     edges: { node: PullRequestNode }[] | null;
   };
@@ -80,12 +80,10 @@ function getPullRequestLabels(pullRequestNode?: PullRequestNode) {
 
 export function parseSourceCommit({
   sourceCommit,
-  sourceBranch,
-  branchLabelMapping,
+  options,
 }: {
-  sourceCommit: CommitWithAssociatedPullRequests;
-  sourceBranch: ValidConfigOptions['sourceBranch'];
-  branchLabelMapping: ValidConfigOptions['branchLabelMapping'];
+  sourceCommit: SourceCommitWithTargetPullRequest;
+  options: ValidConfigOptions;
 }): Commit {
   const existingTargetPullRequests =
     getExistingTargetPullRequests(sourceCommit);
@@ -95,10 +93,11 @@ export function parseSourceCommit({
   const pullNumber =
     pullRequestNode?.number ?? getPullNumberFromMessage(commitMessage);
 
+  const sourceBranch = pullRequestNode?.baseRefName ?? options.sourceBranch;
   const targetBranchesFromLabels = getTargetBranchesFromLabels({
-    sourceBranch: pullRequestNode?.baseRefName,
+    sourceBranch,
     existingTargetPullRequests,
-    branchLabelMapping,
+    branchLabelMapping: options.branchLabelMapping,
     labels: getPullRequestLabels(pullRequestNode),
   });
 
@@ -121,7 +120,7 @@ export function parseSourceCommit({
 }
 
 export const commitWithAssociatedPullRequestsFragment = {
-  name: 'CommitWithAssociatedPullRequests',
+  name: 'SourceCommitWithTargetPullRequest',
   source: /* GraphQL */ `
     fragment InnerCommitNode on Commit {
       repository {
@@ -132,9 +131,10 @@ export const commitWithAssociatedPullRequestsFragment = {
       }
       oid
       message
+      committedDate
     }
 
-    fragment CommitWithAssociatedPullRequests on Commit {
+    fragment SourceCommitWithTargetPullRequest on Commit {
       ...InnerCommitNode
       associatedPullRequests(first: 1) {
         edges {
@@ -186,7 +186,7 @@ export type ExistingTargetPullRequests = ReturnType<
   typeof getExistingTargetPullRequests
 >;
 export function getExistingTargetPullRequests(
-  sourceCommit: CommitWithAssociatedPullRequests
+  sourceCommit: SourceCommitWithTargetPullRequest
 ) {
   const sourcePullRequest =
     sourceCommit.associatedPullRequests.edges?.[0]?.node;

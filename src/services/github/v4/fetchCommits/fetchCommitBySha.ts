@@ -3,7 +3,7 @@ import ora from 'ora';
 import { ValidConfigOptions } from '../../../../options/options';
 import {
   Commit,
-  CommitWithAssociatedPullRequests,
+  SourceCommitWithTargetPullRequest,
   commitWithAssociatedPullRequestsFragment,
   parseSourceCommit,
 } from '../../../../types/commitWithAssociatedPullRequests';
@@ -16,7 +16,6 @@ export async function fetchCommitBySha(
 ): Promise<Commit> {
   const {
     accessToken,
-    branchLabelMapping,
     githubApiBaseUrlV4,
     repoName,
     repoOwner,
@@ -63,11 +62,7 @@ export async function fetchCommitBySha(
     );
   }
 
-  const commit = parseSourceCommit({
-    sourceBranch,
-    branchLabelMapping,
-    sourceCommit,
-  });
+  const commit = parseSourceCommit({ options, sourceCommit });
 
   spinner.stopAndPersist({
     symbol: chalk.green('?'),
@@ -81,6 +76,6 @@ export async function fetchCommitBySha(
 
 interface CommitsByShaResponse {
   repository: {
-    object: CommitWithAssociatedPullRequests | null;
+    object: SourceCommitWithTargetPullRequest | null;
   };
 }

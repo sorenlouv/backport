@@ -3,7 +3,7 @@ import ora from 'ora';
 import { ValidConfigOptions } from '../../../../options/options';
 import {
   Commit,
-  CommitWithAssociatedPullRequests,
+  SourceCommitWithTargetPullRequest,
   commitWithAssociatedPullRequestsFragment,
   parseSourceCommit,
 } from '../../../../types/commitWithAssociatedPullRequests';
@@ -17,7 +17,6 @@ export async function fetchPullRequestBySearchQuery(
     accessToken,
     all,
     author,
-    branchLabelMapping,
     githubApiBaseUrlV4,
     maxNumber,
     prFilter,
@@ -65,11 +64,7 @@ export async function fetchPullRequestBySearchQuery(
 
   const commits = res.search.nodes.map((pullRequestNode) => {
     const sourceCommit = pullRequestNode.mergeCommit;
-    return parseSourceCommit({
-      sourceBranch,
-      branchLabelMapping,
-      sourceCommit,
-    });
+    return parseSourceCommit({ options, sourceCommit });
   });
 
   // terminate if not commits were found
@@ -87,7 +82,7 @@ export async function fetchPullRequestBySearchQuery(
 export interface PullRequestBySearchQueryResponse {
   search: {
     nodes: Array<{
-      mergeCommit: CommitWithAssociatedPullRequests;
+      mergeCommit: SourceCommitWithTargetPullRequest;
     }>;
   };
 }

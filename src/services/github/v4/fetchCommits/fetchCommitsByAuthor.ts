@@ -3,7 +3,7 @@ import ora from 'ora';
 import { ValidConfigOptions } from '../../../../options/options';
 import {
   Commit,
-  CommitWithAssociatedPullRequests,
+  SourceCommitWithTargetPullRequest,
   commitWithAssociatedPullRequestsFragment,
   parseSourceCommit,
 } from '../../../../types/commitWithAssociatedPullRequests';
@@ -31,7 +31,6 @@ export async function fetchCommitsByAuthor(
 ): Promise<Commit[]> {
   const {
     accessToken,
-    branchLabelMapping,
     commitPaths,
     githubApiBaseUrlV4,
     maxNumber,
@@ -101,11 +100,7 @@ export async function fetchCommitsByAuthor(
     (historyResponse) => {
       return historyResponse.edges.map((edge) => {
         const sourceCommit = edge.node;
-        return parseSourceCommit({
-          sourceBranch,
-          branchLabelMapping,
-          sourceCommit,
-        });
+        return parseSourceCommit({ options, sourceCommit });
       });
     }
   );
@@ -134,7 +129,7 @@ export interface CommitByAuthorResponse {
     ref: {
       target: {
         [commitPath: string]: {
-          edges: Array<{ node: CommitWithAssociatedPullRequests }>;
+          edges: Array<{ node: SourceCommitWithTargetPullRequest }>;
         };
       };
     } | null;

@@ -1,8 +1,9 @@
 import nock from 'nock';
+import { ValidConfigOptions } from '../options/options';
 import {
   parseSourceCommit,
   getExistingTargetPullRequests,
-  CommitWithAssociatedPullRequests,
+  SourceCommitWithTargetPullRequest,
 } from './commitWithAssociatedPullRequests';
 
 function getMockSourceCommit({
@@ -24,7 +25,7 @@ function getMockSourceCommit({
     repoOwner?: string;
   }>;
 }) {
-  const sourceCommit: CommitWithAssociatedPullRequests = {
+  const sourceCommit: SourceCommitWithTargetPullRequest = {
     repository: {
       name: 'kibana',
       owner: { login: 'elastic' },
@@ -39,7 +40,7 @@ function getMockSourceCommit({
             labels: {
               nodes: (sourcePullRequest.labels ?? []).map((name) => ({ name })),
             },
-            baseRefName: 'master',
+            baseRefName: 'source-branch-from-associated-pull-request',
             number: sourcePullRequest.number,
             timelineItems: {
               edges: timelineItems.map((timelineItem) => {
@@ -256,11 +257,12 @@ describe('parseSourceCommit', () => {
   it('parses the sourceCommit', () => {
     const commit = parseSourceCommit({
       sourceCommit: mockSourceCommit,
-      sourceBranch: 'main',
-      branchLabelMapping: {
-        '^v6.3.0$': '6.x',
-        '^v(\\d+).(\\d+).\\d+$': '$1.$2',
-      },
+      options: {
+        branchLabelMapping: {
+          '^v6.3.0$': '6.x',
+          '^v(\\d+).(\\d+).\\d+$': '$1.$2',
+        },
+      } as unknown as ValidConfigOptions,
     });
 
     expect(commit).toEqual({
@@ -273,7 +275,7 @@ describe('parseSourceCommit', () => {
       originalMessage: 'My commit message (#1234)',
       pullNumber: 1234,
       sha: '79cf18453ec32a4677009dcbab1c9c8c73fc14fe',
-      sourceBranch: 'main',
+      sourceBranch: 'source-branch-from-associated-pull-request',
       targetBranchesFromLabels: {
         expected: ['6.x', '6.2', '6.1'],
         missing: ['6.1'],

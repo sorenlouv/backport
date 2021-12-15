@@ -3,7 +3,7 @@ import ora from 'ora';
 import { ValidConfigOptions } from '../../../../options/options';
 import {
   Commit,
-  CommitWithAssociatedPullRequests,
+  SourceCommitWithTargetPullRequest,
   commitWithAssociatedPullRequestsFragment,
   parseSourceCommit,
 } from '../../../../types/commitWithAssociatedPullRequests';
@@ -13,15 +13,8 @@ import { apiRequestV4 } from '../apiRequestV4';
 export async function fetchCommitByPullNumber(
   options: ValidConfigOptions & { pullNumber: number }
 ): Promise<Commit> {
-  const {
-    accessToken,
-    branchLabelMapping,
-    githubApiBaseUrlV4,
-    pullNumber,
-    repoName,
-    repoOwner,
-    sourceBranch,
-  } = options;
+  const { accessToken, githubApiBaseUrlV4, pullNumber, repoName, repoOwner } =
+    options;
 
   const query = /* GraphQL */ `
     query CommitByPullNumber(
@@ -72,11 +65,7 @@ export async function fetchCommitByPullNumber(
   if (sourceCommit === null) {
     throw new HandledError(`The PR #${pullNumber} is not merged`);
   }
-  const commit = parseSourceCommit({
-    sourceBranch,
-    branchLabelMapping,
-    sourceCommit,
-  });
+  const commit = parseSourceCommit({ options, sourceCommit });
 
   // add styles to make it look like a prompt question
   spinner.stopAndPersist({
@@ -92,7 +81,7 @@ export async function fetchCommitByPullNumber(
 interface CommitByPullNumberResponse {
   repository: {
     pullRequest: {
-      mergeCommit: CommitWithAssociatedPullRequests | null;
+      mergeCommit: SourceCommitWithTargetPullRequest | null;
     } | null;
   };
 }

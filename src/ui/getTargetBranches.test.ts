@@ -33,11 +33,15 @@ describe('getTargetBranches', () => {
         sourceBranch: 'master',
       } as unknown as ValidConfigOptions;
 
-      const commits = [
+      const commits: Commit[] = [
         {
           committedDate: 'bbb',
           sourceBranch: 'master',
-          targetBranchesFromLabels: ['7.x'],
+          targetBranchesFromLabels: {
+            expected: ['7.x'],
+            missing: [],
+            unmerged: [],
+          },
           sha: 'my-sha',
           formattedMessage: '[backport] Bump to 5.1.3 (#62286)',
           originalMessage: '[backport] Bump to 5.1.3 (#62286)',
@@ -88,11 +92,15 @@ describe('getTargetBranches', () => {
         sourceBranch: 'master',
       } as unknown as ValidConfigOptions;
 
-      const commits = [
+      const commits: Commit[] = [
         {
           committedDate: 'ddd',
           sourceBranch: 'master',
-          targetBranchesFromLabels: ['8.0.0'],
+          targetBranchesFromLabels: {
+            expected: ['8.0.0'],
+            missing: [],
+            unmerged: [],
+          },
           sha: 'my-sha',
           formattedMessage: '[backport] Bump to 5.1.3 (#62286)',
           originalMessage: '[backport] Bump to 5.1.3 (#62286)',
@@ -130,7 +138,7 @@ describe('getTargetBranches', () => {
           committedDate: 'aaa',
           formattedMessage: 'hey',
           originalMessage: 'hey',
-          targetBranchesFromLabels: [],
+          targetBranchesFromLabels: { expected: [], missing: [], unmerged: [] },
           sha: 'abcd',
           sourceBranch: '7.x',
           pullNumber: 1337,
