@@ -84,10 +84,11 @@ describe('getTargetBranchesFromLabels', () => {
       expected: ['branch-b'],
       missing: ['branch-b'],
       unmerged: [],
+      merged: [],
     });
   });
 
-  it('should remove PRs that are already open', () => {
+  it('open PRs', () => {
     const sourceBranch = 'master';
     const existingTargetPullRequests = [
       { branch: 'branch-3', state: 'OPEN' },
@@ -106,10 +107,34 @@ describe('getTargetBranchesFromLabels', () => {
       expected: ['branch-1', 'branch-2', 'branch-3', 'branch-4'],
       missing: ['branch-1', 'branch-2', 'branch-4'],
       unmerged: ['branch-3'],
+      merged: [],
     });
   });
 
-  it('should remove PRs that are already merged', () => {
+  it('closed PRs', () => {
+    const sourceBranch = 'master';
+    const existingTargetPullRequests = [
+      { branch: 'branch-3', state: 'CLOSED' },
+    ] as ExistingTargetPullRequests;
+    const branchLabelMapping = {
+      'label-(\\d+)': 'branch-$1',
+    };
+    const labels = ['label-1', 'label-2', 'label-3', 'label-4'];
+    const targetBranches = getTargetBranchesFromLabels({
+      sourceBranch,
+      existingTargetPullRequests,
+      labels,
+      branchLabelMapping,
+    });
+    expect(targetBranches).toEqual({
+      expected: ['branch-1', 'branch-2', 'branch-3', 'branch-4'],
+      missing: ['branch-1', 'branch-2', 'branch-4'],
+      unmerged: ['branch-3'],
+      merged: [],
+    });
+  });
+
+  it('merged PRs', () => {
     const sourceBranch = 'master';
     const existingTargetPullRequests = [
       { branch: 'branch-2', state: 'MERGED' },
@@ -128,6 +153,7 @@ describe('getTargetBranchesFromLabels', () => {
       expected: ['branch-1', 'branch-2', 'branch-3', 'branch-4'],
       missing: ['branch-1', 'branch-3', 'branch-4'],
       unmerged: [],
+      merged: ['branch-2'],
     });
   });
 

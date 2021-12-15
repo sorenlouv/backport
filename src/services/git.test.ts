@@ -306,7 +306,12 @@ describe('cherrypick', () => {
     formattedMessage: '',
     originalMessage: '',
     sha: 'abcd',
-    targetBranchesFromLabels: { expected: [], missing: [], unmerged: [] },
+    targetBranchesFromLabels: {
+      expected: [],
+      missing: [],
+      unmerged: [],
+      merged: [],
+    },
     existingTargetPullRequests: [],
   };
 

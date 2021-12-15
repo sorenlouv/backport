@@ -26,10 +26,22 @@ export async function promptForCommits({
   isMultipleChoice: boolean;
 }): Promise<Commit[]> {
   const choices = commitChoices.map((c, i) => {
-    const existingPRs = c.existingTargetPullRequests
-      .map((item) => {
-        const styling = item.state === 'MERGED' ? chalk.green : chalk.gray;
-        return styling(item.branch);
+    const existingPRs = c.targetBranchesFromLabels.expected
+      .map((branch) => {
+        const isMerged = c.targetBranchesFromLabels.merged.includes(branch);
+        if (isMerged) {
+          return chalk.green(branch);
+        }
+
+        const isUnmerged = c.targetBranchesFromLabels.unmerged.includes(branch);
+        if (isUnmerged) {
+          return chalk.gray(branch);
+        }
+
+        const isMissing = c.targetBranchesFromLabels.missing.includes(branch);
+        if (isMissing) {
+          return chalk.red(branch);
+        }
       })
       .join(', ');
 

@@ -64,7 +64,12 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
           formattedMessage: 'myCommitMessage (#1000)',
           originalMessage: 'My original commit message',
           pullNumber: 1000,
-          targetBranchesFromLabels: { expected: [], missing: [], unmerged: [] },
+          targetBranchesFromLabels: {
+            expected: [],
+            missing: [],
+            unmerged: [],
+            merged: [],
+          },
           existingTargetPullRequests: [],
         },
         {
@@ -74,7 +79,12 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
           formattedMessage: 'myOtherCommitMessage (#2000)',
           originalMessage: 'My original commit message',
           pullNumber: 2000,
-          targetBranchesFromLabels: { expected: [], missing: [], unmerged: [] },
+          targetBranchesFromLabels: {
+            expected: [],
+            missing: [],
+            unmerged: [],
+            merged: [],
+          },
           existingTargetPullRequests: [],
         },
       ];
@@ -170,6 +180,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
               expected: [],
               missing: [],
               unmerged: [],
+              merged: [],
             },
             existingTargetPullRequests: [],
           },
@@ -228,6 +239,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
               expected: [],
               missing: [],
               unmerged: [],
+              merged: [],
             },
             existingTargetPullRequests: [],
           },

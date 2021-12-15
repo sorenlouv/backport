@@ -280,6 +280,7 @@ describe('parseSourceCommit', () => {
         expected: ['6.x', '6.2', '6.1'],
         missing: ['6.1'],
         unmerged: ['6.2'],
+        merged: ['6.x'],
       },
     });
   });

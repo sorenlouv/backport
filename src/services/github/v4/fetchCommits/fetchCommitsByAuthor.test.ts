@@ -62,7 +62,12 @@ describe('fetchCommitsByAuthor', () => {
           formattedMessage: 'Add 👻 (2e63475c)',
           originalMessage: 'Add 👻',
           existingTargetPullRequests: [],
-          targetBranchesFromLabels: { expected: [], missing: [], unmerged: [] },
+          targetBranchesFromLabels: {
+            expected: [],
+            missing: [],
+            unmerged: [],
+            merged: [],
+          },
           sourceBranch: 'source-branch-from-options',
         },
         {
@@ -72,7 +77,12 @@ describe('fetchCommitsByAuthor', () => {
           originalMessage: 'Add witch (#85)',
           pullNumber: 85,
           existingTargetPullRequests: [],
-          targetBranchesFromLabels: { expected: [], missing: [], unmerged: [] },
+          targetBranchesFromLabels: {
+            expected: [],
+            missing: [],
+            unmerged: [],
+            merged: [],
+          },
           sourceBranch: 'master',
         },
         {
@@ -85,7 +95,12 @@ describe('fetchCommitsByAuthor', () => {
           existingTargetPullRequests: [
             { branch: '6.3', state: 'MERGED', number: 99 },
           ],
-          targetBranchesFromLabels: { expected: [], missing: [], unmerged: [] },
+          targetBranchesFromLabels: {
+            expected: [],
+            missing: [],
+            unmerged: [],
+            merged: [],
+          },
           sourceBranch: 'master',
         },
         {
@@ -94,7 +109,12 @@ describe('fetchCommitsByAuthor', () => {
           formattedMessage: 'Add backport config (3827bbba)',
           originalMessage: 'Add backport config',
           existingTargetPullRequests: [],
-          targetBranchesFromLabels: { expected: [], missing: [], unmerged: [] },
+          targetBranchesFromLabels: {
+            expected: [],
+            missing: [],
+            unmerged: [],
+            merged: [],
+          },
           sourceBranch: 'source-branch-from-options',
         },
         {
@@ -103,7 +123,12 @@ describe('fetchCommitsByAuthor', () => {
           formattedMessage: 'Initial commit (5ea0da55)',
           originalMessage: 'Initial commit',
           existingTargetPullRequests: [],
-          targetBranchesFromLabels: { expected: [], missing: [], unmerged: [] },
+          targetBranchesFromLabels: {
+            expected: [],
+            missing: [],
+            unmerged: [],
+            merged: [],
+          },
           sourceBranch: 'source-branch-from-options',
         },
       ];

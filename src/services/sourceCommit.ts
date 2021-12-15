@@ -14,6 +14,7 @@ export interface Commit {
     expected: string[];
     missing: string[];
     unmerged: string[];
+    merged: string[];
   };
   sha: string;
   formattedMessage: string;

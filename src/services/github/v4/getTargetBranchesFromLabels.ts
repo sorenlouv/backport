@@ -39,12 +39,20 @@ export function getTargetBranchesFromLabels({
   labels?: string[];
 }) {
   if (!sourceBranch || !branchLabelMapping || !labels) {
-    return { expected: [], missing: [], unmerged: [] };
+    return { expected: [], missing: [], unmerged: [], merged: [] };
   }
 
   const existingTargetBranches = existingTargetPullRequests.map(
     (pr) => pr.branch
   );
+
+  const unmerged = existingTargetPullRequests
+    .filter((pr) => pr.state !== 'MERGED')
+    .map((pr) => pr.branch);
+
+  const merged = existingTargetPullRequests
+    .filter((pr) => pr.state === 'MERGED')
+    .map((pr) => pr.branch);
 
   const expectedTargetBranches = labels
     .map((label) => getTargetBranchForLabel({ branchLabelMapping, label }))
@@ -55,9 +63,6 @@ export function getTargetBranchesFromLabels({
   const missing = expected.filter(
     (targetBranch) => !existingTargetBranches.includes(targetBranch)
   );
-  const unmerged = existingTargetPullRequests
-    .filter((pr) => pr.state !== 'MERGED')
-    .map((pr) => pr.branch);
 
-  return { expected, missing, unmerged };
+  return { expected, missing, unmerged, merged };
 }

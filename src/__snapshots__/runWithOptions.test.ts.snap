@@ -97,6 +97,7 @@ Array [
               "sourceBranch": "my-source-branch-from-options",
               "targetBranchesFromLabels": Object {
                 "expected": Array [],
+                "merged": Array [],
                 "missing": Array [],
                 "unmerged": Array [],
               },
@@ -115,6 +116,7 @@ Array [
               "sourceBranch": "master",
               "targetBranchesFromLabels": Object {
                 "expected": Array [],
+                "merged": Array [],
                 "missing": Array [],
                 "unmerged": Array [],
               },
@@ -143,6 +145,7 @@ Array [
               "sourceBranch": "master",
               "targetBranchesFromLabels": Object {
                 "expected": Array [],
+                "merged": Array [],
                 "missing": Array [],
                 "unmerged": Array [],
               },
@@ -161,6 +164,7 @@ Array [
               "sourceBranch": "my-source-branch-from-options",
               "targetBranchesFromLabels": Object {
                 "expected": Array [],
+                "merged": Array [],
                 "missing": Array [],
                 "unmerged": Array [],
               },
@@ -179,6 +183,7 @@ Array [
               "sourceBranch": "my-source-branch-from-options",
               "targetBranchesFromLabels": Object {
                 "expected": Array [],
+                "merged": Array [],
                 "missing": Array [],
                 "unmerged": Array [],
               },
