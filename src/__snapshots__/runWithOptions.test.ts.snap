@@ -39,7 +39,7 @@ Array [
     },
   ],
   Array [
-    "git fetch elastic mySourceBranchFromOptions:mySourceBranchFromOptions --force",
+    "git fetch elastic my-source-branch-from-options:my-source-branch-from-options --force",
     Object {
       "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
     },
@@ -57,7 +57,7 @@ Array [
     },
   ],
   Array [
-    "git reset --hard && git checkout mySourceBranchFromOptions && git branch -D backport/6.x/commit-2e63475c",
+    "git reset --hard && git checkout my-source-branch-from-options && git branch -D backport/6.x/commit-2e63475c",
     Object {
       "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
     },
@@ -94,7 +94,7 @@ Array [
               "originalMessage": "Add 👻",
               "pullNumber": undefined,
               "sha": "2e63475c483f7844b0f2833bc57fdee32095bacb",
-              "sourceBranch": "mySourceBranchFromOptions",
+              "sourceBranch": "my-source-branch-from-options",
               "targetBranchesFromLabels": Object {
                 "expected": Array [],
                 "missing": Array [],
@@ -158,7 +158,7 @@ Array [
               "originalMessage": "Add backport config",
               "pullNumber": undefined,
               "sha": "3827bbbaf39914eda4f02f6940189844375fd097",
-              "sourceBranch": "mySourceBranchFromOptions",
+              "sourceBranch": "my-source-branch-from-options",
               "targetBranchesFromLabels": Object {
                 "expected": Array [],
                 "missing": Array [],
@@ -176,7 +176,7 @@ Array [
               "originalMessage": "Initial commit",
               "pullNumber": undefined,
               "sha": "5ea0da550ac191029459289d67f99ad7d310812b",
-              "sourceBranch": "mySourceBranchFromOptions",
+              "sourceBranch": "my-source-branch-from-options",
               "targetBranchesFromLabels": Object {
                 "expected": Array [],
                 "missing": Array [],

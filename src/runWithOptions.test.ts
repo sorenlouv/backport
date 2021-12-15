@@ -58,7 +58,7 @@ describe('runWithOptions', () => {
       repoOwner: 'elastic',
       resetAuthor: false,
       sha: undefined,
-      sourceBranch: 'mySourceBranchFromOptions',
+      sourceBranch: 'my-source-branch-from-options',
       sourcePRLabels: [],
       prFilter: undefined,
       targetBranches: [],
@@ -158,7 +158,7 @@ describe('runWithOptions', () => {
         maxNumber: 10,
         repoName: 'kibana',
         repoOwner: 'elastic',
-        sourceBranch: 'mySourceBranchFromOptions',
+        sourceBranch: 'my-source-branch-from-options',
       },
     ]);
   });
