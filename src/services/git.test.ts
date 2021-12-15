@@ -16,7 +16,7 @@ import {
 } from '../services/git';
 import { ExecError } from '../test/ExecError';
 import { SpyHelper } from '../types/SpyHelper';
-import { Commit } from '../types/commitWithAssociatedPullRequests';
+import { Commit } from './sourceCommit';
 
 beforeEach(() => {
   jest.clearAllMocks();

@@ -4,7 +4,7 @@ import {
   parseSourceCommit,
   getExistingTargetPullRequests,
   SourceCommitWithTargetPullRequest,
-} from './commitWithAssociatedPullRequests';
+} from './sourceCommit';
 
 function getMockSourceCommit({
   sourcePullRequest,

@@ -29,7 +29,7 @@ import { enablePullRequestAutoMerge } from '../services/github/v4/enablePullRequ
 import { consoleLog, logger } from '../services/logger';
 import { confirmPrompt } from '../services/prompts';
 import { sequentially } from '../services/sequentially';
-import { Commit } from '../types/commitWithAssociatedPullRequests';
+import { Commit } from '../services/sourceCommit';
 
 export async function cherrypickAndCreateTargetPullRequest({
   options,

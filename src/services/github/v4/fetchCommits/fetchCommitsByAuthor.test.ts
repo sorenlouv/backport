@@ -1,7 +1,7 @@
 import nock from 'nock';
 import { ValidConfigOptions } from '../../../../options/options';
 import { mockGqlRequest } from '../../../../test/nockHelpers';
-import { Commit } from '../../../../types/commitWithAssociatedPullRequests';
+import { Commit } from '../../../sourceCommit';
 import { AuthorIdResponse } from '../fetchAuthorId';
 import { commitsByAuthorMock } from '../mocks/commitsByAuthorMock';
 import {

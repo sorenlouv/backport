@@ -1,13 +1,13 @@
 import { isEmpty, uniqBy, orderBy } from 'lodash';
 import ora from 'ora';
 import { ValidConfigOptions } from '../../../../options/options';
+import { HandledError } from '../../../HandledError';
 import {
   Commit,
   SourceCommitWithTargetPullRequest,
-  commitWithAssociatedPullRequestsFragment,
+  sourceCommitWithTargetPullRequestFragment,
   parseSourceCommit,
-} from '../../../../types/commitWithAssociatedPullRequests';
-import { HandledError } from '../../../HandledError';
+} from '../../../sourceCommit';
 import { apiRequestV4 } from '../apiRequestV4';
 import { fetchAuthorId } from '../fetchAuthorId';
 
@@ -20,7 +20,7 @@ function getCommitHistoryFragment(commitPath: string | null, index = 0) {
   ) {
     edges {
       node {
-       ...${commitWithAssociatedPullRequestsFragment.name}
+       ...${sourceCommitWithTargetPullRequestFragment.name}
       }
     }
   }`;
@@ -63,7 +63,7 @@ export async function fetchCommitsByAuthor(
       }
     }
 
-    ${commitWithAssociatedPullRequestsFragment.source}
+    ${sourceCommitWithTargetPullRequestFragment.source}
   `;
 
   const spinner = ora(

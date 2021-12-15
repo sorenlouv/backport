@@ -1,7 +1,7 @@
 import { ValidConfigOptions } from '../../../../options/options';
 import { getDevAccessToken } from '../../../../test/private/getDevAccessToken';
 import { PromiseReturnType } from '../../../../types/PromiseReturnType';
-import { Commit } from '../../../../types/commitWithAssociatedPullRequests';
+import { Commit } from '../../../sourceCommit';
 import { fetchCommitsByAuthor } from './fetchCommitsByAuthor';
 
 describe('fetchCommitsByAuthor', () => {

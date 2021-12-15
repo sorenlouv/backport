@@ -1,13 +1,13 @@
 import { isEmpty } from 'lodash';
 import ora from 'ora';
 import { ValidConfigOptions } from '../../../../options/options';
+import { HandledError } from '../../../HandledError';
 import {
   Commit,
   SourceCommitWithTargetPullRequest,
-  commitWithAssociatedPullRequestsFragment,
+  sourceCommitWithTargetPullRequestFragment,
   parseSourceCommit,
-} from '../../../../types/commitWithAssociatedPullRequests';
-import { HandledError } from '../../../HandledError';
+} from '../../../sourceCommit';
 import { apiRequestV4 } from '../apiRequestV4';
 
 export async function fetchPullRequestBySearchQuery(
@@ -31,14 +31,14 @@ export async function fetchPullRequestBySearchQuery(
         nodes {
           ... on PullRequest {
             mergeCommit {
-              ...${commitWithAssociatedPullRequestsFragment.name}
+              ...${sourceCommitWithTargetPullRequestFragment.name}
             }
           }
         }
       }
     }
 
-    ${commitWithAssociatedPullRequestsFragment.source}
+    ${sourceCommitWithTargetPullRequestFragment.source}
   `;
 
   const authorFilter = all ? '' : `author:${author}`;

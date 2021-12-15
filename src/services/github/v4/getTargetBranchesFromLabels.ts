@@ -1,7 +1,7 @@
 import { uniq } from 'lodash';
 import { ValidConfigOptions } from '../../../options/options';
-import { ExistingTargetPullRequests } from '../../../types/commitWithAssociatedPullRequests';
 import { filterNil } from '../../../utils/filterEmpty';
+import { ExistingTargetPullRequests } from '../../sourceCommit';
 
 export function getTargetBranchForLabel({
   branchLabelMapping,

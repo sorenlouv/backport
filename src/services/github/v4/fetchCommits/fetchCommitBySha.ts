@@ -1,13 +1,13 @@
 import chalk from 'chalk';
 import ora from 'ora';
 import { ValidConfigOptions } from '../../../../options/options';
+import { HandledError } from '../../../HandledError';
 import {
   Commit,
   SourceCommitWithTargetPullRequest,
-  commitWithAssociatedPullRequestsFragment,
+  sourceCommitWithTargetPullRequestFragment,
   parseSourceCommit,
-} from '../../../../types/commitWithAssociatedPullRequests';
-import { HandledError } from '../../../HandledError';
+} from '../../../sourceCommit';
 import { getShortSha } from '../../commitFormatters';
 import { apiRequestV4 } from '../apiRequestV4';
 
@@ -27,12 +27,12 @@ export async function fetchCommitBySha(
   query CommitsBySha($repoOwner: String!, $repoName: String!, $oid: String!) {
     repository(owner: $repoOwner, name: $repoName) {
       object(expression: $oid) {
-        ...${commitWithAssociatedPullRequestsFragment.name}
+        ...${sourceCommitWithTargetPullRequestFragment.name}
       }
     }
   }
 
-    ${commitWithAssociatedPullRequestsFragment.source}
+    ${sourceCommitWithTargetPullRequestFragment.source}
   `;
 
   const spinner = ora(`Loading commit "${getShortSha(sha)}"`).start();

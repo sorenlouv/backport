@@ -1,8 +1,8 @@
 import { TargetBranchChoice } from '../options/ConfigOptions';
 import { ValidConfigOptions } from '../options/options';
 import * as prompts from '../services/prompts';
+import { Commit } from '../services/sourceCommit';
 import { SpyHelper } from '../types/SpyHelper';
-import { Commit } from '../types/commitWithAssociatedPullRequests';
 import { getTargetBranches, getTargetBranchChoices } from './getTargetBranches';
 
 describe('getTargetBranches', () => {

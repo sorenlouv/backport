@@ -4,10 +4,10 @@ import { ValidConfigOptions } from '../options/options';
 import * as childProcess from '../services/child-process-promisified';
 import * as logger from '../services/logger';
 import * as prompts from '../services/prompts';
+import { Commit } from '../services/sourceCommit';
 import { ExecError } from '../test/ExecError';
 import { PromiseReturnType } from '../types/PromiseReturnType';
 import { SpyHelper } from '../types/SpyHelper';
-import { Commit } from '../types/commitWithAssociatedPullRequests';
 import { cherrypickAndCreateTargetPullRequest } from './cherrypickAndCreateTargetPullRequest';
 
 describe('cherrypickAndCreateTargetPullRequest', () => {

@@ -1,13 +1,13 @@
 import chalk from 'chalk';
 import ora from 'ora';
 import { ValidConfigOptions } from '../../../../options/options';
+import { HandledError } from '../../../HandledError';
 import {
   Commit,
   SourceCommitWithTargetPullRequest,
-  commitWithAssociatedPullRequestsFragment,
+  sourceCommitWithTargetPullRequestFragment,
   parseSourceCommit,
-} from '../../../../types/commitWithAssociatedPullRequests';
-import { HandledError } from '../../../HandledError';
+} from '../../../sourceCommit';
 import { apiRequestV4 } from '../apiRequestV4';
 
 export async function fetchCommitByPullNumber(
@@ -25,13 +25,13 @@ export async function fetchCommitByPullNumber(
       repository(owner: $repoOwner, name: $repoName) {
         pullRequest(number: $pullNumber) {
           mergeCommit {
-            ...${commitWithAssociatedPullRequestsFragment.name}
+            ...${sourceCommitWithTargetPullRequestFragment.name}
           }
         }
       }
     }
 
-    ${commitWithAssociatedPullRequestsFragment.source}
+    ${sourceCommitWithTargetPullRequestFragment.source}
   `;
 
   const spinner = ora(

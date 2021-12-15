@@ -1,4 +1,4 @@
-import { ExistingTargetPullRequests } from '../../../types/commitWithAssociatedPullRequests';
+import { ExistingTargetPullRequests } from '../../sourceCommit';
 import { getTargetBranchesFromLabels } from './getTargetBranchesFromLabels';
 
 describe('getTargetBranchesFromLabels', () => {
