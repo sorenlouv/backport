@@ -156,6 +156,7 @@ describe('runWithOptions', () => {
       {
         authorId: 'sqren_author_id',
         maxNumber: 10,
+        commitPath: null,
         repoName: 'kibana',
         repoOwner: 'elastic',
         sourceBranch: 'my-source-branch-from-options',
