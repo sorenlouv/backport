@@ -180,7 +180,8 @@ async function getCommitsWithoutBackports(
       return ` - ${c.formattedMessage} ${
         unmergedPr?.state === 'OPEN' ? chalk.gray('(backport pending)') : ''
       }${c.pullUrl ? `\n   ${c.pullUrl}` : ''}`;
-    });
+    })
+    .slice(0, 5);
 }
 
 /*
