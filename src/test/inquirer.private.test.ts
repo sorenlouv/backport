@@ -174,8 +174,8 @@ function runBackportAsync(
   const p = new Promise<string>((resolve, reject) => {
     let data = '';
 
-    // fail if expectations hasn't been found within 4s
-    const TIMEOUT_IN_SECONDS = 4;
+    // fail if expectations hasn't been found within 10 seconds
+    const TIMEOUT_IN_SECONDS = 10;
     const timeout = setTimeout(() => {
       reject(`Expectation '${waitForString}' not found within ${TIMEOUT_IN_SECONDS} seconds in:
       '${data.toString()}'`);
