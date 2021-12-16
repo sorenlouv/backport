@@ -128,19 +128,25 @@ export async function getUpstreamFromGitRemote() {
   }
 }
 
-// export async function isCommitInBranch(
-//   options: ValidConfigOptions,
-//   commitSha: string
-// ) {
-//   try {
-//     await exec(`git merge-base --is-ancestor ${commitSha} HEAD`, {
-//       cwd: getRepoPath(options),
-//     });
-//   } catch (e) {
-//     // TODO
-//     console.log(e);
-//   }
-// }
+export async function getIsCommitInBranch(
+  options: ValidConfigOptions,
+  commitSha: string
+) {
+  try {
+    const cwd = getRepoPath(options);
+    await exec(`git merge-base --is-ancestor ${commitSha} HEAD`, {
+      cwd,
+    });
+    return true;
+  } catch (e) {
+    const isExecError = e.cmd && e.code > 0;
+    // re-throw if error is not an exec related error
+    if (!isExecError) {
+      throw e;
+    }
+    return false;
+  }
+}
 
 export async function deleteRemote(
   options: ValidConfigOptions,

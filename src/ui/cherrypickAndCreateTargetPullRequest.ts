@@ -15,6 +15,7 @@ import {
   commitChanges,
   getConflictingFiles,
   getRepoForkOwner,
+  getIsCommitInBranch,
 } from '../services/git';
 import { getShortSha } from '../services/github/commitFormatters';
 import { addAssigneesToPullRequest } from '../services/github/v3/addAssigneesToPullRequest';
@@ -26,6 +27,7 @@ import {
   PullRequestPayload,
 } from '../services/github/v3/createPullRequest';
 import { enablePullRequestAutoMerge } from '../services/github/v4/enablePullRequestAutoMerge';
+import { fetchCommitsByAuthor } from '../services/github/v4/fetchCommits/fetchCommitsByAuthor';
 import { consoleLog, logger } from '../services/logger';
 import { confirmPrompt } from '../services/prompts';
 import { sequentially } from '../services/sequentially';
@@ -133,6 +135,46 @@ async function backportViaFilesystem({
   return createPullRequest({ options, prPayload });
 }
 
+// when the user is facing a git conflict we should help them understand
+// why the conflict occurs. In many cases it's because one or more commits haven't been backported yet
+async function getCommitsWithoutBackports(
+  options: ValidConfigOptions,
+  commit: Commit,
+  targetBranch: string
+) {
+  const filenames = await getConflictingFiles(options, false);
+  const conflictingCommits = await fetchCommitsByAuthor({
+    ...options,
+    all: true,
+    commitPaths: filenames,
+  });
+
+  const promises = conflictingCommits
+    .filter((c) => {
+      // don't show the same commit that we are currently trying to backport
+      if (c.sha === commit.sha) {
+        return false;
+      }
+
+      const alreadyBackported = c.existingTargetPullRequests.some(
+        (pr) => pr.branch === targetBranch && pr.state === 'MERGED'
+      );
+      if (alreadyBackported) {
+        return false;
+      }
+
+      return true;
+    })
+    .map(async (c) => {
+      const isCommitInBranch = await getIsCommitInBranch(options, c.sha);
+      return { c, isCommitInBranch };
+    });
+
+  return (await Promise.all(promises))
+    .filter(({ isCommitInBranch }) => !isCommitInBranch)
+    .map(({ c }) => c);
+}
+
 /*
  * Returns the name of the backport branch without remote name
  *
@@ -205,6 +247,13 @@ async function waitForCherrypick(
     }
     autoResolveSpinner.fail();
   }
+
+  const commitsWithoutBackports = await getCommitsWithoutBackports(
+    options,
+    commit,
+    targetBranch
+  );
+  console.log(commitsWithoutBackports);
 
   if (options.ci) {
     throw new HandledError('Commit could not be cherrypicked due to conflicts');
