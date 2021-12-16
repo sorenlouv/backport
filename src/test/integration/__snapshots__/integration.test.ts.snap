@@ -123,6 +123,7 @@ Array [
         edges {
           node {
             # Source PR
+            url
             number
             labels(first: 50) {
               nodes {
@@ -299,6 +300,7 @@ Array [
         edges {
           node {
             # Source PR
+            url
             number
             labels(first: 50) {
               nodes {

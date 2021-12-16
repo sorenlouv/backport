@@ -26,6 +26,7 @@ describe('fetchCommitBySha', () => {
       formattedMessage: '[APM] Add API tests (#70740)',
       originalMessage: '[APM] Add API tests (#70740)',
       pullNumber: 70740,
+      pullUrl: 'https://github.com/elastic/kibana/pull/70740',
       sha: 'cb6fbc0e1b406675724181a3e9f59459b5f8f892',
       sourceBranch: 'master',
       targetBranchesFromLabels: {

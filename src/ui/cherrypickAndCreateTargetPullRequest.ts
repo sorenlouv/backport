@@ -172,7 +172,15 @@ async function getCommitsWithoutBackports(
 
   return (await Promise.all(promises))
     .filter(({ isCommitInBranch }) => !isCommitInBranch)
-    .map(({ c }) => c);
+    .map(({ c }) => {
+      const unmergedPr = c.existingTargetPullRequests.find(
+        (pr) => pr.branch === targetBranch
+      );
+
+      return ` - ${c.formattedMessage} ${
+        unmergedPr?.state === 'OPEN' ? chalk.gray('(backport pending)') : ''
+      }${c.pullUrl ? `\n   ${c.pullUrl}` : ''}`;
+    });
 }
 
 /*
@@ -253,7 +261,20 @@ async function waitForCherrypick(
     commit,
     targetBranch
   );
-  console.log(commitsWithoutBackports);
+
+  consoleLog(
+    chalk.bold('\nThe commit could not be backported due to conflicts\n')
+  );
+
+  if (commitsWithoutBackports.length > 0) {
+    consoleLog(
+      chalk.italic(
+        `Hint: Before fixing the conflicts manually you should consider backporting the following commits to "${targetBranch}":`
+      )
+    );
+
+    consoleLog(`${commitsWithoutBackports.join('\n')}\n\n`);
+  }
 
   if (options.ci) {
     throw new HandledError('Commit could not be cherrypicked due to conflicts');
@@ -317,7 +338,7 @@ async function listConflictingAndUnstagedFiles(options: ValidConfigOptions) {
       : '';
 
     const res = await confirmPrompt(`${chalk.reset(
-      `Please fix the issues in: ${getRepoPath(options)}`
+      `Fix the following conflicts manually`
     )}
 
 ${conflictSection}

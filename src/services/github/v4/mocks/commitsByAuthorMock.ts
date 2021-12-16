@@ -33,6 +33,7 @@ export const commitsByAuthorMock: CommitByAuthorResponse = {
                   edges: [
                     {
                       node: {
+                        url: 'https://github.com/elastic/kibana/pull/85',
                         baseRefName: 'master',
                         labels: {
                           nodes: [{ name: 'my-label-b' }],
@@ -61,10 +62,10 @@ export const commitsByAuthorMock: CommitByAuthorResponse = {
                   edges: [
                     {
                       node: {
+                        url: 'https://github.com/elastic/kibana/pull/80',
                         labels: {
                           nodes: [{ name: 'v6.3.0' }],
                         },
-
                         baseRefName: 'master',
                         number: 80,
                         timelineItems: {

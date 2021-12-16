@@ -37,6 +37,7 @@ function getMockSourceCommit({
       edges: [
         {
           node: {
+            url: `https://github.com/elastic/kibana/pull/${sourcePullRequest.number}`,
             labels: {
               nodes: (sourcePullRequest.labels ?? []).map((name) => ({ name })),
             },
@@ -274,6 +275,7 @@ describe('parseSourceCommit', () => {
       formattedMessage: 'My commit message (#1234)',
       originalMessage: 'My commit message (#1234)',
       pullNumber: 1234,
+      pullUrl: 'https://github.com/elastic/kibana/pull/1234',
       sha: '79cf18453ec32a4677009dcbab1c9c8c73fc14fe',
       sourceBranch: 'source-branch-from-associated-pull-request',
       targetBranchesFromLabels: {

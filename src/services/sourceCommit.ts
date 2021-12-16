@@ -20,11 +20,13 @@ export interface Commit {
   formattedMessage: string;
   originalMessage: string;
   pullNumber?: number;
+  pullUrl?: string;
   existingTargetPullRequests: ExistingTargetPullRequests;
 }
 
 export interface PullRequestNode {
   baseRefName: string;
+  url: string;
   number: number;
   labels: {
     nodes: {
@@ -116,6 +118,7 @@ export function parseSourceCommit({
     formattedMessage,
     originalMessage: commitMessage,
     pullNumber,
+    pullUrl: pullRequestNode?.url,
     existingTargetPullRequests,
   };
 }
@@ -141,6 +144,7 @@ export const sourceCommitWithTargetPullRequestFragment = {
         edges {
           node {
             # Source PR
+            url
             number
             labels(first: 50) {
               nodes {
