@@ -34,8 +34,18 @@ describe('fetchCommitByPullNumber', () => {
           merged: [],
         },
         existingTargetPullRequests: [
-          { branch: '7.x', state: 'MERGED', number: 6 },
-          { branch: '7.8', state: 'MERGED', number: 7 },
+          {
+            branch: '7.x',
+            state: 'MERGED',
+            number: 6,
+            url: 'https://github.com/backport-org/backport-e2e/pull/6',
+          },
+          {
+            branch: '7.8',
+            state: 'MERGED',
+            number: 7,
+            url: 'https://github.com/backport-org/backport-e2e/pull/7',
+          },
         ],
       });
     });

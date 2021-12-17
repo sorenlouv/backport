@@ -397,13 +397,9 @@ export async function pushBackportBranch({
   backportBranch: string;
 }) {
   const repoForkOwner = getRepoForkOwner(options);
-  const spinnerText = `Pushing branch "${repoForkOwner}:${backportBranch}"`;
-  const spinner = ora(spinnerText).start();
-
-  if (options.dryRun) {
-    spinner.succeed(`Dry run: ${spinnerText}`);
-    return;
-  }
+  const spinner = ora(
+    `Pushing branch "${repoForkOwner}:${backportBranch}"`
+  ).start();
 
   try {
     const res = await exec(

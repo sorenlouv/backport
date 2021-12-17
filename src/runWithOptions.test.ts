@@ -55,7 +55,6 @@ describe('runWithOptions', () => {
       autoMergeMethod: 'merge',
       branchLabelMapping: undefined,
       ci: false,
-      dryRun: false,
       editor: 'code',
       forceLocalConfig: undefined,
       fork: true,

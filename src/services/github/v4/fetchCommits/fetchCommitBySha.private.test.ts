@@ -36,7 +36,12 @@ describe('fetchCommitBySha', () => {
         merged: [],
       },
       existingTargetPullRequests: [
-        { branch: '7.x', state: 'MERGED', number: 71014 },
+        {
+          branch: '7.x',
+          state: 'MERGED',
+          number: 71014,
+          url: 'https://github.com/elastic/kibana/pull/71014',
+        },
       ],
     });
   });

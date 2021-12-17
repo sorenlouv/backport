@@ -214,11 +214,6 @@ async function waitForCherrypick(
   )}`;
   const cherrypickSpinner = ora(spinnerText).start();
 
-  if (options.dryRun) {
-    cherrypickSpinner.succeed(`Dry run: ${spinnerText}`);
-    return;
-  }
-
   try {
     const { needsResolving } = await cherrypick(options, commit);
 

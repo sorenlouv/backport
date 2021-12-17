@@ -95,7 +95,12 @@ describe('fetchCommitsByAuthor', () => {
           pullNumber: 80,
           pullUrl: 'https://github.com/elastic/kibana/pull/80',
           existingTargetPullRequests: [
-            { branch: '6.3', state: 'MERGED', number: 99 },
+            {
+              branch: '6.3',
+              state: 'MERGED',
+              number: 99,
+              url: 'https://github.com/elastic/kibana/pull/99',
+            },
           ],
           targetBranchesFromLabels: {
             expected: [],

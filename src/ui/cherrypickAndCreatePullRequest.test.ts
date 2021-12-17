@@ -323,7 +323,6 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         Array [
           "Pulling latest changes",
           "Cherry-picking: myCommitMessage",
-          "Loading commits from branch \\"myDefaultSourceBranch\\"...",
           "Finalizing cherrypick",
           "Pushing branch \\"sqren:backport/6.x/commit-mySha\\"",
           undefined,

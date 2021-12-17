@@ -44,6 +44,7 @@ interface TimelinePullRequestEdge {
   node: {
     targetPullRequest: {
       __typename: 'PullRequest';
+      url: string;
       title: string;
       state: 'OPEN' | 'CLOSED' | 'MERGED';
       baseRefName: string;
@@ -161,6 +162,7 @@ export const sourceCommitWithTargetPullRequestFragment = {
 
                       # Target PRs
                       ... on PullRequest {
+                        url
                         title
                         state
                         baseRefName
@@ -207,10 +209,8 @@ export function getExistingTargetPullRequests(
     .filter((item) => {
       const { targetPullRequest } = item.node;
 
-      if (
-        targetPullRequest.state !== 'MERGED' &&
-        targetPullRequest.state !== 'OPEN'
-      ) {
+      // ignore closed PRs
+      if (targetPullRequest.state === 'CLOSED') {
         return false;
       }
 
@@ -248,6 +248,7 @@ export function getExistingTargetPullRequests(
     .map((item) => {
       const { targetPullRequest } = item.node;
       return {
+        url: targetPullRequest.url,
         number: targetPullRequest.number,
         branch: targetPullRequest.baseRefName,
         state: targetPullRequest.state,

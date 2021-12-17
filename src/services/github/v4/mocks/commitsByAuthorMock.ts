@@ -74,6 +74,7 @@ export const commitsByAuthorMock: CommitByAuthorResponse = {
                               node: {
                                 targetPullRequest: {
                                   __typename: 'PullRequest',
+                                  url: 'https://github.com/elastic/kibana/pull/99',
                                   title: 'some title',
                                   state: 'MERGED',
                                   number: 99,

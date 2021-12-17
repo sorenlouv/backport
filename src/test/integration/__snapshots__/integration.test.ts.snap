@@ -140,6 +140,7 @@ Array [
 
                       # Target PRs
                       ... on PullRequest {
+                        url
                         title
                         state
                         baseRefName
@@ -317,6 +318,7 @@ Array [
 
                       # Target PRs
                       ... on PullRequest {
+                        url
                         title
                         state
                         baseRefName

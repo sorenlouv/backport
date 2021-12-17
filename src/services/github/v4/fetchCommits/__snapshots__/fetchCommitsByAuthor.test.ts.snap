@@ -86,6 +86,7 @@ Array [
 
                       # Target PRs
                       ... on PullRequest {
+                        url
                         title
                         state
                         baseRefName
