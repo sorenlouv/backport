@@ -329,130 +329,140 @@ describe('getExpectedTargetPullRequests', () => {
       { branch: 'master', state: 'MISSING' },
     ]);
   });
+
+  it('should only get first match', () => {
+    const branchLabelMapping = {
+      'label-2': 'branch-b',
+      'label-(\\d+)': 'branch-$1',
+    };
+
+    const mockSourceCommit = getMockSourceCommit({
+      sourceCommitMessage: 'identical messages (#1234)',
+      sourcePullRequest: {
+        number: 1234,
+        labels: ['label-2'],
+      },
+    });
+
+    const expectedTargetPullRequests = getExpectedTargetPullRequests(
+      mockSourceCommit,
+      branchLabelMapping
+    );
+
+    expect(expectedTargetPullRequests).toEqual([
+      { branch: 'branch-b', state: 'MISSING' },
+    ]);
+  });
+
+  it('shows open PRs', () => {
+    const branchLabelMapping = {
+      'label-(\\d+)': 'branch-$1',
+    };
+
+    const mockSourceCommit = getMockSourceCommit({
+      sourceCommitMessage: 'identical messages (#1234)',
+      sourcePullRequest: {
+        number: 1234,
+        labels: ['label-1', 'label-2', 'label-3', 'label-4'],
+      },
+      timelineItems: [
+        {
+          state: 'OPEN',
+          targetBranch: 'branch-3',
+          commitMessages: ['identical messages (#1234)'],
+          number: 5678,
+        },
+      ],
+    });
+
+    const expectedTargetPullRequests = getExpectedTargetPullRequests(
+      mockSourceCommit,
+      branchLabelMapping
+    );
+
+    expect(expectedTargetPullRequests).toEqual([
+      {
+        branch: 'branch-3',
+        number: 5678,
+        state: 'OPEN',
+        url: 'https://github.com/elastic/kibana/pull/5678',
+      },
+      { branch: 'branch-1', state: 'MISSING' },
+      { branch: 'branch-2', state: 'MISSING' },
+      { branch: 'branch-4', state: 'MISSING' },
+    ]);
+  });
+
+  it('ignores closed PRs (treats them as MISSING)', () => {
+    const branchLabelMapping = {
+      'label-(\\d+)': 'branch-$1',
+    };
+
+    const mockSourceCommit = getMockSourceCommit({
+      sourceCommitMessage: 'identical messages (#1234)',
+      sourcePullRequest: {
+        number: 1234,
+        labels: ['label-1', 'label-2', 'label-3', 'label-4'],
+      },
+      timelineItems: [
+        {
+          state: 'CLOSED',
+          targetBranch: 'branch-3',
+          commitMessages: ['identical messages (#1234)'],
+          number: 5678,
+        },
+      ],
+    });
+
+    const expectedTargetPullRequests = getExpectedTargetPullRequests(
+      mockSourceCommit,
+      branchLabelMapping
+    );
+
+    expect(expectedTargetPullRequests).toEqual([
+      { branch: 'branch-1', state: 'MISSING' },
+      { branch: 'branch-2', state: 'MISSING' },
+      { branch: 'branch-3', state: 'MISSING' },
+      { branch: 'branch-4', state: 'MISSING' },
+    ]);
+  });
+
+  it('shows merged PRs', () => {
+    const branchLabelMapping = {
+      'label-(\\d+)': 'branch-$1',
+    };
+
+    const mockSourceCommit = getMockSourceCommit({
+      sourceCommitMessage: 'identical messages (#1234)',
+      sourcePullRequest: {
+        number: 1234,
+        labels: ['label-1', 'label-2', 'label-3', 'label-4'],
+      },
+      timelineItems: [
+        {
+          state: 'MERGED',
+          targetBranch: 'branch-3',
+          commitMessages: ['identical messages (#1234)'],
+          number: 5678,
+        },
+      ],
+    });
+
+    const expectedTargetPullRequests = getExpectedTargetPullRequests(
+      mockSourceCommit,
+      branchLabelMapping
+    );
+
+    expect(expectedTargetPullRequests).toEqual([
+      {
+        branch: 'branch-3',
+        number: 5678,
+        state: 'MERGED',
+        url: 'https://github.com/elastic/kibana/pull/5678',
+      },
+      { branch: 'branch-1', state: 'MISSING' },
+      { branch: 'branch-2', state: 'MISSING' },
+      { branch: 'branch-4', state: 'MISSING' },
+    ]);
+  });
 });
-
-// describe('getTargetBranchesFromLabels', () => {
-
-//   it('should only get first match', () => {
-//     const sourceBranch = 'master';
-//     const expectedTargetPullRequests = [] as ExistingTargetPullRequests;
-//     const branchLabelMapping = {
-//       'label-2': 'branch-b',
-//       'label-(\\d+)': 'branch-$1',
-//     };
-//     const labels = ['label-2'];
-//     const targetBranches = getTargetBranchesFromLabels({
-//       sourceBranch,
-//       expectedTargetPullRequests,
-//       labels,
-//       branchLabelMapping,
-//     });
-//     expect(targetBranches).toEqual({
-//       expected: ['branch-b'],
-//       missing: ['branch-b'],
-//       unmerged: [],
-//       merged: [],
-//     });
-//   });
-
-//   it('open PRs', () => {
-//     const sourceBranch = 'master';
-//     const expectedTargetPullRequests = [
-//       { branch: 'branch-3', state: 'OPEN' },
-//     ] as ExistingTargetPullRequests;
-//     const branchLabelMapping = {
-//       'label-(\\d+)': 'branch-$1',
-//     };
-//     const labels = ['label-1', 'label-2', 'label-3', 'label-4'];
-//     const targetBranches = getTargetBranchesFromLabels({
-//       sourceBranch,
-//       expectedTargetPullRequests,
-//       labels,
-//       branchLabelMapping,
-//     });
-//     expect(targetBranches).toEqual({
-//       expected: ['branch-1', 'branch-2', 'branch-3', 'branch-4'],
-//       missing: ['branch-1', 'branch-2', 'branch-4'],
-//       unmerged: ['branch-3'],
-//       merged: [],
-//     });
-//   });
-
-//   it('closed PRs', () => {
-//     const sourceBranch = 'master';
-//     const expectedTargetPullRequests = [
-//       { branch: 'branch-3', state: 'CLOSED' },
-//     ] as ExistingTargetPullRequests;
-//     const branchLabelMapping = {
-//       'label-(\\d+)': 'branch-$1',
-//     };
-//     const labels = ['label-1', 'label-2', 'label-3', 'label-4'];
-//     const targetBranches = getTargetBranchesFromLabels({
-//       sourceBranch,
-//       expectedTargetPullRequests,
-//       labels,
-//       branchLabelMapping,
-//     });
-//     expect(targetBranches).toEqual({
-//       expected: ['branch-1', 'branch-2', 'branch-3', 'branch-4'],
-//       missing: ['branch-1', 'branch-2', 'branch-4'],
-//       unmerged: ['branch-3'],
-//       merged: [],
-//     });
-//   });
-
-//   it('merged PRs', () => {
-//     const sourceBranch = 'master';
-//     const expectedTargetPullRequests = [
-//       { branch: 'branch-2', state: 'MERGED' },
-//     ] as ExistingTargetPullRequests;
-//     const branchLabelMapping = {
-//       'label-(\\d+)': 'branch-$1',
-//     };
-//     const labels = ['label-1', 'label-2', 'label-3', 'label-4'];
-//     const targetBranches = getTargetBranchesFromLabels({
-//       sourceBranch,
-//       expectedTargetPullRequests,
-//       labels,
-//       branchLabelMapping,
-//     });
-//     expect(targetBranches).toEqual({
-//       expected: ['branch-1', 'branch-2', 'branch-3', 'branch-4'],
-//       missing: ['branch-1', 'branch-3', 'branch-4'],
-//       unmerged: [],
-//       merged: ['branch-2'],
-//     });
-//   });
-//   it('should ignore non-matching labels', () => {
-//     const sourceBranch = 'master';
-//     const expectedTargetPullRequests = [] as ExistingTargetPullRequests;
-//     const branchLabelMapping = {
-//       'label-(\\d+)': 'branch-$1',
-//     };
-//     const labels = ['label-1', 'label-2', 'foo', 'bar'];
-//     const targetBranches = getTargetBranchesFromLabels({
-//       sourceBranch,
-//       expectedTargetPullRequests,
-//       labels,
-//       branchLabelMapping,
-//     });
-//     expect(targetBranches.expected).toEqual(['branch-1', 'branch-2']);
-//   });
-
-//   it('should omit empty labels', () => {
-//     const sourceBranch = 'master';
-//     const expectedTargetPullRequests = [] as ExistingTargetPullRequests;
-//     const branchLabelMapping = {
-//       'label-2': '',
-//       'label-(\\d+)': 'branch-$1',
-//     };
-//     const labels = ['label-1', 'label-2'];
-//     const targetBranches = getTargetBranchesFromLabels({
-//       sourceBranch,
-//       expectedTargetPullRequests,
-//       labels,
-//       branchLabelMapping,
-//     });
-//     expect(targetBranches.expected).toEqual(['branch-1']);
-//   });
-// });
