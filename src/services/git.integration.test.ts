@@ -10,18 +10,14 @@ import { getShortSha } from './github/commitFormatters';
 jest.unmock('make-dir');
 jest.unmock('del');
 
-async function resetGitSandbox() {
-  const GIT_SANDBOX_DIR_PATH = resolve(`${__dirname}/git-test-temp`);
+const GIT_SANDBOX_DIR_PATH = resolve(`${__dirname}/git-test-temp`);
 
+async function resetGitSandbox() {
   await del(GIT_SANDBOX_DIR_PATH);
   await makeDir(GIT_SANDBOX_DIR_PATH);
 
   // mock repo path to point to git-sandbox dir
   jest.spyOn(env, 'getRepoPath').mockReturnValue(GIT_SANDBOX_DIR_PATH);
-
-  return {
-    sandboxDir: GIT_SANDBOX_DIR_PATH,
-  };
 }
 
 async function createAndCommitFile({
@@ -61,9 +57,8 @@ describe('git.integration', () => {
     let secondSha: string;
 
     beforeEach(async () => {
-      const { sandboxDir } = await resetGitSandbox();
-
-      const execOpts = { cwd: sandboxDir };
+      await resetGitSandbox();
+      const execOpts = { cwd: GIT_SANDBOX_DIR_PATH };
 
       // create and commit first file
       await childProcess.exec('git init', execOpts);
@@ -122,8 +117,8 @@ describe('git.integration', () => {
     let execOpts: Record<string, string>;
 
     beforeEach(async () => {
-      const { sandboxDir } = await resetGitSandbox();
-      execOpts = { cwd: sandboxDir };
+      await resetGitSandbox();
+      execOpts = { cwd: GIT_SANDBOX_DIR_PATH };
 
       // create and commit first file
       await childProcess.exec('git init', execOpts);
@@ -189,15 +184,11 @@ describe('git.integration', () => {
         needsResolving: true,
         conflictingFiles: [
           {
-            absolute:
-              '/Users/sqren/elastic/backport/src/services/git-test-temp/foo.md',
+            absolute: `${GIT_SANDBOX_DIR_PATH}/foo.md`,
             relative: 'foo.md',
           },
         ],
-
-        unstagedFiles: [
-          '/Users/sqren/elastic/backport/src/services/git-test-temp/foo.md',
-        ],
+        unstagedFiles: [`${GIT_SANDBOX_DIR_PATH}/foo.md`],
       });
     });
   });
