@@ -63,6 +63,12 @@ export function getOptionsFromCliArgs(
       type: 'boolean',
     })
 
+    .option('cherrypickRef', {
+      description:
+        'Append commit message with "(cherry picked from commit...)"',
+      type: 'boolean',
+    })
+
     .option('details', {
       description: 'Show details about each commit',
       type: 'boolean',
@@ -293,6 +299,7 @@ export function getOptionsFromCliArgs(
     targetBranch,
     targetBranchChoice,
     targetPRLabel,
+    cherrypickRef,
 
     ...restOptions
   } = yargsInstance.parseSync();
@@ -303,6 +310,9 @@ export function getOptionsFromCliArgs(
     // `multiple` is a cli-only flag to override `multipleBranches` and `multipleCommits`
     multipleBranches: multiple ?? multipleBranches,
     multipleCommits: multiple ?? multipleCommits,
+
+    //rename to longer versions
+    cherrypickReference: cherrypickRef,
 
     // rename array types to plural
     assignees: assignee ?? [],

@@ -114,6 +114,7 @@ describe('getOptions', () => {
       autoMerge: false,
       autoMergeMethod: 'merge',
       ci: false,
+      cherrypickReference: true,
       details: false,
       fork: true,
       gitHostname: 'github.com',

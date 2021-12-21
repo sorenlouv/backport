@@ -58,25 +58,26 @@ Please note that dashes between the words are optional, for instance you can typ
 | Option              | Shorthand notation | Description                                            | Default        | Type            |
 | ------------------- | ------------------ | ------------------------------------------------------ | -------------- | --------------- |
 | --access-token      |                    | Github access token                                    |                | `string`        |
-| --all               | -a                 | Show commits from other than me                        | false          | `boolean`       |
-| --author            |                    | Filter commits by author                               | _Current user_ | `string`        |
+| --all               | -a                 | Show commits from other than yourself                  | false          | `boolean`       |
+| --author            |                    | Filter commits by Github username                      | _Current user_ | `string`        |
 | --assignee          | --assign           | Assign users to target pull request                    |                | `Array<string>` |
 | --auto-assign       |                    | Assign current user to target pull request             | false          | `boolean`       |
 | --branch            | -b                 | Target branch to backport to                           |                | `string`        |
 | --ci                |                    | Disable interactive prompts                            | false          | `boolean`       |
+| --cherrypick-ref    |                    | Append "(cherry picked from commit...)". [Git Docs][1] | false          | `boolean`       |
 | --dry-run           |                    | Perform backport without pushing to Github             | false          | `string`        |
-| --editor            |                    | Editor (eg. `code`) to open and solve conflicts        | nano           | `string`        |
-| --fork              |                    | Create backports in fork (true) or origin repo (false) | true           | `boolean`       |
+| --editor            |                    | Editor (eg. `code`) to open and resolve conflicts      | nano           | `string`        |
+| --fork              |                    | Create backports in fork repo                          | true           | `boolean`       |
 | --git-hostname      |                    | Hostname for Git                                       | github.com     | `string`        |
 | --mainline          |                    | Parent id of merge commit                              | 1              | `number`        |
 | --max-number        | --number, -n       | Number of commits to choose from                       | 10             | `number`        |
 | --multiple          |                    | Select multiple commits/branches                       | false          | `boolean`       |
 | --multiple-branches |                    | Backport to multiple branches                          | true           | `boolean`       |
 | --multiple-commits  |                    | Backport multiple commits                              | false          | `boolean`       |
-| --path              | -p                 | Only list commits touching files under a specific path |                | `string`        |
+| --path              | -p                 | Filter commits by path                                 |                | `string`        |
 | --pull-number       | --pr               | Pull request to backport                               |                | `number`        |
 | --pr-description    | --description      | Pull request description suffix                        |                | `string`        |
-| --pr-filter         |                    | Find PRs using [Github's search syntax][1]             |                | `string`        |
+| --pr-filter         |                    | Find PRs using [Github's search syntax][2]             |                | `string`        |
 | --pr-title          | --title            | Title of pull request                                  |                | `string`        |
 | --reset-author      |                    | Set yourself as commit author                          |                | `boolean`       |
 | --sha               |                    | Sha of commit to backport                              |                | `string`        |
@@ -120,4 +121,5 @@ This tools is for anybody who is working on a codebase where they have to mainta
 
 See [CONTRIBUTING.md](https://github.com/sqren/backport/blob/master/CONTRIBUTING.md)
 
-[1]: https://docs.github.com/en/search-github/getting-started-with-searching-on-github/understanding-the-search-syntax
+[1]: https://git-scm.com/docs/git-cherry-pick#Documentation/git-cherry-pick.txt--x
+[2]: https://docs.github.com/en/search-github/getting-started-with-searching-on-github/understanding-the-search-syntax
