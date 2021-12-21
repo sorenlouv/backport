@@ -1,12 +1,8 @@
 import os from 'os';
-import { resolve } from 'path';
-import del from 'del';
-import makeDir from 'make-dir';
 import { ValidConfigOptions } from '../options/options';
 import * as childProcess from '../services/child-process-promisified';
 import { ExecError } from '../test/ExecError';
 import { SpyHelper } from '../types/SpyHelper';
-import * as env from './env';
 import {
   addRemote,
   getUnstagedFiles,
@@ -20,26 +16,8 @@ import {
   isLocalConfigFileUntracked,
   isLocalConfigFileModified,
   getUpstreamFromGitRemote,
-  getIsCommitInBranch,
 } from './git';
 import { Commit } from './sourceCommit/parseSourceCommit';
-
-jest.unmock('make-dir');
-jest.unmock('del');
-
-async function resetGitSandbox() {
-  const GIT_SANDBOX_DIR_PATH = resolve(`${__dirname}/git-test-sandbox`);
-
-  await del(GIT_SANDBOX_DIR_PATH);
-  await makeDir(GIT_SANDBOX_DIR_PATH);
-
-  // mock repo path to point to git-sandbox dir
-  jest.spyOn(env, 'getRepoPath').mockReturnValue(GIT_SANDBOX_DIR_PATH);
-
-  return {
-    sandboxDir: GIT_SANDBOX_DIR_PATH,
-  };
-}
 
 beforeEach(() => {
   jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
@@ -47,74 +25,6 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.restoreAllMocks();
-});
-
-describe('getIsCommitInBranch', () => {
-  let firstSha: string;
-  let secondSha: string;
-
-  beforeEach(async () => {
-    const { sandboxDir } = await resetGitSandbox();
-
-    const execOpts = { cwd: sandboxDir };
-    const createAndCommitFile = async (filename: string, content: string) => {
-      await childProcess.exec(`echo "I${content}" > ${filename}`, execOpts);
-      await childProcess.exec(
-        `git add -A && git commit -m 'Add ${filename}'`,
-        execOpts
-      );
-    };
-
-    const getCurrentSha = async () => {
-      const { stdout } = await childProcess.exec(
-        'git rev-parse HEAD',
-        execOpts
-      );
-      return stdout.trim();
-    };
-
-    // create and commit first file
-    await childProcess.exec('git init', execOpts);
-    await createAndCommitFile('My first file', 'foo.md');
-    firstSha = await getCurrentSha();
-
-    // create 7.x branch (but stay on `main` branch)
-    await childProcess.exec('git branch 7.x', execOpts);
-
-    // create and commit second file
-    await createAndCommitFile('My second file', 'bar.md');
-    secondSha = await getCurrentSha();
-
-    // checkout 7.x
-    await childProcess.exec('git checkout 7.x', execOpts);
-  });
-
-  it('should contain the first commit', async () => {
-    const isFirstCommitInBranch = await getIsCommitInBranch(
-      {} as ValidConfigOptions,
-      firstSha
-    );
-
-    expect(isFirstCommitInBranch).toEqual(true);
-  });
-
-  it('should not contain the second commit', async () => {
-    const isSecondCommitInBranch = await getIsCommitInBranch(
-      {} as ValidConfigOptions,
-      secondSha
-    );
-
-    expect(isSecondCommitInBranch).toEqual(false);
-  });
-
-  it('should not contain a random commit', async () => {
-    const isSecondCommitInBranch = await getIsCommitInBranch(
-      {} as ValidConfigOptions,
-      'abcdefg'
-    );
-
-    expect(isSecondCommitInBranch).toEqual(false);
-  });
 });
 
 describe('getUnstagedFiles', () => {
@@ -394,112 +304,98 @@ describe('deleteRemote', () => {
 });
 
 describe('cherrypick', () => {
-  // describe('integration tests', () => {
-  //   beforeEach(async () => {
-  //     const { sandboxDir } = await resetGitSandbox();
-  //   });
+  const options = {
+    repoOwner: 'elastic',
+    repoName: 'kibana',
+  } as ValidConfigOptions;
 
-  //   it('should cherrpick commit', () => {
-  //     const commit = {};
-  //     cherrypick({} as ValidConfigOptions, commit);
-  //   });
-  // });
+  it('should return `needsResolving: false` when no errors are encountered', async () => {
+    jest
+      .spyOn(childProcess, 'exec')
 
-  describe('unit tests', () => {
-    const options = {
-      repoOwner: 'elastic',
-      repoName: 'kibana',
-    } as ValidConfigOptions;
+      // mock cherry pick command
+      .mockResolvedValueOnce({ stderr: '', stdout: '' });
 
-    it('should return `needsResolving: false` when no errors are encountered', async () => {
-      jest
-        .spyOn(childProcess, 'exec')
-
-        // mock cherry pick command
-        .mockResolvedValueOnce({ stderr: '', stdout: '' });
-
-      expect(await cherrypick(options, 'abcd')).toEqual({
-        conflictingFiles: [],
-        unstagedFiles: [],
-        needsResolving: false,
-      });
+    expect(await cherrypick(options, 'abcd')).toEqual({
+      conflictingFiles: [],
+      unstagedFiles: [],
+      needsResolving: false,
     });
+  });
 
-    it('should use mainline option when specified', async () => {
-      const execSpy = jest
-        .spyOn(childProcess, 'exec')
+  it('should use mainline option when specified', async () => {
+    const execSpy = jest
+      .spyOn(childProcess, 'exec')
 
-        // mock cherry pick command
-        .mockResolvedValueOnce({ stderr: '', stdout: '' });
+      // mock cherry pick command
+      .mockResolvedValueOnce({ stderr: '', stdout: '' });
 
-      await cherrypick({ ...options, mainline: 1 }, 'abcd');
+    await cherrypick({ ...options, mainline: 1 }, 'abcd');
 
-      expect(execSpy.mock.calls[0][0]).toBe(
-        'git cherry-pick --mainline 1 abcd'
+    expect(execSpy.mock.calls[0][0]).toBe('git cherry-pick --mainline 1 abcd');
+  });
+
+  it('should return `needsResolving: true` upon cherrypick error', async () => {
+    jest
+      .spyOn(childProcess, 'exec')
+
+      // mock cherry pick command
+      .mockRejectedValueOnce(
+        new ExecError({
+          killed: false,
+          code: 128,
+          cmd: 'git cherry-pick abcd',
+          stdout: '',
+          stderr: '',
+        })
+      )
+
+      // mock getConflictingFiles
+      .mockRejectedValueOnce(
+        new ExecError({
+          code: 2,
+          cmd: 'git --no-pager diff --check',
+          stdout:
+            'conflicting-file.txt:1: leftover conflict marker\nconflicting-file.txt:3: leftover conflict marker\nconflicting-file.txt:5: leftover conflict marker\n',
+          stderr: '',
+        })
+      )
+
+      // mock getUnstagedFiles
+      .mockResolvedValueOnce({ stdout: '', stderr: '' });
+
+    expect(await cherrypick(options, 'abcd')).toEqual({
+      conflictingFiles: [
+        {
+          absolute:
+            '/myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt',
+          relative: 'conflicting-file.txt',
+        },
+      ],
+      needsResolving: true,
+      unstagedFiles: [],
+    });
+  });
+
+  it('should let the user know about the "--mainline" argument when cherry-picking a merge commit without specifying it', async () => {
+    jest
+      .spyOn(childProcess, 'exec')
+
+      // mock cherry pick command
+      .mockRejectedValueOnce(
+        new ExecError({
+          killed: false,
+          code: 128,
+          signal: null,
+          cmd: 'git cherry-pick 381c7b604110257437a289b1f1742685eb8d79c5',
+          stdout: '',
+          stderr:
+            'error: commit 381c7b604110257437a289b1f1742685eb8d79c5 is a merge but no -m option was given.\nfatal: cherry-pick failed\n',
+        })
       );
-    });
 
-    it('should return `needsResolving: true` upon cherrypick error', async () => {
-      jest
-        .spyOn(childProcess, 'exec')
-
-        // mock cherry pick command
-        .mockRejectedValueOnce(
-          new ExecError({
-            killed: false,
-            code: 128,
-            cmd: 'git cherry-pick abcd',
-            stdout: '',
-            stderr: '',
-          })
-        )
-
-        // mock getConflictingFiles
-        .mockRejectedValueOnce(
-          new ExecError({
-            code: 2,
-            cmd: 'git --no-pager diff --check',
-            stdout:
-              'conflicting-file.txt:1: leftover conflict marker\nconflicting-file.txt:3: leftover conflict marker\nconflicting-file.txt:5: leftover conflict marker\n',
-            stderr: '',
-          })
-        )
-
-        // mock getUnstagedFiles
-        .mockResolvedValueOnce({ stdout: '', stderr: '' });
-
-      expect(await cherrypick(options, 'abcd')).toEqual({
-        conflictingFiles: [
-          {
-            absolute:
-              '/myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt',
-            relative: 'conflicting-file.txt',
-          },
-        ],
-        needsResolving: true,
-        unstagedFiles: [],
-      });
-    });
-
-    it('should let the user know about the "--mainline" argument when cherry-picking a merge commit without specifying it', async () => {
-      jest
-        .spyOn(childProcess, 'exec')
-
-        // mock cherry pick command
-        .mockRejectedValueOnce(
-          new ExecError({
-            killed: false,
-            code: 128,
-            signal: null,
-            cmd: 'git cherry-pick 381c7b604110257437a289b1f1742685eb8d79c5',
-            stdout: '',
-            stderr:
-              'error: commit 381c7b604110257437a289b1f1742685eb8d79c5 is a merge but no -m option was given.\nfatal: cherry-pick failed\n',
-          })
-        );
-
-      await expect(cherrypick(options, 'abcd')).rejects
-        .toThrowError(`Cherrypick failed because the selected commit was a merge commit. Please try again by specifying the parent with the \`mainline\` argument:
+    await expect(cherrypick(options, 'abcd')).rejects
+      .toThrowError(`Cherrypick failed because the selected commit was a merge commit. Please try again by specifying the parent with the \`mainline\` argument:
 
 > backport --mainline
 
@@ -508,50 +404,50 @@ or:
 > backport --mainline <parent-number>
 
 Or refer to the git documentation for more information: https://git-scm.com/docs/git-cherry-pick#Documentation/git-cherry-pick.txt---mainlineparent-number`);
-    });
+  });
 
-    it('should gracefully handle empty commits', async () => {
-      jest
-        .spyOn(childProcess, 'exec')
+  it('should gracefully handle empty commits', async () => {
+    jest
+      .spyOn(childProcess, 'exec')
 
-        // mock cherry pick command
-        .mockRejectedValueOnce(
-          new ExecError({
-            killed: false,
-            code: 1,
-            signal: null,
-            cmd: 'git cherry-pick fe6b13b83cc010f722548cd5a0a8c2d5341a20dd',
-            stdout:
-              'On branch backport/7.x/pr-58692\nYou are currently cherry-picking commit fe6b13b83cc.\n\nnothing to commit, working tree clean\n',
-            stderr:
-              "The previous cherry-pick is now empty, possibly due to conflict resolution.\nIf you wish to commit it anyway, use:\n\n    git commit --allow-empty\n\nOtherwise, please use 'git cherry-pick --skip'\n",
-          })
-        );
-
-      await expect(cherrypick(options, 'abcd')).rejects.toThrowError(
-        `Cherrypick failed because the selected commit (abcd) is empty. Did you already backport this commit?`
+      // mock cherry pick command
+      .mockRejectedValueOnce(
+        new ExecError({
+          killed: false,
+          code: 1,
+          signal: null,
+          cmd: 'git cherry-pick fe6b13b83cc010f722548cd5a0a8c2d5341a20dd',
+          stdout:
+            'On branch backport/7.x/pr-58692\nYou are currently cherry-picking commit fe6b13b83cc.\n\nnothing to commit, working tree clean\n',
+          stderr:
+            "The previous cherry-pick is now empty, possibly due to conflict resolution.\nIf you wish to commit it anyway, use:\n\n    git commit --allow-empty\n\nOtherwise, please use 'git cherry-pick --skip'\n",
+        })
       );
-    });
 
-    it('gracefully handles missing git info', async () => {
-      jest
-        .spyOn(childProcess, 'exec')
+    await expect(cherrypick(options, 'abcd')).rejects.toThrowError(
+      `Cherrypick failed because the selected commit (abcd) is empty. Did you already backport this commit?`
+    );
+  });
 
-        // mock cherry pick command
-        .mockRejectedValueOnce(
-          new ExecError({
-            killed: false,
-            code: 128,
-            signal: null,
-            cmd: 'git cherry-pick 83ad852b6ba1a64c8047f07201018eb6fb020db8',
-            stdout: '',
-            stderr:
-              '\n*** Please tell me who you are.\n\nRun\n\n  git config --global user.email "you@example.com"\n  git config --global user.name "Your Name"\n\nto set your account\'s default identity.\nOmit --global to set the identity only in this repository.\n\nfatal: empty ident name (for <foo@bar.net>) not allowed\n',
-          })
-        );
+  it('gracefully handles missing git info', async () => {
+    jest
+      .spyOn(childProcess, 'exec')
 
-      await expect(cherrypick(options, 'abcd')).rejects
-        .toThrowErrorMatchingInlineSnapshot(`
+      // mock cherry pick command
+      .mockRejectedValueOnce(
+        new ExecError({
+          killed: false,
+          code: 128,
+          signal: null,
+          cmd: 'git cherry-pick 83ad852b6ba1a64c8047f07201018eb6fb020db8',
+          stdout: '',
+          stderr:
+            '\n*** Please tell me who you are.\n\nRun\n\n  git config --global user.email "you@example.com"\n  git config --global user.name "Your Name"\n\nto set your account\'s default identity.\nOmit --global to set the identity only in this repository.\n\nfatal: empty ident name (for <foo@bar.net>) not allowed\n',
+        })
+      );
+
+    await expect(cherrypick(options, 'abcd')).rejects
+      .toThrowErrorMatchingInlineSnapshot(`
             "Cherrypick failed:
 
             *** Please tell me who you are.
@@ -567,25 +463,24 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
             fatal: empty ident name (for <foo@bar.net>) not allowed
             "
           `);
-    });
+  });
 
-    it('should re-throw non-cherrypick errors', async () => {
-      jest
-        .spyOn(childProcess, 'exec')
+  it('should re-throw non-cherrypick errors', async () => {
+    jest
+      .spyOn(childProcess, 'exec')
 
-        // mock cherry pick command
-        .mockRejectedValueOnce(new Error('non-cherrypick error'))
+      // mock cherry pick command
+      .mockRejectedValueOnce(new Error('non-cherrypick error'))
 
-        // getConflictingFiles
-        .mockResolvedValueOnce({ stdout: '', stderr: '' })
+      // getConflictingFiles
+      .mockResolvedValueOnce({ stdout: '', stderr: '' })
 
-        // getUnstagedFiles
-        .mockResolvedValueOnce({ stdout: '', stderr: '' });
+      // getUnstagedFiles
+      .mockResolvedValueOnce({ stdout: '', stderr: '' });
 
-      await expect(
-        cherrypick(options, 'abcd')
-      ).rejects.toThrowErrorMatchingInlineSnapshot(`"non-cherrypick error"`);
-    });
+    await expect(
+      cherrypick(options, 'abcd')
+    ).rejects.toThrowErrorMatchingInlineSnapshot(`"non-cherrypick error"`);
   });
 });
 
