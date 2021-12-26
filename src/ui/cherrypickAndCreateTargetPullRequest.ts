@@ -44,7 +44,11 @@ export async function cherrypickAndCreateTargetPullRequest({
   options: ValidConfigOptions;
   commits: Commit[];
   targetBranch: string;
-}) {
+}): Promise<{
+  url: string;
+  number: number;
+  didUpdate: boolean;
+}> {
   const backportBranch = getBackportBranchName(targetBranch, commits);
   const repoForkOwner = getRepoForkOwner(options);
   consoleLog(`\n${chalk.bold(`Backporting to ${targetBranch}:`)}`);
