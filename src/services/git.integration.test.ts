@@ -167,7 +167,7 @@ describe('git.integration', () => {
 
     it('should cherrypick commit cleanly', async () => {
       const res = await cherrypick(
-        { cherrypickReference: false } as ValidConfigOptions,
+        { cherrypickRef: false } as ValidConfigOptions,
         secondSha
       );
       expect(res).toEqual({
@@ -183,7 +183,7 @@ describe('git.integration', () => {
 
     it('should cherrypick commit cleanly and append "(cherry picked from commit...)"', async () => {
       const res = await cherrypick(
-        { cherrypickReference: true } as ValidConfigOptions,
+        { cherrypickRef: true } as ValidConfigOptions,
         secondSha
       );
       expect(res).toEqual({

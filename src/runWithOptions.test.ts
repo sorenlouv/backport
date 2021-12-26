@@ -57,7 +57,7 @@ describe('runWithOptions', () => {
       autoMergeMethod: 'merge',
       branchLabelMapping: undefined,
       ci: false,
-      cherrypickReference: true,
+      cherrypickRef: true,
       commitPaths: [],
       details: false,
       editor: 'code',

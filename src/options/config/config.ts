@@ -10,7 +10,7 @@ export const defaultConfigOptions = {
   autoMerge: false,
   autoMergeMethod: 'merge',
   ci: false,
-  cherrypickReference: true,
+  cherrypickRef: true,
   details: false,
   fork: true,
   gitHostname: 'github.com',

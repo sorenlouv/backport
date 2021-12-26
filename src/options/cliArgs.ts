@@ -64,8 +64,7 @@ export function getOptionsFromCliArgs(
     })
 
     .option('cherrypickRef', {
-      description:
-        'Append commit message with "(cherry picked from commit...)"',
+      description: 'Append commit message with "(cherry picked from commit...)',
       type: 'boolean',
     })
 
@@ -157,8 +156,14 @@ export function getOptionsFromCliArgs(
       conflicts: ['multiple'],
     })
 
+    .option('noCherrypickRef', {
+      description:
+        'Do not append commit message with "(cherry picked from commit...)"',
+      type: 'boolean',
+    })
+
     .option('noVerify', {
-      description: 'Bypasses the pre-commit and commit-msg hooks',
+      description: 'Bypass the pre-commit and commit-msg hooks',
       type: 'boolean',
     })
 
@@ -286,11 +291,15 @@ export function getOptionsFromCliArgs(
     $0,
     _,
     /* eslint-enable @typescript-eslint/no-unused-vars */
-    verify,
     multiple,
     multipleBranches,
     multipleCommits,
+
+    // negations
+    verify,
     noVerify,
+    cherrypickRef,
+    noCherrypickRef,
 
     // array types (should be renamed to plural form)
     assignee,
@@ -299,7 +308,6 @@ export function getOptionsFromCliArgs(
     targetBranch,
     targetBranchChoice,
     targetPRLabel,
-    cherrypickRef,
 
     ...restOptions
   } = yargsInstance.parseSync();
@@ -311,9 +319,6 @@ export function getOptionsFromCliArgs(
     multipleBranches: multiple ?? multipleBranches,
     multipleCommits: multiple ?? multipleCommits,
 
-    //rename to longer versions
-    cherrypickReference: cherrypickRef,
-
     // rename array types to plural
     assignees: assignee ?? [],
     commitPaths: path ?? [],
@@ -322,7 +327,8 @@ export function getOptionsFromCliArgs(
     targetBranches: targetBranch,
     targetPRLabels: targetPRLabel,
 
-    // `verify` is a cli-only flag to flip the default of `no-verify`
+    // negations (cli-only flags)
+    cherrypickRef: noCherrypickRef ? false : cherrypickRef,
     noVerify: verify ?? noVerify,
   });
 }

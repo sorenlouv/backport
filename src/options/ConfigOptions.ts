@@ -29,7 +29,7 @@ export type ConfigOptions = Partial<{
   autoMergeMethod: string;
   branchLabelMapping: Record<string, string>;
   ci: boolean;
-  cherrypickReference: boolean;
+  cherrypickRef: boolean;
   commitPaths: string[];
   details: boolean;
   editor: string;

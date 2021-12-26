@@ -198,7 +198,7 @@ export async function cherrypick(
   const mainlinArg =
     options.mainline != undefined ? ` --mainline ${options.mainline}` : '';
 
-  const cherrypickRefArg = options.cherrypickReference ? ' -x' : '';
+  const cherrypickRefArg = options.cherrypickRef ? ' -x' : '';
   const cmd = `git cherry-pick${cherrypickRefArg}${mainlinArg} ${sha}`;
   try {
     await exec(cmd, { cwd: getRepoPath(options) });
