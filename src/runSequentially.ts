@@ -1,4 +1,5 @@
 import { ValidConfigOptions } from './options/options';
+import { HandledError } from './services/HandledError';
 import { logger, consoleLog, redact } from './services/logger';
 import { sequentially } from './services/sequentially';
 import { Commit } from './services/sourceCommit/parseSourceCommit';
@@ -19,7 +20,7 @@ export type Result =
       status: 'failure';
       targetBranch: string;
       errorMessage: string;
-      error: Error;
+      error: HandledError;
     };
 
 export async function runSequentially({

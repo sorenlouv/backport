@@ -202,13 +202,16 @@ export async function getCommitsWithoutBackports({
   )
     .filter(({ isCommitInBranch }) => !isCommitInBranch)
     .map(({ c }) => {
+      // get pull request for the target branch (if it exists)
       const unmergedPr = c.expectedTargetPullRequests.find(
         (pr) => pr.branch === targetBranch
       );
 
-      return ` - ${getFirstLine(c.originalMessage)}${
+      const formatted = ` - ${getFirstLine(c.originalMessage)}${
         unmergedPr?.state === 'OPEN' ? chalk.gray(' (backport pending)') : ''
       }${c.pullUrl ? `\n   ${c.pullUrl}` : ''}`;
+
+      return { formatted, commit: c };
     });
 }
 
@@ -305,11 +308,19 @@ async function waitForCherrypick(
       )
     );
 
-    consoleLog(`${commitsWithoutBackports.join('\n')}\n\n`);
+    consoleLog(
+      `${commitsWithoutBackports.map((c) => c.formatted).join('\n')}\n\n`
+    );
   }
 
   if (options.ci) {
-    throw new HandledError('Commit could not be cherrypicked due to conflicts');
+    throw new HandledError(
+      `Commit could not be cherrypicked due to conflicts`,
+      {
+        type: 'commitsWithoutBackports',
+        commitsWithoutBackports,
+      }
+    );
   }
 
   /*

@@ -2,6 +2,7 @@ import { Octokit } from '@octokit/rest';
 import { BackportResponse } from '../../../main';
 import { ValidConfigOptions } from '../../../options/options';
 import { logger } from '../../logger';
+import { getFirstLine, getShortSha } from '../commitFormatters';
 
 export async function createStatusComment({
   options,
@@ -36,7 +37,7 @@ export async function createStatusComment({
           return;
         }
 
-        const body = getCommentFromResponse({
+        const body = getCommentBody({
           options,
           pullNumber: commit.pullNumber,
           backportResponse,
@@ -55,7 +56,7 @@ export async function createStatusComment({
   }
 }
 
-export function getCommentFromResponse({
+export function getCommentBody({
   options,
   pullNumber,
   backportResponse,
@@ -65,7 +66,7 @@ export function getCommentFromResponse({
   backportResponse: BackportResponse;
 }): string {
   const { repoName, repoOwner, autoMerge } = options;
-  const backportPRCommand = `To backport manually run: \`node scripts/backport --pr ${pullNumber}\`.\n\nFor more info read the [Backport documentation](https://github.com/sqren/backport#backport)`;
+  const backportPRCommand = `To backport manually run: \`node scripts/backport --pr ${pullNumber}\`.\nFor more info read the [Backport documentation](https://github.com/sqren/backport#backport)`;
 
   if (backportResponse.status === 'failure') {
     return `## 💔 Backport failed
@@ -76,20 +77,52 @@ ${backportPRCommand}
 `;
   }
 
-  const tableHeader = `| Status | Branch | Result |\n|:------:|:------:|:------:|\n`;
   const tableBody = backportResponse.results
     .map((result) => {
       if (result.status === 'success') {
-        return `| ✅ |  [${result.targetBranch}](${result.pullRequestUrl})  | [<img src="https://img.shields.io/github/pulls/detail/state/${repoOwner}/${repoName}/${result.pullRequestNumber}">](${result.pullRequestUrl}) |`;
+        return [
+          '✅',
+          result.targetBranch,
+          `[<img src="https://img.shields.io/github/pulls/detail/state/${repoOwner}/${repoName}/${result.pullRequestNumber}">](${result.pullRequestUrl})`,
+        ];
       }
 
-      return `| ❌ |  ${result.targetBranch}  | ${result.errorMessage} |`;
-    })
-    .join('\n');
+      if (result.error.meta?.type === 'commitsWithoutBackports') {
+        const conflictMessage = result.error.meta.commitsWithoutBackports.map(
+          (c) => {
+            if (c.commit.pullNumber) {
+              return ` - [#${c.commit.pullNumber}](${c.commit.pullUrl})`;
+            }
 
-  const table = backportResponse.results.length ? tableHeader + tableBody : '';
+            return ` - ${getFirstLine(c.commit.originalMessage)} (${getShortSha(
+              c.commit.sha
+            )})`;
+          }
+        );
+
+        return [
+          '❌',
+          result.targetBranch,
+          `Could not backport due to conflicts, possibly caused by the following unbackported commits:<br>${conflictMessage.join(
+            '<br>'
+          )}`,
+        ];
+      }
+
+      return ['❌', result.targetBranch, result.errorMessage];
+    })
+    .map((line) => line.join('|'))
+    .join('|\n|');
+
+  const table = backportResponse.results.length
+    ? `| Status | Branch | Result |\n|:------:|:------:|:------:|\n|${tableBody}|`
+    : '';
 
   const didAllBackportsSucceed = backportResponse.results.every(
+    (r) => r.status === 'success'
+  );
+
+  const didAnyBackportsSucceed = backportResponse.results.some(
     (r) => r.status === 'success'
   );
 
@@ -97,13 +130,14 @@ ${backportPRCommand}
     ? '## 💚 All backports created successfully'
     : '## 💔 Some backports could not be created';
 
-  const autoMergeMessage = autoMerge
-    ? 'Successful backport PRs will be merged automatically after passing CI.'
-    : '';
+  const autoMergeMessage =
+    autoMerge && didAnyBackportsSucceed
+      ? 'Note: Successful backport PRs will be merged automatically after passing CI.\n'
+      : '';
 
   const backportPRCommandMessage = !didAllBackportsSucceed
-    ? backportPRCommand
+    ? `${backportPRCommand}\n\n`
     : '';
 
-  return `${header}\n${table}\n${autoMergeMessage}${backportPRCommandMessage}`;
+  return `${header}\n\n${table}\n\n${backportPRCommandMessage}${autoMergeMessage}`;
 }
