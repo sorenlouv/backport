@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { ValidConfigOptions } from '../../options/options';
 import { extractPullNumber } from '../github/commitFormatters';
 import {
@@ -82,9 +83,15 @@ export function parseSourceCommit({
   const pullNumber =
     sourcePullRequest?.number ?? extractPullNumber(commitMessage);
   const sourceBranch = sourcePullRequest?.baseRefName ?? options.sourceBranch;
+  const branchLabelMapping = getBranchLabelMappingForCommit(
+    sourceCommit,
+    options.branchLabelMapping,
+    options.historicalBranchLabelMappings
+  );
+
   const expectedTargetPullRequests = getExpectedTargetPullRequests(
     sourceCommit,
-    options.branchLabelMapping
+    branchLabelMapping
   );
 
   return {
@@ -162,3 +169,22 @@ export const sourceCommitWithTargetPullRequestFragment = {
     }
   `,
 };
+
+function getBranchLabelMappingForCommit(
+  sourceCommit: SourceCommitWithTargetPullRequest,
+  branchLabelMapping: ValidConfigOptions['branchLabelMapping'],
+  historicalBranchLabelMappings: ValidConfigOptions['historicalBranchLabelMappings']
+): Record<string, string> | undefined {
+  if (isEmpty(historicalBranchLabelMappings)) {
+    return branchLabelMapping;
+  }
+
+  const item = historicalBranchLabelMappings.find(
+    (item) => item.committedDate < sourceCommit.committedDate
+  );
+
+  return (
+    item?.branchLabelMapping ??
+    historicalBranchLabelMappings[0]?.branchLabelMapping
+  );
+}

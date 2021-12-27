@@ -49,6 +49,7 @@ describe('runSequentially', () => {
       autoMerge: false,
       autoMergeMethod: 'merge',
       branchLabelMapping: undefined,
+      historicalBranchLabelMappings: [],
       cherrypickRef: true,
       ci: false,
       commitPaths: [],
