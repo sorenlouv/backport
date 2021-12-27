@@ -51,7 +51,7 @@ export function updateLogger(options: ConfigOptions) {
 }
 
 export function redactAccessToken(str: string) {
-  // redact might be called before access token is set
+  // `redactAccessToken` might be called before access token is set
   if (accessToken) {
     return str.replace(new RegExp(accessToken, 'g'), '<REDACTED>');
   }
