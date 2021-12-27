@@ -1,6 +1,6 @@
 import { ValidConfigOptions } from './options/options';
 import { HandledError } from './services/HandledError';
-import { logger, consoleLog, redact } from './services/logger';
+import { logger, consoleLog } from './services/logger';
 import { sequentially } from './services/sequentially';
 import { Commit } from './services/sourceCommit/parseSourceCommit';
 import { cherrypickAndCreateTargetPullRequest } from './ui/cherrypickAndCreateTargetPullRequest';
@@ -53,14 +53,13 @@ export async function runSequentially({
         pullRequestNumber: number,
       });
     } catch (e) {
-      const errorMessage = redact(e.message);
       results.push({
         targetBranch,
         status: 'failure',
-        errorMessage,
+        errorMessage: e.message,
         error: e,
       });
-      consoleLog(errorMessage);
+      consoleLog(e.message);
     }
   });
 

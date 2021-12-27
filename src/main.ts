@@ -5,7 +5,7 @@ import { runSequentially, Result } from './runSequentially';
 import { HandledError } from './services/HandledError';
 import { getLogfilePath } from './services/env';
 import { createStatusComment } from './services/github/v3/createStatusComment';
-import { initLogger, consoleLog, redact } from './services/logger';
+import { initLogger, consoleLog } from './services/logger';
 import { Commit } from './services/sourceCommit/parseSourceCommit';
 import { getCommits } from './ui/getCommits';
 import { getTargetBranches } from './ui/getTargetBranches';
@@ -52,7 +52,7 @@ export async function main(
     const backportResponse: BackportResponse = {
       status: 'failure',
       commits,
-      errorMessage: redact(e.message),
+      errorMessage: e.message,
       error: e,
     };
 
@@ -68,7 +68,7 @@ export async function main(
     } else if (e instanceof Error) {
       // output
       consoleLog('\n');
-      consoleLog(chalk.bold('⚠️  Ouch! An unknown error occured 😿'));
+      consoleLog(chalk.bold('⚠️  Ouch! An unhandled error occured 😿'));
       consoleLog(`Error message: ${e.message}`);
 
       consoleLog(

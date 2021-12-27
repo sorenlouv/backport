@@ -1,7 +1,7 @@
 import { Octokit } from '@octokit/rest';
 import { BackportResponse } from '../../../main';
 import { ValidConfigOptions } from '../../../options/options';
-import { logger } from '../../logger';
+import { logger, redactAccessToken } from '../../logger';
 import { getFirstLine, getShortSha } from '../commitFormatters';
 
 export async function createStatusComment({
@@ -139,5 +139,7 @@ ${backportPRCommand}
     ? `${backportPRCommand}\n\n`
     : '';
 
-  return `${header}\n\n${table}\n\n${backportPRCommandMessage}${autoMergeMessage}`;
+  return redactAccessToken(
+    `${header}\n\n${table}\n\n${backportPRCommandMessage}${autoMergeMessage}`
+  );
 }
