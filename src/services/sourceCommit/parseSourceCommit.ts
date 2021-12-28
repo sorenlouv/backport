@@ -179,12 +179,13 @@ function getBranchLabelMappingForCommit(
     return branchLabelMapping;
   }
 
-  const item = historicalBranchLabelMappings.find(
-    (item) => item.committedDate < sourceCommit.committedDate
+  const match = historicalBranchLabelMappings.find(
+    (branchLabelMapping) =>
+      sourceCommit.committedDate > branchLabelMapping.committedDate
   );
 
   return (
-    item?.branchLabelMapping ??
+    match?.branchLabelMapping ??
     historicalBranchLabelMappings[0]?.branchLabelMapping
   );
 }
