@@ -46,7 +46,7 @@ export const query = /* GraphQL */ `
       name
       target {
         ... on Commit {
-          history(first: 10, path: ".backportrc.json") {
+          history(first: 20, path: ".backportrc.json") {
             edges {
               remoteConfig: node {
                 committedDate
