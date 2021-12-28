@@ -19,8 +19,7 @@ export function run(
 
 // public API
 export { BackportResponse } from './main';
-export { ConfigFileOptions as ConfigOptions } from './options/ConfigOptions';
-export { getTargetBranchForLabel } from './services/sourceCommit/getExpectedTargetPullRequests';
+export { ConfigFileOptions } from './options/ConfigOptions';
 export { fetchCommitsByAuthor } from './services/github/v4/fetchCommits/fetchCommitsByAuthor';
 export { fetchCommitByPullNumber } from './services/github/v4/fetchCommits/fetchCommitByPullNumber';
 export { fetchCommitBySha } from './services/github/v4/fetchCommits/fetchCommitBySha';

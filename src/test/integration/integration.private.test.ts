@@ -1,3 +1,4 @@
+/* eslint-disable jest/no-commented-out-tests */
 import os from 'os';
 import { resolve } from 'path';
 import { Octokit } from '@octokit/rest';
@@ -121,7 +122,6 @@ describe('integration', () => {
     });
   });
 
-  // eslint-disable-next-line jest/no-commented-out-tests
   // describe.skip('when two commits are backported', () => {
   //   let createPullRequestsMockCalls: unknown[];
   //   let res: Awaited<ReturnType<typeof runSequentially>>;
