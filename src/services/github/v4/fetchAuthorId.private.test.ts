@@ -9,25 +9,24 @@ describe('fetchAuthorId', () => {
     devAccessToken = await getDevAccessToken();
   });
 
-  describe('all = true', () => {
+  describe('author = null', () => {
     it('returns null', async () => {
       const options = {
         accessToken: devAccessToken,
+        author: null,
         githubApiBaseUrlV4: 'https://api.github.com/graphql',
-        all: true,
       } as ValidConfigOptions;
 
       expect(await fetchAuthorId(options)).toEqual(null);
     });
   });
 
-  describe('all = false', () => {
+  describe('author is "sqren"', () => {
     it('returns author id', async () => {
       const options = {
         accessToken: devAccessToken,
-        githubApiBaseUrlV4: 'https://api.github.com/graphql',
-        all: false,
         author: 'sqren',
+        githubApiBaseUrlV4: 'https://api.github.com/graphql',
       } as ValidConfigOptions;
 
       expect(await fetchAuthorId(options)).toEqual('MDQ6VXNlcjIwOTk2Ng==');

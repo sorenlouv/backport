@@ -56,6 +56,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
     beforeEach(async () => {
       const options = {
         assignees: [] as string[],
+        authenticatedUsername: 'sqren_authenticated',
         fork: true,
         githubApiBaseUrlV3: 'https://api.github.com',
         prDescription: 'myPrSuffix',
@@ -66,7 +67,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         sourceBranch: 'myDefaultSourceBranch',
         sourcePRLabels: [] as string[],
         targetPRLabels: ['backport'],
-        username: 'sqren',
+        author: 'sqren',
       } as ValidConfigOptions;
 
       const commits: Commit[] = [
@@ -116,7 +117,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         Please refer to the [Backport tool documentation](https://github.com/sqren/backport) for additional information
 
         myPrSuffix",
-            "head": "sqren:backport/6.x/pr-1000_pr-2000",
+            "head": "sqren_authenticated:backport/6.x/pr-1000_pr-2000",
             "title": "[6.x] My original commit message (#1000) | My other commit message (#2000)",
           },
         ]
@@ -149,7 +150,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
           "Pulling latest changes",
           "Cherry-picking: My original commit message (#1000)",
           "Cherry-picking: My other commit message (#2000)",
-          "Pushing branch \\"sqren:backport/6.x/pr-1000_pr-2000\\"",
+          "Pushing branch \\"sqren_authenticated:backport/6.x/pr-1000_pr-2000\\"",
           undefined,
           "Creating pull request",
           "Adding labels: backport",
@@ -165,6 +166,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
     beforeEach(async () => {
       const options = {
         assignees: [] as string[],
+        authenticatedUsername: 'sqren_authenticated',
         fork: true,
         githubApiBaseUrlV3: 'https://api.github.com',
         prTitle: '[{targetBranch}] {commitMessages}',
@@ -173,7 +175,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         reviewers: [] as string[],
         sourcePRLabels: [] as string[],
         targetPRLabels: ['backport'],
-        username: 'sqren',
+        author: 'sqren',
       } as ValidConfigOptions;
 
       const commits = [
@@ -209,7 +211,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
             "body": "This is an automatic backport of commit mySha to 6.x.
 
         Please refer to the [Backport tool documentation](https://github.com/sqren/backport) for additional information",
-            "head": "sqren:backport/6.x/commit-mySha",
+            "head": "sqren_authenticated:backport/6.x/commit-mySha",
             "title": "[6.x] My original commit message",
           },
         ]
@@ -235,6 +237,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
 
       const options = {
         assignees: [] as string[],
+        authenticatedUsername: 'sqren_authenticated',
         fork: true,
         githubApiBaseUrlV4: 'http://localhost/graphql',
         prTitle: '[{targetBranch}] {commitMessages}',
@@ -244,7 +247,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         sourceBranch: 'myDefaultSourceBranch',
         sourcePRLabels: [] as string[],
         targetPRLabels: ['backport'],
-        username: 'sqren',
+        author: 'sqren',
       } as ValidConfigOptions;
 
       const scope = nock('https://api.github.com')
@@ -286,7 +289,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
             "body": "This is an automatic backport of commit mySha to 6.x.
 
         Please refer to the [Backport tool documentation](https://github.com/sqren/backport) for additional information",
-            "head": "sqren:backport/6.x/commit-mySha",
+            "head": "sqren_authenticated:backport/6.x/commit-mySha",
             "title": "[6.x] My original commit message",
           },
         ]
@@ -336,6 +339,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         Object {
           "authorId": null,
           "commitPath": "conflicting-file.txt",
+          "maxNumber": 10,
           "repoName": "kibana",
           "repoOwner": "elastic",
           "sourceBranch": "myDefaultSourceBranch",
@@ -354,7 +358,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
           "Pulling latest changes",
           "Cherry-picking: My original commit message",
           "Finalizing cherrypick",
-          "Pushing branch \\"sqren:backport/6.x/commit-mySha\\"",
+          "Pushing branch \\"sqren_authenticated:backport/6.x/commit-mySha\\"",
           undefined,
           "Creating pull request",
           "Adding labels: backport",
@@ -638,7 +642,7 @@ function setupExecSpyForCherryPick() {
       }
 
       // cherrypick
-      if (cmd === 'git cherry-pick mySha') {
+      if (cmd === 'git cherry-pick -x mySha') {
         throw new ExecError({ cmd });
       }
 

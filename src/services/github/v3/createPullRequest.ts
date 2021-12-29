@@ -129,7 +129,7 @@ export function getTitle({
     .map((commit) => getFirstLine(commit.originalMessage))
     .join(' | ');
 
-  return options.prTitle
+  return (options.prTitle ?? '[{targetBranch}] {commitMessages}')
     .replace('{targetBranch}', targetBranch)
     .replace('{commitMessages}', commitMessages)
     .slice(0, 240);

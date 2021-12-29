@@ -1,6 +1,6 @@
 import { ValidConfigOptions } from '../../../options/options';
 import { Commit } from '../../sourceCommit/parseSourceCommit';
-import { getPullRequestBody } from './createPullRequest';
+import { getPullRequestBody, getTitle } from './createPullRequest';
 
 describe('getPullRequestBody', () => {
   it('when single pull request is backported', () => {
@@ -69,5 +69,26 @@ describe('getPullRequestBody', () => {
 
       Please refer to the [Backport tool documentation](https://github.com/sqren/backport) for additional information"
     `);
+  });
+});
+
+describe('getTitle', () => {
+  it('when a custom PR title is used', () => {
+    expect(
+      getTitle({
+        options: {
+          prTitle: 'Branch: "{targetBranch}". Messages: {commitMessages}',
+        } as ValidConfigOptions,
+        commits: [
+          {
+            pullNumber: 55,
+            sha: 'abcdefghi',
+            originalMessage: 'My commit message',
+          } as Commit,
+        ],
+
+        targetBranch: '7.x',
+      })
+    ).toEqual('Branch: "7.x". Messages: My commit message');
   });
 });

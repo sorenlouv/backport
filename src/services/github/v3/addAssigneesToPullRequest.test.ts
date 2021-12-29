@@ -15,11 +15,11 @@ describe('addAssigneesToPullRequest', () => {
 
     const res = await addAssigneesToPullRequest(
       {
+        author: 'sqren',
         githubApiBaseUrlV3: 'https://api.github.com',
         repoName: 'backport-demo',
         repoOwner: 'backport-org',
         accessToken: 'my-token',
-        username: 'sqren',
       } as ValidConfigOptions,
       pullNumber,
       assignees
