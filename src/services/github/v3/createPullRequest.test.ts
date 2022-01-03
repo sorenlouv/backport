@@ -19,7 +19,6 @@ describe('getPullRequestBody', () => {
       })
     ).toMatchInlineSnapshot(`
       "This is an automatic backport of pull request #55 to 7.x.
-
       Please refer to the [Backport tool documentation](https://github.com/sqren/backport) for additional information"
     `);
   });
@@ -39,7 +38,6 @@ describe('getPullRequestBody', () => {
       })
     ).toMatchInlineSnapshot(`
       "This is an automatic backport of commit abcdefghijklmw to 7.x.
-
       Please refer to the [Backport tool documentation](https://github.com/sqren/backport) for additional information"
     `);
   });

@@ -207,7 +207,6 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
           Object {
             "base": "6.x",
             "body": "This is an automatic backport of commit mySha to 6.x.
-
         Please refer to the [Backport tool documentation](https://github.com/sqren/backport) for additional information",
             "head": "sqren_authenticated:backport/6.x/commit-mySha",
             "title": "[6.x] My original commit message",
@@ -285,7 +284,6 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
           Object {
             "base": "6.x",
             "body": "This is an automatic backport of commit mySha to 6.x.
-
         Please refer to the [Backport tool documentation](https://github.com/sqren/backport) for additional information",
             "head": "sqren_authenticated:backport/6.x/commit-mySha",
             "title": "[6.x] My original commit message",
