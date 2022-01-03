@@ -8,7 +8,7 @@ describe('addAssigneesToPullRequest', () => {
     const assignees = ['sqren'];
 
     const scope = nock('https://api.github.com')
-      .post('/repos/backport-org/backport-demo/issues/216/assignees', {
+      .post('/repos/elastic/kibana/issues/216/assignees', {
         assignees: ['sqren'],
       })
       .reply(200, 'some response');
@@ -16,9 +16,8 @@ describe('addAssigneesToPullRequest', () => {
     const res = await addAssigneesToPullRequest(
       {
         author: 'sqren',
-        githubApiBaseUrlV3: 'https://api.github.com',
-        repoName: 'backport-demo',
-        repoOwner: 'backport-org',
+        repoName: 'kibana',
+        repoOwner: 'elastic',
         accessToken: 'my-token',
       } as ValidConfigOptions,
       pullNumber,

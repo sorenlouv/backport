@@ -63,12 +63,18 @@ export type ConfigFileOptions = Options &
     // only allowed in project config. Not allowed in CI and denoted in plural (historicalBranchLabelMappings) in options from Github
     branchLabelMapping: Record<string, string>;
 
-    // deprecated: replaced by `repoOwner` and `repoName`
+    /**
+     * @deprecated Replaced by `repoOwner` and `repoName`
+     */
     upstream: string;
 
-    // deprecated: renamed to `targetBranchChoices`
+    /**
+     * @deprecated Replaced by `targetBranchChoices`
+     */
     branches: TargetBranchChoiceOrString[];
 
-    // deprecated: renamed to `targetPRLabels`
+    /**
+     * @deprecated Replaced by `targetPRLabels`
+     */
     labels: string[];
   }>;

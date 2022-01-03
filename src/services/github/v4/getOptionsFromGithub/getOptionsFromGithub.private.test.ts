@@ -16,7 +16,6 @@ describe('getOptionsFromGithub', () => {
         const combinedOptions = {
           author: 'sqren',
           accessToken: 'foo',
-          githubApiBaseUrlV4: 'https://api.github.com/graphql',
           repoOwner: 'backport-org',
           repoName: 'backport-e2e',
         };
@@ -34,7 +33,6 @@ describe('getOptionsFromGithub', () => {
         const combinedOptions = {
           author: 'sqren',
           accessToken: devAccessToken,
-          githubApiBaseUrlV4: 'https://api.github.com/graphql',
           repoOwner: 'backport-org',
           repoName: 'backport-e2e',
         };
@@ -83,7 +81,6 @@ describe('getOptionsFromGithub', () => {
       const combinedOptions = {
         author: 'sqren',
         accessToken: devAccessToken,
-        githubApiBaseUrlV4: 'https://api.github.com/graphql',
         repoOwner: 'sqren',
         repoName: 'backport-e2e',
       };
@@ -100,7 +97,6 @@ describe('getOptionsFromGithub', () => {
         const combinedOptions = {
           author: 'sqren',
           accessToken: devAccessToken,
-          githubApiBaseUrlV4: 'https://api.github.com/graphql',
           repoOwner: 'backport-org',
           repoName: 'repo-with-non-standard-main-branch',
         };
@@ -118,7 +114,6 @@ describe('getOptionsFromGithub', () => {
         const combinedOptions = {
           author: 'sqren',
           accessToken: devAccessToken,
-          githubApiBaseUrlV4: 'https://api.github.com/graphql',
           repoOwner: 'backport-org',
           repoName: 'repo-with-branch-named-backport',
         };
@@ -137,7 +132,6 @@ describe('getOptionsFromGithub', () => {
       const combinedOptions = {
         author: 'sqren',
         accessToken: devAccessToken,
-        githubApiBaseUrlV4: 'https://api.github.com/graphql',
         repoOwner: 'backport-org',
         repoName: 'repo-with-backportrc-removed',
       };

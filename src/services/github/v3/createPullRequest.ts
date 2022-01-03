@@ -89,10 +89,10 @@ export function getPullRequestBody({
   commits: Commit[];
   targetBranch: string;
 }) {
+  const backportDocsNote = `Please refer to the [Backport tool documentation](https://github.com/sqren/backport) for additional information`;
   const bodySuffix = options.prDescription
     ? `\n\n${options.prDescription}`
     : '';
-  const backportDocsNote = `\n\nPlease refer to the [Backport tool documentation](https://github.com/sqren/backport) for additional information`;
 
   if (commits.length === 1) {
     const c = commits[0];
@@ -100,7 +100,7 @@ export function getPullRequestBody({
       ? `pull request #${c.pullNumber}`
       : `commit ${c.sha}`;
 
-    return `This is an automatic backport of ${ref} to ${targetBranch}.${backportDocsNote}${bodySuffix}`;
+    return `This is an automatic backport of ${ref} to ${targetBranch}.\n${backportDocsNote}${bodySuffix}`;
   }
 
   const commitMessages = commits
@@ -113,7 +113,7 @@ export function getPullRequestBody({
     })
     .join('\n');
 
-  return `This is an automatic backport of the following commits to ${targetBranch}:\n${commitMessages}${backportDocsNote}${bodySuffix}`;
+  return `This is an automatic backport of the following commits to ${targetBranch}:\n${commitMessages}\n\n${backportDocsNote}${bodySuffix}`;
 }
 
 export function getTitle({

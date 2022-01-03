@@ -13,7 +13,6 @@ describe('fetchPullRequestBySearchQuery', () => {
     it('throws an error', async () => {
       const options = {
         accessToken: devAccessToken,
-        githubApiBaseUrlV4: 'https://api.github.com/graphql',
         maxNumber: 10,
         prFilter: 'label:non-existing',
         repoName: 'backport-e2e',
@@ -32,7 +31,6 @@ describe('fetchPullRequestBySearchQuery', () => {
     it('returns the merge commits for those PRs', async () => {
       const options = {
         accessToken: devAccessToken,
-        githubApiBaseUrlV4: 'https://api.github.com/graphql',
         maxNumber: 10,
         prFilter: 'label:v7.8.0',
         repoName: 'backport-e2e',

@@ -58,56 +58,56 @@ See [configuration.md](https://github.com/sqren/backport/blob/master/docs/config
 
 ### CLI options
 
-Please note that dashes between the words are optional, for instance you can type `--targetBranch` or `--target-branch` both are valid options.
-
-| Option              | Shorthand notation | Description                                                   | Default        | Type      |
-| ------------------- | ------------------ | ------------------------------------------------------------- | -------------- | --------- |
-| --access-token      |                    | Github access token                                           |                | `string`  |
-| --all               | -a                 | Show commits from any author                                  | false          | `boolean` |
-| --assignee          | --assign           | Assign users to the target PR                                 |                | `string`  |
-| --author            |                    | Filter commits by Github username. Opposite of `--all`        | _Current user_ | `string`  |
-| --auto-assign       |                    | Assign current user to the target PR                          | false          | `boolean` |
-| --branch            | -b                 | Target branch to backport to                                  |                | `string`  |
-| --ci                |                    | Disable interactive prompts                                   | false          | `boolean` |
-| --dry-run           |                    | Perform backport without pushing to Github                    | false          | `string`  |
-| --editor            |                    | Editor (eg. `code`) to open and resolve conflicts             | nano           | `string`  |
-| --fork              |                    | Create backports in fork repo                                 | true           | `boolean` |
-| --git-hostname      |                    | Hostname for Git                                              | github.com     | `string`  |
-| --mainline          |                    | Parent id of merge commit                                     | 1              | `number`  |
-| --max-number        | --number, -n       | Number of commits to choose from                              | 10             | `number`  |
-| --multiple          |                    | Multi-select for commits and branches                         | false          | `boolean` |
-| --multiple-branches |                    | Multi-select for branches                                     | true           | `boolean` |
-| --multiple-commits  |                    | Multi-select for commits                                      | false          | `boolean` |
-| --no-cherrypick-ref |                    | Do not append "(cherry picked from commit...)". [Git Docs][1] | false          | `boolean` |
-| --no-verify         |                    | Bypass the pre-commit and commit-msg hooks                    | false          | `boolean` |
-| --path              | -p                 | Filter commits by path                                        |                | `string`  |
-| --pr-description    | --description      | Pull request description suffix                               |                | `string`  |
-| --pr-filter         |                    | Find PRs using [Github's search syntax][2]                    |                | `string`  |
-| --pr-title          | --title            | Title of pull request                                         |                | `string`  |
-| --pull-number       | --pr               | Backport pull request by number                               |                | `number`  |
-| --repo-name         |                    | Name of repository                                            |                | `string`  |
-| --repo-owner        |                    | Owner of repository                                           |                | `string`  |
-| --reset-author      |                    | Set yourself as commit author                                 |                | `boolean` |
-| --reviewer          |                    | Add reviewer to the target PR                                 |                | `boolean` |
-| --sha               |                    | Sha of commit to backport                                     |                | `string`  |
-| --source-branch     |                    | Specify a non-default branch to backport from                 |                | `string`  |
-| --source-pr-label   |                    | Labels added to the source PR                                 |                | `string`  |
-| --target-branch     | -b                 | Target branch(es) to backport to                              |                | `string`  |
-| --target-pr-label   | --label, -l        | Labels added to the target PR                                 |                | `string`  |
-| --help              |                    | Show help                                                     |                |           |
-| -v, --version       |                    | Show version number                                           |                |           |
+| Option              | Shorthand notation | Description                                                   | Default        |
+| ------------------- | ------------------ | ------------------------------------------------------------- | -------------- |
+| --access-token      |                    | Github access token                                           |                |
+| --all               | -a                 | Show commits from any author                                  | false          |
+| --assignee          | --assign           | Assign users to the target PR                                 |                |
+| --author            |                    | Filter commits by Github username. Opposite of `--all`        | _Current user_ |
+| --auto-assign       |                    | Assign current user to the target PR                          | false          |
+| --branch            | -b                 | Target branch to backport to                                  |                |
+| --ci                |                    | Disable interactive prompts                                   | false          |
+| --dry-run           |                    | Perform backport without pushing to Github                    | false          |
+| --editor            |                    | Editor (eg. `code`) to open and resolve conflicts             | nano           |
+| --fork              |                    | Create backports in fork repo                                 | true           |
+| --git-hostname      |                    | Hostname for Git                                              | github.com     |
+| --mainline          |                    | Parent id of merge commit                                     | 1              |
+| --max-number        | --number, -n       | Number of commits to choose from                              | 10             |
+| --multiple          |                    | Multi-select for commits and branches                         | false          |
+| --multiple-branches |                    | Multi-select for branches                                     | true           |
+| --multiple-commits  |                    | Multi-select for commits                                      | false          |
+| --no-cherrypick-ref |                    | Do not append "(cherry picked from commit...)". [Git Docs][1] | false          |
+| --no-verify         |                    | Bypass the pre-commit and commit-msg hooks                    | false          |
+| --path              | -p                 | Filter commits by path                                        |                |
+| --pr-description    | --description      | Pull request description suffix                               |                |
+| --pr-filter         |                    | Find PRs using [Github's search syntax][2]                    |                |
+| --pr-title          | --title            | Title of pull request                                         |                |
+| --pull-number       | --pr               | Backport pull request by number                               |                |
+| --repo-name         |                    | Name of repository                                            |                |
+| --repo-owner        |                    | Owner of repository                                           |                |
+| --reset-author      |                    | Set yourself as commit author                                 |                |
+| --reviewer          |                    | Add reviewer to the target PR                                 |                |
+| --sha               |                    | Sha of commit to backport                                     |                |
+| --source-branch     |                    | Specify a non-default branch to backport from                 |                |
+| --source-pr-label   |                    | Labels added to the source PR                                 |                |
+| --target-branch     | -b                 | Target branch(es) to backport to                              |                |
+| --target-pr-label   | --label, -l        | Labels added to the target PR                                 |                |
+| --help              |                    | Show help                                                     |                |
+| -v, --version       |                    | Show version number                                           |                |
 
 The CLI options will override the [configuration options](https://github.com/sqren/backport/blob/master/docs/configuration.md).
 
-### Using `backport` as a Node module
+### Node module
 
-Backport a commit programatically. Commits can be selected via `pullNumber` or `sha`.
+`backport` can be imported as a Node module and interacted with programatically.
 
 #### `backportRun`
 
+Backport a commit programatically. Commits can be selected via `pullNumber` or `sha`.
+
 ##### Arguments:
 
-All of the options listed on [configuration.md](https://github.com/sqren/backport/blob/main/docs/configuration.md) are valid. The most
+All of the options listed on [configuration.md](https://github.com/sqren/backport/blob/main/docs/configuration.md) are valid. The most common options are:
 
 `accessToken` _string_ **(Required)**
 Github access token to authenticate the request
@@ -131,7 +131,8 @@ Enabling this will disable the interactive prompts
 
 ```ts
 import { backportRun } from 'backport';
-await backportRun({
+
+const result = await backportRun({
   accessToken: 'abc',
   repoName: 'kibana',
   repoOwner: 'elastic',
@@ -141,11 +142,13 @@ await backportRun({
   autoMerge: true,
   autoMergeMethod: 'squash',
 });
+
+console.log(result);
 ```
 
 #### `getCommits`
 
-Retrieve information about
+Retrieve information about commits and whether they are backported
 
 ##### Arguments:
 
@@ -182,11 +185,10 @@ const commits = await getCommits({
   pullNumber: 121633,
 });
 
-return commits;
+console.log(commits);
 
 /*
-Return value:
-{
+[{
   committedDate: '2021-12-20T14:20:16Z',
   sourceBranch: 'main',
   sha: 'd421ddcf6157150596581c7885afa3690cec6339',
@@ -201,9 +203,13 @@ Return value:
       state: 'MERGED'
     }
   ]
-}
+}]
 */
 ```
+
+## Github Action (beta)
+
+A [Github Action](https://github.com/elastic/kibana-github-actions/tree/main/backport) for automatically backporting pull requests.
 
 ## What is backporting?
 

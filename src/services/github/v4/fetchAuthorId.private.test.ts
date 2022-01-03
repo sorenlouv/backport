@@ -14,7 +14,6 @@ describe('fetchAuthorId', () => {
       const options = {
         accessToken: devAccessToken,
         author: null,
-        githubApiBaseUrlV4: 'https://api.github.com/graphql',
       } as ValidConfigOptions;
 
       expect(await fetchAuthorId(options)).toEqual(null);
@@ -26,7 +25,6 @@ describe('fetchAuthorId', () => {
       const options = {
         accessToken: devAccessToken,
         author: 'sqren',
-        githubApiBaseUrlV4: 'https://api.github.com/graphql',
       } as ValidConfigOptions;
 
       expect(await fetchAuthorId(options)).toEqual('MDQ6VXNlcjIwOTk2Ng==');

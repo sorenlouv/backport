@@ -5,6 +5,9 @@ import { fetchCommitByPullNumber } from './services/github/v4/fetchCommits/fetch
 import { fetchCommitBySha } from './services/github/v4/fetchCommits/fetchCommitBySha';
 import { fetchCommitsByAuthor } from './services/github/v4/fetchCommits/fetchCommitsByAuthor';
 import { getOptionsFromGithub } from './services/github/v4/getOptionsFromGithub/getOptionsFromGithub';
+import { initLogger } from './services/logger';
+
+initLogger();
 
 // public API
 export { BackportResponse } from './main';
