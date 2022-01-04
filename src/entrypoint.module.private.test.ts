@@ -8,28 +8,27 @@ describe('entrypoint.module', () => {
     const accessToken = await getDevAccessToken();
     const commits = await getCommits({
       accessToken: accessToken,
-      repoName: 'kibana',
-      repoOwner: 'elastic',
-      pullNumber: 121633,
+      repoName: 'backport-e2e',
+      repoOwner: 'backport-org',
+      pullNumber: 2,
     });
 
     expect(commits).toEqual([
       {
-        committedDate: '2021-12-20T14:20:16Z',
+        committedDate: '2020-08-15T10:44:04Z',
         expectedTargetPullRequests: [
           {
-            branch: '8.0',
-            number: 121643,
+            branch: '7.x',
+            number: 4,
             state: 'MERGED',
-            url: 'https://github.com/elastic/kibana/pull/121643',
+            url: 'https://github.com/backport-org/backport-e2e/pull/4',
           },
         ],
-        originalMessage:
-          '[APM] Add note about synthtrace to APM docs (#121633)',
-        pullNumber: 121633,
-        pullUrl: 'https://github.com/elastic/kibana/pull/121633',
-        sha: 'd421ddcf6157150596581c7885afa3690cec6339',
-        sourceBranch: 'main',
+        originalMessage: 'Add family emoji (#2)',
+        pullNumber: 2,
+        pullUrl: 'https://github.com/backport-org/backport-e2e/pull/2',
+        sha: '59d6ff1ca90a4ce210c0a4f0e159214875c19d60',
+        sourceBranch: 'master',
       },
     ]);
   });

@@ -139,7 +139,7 @@ Config:
 
 #### `author`
 
-By default only commitsfrom the the currently authenticated user. To see commits from another user use `--author john.doe`. To see commits from any user use `--all` (cli-only flag) or `{ author: null }` (config file)
+By default only commits from the authenticated user are displayed. To see commits from another user use `--author john.doe`. To see commits from any user use `--all` (cli-only flag).
 
 CLI: `--author sqren`
 
