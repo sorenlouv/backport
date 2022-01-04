@@ -135,8 +135,13 @@ describe('runSequentially', () => {
       Array [
         Object {
           "base": "7.x",
-          "body": "This is an automatic backport of pull request #55 to 7.x.
-      Please refer to the [Backport tool documentation](https://github.com/sqren/backport) for additional information
+          "body": "# Backport
+
+      This is an automatic backport to 7.x of:
+       - #55
+
+      ### Questions ?
+      Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
 
       myPrDescription",
           "head": "sqren_authenticated:backport/7.x/pr-55",

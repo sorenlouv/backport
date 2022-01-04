@@ -115,14 +115,6 @@ Config:
 
 The following options can be used in both the global config, project config, and passed in through CLI.
 
-#### `all` (cli only)
-
-By default only the commits of the authenticated user will be displayed. Use `--all` to see commits from all authors. Shorthand for `{ author: null }`.
-
-Default: `false`
-
-CLI: `--all`, `-a`
-
 #### `assignees`
 
 Add assignees to the target pull request
@@ -151,6 +143,14 @@ Config:
 }
 ```
 
+To view commits form all users (equivalent to `backport --all`):
+
+```json
+{
+  "author": null
+}
+```
+
 #### `autoAssign`
 
 Automatically add the current user as assignee to the target pull request
@@ -167,7 +167,7 @@ Config:
 
 #### `branchLabelMapping`
 
-Pre-select target branch choices based on the source PR labels.
+Automatically detech which branches a pull request should be backported to, based on the pull request labels.
 
 CLI: N/A
 

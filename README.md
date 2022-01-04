@@ -30,10 +30,13 @@ Add a [project config](https://github.com/sqren/backport/blob/master/docs/config
 {
   "repoOwner": "elastic",
   "repoName": "kibana",
+
+  // the branches available to backport to
   "targetBranchChoices": ["main", "6.3", "6.2", "6.1", "6.0"],
+
+  // Automatically detect which branches a pull request should be backported to based on the pull request labels.
   "branchLabelMapping": {
-    "^v6.4.0$": "main",
-    "^v(\\d+).(\\d+).\\d+$": "$1.$2"
+    "^backport-to-(.+)$": "$1"
   }
 }
 ```

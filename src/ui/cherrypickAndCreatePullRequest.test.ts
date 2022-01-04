@@ -109,11 +109,14 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         Array [
           Object {
             "base": "6.x",
-            "body": "This is an automatic backport of the following commits to 6.x:
+            "body": "# Backport
+
+        This is an automatic backport to 6.x of:
          - #1000
          - #2000
 
-        Please refer to the [Backport tool documentation](https://github.com/sqren/backport) for additional information
+        ### Questions ?
+        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
 
         myPrSuffix",
             "head": "sqren_authenticated:backport/6.x/pr-1000_pr-2000",
@@ -206,8 +209,14 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         Array [
           Object {
             "base": "6.x",
-            "body": "This is an automatic backport of commit mySha to 6.x.
-        Please refer to the [Backport tool documentation](https://github.com/sqren/backport) for additional information",
+            "body": "# Backport
+
+        This is an automatic backport to 6.x of:
+         - My original commit message (mySha)
+
+        ### Questions ?
+        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
+        ",
             "head": "sqren_authenticated:backport/6.x/commit-mySha",
             "title": "[6.x] My original commit message",
           },
@@ -283,8 +292,14 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         Array [
           Object {
             "base": "6.x",
-            "body": "This is an automatic backport of commit mySha to 6.x.
-        Please refer to the [Backport tool documentation](https://github.com/sqren/backport) for additional information",
+            "body": "# Backport
+
+        This is an automatic backport to 6.x of:
+         - My original commit message (mySha)
+
+        ### Questions ?
+        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
+        ",
             "head": "sqren_authenticated:backport/6.x/commit-mySha",
             "title": "[6.x] My original commit message",
           },
