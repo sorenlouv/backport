@@ -66,17 +66,15 @@ export function getCommentBody({
   backportResponse: BackportResponse;
 }): string {
   const { repoName, repoOwner, autoMerge } = options;
-  const backportPRCommand = `To backport manually run: \`${options.backportBinary} --pr ${pullNumber}\`.`;
+  const backportPRCommand = `\nTo backport manually run: \`${options.backportBinary} --pr ${pullNumber}\`.`;
   const supportSection =
-    '### Questions ?\nPlease refer to the [Backport tool documentation](https://github.com/sqren/backport)';
+    '\n\n### Questions ?\nPlease refer to the [Backport tool documentation](https://github.com/sqren/backport)';
 
   if (backportResponse.status === 'failure') {
     return `## 💔 Backport failed
 The pull request could not be backported due to the following error:
 \`${backportResponse.errorMessage}\`
-
-${backportPRCommand}\n\n${supportSection}
-`;
+${backportPRCommand}${supportSection}`;
   }
 
   const tableBody = backportResponse.results
@@ -133,14 +131,15 @@ ${backportPRCommand}\n\n${supportSection}
 
   const autoMergeMessage =
     autoMerge && didAnyBackportsSucceed
-      ? 'Note: Successful backport PRs will be merged automatically after passing CI.\n'
+      ? '\nNote: Successful backport PRs will be merged automatically after passing CI.'
       : '';
 
   const backportPRCommandMessage = !didAllBackportsSucceed
-    ? `${backportPRCommand}\n\n`
+    ? `${backportPRCommand}`
     : '';
 
   return redactAccessToken(
-    `${header}\n\n${table}\n\n${backportPRCommandMessage}${autoMergeMessage}\n\n${supportSection}`
+    `${header}\n\n${table}
+${backportPRCommandMessage}${autoMergeMessage}${supportSection}`
   );
 }

@@ -24,8 +24,7 @@ describe('getCommentBody', () => {
       To backport manually run: \`node scripts/backport --pr 55\`.
 
       ### Questions ?
-      Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
-      "
+      Please refer to the [Backport tool documentation](https://github.com/sqren/backport)"
     `);
   });
 
@@ -66,7 +65,6 @@ describe('getCommentBody', () => {
       |✅|7.1|[<img src=\\"https://img.shields.io/github/pulls/detail/state/elastic/kibana/66\\">](url-to-pr)|
 
       Note: Successful backport PRs will be merged automatically after passing CI.
-
 
       ### Questions ?
       Please refer to the [Backport tool documentation](https://github.com/sqren/backport)"
@@ -112,8 +110,6 @@ describe('getCommentBody', () => {
 
       To backport manually run: \`node scripts/backport --pr 55\`.
 
-
-
       ### Questions ?
       Please refer to the [Backport tool documentation](https://github.com/sqren/backport)"
     `);
@@ -157,9 +153,7 @@ describe('getCommentBody', () => {
       |❌|7.1|My boom error!|
 
       To backport manually run: \`node scripts/backport --pr 55\`.
-
       Note: Successful backport PRs will be merged automatically after passing CI.
-
 
       ### Questions ?
       Please refer to the [Backport tool documentation](https://github.com/sqren/backport)"
@@ -236,9 +230,7 @@ describe('getCommentBody', () => {
       |❌|7.2|**Backport failed because of merge conflicts**|
 
       To backport manually run: \`node scripts/backport --pr 55\`.
-
       Note: Successful backport PRs will be merged automatically after passing CI.
-
 
       ### Questions ?
       Please refer to the [Backport tool documentation](https://github.com/sqren/backport)"
