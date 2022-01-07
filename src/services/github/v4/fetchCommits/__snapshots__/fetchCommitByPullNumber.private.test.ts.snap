@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`fetchCommitByPullNumber snapshot request/response makes the right queries: CommitsBySha 1`] = `undefined`;
+
+exports[`fetchCommitByPullNumber snapshot request/response returns the correct response 1`] = `
+Object {
+  "committedDate": "2021-12-20T14:20:16Z",
+  "expectedTargetPullRequests": Array [
+    Object {
+      "branch": "8.0",
+      "mergeCommit": Object {
+        "message": "[APM] Add note about synthtrace to APM docs (#121633) (#121643)
+
+Co-authored-by: Søren Louv-Jansen <soren.louv@elastic.co>",
+        "sha": "842adfdeb5541b059231857522f9009771a46107",
+      },
+      "number": 121643,
+      "state": "MERGED",
+      "url": "https://github.com/elastic/kibana/pull/121643",
+    },
+  ],
+  "originalMessage": "[APM] Add note about synthtrace to APM docs (#121633)",
+  "pullNumber": 121633,
+  "pullUrl": "https://github.com/elastic/kibana/pull/121633",
+  "sha": "d421ddcf6157150596581c7885afa3690cec6339",
+  "sourceBranch": "main",
+}
+`;
