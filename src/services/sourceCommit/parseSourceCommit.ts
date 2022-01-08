@@ -133,7 +133,6 @@ export function parseSourceCommit({
 }
 
 export const sourceCommitWithTargetPullRequestFragment = {
-  name: 'SourceCommitWithTargetPullRequest',
   source: /* GraphQL */ `
     fragment SourceCommitWithTargetPullRequest on Commit {
       # Source Commit

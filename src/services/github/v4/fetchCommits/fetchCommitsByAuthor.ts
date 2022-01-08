@@ -61,11 +61,10 @@ function fetchByCommitPath({
                 path: $commitPath
                 since: $dateSince
                 until: $dateUntil
-
               ) {
                 edges {
                   node {
-                    ...${sourceCommitWithTargetPullRequestFragment.name}
+                    ...SourceCommitWithTargetPullRequest
                   }
                 }
               }

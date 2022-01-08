@@ -40,15 +40,12 @@ describe('fetchCommitsByAuthor', () => {
         return { ...acc, [name]: query };
       }, {});
 
-      expect(Object.keys(queries)).toMatchInlineSnapshot(`
-        Array [
-          "AuthorId",
-          "CommitsByAuthor",
-        ]
-      `);
+      const queryNames = Object.keys(queries);
+      expect(queryNames).toEqual(['AuthorId', 'CommitsByAuthor']);
 
-      expect(queries.AuthorId).toMatchSnapshot('AuthorId');
-      expect(queries.CommitsByAuthor).toMatchSnapshot('CommitsByAuthor');
+      queryNames.forEach((name) => {
+        expect(queries[name]).toMatchSnapshot(`Query: ${name}`);
+      });
     });
 
     it('returns the correct response', async () => {

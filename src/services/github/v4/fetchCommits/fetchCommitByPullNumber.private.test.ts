@@ -37,13 +37,12 @@ describe('fetchCommitByPullNumber', () => {
         return { ...acc, [name]: query };
       }, {});
 
-      expect(Object.keys(queries)).toMatchInlineSnapshot(`
-        Array [
-          "CommitByPullNumber",
-        ]
-      `);
+      const queryNames = Object.keys(queries);
+      expect(queryNames).toEqual(['CommitByPullNumber']);
 
-      expect(queries.CommitByPullNumber).toMatchSnapshot('CommitsBySha');
+      queryNames.forEach((name) => {
+        expect(queries[name]).toMatchSnapshot(`Query: ${name}`);
+      });
     });
 
     it('returns the correct response', async () => {

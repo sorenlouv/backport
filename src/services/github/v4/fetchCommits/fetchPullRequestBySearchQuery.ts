@@ -29,7 +29,7 @@ export async function fetchPullRequestBySearchQuery(
         nodes {
           ... on PullRequest {
             mergeCommit {
-              ...${sourceCommitWithTargetPullRequestFragment.name}
+              ...SourceCommitWithTargetPullRequest
             }
           }
         }
