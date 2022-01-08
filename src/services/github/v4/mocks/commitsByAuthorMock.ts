@@ -102,12 +102,6 @@ export const commitsByAuthorMock: CommitByAuthorResponse = {
                                       {
                                         node: {
                                           targetCommit: {
-                                            // repository: {
-                                            //   name: 'kibana',
-                                            //   owner: { login: 'elastic' },
-                                            // },
-                                            // committedDate:
-                                            //   '2021-12-23T00:00:00Z',
                                             oid: 'abc',
                                             message:
                                               'Add SF mention (#80)\n\n* Add SF mention\r\n\r\n* Add several emojis!',
