@@ -1,6 +1,102 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`fetchCommitByPullNumber snapshot request/response makes the right queries: CommitsBySha 1`] = `undefined`;
+exports[`fetchCommitByPullNumber snapshot request/response makes the right queries: CommitsBySha 1`] = `
+"
+    query CommitByPullNumber(
+      $repoOwner: String!
+      $repoName: String!
+      $pullNumber: Int!
+    ) {
+      repository(owner: $repoOwner, name: $repoName) {
+        pullRequest(number: $pullNumber) {
+          mergeCommit {
+            ...SourceCommitWithTargetPullRequest
+          }
+        }
+      }
+    }
+
+    
+    fragment SourceCommitWithTargetPullRequest on Commit {
+      # Source Commit
+      repository {
+        name
+        owner {
+          login
+        }
+      }
+      oid
+      message
+      committedDate
+
+      # Source pull request: PR where source commit was merged in
+      associatedPullRequests(first: 1) {
+        edges {
+          node {
+            url
+            number
+            labels(first: 50) {
+              nodes {
+                name
+              }
+            }
+            baseRefName
+
+            # source merge commit (the commit that actually went into the source branch)
+            sourceMergeCommit: mergeCommit {
+              oid
+              message
+            }
+
+            # (possible) backport pull requests referenced in the source pull request
+            timelineItems(last: 20, itemTypes: CROSS_REFERENCED_EVENT) {
+              edges {
+                node {
+                  ... on CrossReferencedEvent {
+                    targetPullRequest: source {
+                      __typename
+
+                      # Target PRs (backport PRs)
+                      ... on PullRequest {
+                        # target merge commit: the backport commit that was merged into the target branch
+                        targetMergeCommit: mergeCommit {
+                          oid
+                          message
+                        }
+                        repository {
+                          name
+                          owner {
+                            login
+                          }
+                        }
+                        url
+                        title
+                        state
+                        baseRefName
+                        number
+                        commits(first: 20) {
+                          edges {
+                            node {
+                              targetCommit: commit {
+                                message
+                                oid
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  
+  "
+`;
 
 exports[`fetchCommitByPullNumber snapshot request/response returns the correct response 1`] = `
 Object {

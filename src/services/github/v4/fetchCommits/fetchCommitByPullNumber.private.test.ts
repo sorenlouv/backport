@@ -43,7 +43,7 @@ describe('fetchCommitByPullNumber', () => {
         ]
       `);
 
-      expect(queries.CommitsBySha).toMatchSnapshot('CommitsBySha');
+      expect(queries.CommitByPullNumber).toMatchSnapshot('CommitsBySha');
     });
 
     it('returns the correct response', async () => {
