@@ -41,7 +41,6 @@ Array [
                 path: $commitPath
                 since: $dateSince
                 until: $dateUntil
-
               ) {
                 edges {
                   node {

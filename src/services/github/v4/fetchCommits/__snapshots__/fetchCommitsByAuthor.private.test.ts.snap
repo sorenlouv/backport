@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`fetchCommitsByAuthor snapshot request/response makes the right queries: AuthorId 1`] = `
+exports[`fetchCommitsByAuthor snapshot request/response makes the right queries: Query: AuthorId 1`] = `
 "
     query AuthorId($author: String!) {
       user(login: $author) {
@@ -10,7 +10,7 @@ exports[`fetchCommitsByAuthor snapshot request/response makes the right queries:
   "
 `;
 
-exports[`fetchCommitsByAuthor snapshot request/response makes the right queries: CommitsByAuthor 1`] = `
+exports[`fetchCommitsByAuthor snapshot request/response makes the right queries: Query: CommitsByAuthor 1`] = `
 "
     query CommitsByAuthor(
       $repoOwner: String!
@@ -32,7 +32,6 @@ exports[`fetchCommitsByAuthor snapshot request/response makes the right queries:
                 path: $commitPath
                 since: $dateSince
                 until: $dateUntil
-
               ) {
                 edges {
                   node {

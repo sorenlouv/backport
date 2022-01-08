@@ -1,14 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`fetchCommitBySha snapshot request/response makes the right queries: CommitsBySha 1`] = `
+exports[`fetchCommitBySha snapshot request/response makes the right queries: Query: CommitsBySha 1`] = `
 "
-  query CommitsBySha($repoOwner: String!, $repoName: String!, $oid: String!) {
-    repository(owner: $repoOwner, name: $repoName) {
-      object(expression: $oid) {
-        ...SourceCommitWithTargetPullRequest
+    query CommitsBySha($repoOwner: String!, $repoName: String!, $oid: String!) {
+      repository(owner: $repoOwner, name: $repoName) {
+        object(expression: $oid) {
+          ...SourceCommitWithTargetPullRequest
+        }
       }
     }
-  }
 
     
     fragment SourceCommitWithTargetPullRequest on Commit {

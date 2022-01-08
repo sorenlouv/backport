@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`fetchCommitByPullNumber snapshot request/response makes the right queries: CommitsBySha 1`] = `
+exports[`fetchCommitByPullNumber snapshot request/response makes the right queries: Query: CommitByPullNumber 1`] = `
 "
     query CommitByPullNumber(
       $repoOwner: String!
