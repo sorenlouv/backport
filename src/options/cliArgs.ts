@@ -178,6 +178,11 @@ export function getOptionsFromCliArgs(
       conflicts: ['cherrypickRef'],
     })
 
+    .option('noStatusComment', {
+      description: "Don't publish status comment to Github",
+      type: 'boolean',
+    })
+
     .option('noVerify', {
       description: 'Bypass the pre-commit and commit-msg hooks',
       type: 'boolean',
@@ -336,10 +341,11 @@ export function getOptionsFromCliArgs(
     until,
 
     // negations
-    verify,
-    noVerify,
     noCherrypickRef,
     noFork,
+    noStatusComment,
+    noVerify,
+    verify,
 
     // array types (should be renamed to plural form)
     assignee,
@@ -378,5 +384,6 @@ export function getOptionsFromCliArgs(
     cherrypickRef: noCherrypickRef === true ? false : restOptions.cherrypickRef,
     fork: noFork === true ? false : restOptions.fork,
     noVerify: verify ?? noVerify,
+    publishStatusComment: noStatusComment === true ? false : undefined,
   });
 }

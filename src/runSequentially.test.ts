@@ -70,6 +70,7 @@ describe('runSequentially', () => {
       prDescription: 'myPrDescription',
       prFilter: undefined,
       prTitle: 'myPrTitle {targetBranch} {commitMessages}',
+      publishStatusComment: true,
       pullNumber: undefined,
       repoName: 'kibana',
       repoOwner: 'elastic',

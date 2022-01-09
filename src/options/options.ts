@@ -37,6 +37,7 @@ export const defaultConfigOptions = {
   multipleBranches: true,
   multipleCommits: false,
   noVerify: true,
+  publishStatusComment: true,
   resetAuthor: false,
   reviewers: [] as Array<string>,
   sourcePRLabels: [] as string[],
