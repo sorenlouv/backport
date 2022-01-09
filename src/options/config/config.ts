@@ -6,13 +6,17 @@ import { getProjectConfig } from './projectConfig';
 export type OptionsFromConfigFiles = Awaited<
   ReturnType<typeof getOptionsFromConfigFiles>
 >;
-export async function getOptionsFromConfigFiles(
-  optionsFromModule?: ConfigFileOptions
-) {
+export async function getOptionsFromConfigFiles({
+  optionsFromModule,
+  ci,
+}: {
+  optionsFromModule?: ConfigFileOptions;
+  ci: boolean;
+}) {
   const [gitConfig, projectConfig, globalConfig] = await Promise.all([
     getOptionsFromGit(),
     getProjectConfig(),
-    optionsFromModule?.ci ? undefined : getGlobalConfig(),
+    ci ? undefined : getGlobalConfig(),
   ]);
 
   return {

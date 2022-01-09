@@ -50,11 +50,14 @@ export async function getOptions(
   argv: string[],
   optionsFromModule?: ConfigFileOptions
 ) {
-  const optionsFromConfigFiles = await getOptionsFromConfigFiles(
-    optionsFromModule
-  );
-
   const optionsFromCliArgs = getOptionsFromCliArgs(argv);
+  const ci =
+    optionsFromCliArgs.ci ?? optionsFromModule?.ci ?? defaultConfigOptions.ci;
+
+  const optionsFromConfigFiles = await getOptionsFromConfigFiles({
+    optionsFromModule,
+    ci,
+  });
 
   // combined options from cli and config files
   const combined = getCombinedOptions({
