@@ -76,6 +76,11 @@ export function getOptionsFromCliArgs(
       type: 'string',
     })
 
+    .option('dir', {
+      description: 'Location where the temporary repository will be stored',
+      type: 'string',
+    })
+
     .option('details', {
       description: 'Show details about each commit',
       type: 'boolean',

@@ -12,7 +12,7 @@ export async function getOptionsFromConfigFiles(
   const [gitConfig, projectConfig, globalConfig] = await Promise.all([
     getOptionsFromGit(),
     getProjectConfig(),
-    getGlobalConfig(optionsFromModule?.ci),
+    optionsFromModule?.ci ? undefined : getGlobalConfig(),
   ]);
 
   return {
