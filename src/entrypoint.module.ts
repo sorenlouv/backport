@@ -1,4 +1,4 @@
-import { main } from './main';
+import { backportRun as run } from './backportRun';
 import { ConfigFileOptions } from './options/ConfigOptions';
 import { ValidConfigOptions } from './options/options';
 import { fetchCommitByPullNumber } from './services/github/v4/fetchCommits/fetchCommitByPullNumber';
@@ -11,7 +11,7 @@ import { excludeUndefined } from './utils/excludeUndefined';
 initLogger();
 
 // public API
-export { BackportResponse } from './main';
+export { BackportResponse } from './backportRun';
 export { ConfigFileOptions } from './options/ConfigOptions';
 export { Commit } from './services/sourceCommit/parseSourceCommit';
 export { fetchRemoteProjectConfig as getRemoteProjectConfig } from './services/github/v4/fetchRemoteProjectConfig';
@@ -29,7 +29,7 @@ export function backportRun(
   //
   args: string[] = []
 ) {
-  return main(args, excludeUndefined(options));
+  return run(args, excludeUndefined(options));
 }
 
 export async function getCommits(options: {

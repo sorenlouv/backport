@@ -24,7 +24,7 @@ export type BackportResponse =
       error: Error;
     };
 
-export async function main(
+export async function backportRun(
   argv: string[],
   optionsFromModule?: ConfigFileOptions
 ): Promise<BackportResponse> {
