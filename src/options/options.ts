@@ -48,11 +48,10 @@ export const defaultConfigOptions = {
 };
 
 export async function getOptions(
-  argv: string[],
+  processArgs: string[],
   optionsFromModule: ConfigFileOptions
 ) {
-  const optionsFromCliArgs = getOptionsFromCliArgs(argv);
-
+  const optionsFromCliArgs = getOptionsFromCliArgs(processArgs);
   const optionsFromConfigFiles = await getOptionsFromConfigFiles({
     optionsFromCliArgs,
     optionsFromModule,

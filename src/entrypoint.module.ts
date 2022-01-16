@@ -8,8 +8,6 @@ import { getOptionsFromGithub } from './services/github/v4/getOptionsFromGithub/
 import { initLogger } from './services/logger';
 import { excludeUndefined } from './utils/excludeUndefined';
 
-initLogger();
-
 // public API
 export { BackportResponse } from './backportRun';
 export { ConfigFileOptions } from './options/ConfigOptions';
@@ -27,9 +25,9 @@ export function backportRun(
   // const args = process.argv.slice(2);
   // backportRun(options, args)
   //
-  args: string[] = []
+  processArgs: string[] = []
 ) {
-  return run(args, excludeUndefined(options));
+  return run(processArgs, excludeUndefined(options));
 }
 
 export async function getCommits(options: {
@@ -49,6 +47,8 @@ export async function getCommits(options: {
   dateUntil?: string;
   dateSince?: string;
 }) {
+  initLogger({ ci: true });
+
   const optionsFromGithub = await getOptionsFromGithub(options);
 
   if (options.pullNumber) {

@@ -38,6 +38,7 @@ type Options = Partial<{
   gitHostname: string;
   githubApiBaseUrlV3: string;
   githubApiBaseUrlV4: string;
+  logFilePath: string;
   maxNumber: number;
   multiple: boolean;
   multipleBranches: boolean;

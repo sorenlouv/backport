@@ -1,4 +1,6 @@
+import os from 'os';
 import nock from 'nock';
+import * as fs from '../services/fs-promisified';
 import { GithubConfigOptionsResponse } from '../services/github/v4/getOptionsFromGithub/query';
 import * as logger from '../services/logger';
 import { mockConfigFiles } from '../test/mockConfigFiles';
@@ -27,6 +29,9 @@ describe('getOptions', () => {
 
   beforeEach(() => {
     mockConfigFiles(defaultConfigs);
+    jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
+    jest.spyOn(fs, 'writeFile').mockResolvedValue();
+    jest.spyOn(fs, 'chmod').mockResolvedValue();
   });
 
   describe('should throw', () => {
@@ -39,13 +44,14 @@ describe('getOptions', () => {
         projectConfig: defaultConfigs.projectConfig,
         globalConfig: { accessToken: undefined },
       });
-      await expect(() => getOptions([], {})).rejects
-        .toThrowErrorMatchingInlineSnapshot(`
-              "Please update your config file: \\"/Users/sqren/.backport/config.json\\".
-              It must contain a valid \\"accessToken\\".
 
-              Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#global-config-backportconfigjson"
-            `);
+      await expect(() => getOptions([], { ci: true })).rejects
+        .toThrowErrorMatchingInlineSnapshot(`
+      "Please update your config file: \\"/myHomeDir/.backport/config.json\\".
+      It must contain a valid \\"accessToken\\".
+
+      Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#global-config-backportconfigjson"
+      `);
     });
 
     it('when `targetBranches`, `targetBranchChoices` and `branchLabelMapping` are all empty', async () => {
