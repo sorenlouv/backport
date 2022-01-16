@@ -26,7 +26,7 @@ export type BackportResponse =
 
 export async function backportRun(
   argv: string[],
-  optionsFromModule?: ConfigFileOptions
+  optionsFromModule: ConfigFileOptions = {}
 ): Promise<BackportResponse> {
   const spinner = ora().start('Initializing...');
 

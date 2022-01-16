@@ -10,7 +10,11 @@ describe('getOptionsFromConfigFiles', () => {
       projectConfig: { repoName: 'kibana', repoOwner: 'elastic' },
     });
 
-    res = await getOptionsFromConfigFiles({ ci: false });
+    res = await getOptionsFromConfigFiles({
+      optionsFromCliArgs: {},
+      optionsFromModule: {},
+      defaultConfigOptions: { ci: false },
+    });
   });
 
   it('should return values from config files', () => {

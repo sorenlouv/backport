@@ -66,6 +66,11 @@ export function getOptionsFromCliArgs(
       conflicts: ['noCherrypickRef'],
     })
 
+    .option('configFile', {
+      description: 'Path to project config',
+      type: 'string',
+    })
+
     .option('since', {
       description: 'ISO-8601 date for filtering commits',
       type: 'string',
