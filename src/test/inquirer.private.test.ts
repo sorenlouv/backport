@@ -35,8 +35,6 @@ describe('inquirer cli', () => {
       'backport-org',
       '--repo-name',
       'backport-e2e',
-      '--author',
-      'sqren',
       '--accessToken',
       devAccessToken,
     ]);
@@ -69,8 +67,6 @@ describe('inquirer cli', () => {
       'foo',
       '--repo-name',
       'bar',
-      '--author',
-      'some-user',
       '--accessToken',
       'some-token',
     ]);
@@ -125,6 +121,39 @@ describe('inquirer cli', () => {
         4. Add family emoji (#2) 7.x
         5. Add \`backport\` dep
         6. Merge pull request #1 from backport-org/add-heart-emoji"
+    `);
+  });
+
+  it(`should limit commits by since and until`, async () => {
+    jest.setTimeout(TIMEOUT_IN_SECONDS * 1000 * 1.1);
+    const output = await runBackportAsync(
+      [
+        '--branch',
+        'foo',
+        '--repo-owner',
+        'backport-org',
+        '--repo-name',
+        'backport-e2e',
+        '--accessToken',
+        devAccessToken,
+        '--since',
+        '2020-08-15',
+        '--until',
+        '2020-08-15 14:00',
+      ],
+      { waitForString: 'Select commit' }
+    );
+
+    expect(output).toMatchInlineSnapshot(`
+      "? Select commit (Use arrow keys)
+      ❯ 1. Add family emoji (#2) 7.x
+        2. Add \`backport\` dep
+        3. Merge pull request #1 from backport-org/add-heart-emoji
+        4. Update .backportrc.json
+        5. Bump to 8.0.0
+        6. Add package.json
+        7. Update .backportrc.json
+        8. Create .backportrc.json"
     `);
   });
 

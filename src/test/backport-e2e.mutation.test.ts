@@ -165,7 +165,22 @@ describe('backport e2e', () => {
     });
 
     it('sends the correct http body when creating pull request', () => {
-      expect(createPullRequestsMockCalls).toMatchInlineSnapshot();
+      expect(createPullRequestsMockCalls).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "base": "7.x",
+            "body": "# Backport
+
+        This is an automatic backport to \`7.x\` of:
+         - Add ❤️ emoji (5bf29b7d)
+
+        ### Questions ?
+        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)",
+            "head": "sqren:backport/7.x/commit-5bf29b7d",
+            "title": "[7.x] Add ❤️ emoji",
+          },
+        ]
+      `);
     });
 
     it('returns pull request', () => {
