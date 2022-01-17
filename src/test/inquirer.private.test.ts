@@ -4,6 +4,8 @@ import { getDevAccessToken } from './private/getDevAccessToken';
 
 const TIMEOUT_IN_SECONDS = 10;
 
+jest.setTimeout(15000);
+
 describe('inquirer cli', () => {
   let devAccessToken: string;
 

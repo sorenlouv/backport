@@ -135,78 +135,78 @@ describe('backport e2e', () => {
     });
   });
 
-  // describe.skip('when two commits are backported', () => {
-  //   let createPullRequestsMockCalls: unknown[];
-  //   let res: Awaited<ReturnType<typeof runSequentially>>;
-  //   let accessToken: string;
+  describe('when two commits are backported', () => {
+    let createPullRequestsMockCalls: unknown[];
+    let res: Awaited<ReturnType<typeof runSequentially>>;
+    let accessToken: string;
 
-  //   beforeAll(async () => {
-  //     accessToken = await getDevAccessToken();
-  //     await resetState(accessToken);
+    beforeAll(async () => {
+      accessToken = await getDevAccessToken();
+      await resetState(accessToken);
 
-  //     createPullRequestsMockCalls = mockCreatePullRequest({
-  //       number: 1337,
-  //       html_url: 'myHtmlUrl',
-  //     });
+      createPullRequestsMockCalls = mockCreatePullRequest({
+        number: 1337,
+        html_url: 'myHtmlUrl',
+      });
 
-  //     const options = {
-  //       githubApiBaseUrlV3: 'https://api.foo.com',
-  //       ci: true,
-  //       sha: '5bf29b7d847ea3dbde9280448f0f62ad0f22d3ad',
-  //       author: AUHTOR,
-  //       accessToken,
-  //       repoOwner: 'backport-org',
-  //       reponame: 'integration-test',
-  //     } as ValidConfigOptions;
-  //     const commits = await getCommits(options);
-  //     const targetBranches: string[] = ['7.x'];
+      const options = await getOptions([], {
+        githubApiBaseUrlV3: 'https://api.foo.com',
+        ci: true,
+        sha: '5bf29b7d847ea3dbde9280448f0f62ad0f22d3ad',
+        author: AUHTOR,
+        accessToken,
+        repoOwner: 'backport-org',
+        repoName: 'integration-test',
+      });
+      const commits = await getCommits(options);
+      const targetBranches: string[] = ['7.x'];
 
-  //     res = await runSequentially({ options, commits, targetBranches });
-  //   });
+      res = await runSequentially({ options, commits, targetBranches });
+    });
 
-  //   it('sends the correct http body when creating pull request', () => {
-  //     expect(createPullRequestsMockCalls).toMatchInlineSnapshot();
-  //   });
+    it('sends the correct http body when creating pull request', () => {
+      expect(createPullRequestsMockCalls).toMatchInlineSnapshot();
+    });
 
-  //   it('returns pull request', () => {
-  //     expect(res).toEqual([
-  //       { pullRequestUrl: 'myHtmlUrl', success: true, targetBranch: '6.0' },
-  //     ]);
-  //   });
+    it('returns pull request', () => {
+      expect(res).toEqual([
+        { pullRequestUrl: 'myHtmlUrl', success: true, targetBranch: '6.0' },
+      ]);
+    });
 
-  //   it('should not create new branches in origin (backport-org/integration-test)', async () => {
-  //     const branches = await getBranches({
-  //       accessToken,
-  //       repoOwner: REPO_OWNER,
-  //       repoName: REPO_NAME,
-  //     });
-  //     expect(branches.map((b) => b.name)).toEqual(['7.x', '* master']);
-  //   });
+    it('should not create new branches in origin (backport-org/integration-test)', async () => {
+      const branches = await getBranches({
+        accessToken,
+        repoOwner: REPO_OWNER,
+        repoName: REPO_NAME,
+      });
+      expect(branches.map((b) => b.name)).toEqual(['7.x', '* master']);
+    });
 
-  //   it('should create branch in the fork (sqren/integration-test)', async () => {
-  //     const branches = await getBranches({
-  //       accessToken,
-  //       repoOwner: AUHTOR,
-  //       repoName: REPO_NAME,
-  //     });
-  //     expect(branches.map((b) => b.name)).toEqual([
-  //       '7.x',
-  //       'backport/6.0/pr-85_commit-2e63475c',
-  //       'master',
-  //     ]);
-  //   });
+    it('should create branch in the fork (sqren/integration-test)', async () => {
+      const branches = await getBranches({
+        accessToken,
+        repoOwner: AUHTOR,
+        repoName: REPO_NAME,
+      });
+      expect(branches.map((b) => b.name)).toEqual([
+        '7.x',
+        'backport/6.0/pr-85_commit-2e63475c',
+        'master',
+      ]);
+    });
 
-  //   it('should have cherry picked the correct commit', async () => {
-  //     const branches = await getBranches({
-  //       accessToken,
-  //       repoOwner: AUHTOR,
-  //       repoName: REPO_NAME,
-  //     });
+    it('should have cherry picked the correct commit', async () => {
+      const branches = await getBranches({
+        accessToken,
+        repoOwner: AUHTOR,
+        repoName: REPO_NAME,
+      });
 
-  //     const sha = branches.find((branch) => branch.name === '7.x')?.commit.sha;
-  //     expect(sha).toEqual('foo');
-  //   });
-  // });
+      const sha = branches.find((branch) => branch.name === '7.x')?.commit.sha;
+      expect(sha).toEqual('foo');
+    });
+  });
 
   describe('when disabling fork mode', () => {
     let res: Awaited<ReturnType<typeof runSequentially>>;

@@ -5,8 +5,9 @@ module.exports = {
   testRegex: 'src/.*test.ts$',
   testEnvironment: 'node',
 
-  // exclude private tests that requires credentials and can therefore not run on CI for external contributors
-  modulePathIgnorePatterns: ['.*.private.test.ts$'],
+  // exclude "private" tests that requires credentials and can therefore not run on CI for external contributors
+  // exclude "mutation" tests that cannot run on in parallel (like they are on CI) because they mutate shared state
+  modulePathIgnorePatterns: ['.*.private.test.ts$', '.*.mutation.test.ts$'],
 
   moduleFileExtensions: ['ts', 'js', 'json'],
   globals: {
