@@ -1,3 +1,6 @@
+// ensure timezone is always in UTC
+process.env.TZ = 'UTC';
+
 module.exports = {
   snapshotSerializers: ['jest-snapshot-serializer-ansi'],
   setupFiles: ['./src/test/setupFiles/automatic-mocks.ts'],

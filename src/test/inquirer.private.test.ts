@@ -137,9 +137,9 @@ describe('inquirer cli', () => {
         '--accessToken',
         devAccessToken,
         '--since',
-        '2020-08-15',
+        '2020-08-15T00:00:00.000Z',
         '--until',
-        '2020-08-15 14:00',
+        '2020-08-15T14:00:00.000Z',
       ],
       { waitForString: 'Select commit' }
     );
