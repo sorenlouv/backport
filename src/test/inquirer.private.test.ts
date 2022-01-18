@@ -146,14 +146,15 @@ describe('inquirer cli', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "? Select commit (Use arrow keys)
-      ❯ 1. Add family emoji (#2) 7.x
-        2. Add \`backport\` dep
-        3. Merge pull request #1 from backport-org/add-heart-emoji
-        4. Update .backportrc.json
-        5. Bump to 8.0.0
-        6. Add package.json
-        7. Update .backportrc.json
-        8. Create .backportrc.json"
+      ❯ 1. Add 🍏 emoji (#5) 7.x, 7.8
+        2. Add family emoji (#2) 7.x
+        3. Add \`backport\` dep
+        4. Merge pull request #1 from backport-org/add-heart-emoji
+        5. Update .backportrc.json
+        6. Bump to 8.0.0
+        7. Add package.json
+        8. Update .backportrc.json
+        9. Create .backportrc.json"
     `);
   });
 
