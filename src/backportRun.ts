@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import ora from 'ora';
-import yargs from 'yargs';
+import yargsParser from 'yargs-parser';
 import { ConfigFileOptions } from './options/ConfigOptions';
 import { getOptions, ValidConfigOptions } from './options/options';
 import { runSequentially, Result } from './runSequentially';
@@ -29,13 +29,17 @@ export async function backportRun(
   processArgs: string[],
   optionsFromModule: ConfigFileOptions = {}
 ): Promise<BackportResponse> {
-  const argv = yargs(processArgs).argv as any as ConfigFileOptions;
+  const argv = yargsParser(processArgs) as ConfigFileOptions;
   const ci = argv.ci ?? optionsFromModule.ci;
   const logFilePath = argv.logFilePath ?? optionsFromModule.logFilePath;
 
   initLogger({ ci, logFilePath });
 
-  const spinner = ora().start('Initializing...');
+  // don't show spinner for yargs commands that exit the process without stopping the spinner first
+  const spinner = ora();
+  if (!argv.help && !argv.version) {
+    spinner.start('Initializing...');
+  }
 
   let options: ValidConfigOptions | null = null;
   let commits: Commit[] = [];

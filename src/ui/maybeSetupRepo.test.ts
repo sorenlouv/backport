@@ -57,6 +57,7 @@ describe('maybeSetupRepo', () => {
       } as ValidConfigOptions);
 
       expect(execSpy.mock.calls.map(([cmd]) => cmd)).toEqual([
+        'git remote --verbose',
         'git remote rm origin',
         'git remote rm sqren_authenticated',
         'git remote add sqren_authenticated https://x-access-token:myAccessToken@github.com/sqren_authenticated/kibana.git',

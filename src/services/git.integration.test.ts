@@ -2,22 +2,26 @@ import { resolve } from 'path';
 import del from 'del';
 import makeDir from 'make-dir';
 import { ValidConfigOptions } from '../options/options';
+import { SpyHelper } from '../types/SpyHelper';
 import * as childProcess from './child-process-promisified';
-import * as env from './env';
-import { cherrypick, getIsCommitInBranch } from './git';
+import {
+  cherrypick,
+  cloneRepo,
+  getIsCommitInBranch,
+  getSourceRepoPath,
+} from './git';
 import { getShortSha } from './github/commitFormatters';
 
 jest.unmock('make-dir');
 jest.unmock('del');
 
-const GIT_SANDBOX_DIR_PATH = resolve(`${__dirname}/git-test-temp`);
+const GIT_SANDBOX_DIR_PATH = resolve(
+  `${__dirname}/git.integration.test.sandbox`
+);
 
-async function resetGitSandbox() {
+async function resetGitSandbox(subFolder: string) {
   await del(GIT_SANDBOX_DIR_PATH);
-  await makeDir(GIT_SANDBOX_DIR_PATH);
-
-  // mock repo path to point to git-sandbox dir
-  jest.spyOn(env, 'getRepoPath').mockReturnValue(GIT_SANDBOX_DIR_PATH);
+  await makeDir(`${GIT_SANDBOX_DIR_PATH}/${subFolder}`);
 }
 
 async function createAndCommitFile({
@@ -27,7 +31,7 @@ async function createAndCommitFile({
 }: {
   filename: string;
   content: string;
-  execOpts: Record<string, string>;
+  execOpts: { cwd: string };
 }) {
   await childProcess.exec(`echo "${content}" > "${filename}"`, execOpts);
   await childProcess.exec(
@@ -38,12 +42,12 @@ async function createAndCommitFile({
   return getCurrentSha(execOpts);
 }
 
-async function getCurrentSha(execOpts: Record<string, string>) {
+async function getCurrentSha(execOpts: { cwd: string }) {
   const { stdout } = await childProcess.exec('git rev-parse HEAD', execOpts);
   return stdout.trim();
 }
 
-async function getCurrentMessage(execOpts: Record<string, string>) {
+async function getCurrentMessage(execOpts: { cwd: string }) {
   const { stdout } = await childProcess.exec(
     'git --no-pager log -1 --pretty=%B',
     execOpts
@@ -57,7 +61,7 @@ describe('git.integration', () => {
     let secondSha: string;
 
     beforeEach(async () => {
-      await resetGitSandbox();
+      await resetGitSandbox('getIsCommitInBranch');
       const execOpts = { cwd: GIT_SANDBOX_DIR_PATH };
 
       // create and commit first file
@@ -84,7 +88,7 @@ describe('git.integration', () => {
 
     it('should contain the first commit', async () => {
       const isFirstCommitInBranch = await getIsCommitInBranch(
-        {} as ValidConfigOptions,
+        { dir: GIT_SANDBOX_DIR_PATH } as ValidConfigOptions,
         firstSha
       );
 
@@ -93,7 +97,7 @@ describe('git.integration', () => {
 
     it('should not contain the second commit', async () => {
       const isSecondCommitInBranch = await getIsCommitInBranch(
-        {} as ValidConfigOptions,
+        { dir: GIT_SANDBOX_DIR_PATH } as ValidConfigOptions,
         secondSha
       );
 
@@ -102,7 +106,7 @@ describe('git.integration', () => {
 
     it('should not contain a random commit', async () => {
       const isSecondCommitInBranch = await getIsCommitInBranch(
-        {} as ValidConfigOptions,
+        { dir: GIT_SANDBOX_DIR_PATH } as ValidConfigOptions,
         'abcdefg'
       );
 
@@ -114,10 +118,10 @@ describe('git.integration', () => {
     let firstSha: string;
     let secondSha: string;
     let fourthSha: string;
-    let execOpts: Record<string, string>;
+    let execOpts: { cwd: string };
 
     beforeEach(async () => {
-      await resetGitSandbox();
+      await resetGitSandbox('cherrypick');
       execOpts = { cwd: GIT_SANDBOX_DIR_PATH };
 
       // create and commit first file
@@ -159,7 +163,10 @@ describe('git.integration', () => {
     it('should not cherrypick commit that already exists', async () => {
       const shortSha = getShortSha(firstSha);
       return expect(() =>
-        cherrypick({} as ValidConfigOptions, firstSha)
+        cherrypick(
+          { dir: GIT_SANDBOX_DIR_PATH } as ValidConfigOptions,
+          firstSha
+        )
       ).rejects.toThrowError(
         `Cherrypick failed because the selected commit (${shortSha}) is empty. Did you already backport this commit?`
       );
@@ -167,7 +174,10 @@ describe('git.integration', () => {
 
     it('should cherrypick commit cleanly', async () => {
       const res = await cherrypick(
-        { cherrypickRef: false } as ValidConfigOptions,
+        {
+          cherrypickRef: false,
+          dir: GIT_SANDBOX_DIR_PATH,
+        } as ValidConfigOptions,
         secondSha
       );
       expect(res).toEqual({
@@ -183,7 +193,10 @@ describe('git.integration', () => {
 
     it('should cherrypick commit cleanly and append "(cherry picked from commit...)"', async () => {
       const res = await cherrypick(
-        { cherrypickRef: true } as ValidConfigOptions,
+        {
+          cherrypickRef: true,
+          dir: GIT_SANDBOX_DIR_PATH,
+        } as ValidConfigOptions,
         secondSha
       );
       expect(res).toEqual({
@@ -200,7 +213,10 @@ describe('git.integration', () => {
     });
 
     it('should cherrypick commit with conflicts', async () => {
-      const res = await cherrypick({} as ValidConfigOptions, fourthSha);
+      const res = await cherrypick(
+        { dir: GIT_SANDBOX_DIR_PATH } as ValidConfigOptions,
+        fourthSha
+      );
       expect(res).toEqual({
         needsResolving: true,
         conflictingFiles: [
@@ -211,6 +227,82 @@ describe('git.integration', () => {
         ],
         unstagedFiles: [`${GIT_SANDBOX_DIR_PATH}/foo.md`],
       });
+    });
+  });
+
+  describe('cloneRepo', () => {
+    const sourceRepo = `${GIT_SANDBOX_DIR_PATH}/clone/source-repo`;
+    const backportRepo = `${GIT_SANDBOX_DIR_PATH}/clone/backport-repo`;
+    let execSpy: SpyHelper<typeof childProcess.execAsCallback>;
+
+    beforeEach(async () => {
+      await del(GIT_SANDBOX_DIR_PATH);
+      await makeDir(sourceRepo);
+
+      const execOpts = { cwd: sourceRepo };
+      await childProcess.exec(`git init`, execOpts);
+      await childProcess.exec(
+        `git remote add origin git@github.com:elastic/kibana.git`,
+        execOpts
+      );
+
+      await createAndCommitFile({
+        filename: 'my-file.txt',
+        content: 'Hello!',
+        execOpts,
+      });
+
+      execSpy = jest.spyOn(childProcess, 'execAsCallback');
+    });
+
+    it('clones the repo', async () => {
+      await cloneRepo(
+        { sourcePath: sourceRepo, targetPath: backportRepo },
+        () => null
+      );
+
+      expect(execSpy).toHaveBeenCalledTimes(1);
+      expect(execSpy.mock.calls[0][0].startsWith('git clone ')).toBe(true);
+    });
+  });
+
+  describe('getSourceRepoPath', () => {
+    const sourceRepo = `${GIT_SANDBOX_DIR_PATH}/clone/source-repo`;
+
+    beforeEach(async () => {
+      await del(GIT_SANDBOX_DIR_PATH);
+      await makeDir(sourceRepo);
+
+      const execOpts = { cwd: sourceRepo };
+      await childProcess.exec(`git init`, execOpts);
+      await childProcess.exec(
+        `git remote add origin git@github.com:elastic/kibana.git`,
+        execOpts
+      );
+    });
+
+    it('returns local source repo, when one remote matches', async () => {
+      const options = {
+        accessToken: 'verysecret',
+        repoName: 'kibana',
+        repoOwner: 'elastic',
+        cwd: sourceRepo,
+      } as ValidConfigOptions;
+      const sourcePath = await getSourceRepoPath(options);
+      expect(sourcePath).toBe(sourceRepo);
+    });
+
+    it("returns remote source repo when remotes don't match", async () => {
+      const options = {
+        accessToken: 'verysecret',
+        repoName: 'kibana',
+        repoOwner: 'sqren',
+        cwd: sourceRepo,
+      } as ValidConfigOptions;
+      const sourcePath = await getSourceRepoPath(options);
+      expect(sourcePath).toBe(
+        'https://x-access-token:verysecret@github.com/sqren/kibana.git'
+      );
     });
   });
 });

@@ -53,6 +53,7 @@ describe('runSequentially', () => {
       cherrypickRef: true,
       ci: false,
       commitPaths: [],
+      cwd: '/path/to/source/repo',
       dateSince: null,
       dateUntil: null,
       details: false,
@@ -151,19 +152,26 @@ describe('runSequentially', () => {
     `);
   });
 
-  it('should run all commands in the correct directory', () => {
-    expect(
-      rpcExecMock.mock.calls.every(
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        ([cmd, opts]) =>
-          opts.cwd === '/myHomeDir/.backport/repositories/elastic/kibana'
-      )
-    ).toBe(true);
+  it('should run all exec commands in the either source or backport directory', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    expect(rpcExecMock.mock.calls.map(([cmd, opts]) => opts.cwd)).toEqual([
+      '/path/to/source/repo',
+      '/myHomeDir/.backport/repositories/elastic/kibana',
+      '/myHomeDir/.backport/repositories/elastic/kibana',
+      '/myHomeDir/.backport/repositories/elastic/kibana',
+      '/myHomeDir/.backport/repositories/elastic/kibana',
+      '/myHomeDir/.backport/repositories/elastic/kibana',
+      '/myHomeDir/.backport/repositories/elastic/kibana',
+      '/myHomeDir/.backport/repositories/elastic/kibana',
+      '/myHomeDir/.backport/repositories/elastic/kibana',
+      '/myHomeDir/.backport/repositories/elastic/kibana',
+      '/myHomeDir/.backport/repositories/elastic/kibana',
+    ]);
   });
 
-  it('exec should be called with correct args', () => {
-    expect(rpcExecMock).toHaveBeenCalledTimes(10);
+  it('exec commands should be called with correct args', () => {
     expect(rpcExecMock.mock.calls.map(([cmd]) => cmd)).toEqual([
+      'git remote --verbose',
       'git remote rm origin',
       'git remote rm sqren_authenticated',
       'git remote add sqren_authenticated https://x-access-token:myAccessToken@github.com/sqren_authenticated/kibana.git',

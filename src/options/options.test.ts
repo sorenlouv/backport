@@ -142,6 +142,7 @@ describe('getOptions', () => {
       cherrypickRef: true,
       ci: false,
       commitPaths: [],
+      cwd: expect.any(String),
       dateSince: null,
       dateUntil: null,
       details: false,

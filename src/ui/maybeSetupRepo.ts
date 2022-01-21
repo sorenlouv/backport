@@ -1,10 +1,12 @@
 import ora = require('ora');
 import { ValidConfigOptions } from '../options/options';
+import { getRepoPath } from '../services/env';
 import {
   addRemote,
   cloneRepo,
   deleteRemote,
   deleteRepo,
+  getSourceRepoPath,
   repoExists,
 } from '../services/git';
 
@@ -15,10 +17,13 @@ export async function maybeSetupRepo(options: ValidConfigOptions) {
   if (!isAlreadyCloned) {
     const spinner = ora().start();
     try {
-      const spinnerCloneText = 'Cloning repository (one-time operation)';
+      const sourcePath = await getSourceRepoPath(options);
+      const targetPath = getRepoPath(options);
+
+      const spinnerCloneText = `Cloning repository from ${sourcePath} (one-time operation)`;
       spinner.text = `0% ${spinnerCloneText}`;
 
-      await cloneRepo(options, (progress: string) => {
+      await cloneRepo({ sourcePath, targetPath }, (progress: string) => {
         spinner.text = `${progress}% ${spinnerCloneText}`;
       });
 

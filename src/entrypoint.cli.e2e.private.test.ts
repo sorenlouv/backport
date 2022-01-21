@@ -1,10 +1,11 @@
 import { spawn } from 'child_process';
 import stripAnsi from 'strip-ansi';
-import { getDevAccessToken } from './private/getDevAccessToken';
+import { getDevAccessToken } from './test/private/getDevAccessToken';
 
 const TIMEOUT_IN_SECONDS = 10;
 
 jest.setTimeout(15000);
+jest.unmock('ora');
 
 describe('inquirer cli', () => {
   let devAccessToken: string;
@@ -25,7 +26,64 @@ describe('inquirer cli', () => {
 
   it('--help', async () => {
     const res = await runBackportAsync([`--help`]);
-    expect(res).toContain('Show version number');
+    expect(res).toMatchInlineSnapshot(`
+      "entrypoint.cli.ts [args]
+      Options:
+        -v, -V, --version                     Show version number                                [boolean]
+            --accessToken, --accesstoken      Github access token                                 [string]
+        -a, --all                             List all commits                                   [boolean]
+            --assignee, --assign              Add assignees to the target pull request             [array]
+            --autoAssign                      Auto assign the target pull request to yourself    [boolean]
+            --autoMerge                       Enable auto-merge for created pull requests        [boolean]
+            --autoMergeMethod                 Sets auto-merge method when using --auto-merge. Default:
+                                              merge        [string] [choices: \\"merge\\", \\"rebase\\", \\"squash\\"]
+            --ci                              Disable interactive prompts                        [boolean]
+            --cherrypickRef                   Append commit message with \\"(cherry picked from commit...)
+                                                                                                 [boolean]
+            --configFile                      Path to project config                              [string]
+            --since                           ISO-8601 date for filtering commits                 [string]
+            --until                           ISO-8601 date for filtering commits                 [string]
+            --dir                             Location where the temporary repository will be stored
+                                                                                                  [string]
+            --details                         Show details about each commit                     [boolean]
+            --editor                          Editor to be opened during conflict resolution      [string]
+            --skipRemoteConfig                Use local .backportrc.json config instead of loading from
+                                              Github                                             [boolean]
+            --fork                            Create backports in fork or origin repo            [boolean]
+            --mainline                        Parent id of merge commit. Defaults to 1 when supplied
+                                              without arguments                                   [number]
+        -n, --maxNumber, --number             Number of commits to choose from                    [number]
+            --multiple                        Select multiple branches/commits                   [boolean]
+            --multipleBranches                Backport to multiple branches                      [boolean]
+            --multipleCommits                 Backport multiple commits                          [boolean]
+            --noCherrypickRef                 Do not append commit message with \\"(cherry picked from
+                                              commit...)\\"                                        [boolean]
+            --noStatusComment                 Don't publish status comment to Github             [boolean]
+            --noVerify                        Bypass the pre-commit and commit-msg hooks         [boolean]
+            --noFork                          Create backports in the origin repo                [boolean]
+        -p, --path                            Only list commits touching files under the specified path
+                                                                                                   [array]
+            --prDescription, --description    Description to be added to pull request             [string]
+            --prTitle, --title                Title of pull request                               [string]
+            --prFilter                        Filter source pull requests by a query              [string]
+            --pullNumber, --pr                Pull request to backport                            [number]
+            --resetAuthor                     Set yourself as commit author                      [boolean]
+            --reviewer                        Add reviewer to the target PR                        [array]
+            --repoOwner                       Repository owner                                    [string]
+            --repoName                        Repository name                                     [string]
+            --sha, --commit                   Commit sha to backport                              [string]
+            --sourceBranch                    Specify a non-default branch (normally \\"master\\") to backport
+                                              from                                                [string]
+            --sourcePRLabel, --sourcePrLabel  Add labels to the source (original) PR               [array]
+        -b, --targetBranch, --branch          Branch(es) to backport to                            [array]
+            --targetBranchChoice              List branches to backport to                         [array]
+        -l, --targetPRLabel, --label          Add labels to the target (backport) PR               [array]
+            --verbose                         Show additional debug information                  [boolean]
+            --verify                          Opposite of no-verify                              [boolean]
+            --help                            Show help                                          [boolean]
+      For bugs, feature requests or questions: https://github.com/sqren/backport/issues
+      Or contact me directly: https://twitter.com/sorenlouv"
+    `);
   });
 
   it('should return error when branch is missing', async () => {

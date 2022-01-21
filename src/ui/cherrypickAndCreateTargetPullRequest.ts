@@ -274,7 +274,7 @@ async function waitForCherrypick(
 
   if (options.editor) {
     const repoPath = getRepoPath(options);
-    await exec(`${options.editor} ${repoPath}`, {});
+    await exec(`${options.editor} ${repoPath}`, { cwd: options.cwd });
   }
 
   // list files with conflict markers + unstaged files and require user to resolve them

@@ -31,6 +31,7 @@ export async function getOptionsFromGithub(options: {
   repoName: string;
   repoOwner: string;
   skipRemoteConfig?: boolean;
+  cwd: string;
 }) {
   const { accessToken, githubApiBaseUrlV4, repoName, repoOwner } = options;
 
@@ -71,6 +72,7 @@ export async function getOptionsFromGithub(options: {
   const historicalRemoteConfigs = repo.defaultBranchRef.target.history.edges;
   const latestRemoteConfig = historicalRemoteConfigs[0]?.remoteConfig;
   const skipRemoteConfig = await getSkipRemoteConfigFile(
+    options.cwd,
     options.skipRemoteConfig,
     latestRemoteConfig
   );
@@ -86,6 +88,7 @@ export async function getOptionsFromGithub(options: {
 }
 
 async function getSkipRemoteConfigFile(
+  cwd: string,
   skipRemoteConfig?: boolean,
   remoteConfig?: RemoteConfig
 ) {
@@ -103,9 +106,9 @@ async function getSkipRemoteConfigFile(
 
   const [isLocalConfigModified, isLocalConfigUntracked, localCommitDate] =
     await Promise.all([
-      isLocalConfigFileModified(),
-      isLocalConfigFileUntracked(),
-      getLocalConfigFileCommitDate(),
+      isLocalConfigFileModified({ cwd }),
+      isLocalConfigFileUntracked({ cwd }),
+      getLocalConfigFileCommitDate({ cwd }),
     ]);
 
   if (isLocalConfigUntracked) {

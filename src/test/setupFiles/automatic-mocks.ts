@@ -19,12 +19,11 @@ jest.mock('del', () => {
 
 jest.mock('ora', () => {
   const ora = {
-    start: () => ({
-      succeed: () => {},
-      stop: () => {},
-      fail: () => {},
-      stopAndPersist: () => {},
-    }),
+    succeed: () => {},
+    start: () => ora,
+    stop: () => {},
+    fail: () => {},
+    stopAndPersist: () => {},
   };
 
   return jest.fn(() => ora);

@@ -1,8 +1,10 @@
+import { ExecException } from 'child_process';
 import { resolve as pathResolve } from 'path';
 import del from 'del';
 import { uniq, isEmpty } from 'lodash';
 import ora from 'ora';
 import { ValidConfigOptions } from '../options/options';
+import { filterNil } from '../utils/filterEmpty';
 import { HandledError } from './HandledError';
 import { execAsCallback, exec } from './child-process-promisified';
 import { getRepoPath } from './env';
@@ -41,23 +43,19 @@ export function getRemoteUrl(
   return `https://x-access-token:${accessToken}@${gitHostname}/${repoOwner}/${repoName}.git`;
 }
 
-export function cloneRepo(
-  options: ValidConfigOptions,
+export async function cloneRepo(
+  { sourcePath, targetPath }: { sourcePath: string; targetPath: string },
   callback: (progress: string) => void
 ) {
+  // where to store the repo (always local on disc)
+
   return new Promise<void>((resolve, reject) => {
-    const cb = (error: any) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve();
-      }
+    const cb = (error: ExecException | null) => {
+      return error ? reject(error) : resolve();
     };
 
     const execProcess = execAsCallback(
-      `git clone ${getRemoteUrl(options, options.repoOwner)} ${getRepoPath(
-        options
-      )} --progress`,
+      `git clone ${sourcePath} ${targetPath} --progress`,
       { maxBuffer: 100 * 1024 * 1024 },
       cb
     );
@@ -76,11 +74,11 @@ export function cloneRepo(
   });
 }
 
-export async function getLocalConfigFileCommitDate() {
+export async function getLocalConfigFileCommitDate({ cwd }: { cwd: string }) {
   try {
     const { stdout } = await exec(
       'git --no-pager log -1 --format=%cd .backportrc.js*',
-      {}
+      { cwd }
     );
 
     const timestamp = Date.parse(stdout);
@@ -92,12 +90,12 @@ export async function getLocalConfigFileCommitDate() {
   }
 }
 
-export async function isLocalConfigFileUntracked() {
+export async function isLocalConfigFileUntracked({ cwd }: { cwd: string }) {
   try {
     // list untracked files
     const { stdout } = await exec(
       'git ls-files .backportrc.js*  --exclude-standard --others',
-      {}
+      { cwd }
     );
 
     return !!stdout;
@@ -106,11 +104,11 @@ export async function isLocalConfigFileUntracked() {
   }
 }
 
-export async function isLocalConfigFileModified() {
+export async function isLocalConfigFileModified({ cwd }: { cwd: string }) {
   try {
     const { stdout } = await exec(
       'git  --no-pager diff HEAD --name-only  .backportrc.js*',
-      {}
+      { cwd }
     );
 
     return !!stdout;
@@ -119,15 +117,36 @@ export async function isLocalConfigFileModified() {
   }
 }
 
-export async function getRepoOwnerAndNameFromGitRemote() {
+export async function getRepoOwnerAndNameFromGitRemotes({
+  cwd,
+}: {
+  cwd: string;
+}) {
   try {
-    const { stdout } = await exec('git remote --verbose', {});
-    const matches = stdout.match(/github.com[:/]{1}(.*).git/);
-    if (matches !== null) {
-      const [repoOwner, repoName] = matches[1].split('/');
+    const { stdout } = await exec('git remote --verbose', { cwd });
+    const remotes = stdout
+      .split('\n')
+      .map((line) => {
+        const match = line.match(/.+github.com:(.+?)(.git)? \((fetch|push)\)/);
+        return match?.[1];
+      })
+      .filter(filterNil);
+
+    return uniq(remotes).map((remote) => {
+      const [repoOwner, repoName] = remote.split('/');
       return { repoOwner, repoName };
-    }
+    });
   } catch (e) {
+    return [];
+  }
+}
+
+export async function getGitProjectRoot({ cwd }: { cwd: string }) {
+  try {
+    const { stdout } = await exec('git rev-parse --show-toplevel', { cwd });
+    return stdout.trim();
+  } catch (e) {
+    logger.error('An error occurred while retrieving git project root', e);
     return;
   }
 }
@@ -450,4 +469,21 @@ export async function pushBackportBranch({
 
     throw e;
   }
+}
+
+export async function getSourceRepoPath(options: ValidConfigOptions) {
+  const gitRemotes = await getRepoOwnerAndNameFromGitRemotes(options);
+  const isProjectMatch = gitRemotes.some(
+    (remote) =>
+      remote.repoName === options.repoName &&
+      remote.repoOwner === options.repoOwner
+  );
+
+  // where to fetch the repo from (either remotely from Github or from a local path)
+  const remoteUrl = getRemoteUrl(options, options.repoOwner);
+  const sourcePath = isProjectMatch
+    ? (await getGitProjectRoot(options)) ?? remoteUrl
+    : remoteUrl;
+
+  return sourcePath;
 }

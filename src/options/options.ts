@@ -29,6 +29,7 @@ export const defaultConfigOptions = {
   cherrypickRef: true,
   ci: false,
   commitPaths: [] as Array<string>,
+  cwd: process.cwd(),
   dateSince: null,
   dateUntil: null,
   details: false,

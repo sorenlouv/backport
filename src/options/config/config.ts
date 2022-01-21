@@ -27,7 +27,7 @@ export async function getOptionsFromConfigFiles({
     defaultConfigOptions.configFile;
 
   const [gitConfig, projectConfig, globalConfig] = await Promise.all([
-    getOptionsFromGit(),
+    getOptionsFromGit({ cwd: process.cwd() }),
     getProjectConfig({ configFile }),
     ci ? undefined : getGlobalConfig(),
   ]);
