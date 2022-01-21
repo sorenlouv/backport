@@ -1,14 +1,12 @@
+import fs from 'fs/promises';
 import os from 'os';
 import nock from 'nock';
-import * as fs from '../services/fs-promisified';
 import { GithubConfigOptionsResponse } from '../services/github/v4/getOptionsFromGithub/query';
 import * as logger from '../services/logger';
 import { mockConfigFiles } from '../test/mockConfigFiles';
 import { mockGqlRequest } from '../test/nockHelpers';
 import { ConfigFileOptions } from './ConfigOptions';
 import { getOptions } from './options';
-
-jest.unmock('../services/fs-promisified');
 
 const defaultConfigs = {
   projectConfig: {

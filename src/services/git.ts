@@ -1,4 +1,5 @@
 import { ExecException } from 'child_process';
+import { stat } from 'fs/promises';
 import { resolve as pathResolve } from 'path';
 import del from 'del';
 import { uniq, isEmpty } from 'lodash';
@@ -8,7 +9,6 @@ import { filterNil } from '../utils/filterEmpty';
 import { HandledError } from './HandledError';
 import { execAsCallback, exec } from './child-process-promisified';
 import { getRepoPath } from './env';
-import { stat } from './fs-promisified';
 import { getShortSha } from './github/commitFormatters';
 import { logger } from './logger';
 import { ExpectedTargetPullRequest } from './sourceCommit/getExpectedTargetPullRequests';

@@ -28,13 +28,15 @@ const BRANCH_WITH_TWO_COMMITS = 'backport/7.x/commit-5bf29b7d_pr-2';
 const AUTHOR = 'sqren';
 
 describe('backport e2e', () => {
+  let accessToken: string;
   afterAll(() => {
     nock.cleanAll();
   });
 
-  beforeAll(() => {
+  beforeAll(async () => {
     // set alternative homedir
     jest.spyOn(os, 'homedir').mockReturnValue(HOMEDIR_PATH);
+    accessToken = await getDevAccessToken();
 
     mockConfigFiles({
       globalConfig: {},
@@ -44,11 +46,10 @@ describe('backport e2e', () => {
 
   describe('when a single commit is backported', () => {
     let res: Awaited<ReturnType<typeof runSequentially>>;
-    let accessToken: string;
+
     let createPullRequestsMockCalls: unknown[];
 
     beforeAll(async () => {
-      accessToken = await getDevAccessToken();
       await resetState(accessToken);
 
       createPullRequestsMockCalls = mockCreatePullRequest({
@@ -128,10 +129,8 @@ describe('backport e2e', () => {
   describe('when two commits are backported', () => {
     let createPullRequestsMockCalls: unknown[];
     let res: Awaited<ReturnType<typeof runSequentially>>;
-    let accessToken: string;
 
     beforeAll(async () => {
-      accessToken = await getDevAccessToken();
       await resetState(accessToken);
 
       createPullRequestsMockCalls = mockCreatePullRequest({
@@ -219,11 +218,9 @@ describe('backport e2e', () => {
 
   describe('when disabling fork mode', () => {
     let res: Awaited<ReturnType<typeof runSequentially>>;
-    let accessToken: string;
     let createPullRequestsMockCalls: unknown[];
 
     beforeAll(async () => {
-      accessToken = await getDevAccessToken();
       await resetState(accessToken);
 
       createPullRequestsMockCalls = mockCreatePullRequest({

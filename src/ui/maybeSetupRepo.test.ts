@@ -1,8 +1,8 @@
+import fs from 'fs/promises';
 import os from 'os';
 import del from 'del';
 import { ValidConfigOptions } from '../options/options';
 import * as childProcess from '../services/child-process-promisified';
-import * as fs from '../services/fs-promisified';
 import { maybeSetupRepo } from './maybeSetupRepo';
 
 describe('maybeSetupRepo', () => {
