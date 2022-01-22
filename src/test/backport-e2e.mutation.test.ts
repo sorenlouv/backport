@@ -15,12 +15,8 @@ jest.unmock('make-dir');
 jest.unmock('del');
 jest.setTimeout(10000);
 
-const E2E_TEST_DATA_PATH = resolve(
-  './src/test/tmp-mock-environments/backport-e2e'
-);
-const HOMEDIR_PATH = resolve(
-  './src/test/tmp-mock-environments/backport-e2e/homedir'
-);
+const E2E_TEST_DATA_PATH = resolve(`${__dirname}/_tmp_sandbox_/backport-e2e`);
+const HOMEDIR_PATH = resolve(`${__dirname}/_tmp_sandbox_/backport-e2e/homedir`);
 const REPO_OWNER = 'backport-org';
 const REPO_NAME = 'integration-test';
 const BRANCH_WITH_ONE_COMMIT = 'backport/7.x/commit-5bf29b7d';

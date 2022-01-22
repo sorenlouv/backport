@@ -34,9 +34,7 @@ describe('Handle unbackported pull requests', () => {
       repoName: 'repo-with-conflicts',
       pullNumber: 12,
       targetBranches: ['7.x'],
-      dir: resolve(
-        './src/test/tmp-mock-environments/handleUnbackportedPullRequests'
-      ),
+      dir: resolve(`${__dirname}/_tmp_sandbox_/handleUnbackportedPullRequests`),
       ci: true,
       publishStatusComment: false,
     });

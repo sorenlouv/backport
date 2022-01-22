@@ -16,12 +16,12 @@ jest.unmock('make-dir');
 jest.unmock('del');
 
 const GIT_SANDBOX_DIR_PATH = resolve(
-  `${__dirname}/git.integration.test.sandbox`
+  `${__dirname}/_tmp_sandbox_/git.integration.test`
 );
 
-async function resetGitSandbox(subFolder: string) {
+async function resetGitSandbox(specName: string) {
   await del(GIT_SANDBOX_DIR_PATH);
-  await makeDir(`${GIT_SANDBOX_DIR_PATH}/${subFolder}`);
+  await makeDir(`${GIT_SANDBOX_DIR_PATH}/${specName}`);
 }
 
 async function createAndCommitFile({
