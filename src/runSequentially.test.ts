@@ -143,6 +143,8 @@ describe('runSequentially', () => {
       This is an automatic backport to \`7.x\` of:
        - #55
 
+      <!--- Backport version: 1.2.3 -->
+
       ### Questions ?
       Please refer to the [Backport tool documentation](https://github.com/sqren/backport)",
           "head": "sqren_authenticated:backport/7.x/pr-55",

@@ -3,11 +3,17 @@
  * It will be run once per test file
  */
 
+import * as getPackageVersionModule from '../../utils/getPackageVersion';
+
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 jest.mock('find-up', () => {
   return jest.fn(async () => '/path/to/project/config');
 });
+
+jest
+  .spyOn(getPackageVersionModule, 'getPackageVersion')
+  .mockReturnValue('1.2.3');
 
 jest.mock('make-dir', () => {
   return jest.fn(() => Promise.resolve('/some/path'));

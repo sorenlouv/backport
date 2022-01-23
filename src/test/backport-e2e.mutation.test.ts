@@ -90,6 +90,8 @@ describe('backport e2e', () => {
         This is an automatic backport to \`7.x\` of:
          - Add ❤️ emoji (5bf29b7d)
 
+        <!--- Backport version: 1.2.3 -->
+
         ### Questions ?
         Please refer to the [Backport tool documentation](https://github.com/sqren/backport)",
             "head": "sqren:backport/7.x/commit-5bf29b7d",
@@ -167,6 +169,8 @@ describe('backport e2e', () => {
         This is an automatic backport to \`7.x\` of:
          - Add ❤️ emoji (5bf29b7d)
          - #2
+
+        <!--- Backport version: 1.2.3 -->
 
         ### Questions ?
         Please refer to the [Backport tool documentation](https://github.com/sqren/backport)",
@@ -249,6 +253,8 @@ describe('backport e2e', () => {
 
         This is an automatic backport to \`7.x\` of:
          - Add ❤️ emoji (5bf29b7d)
+
+        <!--- Backport version: 1.2.3 -->
 
         ### Questions ?
         Please refer to the [Backport tool documentation](https://github.com/sqren/backport)",

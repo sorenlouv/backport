@@ -243,13 +243,10 @@ async function waitForCherrypick(
   });
 
   if (options.ci) {
-    throw new HandledError(
-      `Commit could not be cherrypicked due to conflicts`,
-      {
-        type: 'merge-conflict-due-to-missing-backports',
-        commitsWithoutBackports,
-      }
-    );
+    throw new HandledError({
+      code: 'merge-conflict-exception',
+      commitsWithoutBackports,
+    });
   }
 
   consoleLog(
@@ -345,7 +342,7 @@ ${unstagedSection}
 Press ENTER when the conflicts are resolved and files are staged`);
 
   if (!res) {
-    throw new HandledError('Aborted');
+    throw new HandledError({ code: 'abort-exception' });
   }
 
   const MAX_RETRIES = 100;

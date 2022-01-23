@@ -21,8 +21,7 @@ export type BackportResponse =
   | {
       status: 'failure';
       commits: Commit[];
-      errorMessage: string;
-      error: Error;
+      error: Error | HandledError;
     };
 
 export async function backportRun(
@@ -37,6 +36,7 @@ export async function backportRun(
 
   // don't show spinner for yargs commands that exit the process without stopping the spinner first
   const spinner = ora();
+
   if (!argv.help && !argv.version) {
     spinner.start('Initializing...');
   }
@@ -67,7 +67,6 @@ export async function backportRun(
     const backportResponse: BackportResponse = {
       status: 'failure',
       commits,
-      errorMessage: e.message,
       error: e,
     };
 

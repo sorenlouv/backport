@@ -41,7 +41,8 @@ describe('Handle unbackported pull requests', () => {
 
     expect(
       //@ts-expect-error
-      result.results[0].error.meta?.commitsWithoutBackports[0].commit.pullNumber
+      result.results[0].error.attributes?.commitsWithoutBackports[0].commit
+        .pullNumber
     ).toBe(8);
   });
 });

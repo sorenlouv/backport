@@ -1,19 +1,41 @@
 import { Commit } from './sourceCommit/parseSourceCommit';
 
-type Meta = {
-  type: 'merge-conflict-due-to-missing-backports';
-  commitsWithoutBackports: {
-    formatted: string;
-    commit: Commit;
-  }[];
-};
+type ErrorAttributes =
+  | {
+      code: 'merge-conflict-exception';
+      commitsWithoutBackports: {
+        formatted: string;
+        commit: Commit;
+      }[];
+    }
+  | {
+      code: 'no-branches-exception' | 'abort-exception';
+    };
+
+function getMessage(errorAttributes: ErrorAttributes | string): string {
+  if (typeof errorAttributes === 'string') {
+    return errorAttributes;
+  }
+
+  switch (errorAttributes.code) {
+    case 'merge-conflict-exception':
+      return `Commit could not be cherrypicked due to conflicts`;
+    case 'no-branches-exception':
+      return 'There are no branches to backport to. Aborting.';
+    case 'abort-exception':
+      return 'Aborted';
+  }
+}
 
 export class HandledError extends Error {
-  meta?: Meta;
-  constructor(message: string, meta?: Meta) {
-    super(message);
+  attributes?: ErrorAttributes;
+  constructor(errorAttributes: ErrorAttributes | string) {
+    super(getMessage(errorAttributes));
     Error.captureStackTrace(this, HandledError);
     this.name = 'HandledError';
-    this.meta = meta;
+
+    if (typeof errorAttributes !== 'string') {
+      this.attributes = errorAttributes;
+    }
   }
 }
