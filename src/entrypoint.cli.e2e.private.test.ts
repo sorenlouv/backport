@@ -111,6 +111,9 @@ describe('inquirer cli', () => {
       devAccessToken,
     ]);
 
+    // eslint-disable-next-line no-console
+    console.log('res', JSON.stringify(res));
+
     const lineCount = res.split('\n').length;
     expect(lineCount).toBeGreaterThan(10);
 
