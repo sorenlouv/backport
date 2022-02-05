@@ -1,7 +1,4 @@
-import { ExecException } from 'child_process';
-import { stat } from 'fs/promises';
 import { resolve as pathResolve } from 'path';
-import del from 'del';
 import { uniq, isEmpty } from 'lodash';
 import ora from 'ora';
 import { ValidConfigOptions } from '../options/options';
@@ -10,31 +7,10 @@ import { HandledError } from './HandledError';
 import { execAsCallback, exec } from './child-process-promisified';
 import { getRepoPath } from './env';
 import { getShortSha } from './github/commitFormatters';
+import { getRepoOwnerAndName } from './github/v4/getRepoOwnerAndName';
 import { logger } from './logger';
 import { ExpectedTargetPullRequest } from './sourceCommit/getExpectedTargetPullRequests';
 import { Commit } from './sourceCommit/parseSourceCommit';
-
-async function folderExists(path: string): Promise<boolean> {
-  try {
-    const stats = await stat(path);
-    return stats.isDirectory();
-  } catch (e) {
-    if (e.code === 'ENOENT') {
-      return false;
-    }
-
-    throw e;
-  }
-}
-
-export function repoExists(options: ValidConfigOptions): Promise<boolean> {
-  return folderExists(getRepoPath(options));
-}
-
-export function deleteRepo(options: ValidConfigOptions) {
-  const repoPath = getRepoPath(options);
-  return del(repoPath);
-}
 
 export function getRemoteUrl(
   { repoName, accessToken, gitHostname = 'github.com' }: ValidConfigOptions,
@@ -45,29 +21,46 @@ export function getRemoteUrl(
 
 export async function cloneRepo(
   { sourcePath, targetPath }: { sourcePath: string; targetPath: string },
-  callback: (progress: string) => void
+  onProgress: (progress: number) => void
 ) {
-  // where to store the repo (always local on disc)
-
   return new Promise<void>((resolve, reject) => {
-    const cb = (error: ExecException | null) => {
-      return error ? reject(error) : resolve();
-    };
-
     const execProcess = execAsCallback(
       `git clone ${sourcePath} ${targetPath} --progress`,
       { maxBuffer: 100 * 1024 * 1024 },
-      cb
+      (error) => {
+        return error ? reject(error) : resolve();
+      }
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    const progress = {
+      fileUpdate: 0,
+      objectReceive: 0,
+    };
+
     if (execProcess.stderr) {
       execProcess.stderr.on('data', (data) => {
-        const regex = /^Receiving objects:\s+(\d+)%/;
-        const [, progress]: RegExpMatchArray =
-          data.toString().match(regex) || [];
-        if (progress) {
-          callback(progress);
+        logger.verbose(data);
+        const [, objectReceiveProgress]: RegExpMatchArray =
+          data.toString().match(/^Receiving objects:\s+(\d+)%/) || [];
+
+        if (objectReceiveProgress) {
+          progress.objectReceive = parseInt(objectReceiveProgress, 10);
+        }
+
+        const [, fileUpdateProgress]: RegExpMatchArray =
+          data.toString().match(/^Updating files:\s+(\d+)%/) || [];
+
+        if (fileUpdateProgress) {
+          progress.objectReceive = 100;
+          progress.fileUpdate = parseInt(fileUpdateProgress, 10);
+        }
+
+        const progressSum = Math.round(
+          progress.fileUpdate * 0.1 + progress.objectReceive * 0.9
+        );
+
+        if (progressSum > 0) {
+          onProgress(progressSum);
         }
       });
     }
@@ -117,11 +110,7 @@ export async function isLocalConfigFileModified({ cwd }: { cwd: string }) {
   }
 }
 
-export async function getRepoOwnerAndNameFromGitRemotes({
-  cwd,
-}: {
-  cwd: string;
-}) {
+export async function getRepoInfoFromGitRemotes({ cwd }: { cwd: string }) {
   try {
     const { stdout } = await exec('git remote --verbose', { cwd });
     const remotes = stdout
@@ -156,9 +145,8 @@ export async function getIsCommitInBranch(
   commitSha: string
 ) {
   try {
-    const cwd = getRepoPath(options);
     await exec(`git merge-base --is-ancestor ${commitSha} HEAD`, {
-      cwd,
+      cwd: getRepoPath(options),
     });
     return true;
   } catch (e) {
@@ -472,18 +460,15 @@ export async function pushBackportBranch({
 }
 
 export async function getSourceRepoPath(options: ValidConfigOptions) {
-  const gitRemotes = await getRepoOwnerAndNameFromGitRemotes(options);
-  const isProjectMatch = gitRemotes.some(
-    (remote) =>
-      remote.repoName === options.repoName &&
-      remote.repoOwner === options.repoOwner
-  );
+  const gitRemote = await getRepoOwnerAndName(options);
 
   // where to fetch the repo from (either remotely from Github or from a local path)
   const remoteUrl = getRemoteUrl(options, options.repoOwner);
-  const sourcePath = isProjectMatch
-    ? (await getGitProjectRoot(options)) ?? remoteUrl
-    : remoteUrl;
+  const sourcePath =
+    options.repoName === gitRemote.repoName &&
+    options.repoOwner === gitRemote.repoOwner
+      ? (await getGitProjectRoot(options)) ?? remoteUrl
+      : remoteUrl;
 
   return sourcePath;
 }

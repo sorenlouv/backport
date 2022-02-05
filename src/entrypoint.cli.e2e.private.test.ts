@@ -40,7 +40,7 @@ describe('inquirer cli', () => {
             --ci                              Disable interactive prompts                        [boolean]
             --cherrypickRef                   Append commit message with \\"(cherry picked from commit...)
                                                                                                  [boolean]
-            --configFile                      Path to project config                              [string]
+            --configFile, --config            Path to project config                              [string]
             --since                           ISO-8601 date for filtering commits                 [string]
             --until                           ISO-8601 date for filtering commits                 [string]
             --dir                             Location where the temporary repository will be stored
@@ -110,9 +110,6 @@ describe('inquirer cli', () => {
       '--accessToken',
       devAccessToken,
     ]);
-
-    // eslint-disable-next-line no-console
-    console.log('res', JSON.stringify(res));
 
     const lineCount = res.split('\n').length;
     expect(lineCount).toBeGreaterThan(10);

@@ -15,7 +15,7 @@ import {
   getLocalConfigFileCommitDate,
   isLocalConfigFileUntracked,
   isLocalConfigFileModified,
-  getRepoOwnerAndNameFromGitRemotes,
+  getRepoInfoFromGitRemotes,
 } from './git';
 import { Commit } from './sourceCommit/parseSourceCommit';
 
@@ -160,7 +160,7 @@ describe('isLocalConfigFileModified', () => {
   });
 });
 
-describe('getRepoOwnerAndNameFromGitRemotes', () => {
+describe('getRepoInfoFromGitRemotes', () => {
   it('returns repoName and repoOwner for every remote', async () => {
     const res = {
       stdout:
@@ -175,22 +175,18 @@ describe('getRepoOwnerAndNameFromGitRemotes', () => {
       stderr: '',
     };
     jest.spyOn(childProcess, 'exec').mockResolvedValue(res);
-    expect(await getRepoOwnerAndNameFromGitRemotes({ cwd: 'foo/bar' })).toEqual(
-      [
-        { repoName: 'kibana', repoOwner: 'john.doe' },
-        { repoName: 'kibana', repoOwner: 'elastic' },
-        { repoName: 'kibana', repoOwner: 'peter' },
-        { repoName: 'kibana', repoOwner: 'sqren' },
-      ]
-    );
+    expect(await getRepoInfoFromGitRemotes({ cwd: 'foo/bar' })).toEqual([
+      { repoName: 'kibana', repoOwner: 'john.doe' },
+      { repoName: 'kibana', repoOwner: 'elastic' },
+      { repoName: 'kibana', repoOwner: 'peter' },
+      { repoName: 'kibana', repoOwner: 'sqren' },
+    ]);
   });
 
   it('returns undefined when no remotes exist', async () => {
     const res = { stdout: '', stderr: '' };
     jest.spyOn(childProcess, 'exec').mockResolvedValue(res);
-    expect(await getRepoOwnerAndNameFromGitRemotes({ cwd: 'foo/bar' })).toEqual(
-      []
-    );
+    expect(await getRepoInfoFromGitRemotes({ cwd: 'foo/bar' })).toEqual([]);
   });
 
   it('handles errors', async () => {
@@ -204,9 +200,7 @@ describe('getRepoOwnerAndNameFromGitRemotes', () => {
         'fatal: not a git repository (or any of the parent directories): .git\n',
     };
     jest.spyOn(childProcess, 'exec').mockRejectedValueOnce(err);
-    expect(await getRepoOwnerAndNameFromGitRemotes({ cwd: 'foo/bar' })).toEqual(
-      []
-    );
+    expect(await getRepoInfoFromGitRemotes({ cwd: 'foo/bar' })).toEqual([]);
   });
 });
 

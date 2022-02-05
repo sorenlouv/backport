@@ -46,14 +46,10 @@ export async function getCommits(options: {
   sourceBranch?: string;
   dateUntil?: string;
   dateSince?: string;
-  cwd?: string;
 }) {
   initLogger({ ci: true, accessToken: options.accessToken });
 
-  const optionsFromGithub = await getOptionsFromGithub({
-    cwd: process.cwd(),
-    ...options,
-  });
+  const optionsFromGithub = await getOptionsFromGithub(options);
 
   if (options.pullNumber) {
     return [

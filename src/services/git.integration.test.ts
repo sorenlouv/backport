@@ -2,6 +2,7 @@ import { resolve } from 'path';
 import del from 'del';
 import makeDir from 'make-dir';
 import { ValidConfigOptions } from '../options/options';
+import { mockGqlRequest } from '../test/nockHelpers';
 import { SpyHelper } from '../types/SpyHelper';
 import * as childProcess from './child-process-promisified';
 import {
@@ -11,6 +12,7 @@ import {
   getSourceRepoPath,
 } from './git';
 import { getShortSha } from './github/commitFormatters';
+import { RepoOwnerAndNameResponse } from './github/v4/getRepoOwnerAndName';
 
 jest.unmock('make-dir');
 jest.unmock('del');
@@ -279,6 +281,12 @@ describe('git.integration', () => {
         `git remote add origin git@github.com:elastic/kibana.git`,
         execOpts
       );
+
+      mockRepoOwnerAndName({
+        childRepoOwner: 'sqren',
+        parentRepoOwner: 'elastic',
+        repoName: 'kibana',
+      });
     });
 
     it('returns local source repo, when one remote matches', async () => {
@@ -287,6 +295,7 @@ describe('git.integration', () => {
         repoName: 'kibana',
         repoOwner: 'elastic',
         cwd: sourceRepo,
+        githubApiBaseUrlV4: 'http://localhost/graphql', // required to mock the response
       } as ValidConfigOptions;
       const sourcePath = await getSourceRepoPath(options);
       expect(sourcePath).toBe(sourceRepo);
@@ -296,13 +305,48 @@ describe('git.integration', () => {
       const options = {
         accessToken: 'verysecret',
         repoName: 'kibana',
-        repoOwner: 'sqren',
+        repoOwner: 'no-a-match',
         cwd: sourceRepo,
+        githubApiBaseUrlV4: 'http://localhost/graphql', // required to mock the response
       } as ValidConfigOptions;
       const sourcePath = await getSourceRepoPath(options);
       expect(sourcePath).toBe(
-        'https://x-access-token:verysecret@github.com/sqren/kibana.git'
+        'https://x-access-token:verysecret@github.com/no-a-match/kibana.git'
       );
     });
   });
 });
+
+function mockRepoOwnerAndName({
+  repoName,
+  parentRepoOwner,
+  childRepoOwner,
+}: {
+  repoName: string;
+  childRepoOwner: string;
+  parentRepoOwner?: string;
+}) {
+  return mockGqlRequest<RepoOwnerAndNameResponse>({
+    name: 'RepoOwnerAndName',
+    statusCode: 200,
+    body: {
+      data: {
+        // @ts-expect-error
+        repository: {
+          isFork: !!parentRepoOwner,
+          name: repoName,
+          owner: {
+            login: childRepoOwner,
+          },
+          parent: parentRepoOwner
+            ? {
+                owner: {
+                  login: parentRepoOwner,
+                },
+              }
+            : null,
+        },
+      },
+    },
+  });
+}

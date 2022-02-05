@@ -43,10 +43,10 @@ export async function apiRequestV4<DataResponse>({
     );
 
     if (response.data.errors) {
-      const newError = new Error();
-      //@ts-expect-error
-      newError.response = response;
-      throw newError;
+      throw new HandledError({
+        code: 'github-v4-exception',
+        errors: response.data.errors,
+      });
     }
 
     logger.info(`POST ${githubApiBaseUrlV4} (status: ${response.status})`);

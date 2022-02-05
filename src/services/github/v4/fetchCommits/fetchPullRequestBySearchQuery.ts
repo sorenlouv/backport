@@ -41,6 +41,7 @@ export async function fetchPullRequestBySearchQuery(
 
   const authorFilter = author ? ` author:${author}` : '';
   const searchQuery = `type:pr is:merged sort:updated-desc repo:${repoOwner}/${repoName}${authorFilter} ${prFilter} base:${sourceBranch}`;
+
   const variables = {
     query: searchQuery,
     maxNumber: maxNumber,

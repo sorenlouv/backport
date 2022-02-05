@@ -3,7 +3,6 @@
   "compilerOptions": {
     "declaration": true,
     "target": "ES2021",
-    "resolveJsonModule": true,
     "lib": ["ES2021"],
     "module": "CommonJS",
     "outDir": "./dist",

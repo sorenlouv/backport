@@ -1,7 +1,9 @@
 import fs from 'fs/promises';
 import os from 'os';
 import nock from 'nock';
+import * as git from '../services/git';
 import { GithubConfigOptionsResponse } from '../services/github/v4/getOptionsFromGithub/query';
+import { RepoOwnerAndNameResponse } from '../services/github/v4/getRepoOwnerAndName';
 import * as logger from '../services/logger';
 import { mockConfigFiles } from '../test/mockConfigFiles';
 import { mockGqlRequest } from '../test/nockHelpers';
@@ -67,26 +69,38 @@ describe('getOptions', () => {
             `);
     });
 
-    it('when repoName is missing', async () => {
-      mockProjectConfig({ repoName: '' });
+    describe('when repoName and repoOwner are missing', () => {
+      beforeEach(() => {
+        mockProjectConfig({ repoName: undefined, repoOwner: undefined });
+      });
 
-      await expect(() => getOptions([], {})).rejects
-        .toThrowErrorMatchingInlineSnapshot(`
+      it('should throw if there are no remotes', async () => {
+        jest.spyOn(git, 'getRepoInfoFromGitRemotes').mockResolvedValue([]);
+
+        await expect(() => getOptions([], {})).rejects
+          .toThrowErrorMatchingInlineSnapshot(`
               "Please specify a repo name: \\"--repo-name kibana\\".
 
               Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#project-config-backportrcjson"
             `);
-    });
+      });
 
-    it('when repoOwner is missing', async () => {
-      mockProjectConfig({ repoOwner: '' });
+      it('should get repoName from the remote', async () => {
+        mockRepoOwnerAndName({
+          childRepoOwner: 'sqren',
+          parentRepoOwner: 'elastic',
+          repoName: 'kibana',
+        });
 
-      await expect(() => getOptions([], {})).rejects
-        .toThrowErrorMatchingInlineSnapshot(`
-              "Please specify a repo owner: \\"--repo-owner elastic\\".
+        jest
+          .spyOn(git, 'getRepoInfoFromGitRemotes')
+          .mockResolvedValue([{ repoName: 'kibana', repoOwner: 'sqren' }]);
 
-              Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#project-config-backportrcjson"
-            `);
+        const options = await getOptions([], {});
+
+        expect(options.repoName).toBe('kibana');
+        expect(options.repoOwner).toBe('elastic');
+      });
     });
   });
 
@@ -146,6 +160,7 @@ describe('getOptions', () => {
       details: false,
       editor: 'code',
       fork: true,
+      gitHostname: 'github.com',
       githubApiBaseUrlV4: 'http://localhost/graphql',
       historicalBranchLabelMappings: [
         {
@@ -373,6 +388,37 @@ function mockGithubConfigOptions({
                   }
                 ),
               },
+            },
+          },
+        },
+      },
+    },
+  });
+}
+
+function mockRepoOwnerAndName({
+  repoName,
+  parentRepoOwner,
+  childRepoOwner,
+}: {
+  repoName: string;
+  parentRepoOwner: string;
+  childRepoOwner: string;
+}) {
+  return mockGqlRequest<RepoOwnerAndNameResponse>({
+    name: 'RepoOwnerAndName',
+    statusCode: 200,
+    body: {
+      data: {
+        repository: {
+          isFork: true,
+          name: repoName,
+          owner: {
+            login: childRepoOwner,
+          },
+          parent: {
+            owner: {
+              login: parentRepoOwner,
             },
           },
         },

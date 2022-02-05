@@ -1,0 +1,87 @@
+import { maybe } from '../../../utils/maybe';
+import { HandledError } from '../../HandledError';
+import { getRepoInfoFromGitRemotes } from '../../git';
+import { logger } from '../../logger';
+import { apiRequestV4 } from './apiRequestV4';
+
+export async function getRepoOwnerAndName({
+  accessToken,
+  githubApiBaseUrlV4,
+  cwd,
+}: {
+  accessToken: string;
+  githubApiBaseUrlV4?: string;
+  cwd: string;
+}): Promise<{ repoOwner?: string; repoName?: string }> {
+  const remotes = await getRepoInfoFromGitRemotes({ cwd });
+  const firstRemote = maybe(remotes[0]);
+
+  if (!firstRemote) {
+    return {};
+  }
+
+  try {
+    const res = await apiRequestV4<RepoOwnerAndNameResponse>({
+      githubApiBaseUrlV4,
+      accessToken,
+      query,
+      variables: {
+        repoOwner: firstRemote.repoOwner,
+        repoName: firstRemote.repoName,
+      },
+      handleError: false,
+    });
+
+    return {
+      repoName: res.repository.name,
+      // get the original owner (not the fork owner)
+      repoOwner: res.repository.isFork
+        ? res.repository.parent.owner.login
+        : res.repository.owner.login,
+    };
+  } catch (e) {
+    if (
+      e instanceof HandledError &&
+      e.errorContext?.code === 'github-v4-exception'
+    ) {
+      logger.error(e.message);
+      return {};
+    }
+    throw e;
+  }
+}
+
+export interface RepoOwnerAndNameResponse {
+  repository:
+    | {
+        isFork: true;
+        name: string;
+        owner: { login: string };
+        parent: {
+          owner: { login: string };
+        };
+      }
+    | {
+        isFork: false;
+        name: string;
+        owner: { login: string };
+        parent: null;
+      };
+}
+
+export const query = /* GraphQL */ `
+  query RepoOwnerAndName($repoOwner: String!, $repoName: String!) {
+    repository(owner: $repoOwner, name: $repoName) {
+      isFork
+      name
+      owner {
+        login
+      }
+      parent {
+        owner {
+          login
+        }
+      }
+    }
+  }
+`;

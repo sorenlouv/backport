@@ -1,7 +1,7 @@
 import { Octokit } from '@octokit/rest';
 import { BackportResponse } from '../../../backportRun';
 import { ValidConfigOptions } from '../../../options/options';
-import { getPackageVersion } from '../../../utils/getPackageVersion';
+import { PACKAGE_VERSION } from '../../../utils/packageVersion';
 import { redact } from '../../../utils/redact';
 import { HandledError } from '../../HandledError';
 import { logger } from '../../logger';
@@ -92,7 +92,7 @@ export function getCommentBody({
     }
   }
 
-  const packageVersionSection = `\n<!--- Backport version: ${getPackageVersion()} -->`;
+  const packageVersionSection = `\n<!--- Backport version: ${PACKAGE_VERSION} -->`;
   const backportPRCommand = `\n### Manual backport\nTo create the backport manually run:\n\`\`\`\n${options.backportBinary} --pr ${pullNumber}\n\`\`\``;
   const supportSection =
     '\n\n### Questions ?\nPlease refer to the [Backport tool documentation](https://github.com/sqren/backport)';
@@ -100,7 +100,7 @@ export function getCommentBody({
   if (backportResponse.status === 'failure') {
     if (
       backportResponse.error instanceof HandledError &&
-      backportResponse.error.attributes?.code === 'no-branches-exception'
+      backportResponse.error.errorContext?.code === 'no-branches-exception'
     ) {
       return `## ⚪ Backport skipped
       The pull request was not backport as there were no branches to backport to. If this is a mistake, please apply the desired version labels or run the backport tool manually.
@@ -127,9 +127,9 @@ ${backportPRCommand}${supportSection}${packageVersionSection}`;
         ];
       }
 
-      if (result.error.attributes?.code === 'merge-conflict-exception') {
+      if (result.error.errorContext?.code === 'merge-conflict-exception') {
         const unmergedBackports =
-          result.error.attributes.commitsWithoutBackports.map((c) => {
+          result.error.errorContext.commitsWithoutBackports.map((c) => {
             return ` - [${getFirstLine(c.commit.originalMessage)}](${
               c.commit.pullUrl
             })`;

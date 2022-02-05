@@ -31,7 +31,7 @@ export async function getOptionsFromGithub(options: {
   repoName: string;
   repoOwner: string;
   skipRemoteConfig?: boolean;
-  cwd: string;
+  cwd?: string;
 }) {
   const { accessToken, githubApiBaseUrlV4, repoName, repoOwner } = options;
 
@@ -88,7 +88,7 @@ export async function getOptionsFromGithub(options: {
 }
 
 async function getSkipRemoteConfigFile(
-  cwd: string,
+  cwd?: string,
   skipRemoteConfig?: boolean,
   remoteConfig?: RemoteConfig
 ) {
@@ -104,33 +104,35 @@ async function getSkipRemoteConfigFile(
     return true;
   }
 
-  const [isLocalConfigModified, isLocalConfigUntracked, localCommitDate] =
-    await Promise.all([
-      isLocalConfigFileModified({ cwd }),
-      isLocalConfigFileUntracked({ cwd }),
-      getLocalConfigFileCommitDate({ cwd }),
-    ]);
+  if (cwd) {
+    const [isLocalConfigModified, isLocalConfigUntracked, localCommitDate] =
+      await Promise.all([
+        isLocalConfigFileModified({ cwd }),
+        isLocalConfigFileUntracked({ cwd }),
+        getLocalConfigFileCommitDate({ cwd }),
+      ]);
 
-  if (isLocalConfigUntracked) {
-    logger.info('Skipping remote config: local config is new');
-    return true;
-  }
+    if (isLocalConfigUntracked) {
+      logger.info('Skipping remote config: local config is new');
+      return true;
+    }
 
-  if (isLocalConfigModified) {
-    logger.info('Skipping remote config: local config is modified');
-    return true;
-  }
+    if (isLocalConfigModified) {
+      logger.info('Skipping remote config: local config is modified');
+      return true;
+    }
 
-  if (
-    localCommitDate &&
-    localCommitDate > Date.parse(remoteConfig.committedDate)
-  ) {
-    logger.info(
-      `Skipping remote config: local config is newer: ${new Date(
-        localCommitDate
-      ).toISOString()} > ${remoteConfig.committedDate}`
-    );
-    return true;
+    if (
+      localCommitDate &&
+      localCommitDate > Date.parse(remoteConfig.committedDate)
+    ) {
+      logger.info(
+        `Skipping remote config: local config is newer: ${new Date(
+          localCommitDate
+        ).toISOString()} > ${remoteConfig.committedDate}`
+      );
+      return true;
+    }
   }
 
   return false;

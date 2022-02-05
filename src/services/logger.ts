@@ -42,7 +42,7 @@ export function updateLogger({
   accessToken,
   verbose,
 }: {
-  accessToken?: string;
+  accessToken: string;
   verbose?: boolean;
 }) {
   // set access token
