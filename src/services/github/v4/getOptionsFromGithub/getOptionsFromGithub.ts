@@ -1,4 +1,3 @@
-import { AxiosError } from 'axios';
 import { ConfigFileOptions } from '../../../../options/ConfigOptions';
 import { withConfigMigrations } from '../../../../options/config/readConfigFile';
 import { filterNil } from '../../../../utils/filterEmpty';
@@ -9,11 +8,7 @@ import {
   isLocalConfigFileModified,
 } from '../../../git';
 import { logger } from '../../../logger';
-import {
-  apiRequestV4,
-  handleGithubV4Error,
-  GithubV4Response,
-} from '../apiRequestV4';
+import { apiRequestV4, GithubV4Exception } from '../apiRequestV4';
 import { throwOnInvalidAccessToken } from '../throwOnInvalidAccessToken';
 import { GithubConfigOptionsResponse, query, RemoteConfig } from './query';
 
@@ -43,12 +38,13 @@ export async function getOptionsFromGithub(options: {
       accessToken,
       query,
       variables: { repoOwner, repoName },
-      handleError: false,
     });
   } catch (e) {
-    const error = e as AxiosError<
-      GithubV4Response<GithubConfigOptionsResponse | null>
-    >;
+    if (!(e instanceof GithubV4Exception)) {
+      throw e;
+    }
+
+    const error = e as GithubV4Exception<GithubConfigOptionsResponse>;
 
     throwOnInvalidAccessToken({
       error,
@@ -56,7 +52,7 @@ export async function getOptionsFromGithub(options: {
       repoOwner,
     });
 
-    res = handleMissingConfigFile(error);
+    res = swallowErrorIfConfigFileIsMissing(error);
   }
 
   // get the original repo (not the fork)
@@ -179,20 +175,23 @@ function getHistoricalBranchLabelMappings(
     })
     .filter(filterNil);
 }
-function handleMissingConfigFile(
-  error: AxiosError<GithubV4Response<GithubConfigOptionsResponse | null>>
+function swallowErrorIfConfigFileIsMissing(
+  error: GithubV4Exception<GithubConfigOptionsResponse>
 ) {
-  const wasMissingConfigError = error.response?.data.errors?.some(
+  const { data, errors } = error.response.data;
+
+  const wasMissingConfigError = errors?.some(
     (error) =>
       error.type === 'NOT_FOUND' &&
       error.path.join('.') ===
         'repository.defaultBranchRef.target.history.edges.0.remoteConfig.file'
   );
 
-  // Throw unexpected error
-  if (!wasMissingConfigError || !error.response?.data.data) {
-    throw handleGithubV4Error(error);
+  // swallow error if it's just the config file that's missing
+  if (wasMissingConfigError && data != null) {
+    return data;
   }
 
-  return error.response.data.data;
+  // Throw unexpected error
+  throw error;
 }

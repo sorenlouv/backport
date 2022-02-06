@@ -1,4 +1,3 @@
-import { GithubV4Response } from './github/v4/apiRequestV4';
 import { Commit } from './sourceCommit/parseSourceCommit';
 
 type ErrorContext =
@@ -11,10 +10,6 @@ type ErrorContext =
     }
   | {
       code: 'no-branches-exception' | 'abort-exception';
-    }
-  | {
-      code: 'github-v4-exception';
-      errors: NonNullable<GithubV4Response<any>['errors']>;
     };
 
 function getMessage(errorContext: ErrorContext | string): string {
@@ -29,10 +24,6 @@ function getMessage(errorContext: ErrorContext | string): string {
       return 'There are no branches to backport to. Aborting.';
     case 'abort-exception':
       return 'Aborted';
-    case 'github-v4-exception':
-      return `Github v4 error: ${errorContext.errors
-        .map((error) => error.message)
-        .join(',')}`;
   }
 }
 

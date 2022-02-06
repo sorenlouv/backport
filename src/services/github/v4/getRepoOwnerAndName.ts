@@ -1,8 +1,7 @@
 import { maybe } from '../../../utils/maybe';
-import { HandledError } from '../../HandledError';
 import { getRepoInfoFromGitRemotes } from '../../git';
 import { logger } from '../../logger';
-import { apiRequestV4 } from './apiRequestV4';
+import { apiRequestV4, GithubV4Exception } from './apiRequestV4';
 
 export async function getRepoOwnerAndName({
   accessToken,
@@ -29,7 +28,6 @@ export async function getRepoOwnerAndName({
         repoOwner: firstRemote.repoOwner,
         repoName: firstRemote.repoName,
       },
-      handleError: false,
     });
 
     return {
@@ -40,10 +38,7 @@ export async function getRepoOwnerAndName({
         : res.repository.owner.login,
     };
   } catch (e) {
-    if (
-      e instanceof HandledError &&
-      e.errorContext?.code === 'github-v4-exception'
-    ) {
+    if (e instanceof GithubV4Exception) {
       logger.error(e.message);
       return {};
     }

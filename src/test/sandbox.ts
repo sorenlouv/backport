@@ -1,5 +1,5 @@
 import path, { resolve } from 'path';
-// import del from 'del';
+import del from 'del';
 import makeDir from 'make-dir';
 
 jest.unmock('make-dir');
@@ -21,9 +21,9 @@ export function getSandboxPath({
 }
 
 export async function resetSandbox(sandboxPath: string) {
-  // await del(sandboxPath);
   // eslint-disable-next-line no-console
   console.log('deleting', sandboxPath);
+  await del(sandboxPath);
   await makeDir(sandboxPath);
 }
 
