@@ -1,8 +1,6 @@
 /* eslint-disable jest/no-commented-out-tests */
 import os from 'os';
-import { resolve } from 'path';
 import { Octokit } from '@octokit/rest';
-import del = require('del');
 import nock from 'nock';
 import { getOptions } from '../options/options';
 import { runSequentially } from '../runSequentially';
@@ -10,13 +8,11 @@ import { getCommits } from '../ui/getCommits';
 import { mockConfigFiles } from './mockConfigFiles';
 import { listenForCallsToNockScope } from './nockHelpers';
 import { getDevAccessToken } from './private/getDevAccessToken';
+import { getSandboxPath, resetSandbox } from './sandbox';
 
-jest.unmock('make-dir');
-jest.unmock('del');
 jest.setTimeout(10000);
 
-const E2E_TEST_DATA_PATH = resolve(`${__dirname}/_tmp_sandbox_/backport-e2e`);
-const HOMEDIR_PATH = resolve(`${__dirname}/_tmp_sandbox_/backport-e2e/homedir`);
+const sandboxPath = getSandboxPath({ filename: __filename });
 const REPO_OWNER = 'backport-org';
 const REPO_NAME = 'integration-test';
 const BRANCH_WITH_ONE_COMMIT = 'backport/7.x/commit-5bf29b7d';
@@ -31,7 +27,7 @@ describe('backport e2e', () => {
 
   beforeAll(async () => {
     // set alternative homedir
-    jest.spyOn(os, 'homedir').mockReturnValue(HOMEDIR_PATH);
+    jest.spyOn(os, 'homedir').mockReturnValue(`${sandboxPath}/homedir`);
     accessToken = await getDevAccessToken();
 
     mockConfigFiles({
@@ -393,5 +389,5 @@ async function resetState(accessToken: string) {
     branchName: BRANCH_WITH_TWO_COMMITS,
   });
 
-  await del(E2E_TEST_DATA_PATH);
+  await resetSandbox(sandboxPath);
 }

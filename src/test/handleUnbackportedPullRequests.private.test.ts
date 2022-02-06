@@ -1,9 +1,11 @@
-import { resolve } from 'path';
 import { getCommits, backportRun } from '../entrypoint.module';
 import { getDevAccessToken } from './private/getDevAccessToken';
+import { getSandboxPath } from './sandbox';
 
 jest.unmock('find-up');
 jest.setTimeout(15000);
+
+const sandboxPath = getSandboxPath({ filename: __filename });
 
 describe('Handle unbackported pull requests', () => {
   it('shows missing backports for PR number 8', async () => {
@@ -34,7 +36,7 @@ describe('Handle unbackported pull requests', () => {
       repoName: 'repo-with-conflicts',
       pullNumber: 12,
       targetBranches: ['7.x'],
-      dir: resolve(`${__dirname}/_tmp_sandbox_/handleUnbackportedPullRequests`),
+      dir: sandboxPath,
       ci: true,
       publishStatusComment: false,
     });

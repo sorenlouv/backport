@@ -1,28 +1,12 @@
-import { resolve } from 'path';
-import del from 'del';
-import makeDir from 'make-dir';
 import * as childProcess from '../../../services/child-process-promisified';
 import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
+import { getSandboxPath, resetSandbox } from '../../../test/sandbox';
 import { getRepoOwnerAndName } from './getRepoOwnerAndName';
 
-jest.unmock('make-dir');
-jest.unmock('del');
+const sandboxPath = getSandboxPath({ filename: __filename });
 
 describe('fetchRemoteProjectConfig', () => {
   let devAccessToken: string;
-
-  async function resetSandbox() {
-    const GIT_SANDBOX_DIR_PATH = resolve(
-      `${__dirname}/_tmp_sandbox_/getRepoOwnerAndName.private.test`
-    );
-
-    console.log(__dirname, GIT_SANDBOX_DIR_PATH);
-
-    await del(GIT_SANDBOX_DIR_PATH);
-    await makeDir(GIT_SANDBOX_DIR_PATH);
-
-    return GIT_SANDBOX_DIR_PATH;
-  }
 
   beforeEach(async () => {
     devAccessToken = await getDevAccessToken();
@@ -30,7 +14,7 @@ describe('fetchRemoteProjectConfig', () => {
 
   describe('when the remote is a fork', () => {
     it('retrives the original owner from github', async () => {
-      const sandboxPath = await resetSandbox();
+      await resetSandbox(sandboxPath);
       const execOpts = { cwd: sandboxPath };
       await childProcess.exec(`git init`, execOpts);
       await childProcess.exec(
@@ -52,7 +36,7 @@ describe('fetchRemoteProjectConfig', () => {
 
   describe('when none of the git remotes are found', () => {
     it('swallows the error and returns empty', async () => {
-      const sandboxPath = await resetSandbox();
+      await resetSandbox(sandboxPath);
       const execOpts = { cwd: sandboxPath };
       await childProcess.exec(`git init`, execOpts);
       await childProcess.exec(
@@ -76,7 +60,7 @@ describe('fetchRemoteProjectConfig', () => {
 
   describe('when there are no git remotes', () => {
     it('returns empty', async () => {
-      const sandboxPath = await resetSandbox();
+      await resetSandbox(sandboxPath);
       const execOpts = { cwd: sandboxPath };
       await childProcess.exec(`git init`, execOpts);
 

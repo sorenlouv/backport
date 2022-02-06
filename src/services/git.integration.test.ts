@@ -1,8 +1,7 @@
-import { resolve } from 'path';
-import del from 'del';
 import makeDir from 'make-dir';
 import { ValidConfigOptions } from '../options/options';
 import { mockGqlRequest } from '../test/nockHelpers';
+import { getSandboxPath, resetSandbox } from '../test/sandbox';
 import { SpyHelper } from '../types/SpyHelper';
 import * as childProcess from './child-process-promisified';
 import {
@@ -14,17 +13,7 @@ import {
 import { getShortSha } from './github/commitFormatters';
 import { RepoOwnerAndNameResponse } from './github/v4/getRepoOwnerAndName';
 
-jest.unmock('make-dir');
 jest.unmock('del');
-
-const GIT_SANDBOX_DIR_PATH = resolve(
-  `${__dirname}/_tmp_sandbox_/git.integration.test`
-);
-
-async function resetGitSandbox(specName: string) {
-  await del(GIT_SANDBOX_DIR_PATH);
-  await makeDir(`${GIT_SANDBOX_DIR_PATH}/${specName}`);
-}
 
 async function createAndCommitFile({
   filename,
@@ -61,10 +50,14 @@ describe('git.integration', () => {
   describe('getIsCommitInBranch', () => {
     let firstSha: string;
     let secondSha: string;
+    const sandboxPath = getSandboxPath({
+      filename: __filename,
+      specname: 'getIsCommitInBranch',
+    });
 
     beforeEach(async () => {
-      await resetGitSandbox('getIsCommitInBranch');
-      const execOpts = { cwd: GIT_SANDBOX_DIR_PATH };
+      await resetSandbox(sandboxPath);
+      const execOpts = { cwd: sandboxPath };
 
       // create and commit first file
       await childProcess.exec('git init', execOpts);
@@ -90,7 +83,7 @@ describe('git.integration', () => {
 
     it('should contain the first commit', async () => {
       const isFirstCommitInBranch = await getIsCommitInBranch(
-        { dir: GIT_SANDBOX_DIR_PATH } as ValidConfigOptions,
+        { dir: sandboxPath } as ValidConfigOptions,
         firstSha
       );
 
@@ -99,7 +92,7 @@ describe('git.integration', () => {
 
     it('should not contain the second commit', async () => {
       const isSecondCommitInBranch = await getIsCommitInBranch(
-        { dir: GIT_SANDBOX_DIR_PATH } as ValidConfigOptions,
+        { dir: sandboxPath } as ValidConfigOptions,
         secondSha
       );
 
@@ -108,7 +101,7 @@ describe('git.integration', () => {
 
     it('should not contain a random commit', async () => {
       const isSecondCommitInBranch = await getIsCommitInBranch(
-        { dir: GIT_SANDBOX_DIR_PATH } as ValidConfigOptions,
+        { dir: sandboxPath } as ValidConfigOptions,
         'abcdefg'
       );
 
@@ -121,10 +114,14 @@ describe('git.integration', () => {
     let secondSha: string;
     let fourthSha: string;
     let execOpts: { cwd: string };
+    const sandboxPath = getSandboxPath({
+      filename: __filename,
+      specname: 'cherrypick',
+    });
 
     beforeEach(async () => {
-      await resetGitSandbox('cherrypick');
-      execOpts = { cwd: GIT_SANDBOX_DIR_PATH };
+      await resetSandbox(sandboxPath);
+      execOpts = { cwd: sandboxPath };
 
       // create and commit first file
       await childProcess.exec('git init', execOpts);
@@ -165,10 +162,7 @@ describe('git.integration', () => {
     it('should not cherrypick commit that already exists', async () => {
       const shortSha = getShortSha(firstSha);
       return expect(() =>
-        cherrypick(
-          { dir: GIT_SANDBOX_DIR_PATH } as ValidConfigOptions,
-          firstSha
-        )
+        cherrypick({ dir: sandboxPath } as ValidConfigOptions, firstSha)
       ).rejects.toThrowError(
         `Cherrypick failed because the selected commit (${shortSha}) is empty. Did you already backport this commit?`
       );
@@ -178,7 +172,7 @@ describe('git.integration', () => {
       const res = await cherrypick(
         {
           cherrypickRef: false,
-          dir: GIT_SANDBOX_DIR_PATH,
+          dir: sandboxPath,
         } as ValidConfigOptions,
         secondSha
       );
@@ -197,7 +191,7 @@ describe('git.integration', () => {
       const res = await cherrypick(
         {
           cherrypickRef: true,
-          dir: GIT_SANDBOX_DIR_PATH,
+          dir: sandboxPath,
         } as ValidConfigOptions,
         secondSha
       );
@@ -216,29 +210,33 @@ describe('git.integration', () => {
 
     it('should cherrypick commit with conflicts', async () => {
       const res = await cherrypick(
-        { dir: GIT_SANDBOX_DIR_PATH } as ValidConfigOptions,
+        { dir: sandboxPath } as ValidConfigOptions,
         fourthSha
       );
       expect(res).toEqual({
         needsResolving: true,
         conflictingFiles: [
           {
-            absolute: `${GIT_SANDBOX_DIR_PATH}/foo.md`,
+            absolute: `${sandboxPath}/foo.md`,
             relative: 'foo.md',
           },
         ],
-        unstagedFiles: [`${GIT_SANDBOX_DIR_PATH}/foo.md`],
+        unstagedFiles: [`${sandboxPath}/foo.md`],
       });
     });
   });
 
   describe('cloneRepo', () => {
-    const sourceRepo = `${GIT_SANDBOX_DIR_PATH}/clone/source-repo`;
-    const backportRepo = `${GIT_SANDBOX_DIR_PATH}/clone/backport-repo`;
+    const sandboxPath = getSandboxPath({
+      filename: __filename,
+      specname: 'cloneRepo',
+    });
+    const sourceRepo = `${sandboxPath}/source-repo`;
+    const backportRepo = `${sandboxPath}/backport-repo`;
     let execSpy: SpyHelper<typeof childProcess.execAsCallback>;
 
     beforeEach(async () => {
-      await del(GIT_SANDBOX_DIR_PATH);
+      await resetSandbox(sandboxPath);
       await makeDir(sourceRepo);
 
       const execOpts = { cwd: sourceRepo };
@@ -269,10 +267,14 @@ describe('git.integration', () => {
   });
 
   describe('getSourceRepoPath', () => {
-    const sourceRepo = `${GIT_SANDBOX_DIR_PATH}/clone/source-repo`;
+    const sandboxPath = getSandboxPath({
+      filename: __filename,
+      specname: 'getSourceRepoPath',
+    });
+    const sourceRepo = `${sandboxPath}/source-repo`;
 
     beforeEach(async () => {
-      await del(GIT_SANDBOX_DIR_PATH);
+      await resetSandbox(sandboxPath);
       await makeDir(sourceRepo);
 
       const execOpts = { cwd: sourceRepo };
