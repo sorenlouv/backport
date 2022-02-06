@@ -22,7 +22,7 @@ export function getSandboxPath({
 
 export async function resetSandbox(sandboxPath: string) {
   // eslint-disable-next-line no-console
-  console.log('deleting', sandboxPath);
+  console.log('Resetting', sandboxPath);
   await del(sandboxPath);
   await makeDir(sandboxPath);
 }

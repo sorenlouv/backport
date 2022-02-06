@@ -14,6 +14,7 @@ import { getShortSha } from './github/commitFormatters';
 import { RepoOwnerAndNameResponse } from './github/v4/getRepoOwnerAndName';
 
 jest.unmock('del');
+jest.unmock('make-dir');
 
 async function createAndCommitFile({
   filename,
