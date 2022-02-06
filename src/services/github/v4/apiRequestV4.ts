@@ -17,6 +17,8 @@ export interface GithubV4Response<DataResponse> {
   errors?: GithubError[];
 }
 
+type Variables = Record<string, string | number | null>;
+
 export async function apiRequestV4<DataResponse>({
   githubApiBaseUrlV4 = 'https://api.github.com/graphql',
   accessToken,
@@ -26,9 +28,7 @@ export async function apiRequestV4<DataResponse>({
   githubApiBaseUrlV4?: string;
   accessToken: string;
   query: string;
-  variables?: {
-    [key: string]: string | number | null;
-  };
+  variables?: Variables;
 }) {
   try {
     const response = await axios.post<GithubV4Response<DataResponse>>(
@@ -43,52 +43,71 @@ export async function apiRequestV4<DataResponse>({
     );
 
     if (response.data.errors) {
-      throw new GithubV4Exception(response);
+      const message = `${response.data.errors
+        .map((error) => error.message)
+        .join(',')} (Github API v4)`;
+
+      throw new GithubV4Exception(message, response);
     }
 
-    logger.info(`POST ${githubApiBaseUrlV4} (status: ${response.status})`);
-    logger.verbose('Query:', query);
-    logger.verbose('Variables:', variables);
-    logger.verbose('Response headers:', response.headers);
-    logger.verbose('Response data:', response.data);
+    addDebugLogs({
+      githubApiBaseUrlV4,
+      query,
+      variables,
+      axiosResponse: response,
+      didSucceed: false,
+    });
 
     return response.data.data;
   } catch (e) {
-    logger.info(`POST ${githubApiBaseUrlV4} (status: ${e.response?.status})`);
-    logger.info('Query:', query);
-    logger.info('Variables:', variables);
-    logger.verbose('Response headers:', e.response?.headers);
-    logger.info('Response data:', e.response?.data);
-
-    if (e.response.data) {
-      throw new HandledError(
-        `Unexpected response (Github API v4):\n${JSON.stringify(
-          e.response.data,
-          null,
-          2
-        )}`
-      );
+    if (axios.isAxiosError(e) && e.response) {
+      addDebugLogs({
+        githubApiBaseUrlV4,
+        query,
+        variables,
+        axiosResponse: e.response,
+        didSucceed: false,
+      });
+      throw new GithubV4Exception(e.message, e.response);
     }
 
     throw e;
   }
 }
 
-type Response<DataResponse> = AxiosResponse<
+function addDebugLogs({
+  githubApiBaseUrlV4,
+  query,
+  variables,
+  axiosResponse,
+  didSucceed,
+}: {
+  githubApiBaseUrlV4: string;
+  query: string;
+  variables?: Variables;
+  axiosResponse: AxiosResponse;
+  didSucceed: boolean;
+}) {
+  logger.info(`POST ${githubApiBaseUrlV4} (status: ${axiosResponse.status})`);
+  const logMethod = didSucceed ? logger.verbose : logger.info;
+
+  logMethod('Query:', query);
+  logMethod('Variables:', variables);
+  logMethod('Response headers:', axiosResponse.headers);
+  logMethod('Response data:', axiosResponse.data);
+}
+
+type AxiosGithubResponse<DataResponse> = AxiosResponse<
   GithubV4Response<DataResponse | null>,
   any
 >;
 export class GithubV4Exception<DataResponse> extends Error {
-  response: Response<DataResponse>;
-
-  constructor(response: Response<DataResponse>) {
-    const message = `${response.data.errors
-      ?.map((error) => error.message)
-      .join(',')} (Github API v4)`;
-
-    super(message);
+  constructor(
+    public message: string,
+    public axiosResponse: AxiosGithubResponse<DataResponse>
+  ) {
+    super(`${message} (Github API v4)`);
     Error.captureStackTrace(this, HandledError);
     this.name = 'GithubV4Exception';
-    this.response = response;
   }
 }

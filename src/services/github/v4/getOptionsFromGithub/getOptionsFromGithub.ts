@@ -45,13 +45,7 @@ export async function getOptionsFromGithub(options: {
     }
 
     const error = e as GithubV4Exception<GithubConfigOptionsResponse>;
-
-    throwOnInvalidAccessToken({
-      error,
-      repoName,
-      repoOwner,
-    });
-
+    throwOnInvalidAccessToken({ error, repoName, repoOwner });
     res = swallowErrorIfConfigFileIsMissing(error);
   }
 
@@ -175,10 +169,8 @@ function getHistoricalBranchLabelMappings(
     })
     .filter(filterNil);
 }
-function swallowErrorIfConfigFileIsMissing(
-  error: GithubV4Exception<GithubConfigOptionsResponse>
-) {
-  const { data, errors } = error.response.data;
+function swallowErrorIfConfigFileIsMissing<T>(error: GithubV4Exception<T>) {
+  const { data, errors } = error.axiosResponse.data;
 
   const wasMissingConfigError = errors?.some(
     (error) =>

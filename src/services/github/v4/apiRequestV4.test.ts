@@ -67,7 +67,7 @@ describe('apiRequestV4', () => {
     });
   });
 
-  describe.only('when request fails without error messages', () => {
+  describe('when request fails without error messages', () => {
     beforeEach(() => {
       mockGqlRequest({
         name: 'MyQuery',
@@ -86,7 +86,7 @@ describe('apiRequestV4', () => {
             foo: 'bar',
           },
         })
-      ).rejects.toThrowErrorMatchingSnapshot();
+      ).rejects.toThrowError('Request failed with status code 500');
     });
   });
 });
