@@ -60,6 +60,16 @@ export async function apiRequestV4<DataResponse>({
     logger.verbose('Response headers:', e.response?.headers);
     logger.info('Response data:', e.response?.data);
 
+    if (e.response.data) {
+      throw new HandledError(
+        `Unexpected response (Github API v4):\n${JSON.stringify(
+          e.response.data,
+          null,
+          2
+        )}`
+      );
+    }
+
     throw e;
   }
 }
