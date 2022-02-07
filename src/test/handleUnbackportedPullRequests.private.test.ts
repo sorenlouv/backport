@@ -1,11 +1,10 @@
 import { getCommits, backportRun } from '../entrypoint.module';
+import { exec } from '../services/child-process-promisified';
 import { getDevAccessToken } from './private/getDevAccessToken';
-import { getSandboxPath } from './sandbox';
+import { getSandboxPath, resetSandbox } from './sandbox';
 
 jest.unmock('find-up');
 jest.setTimeout(15000);
-
-const sandboxPath = getSandboxPath({ filename: __filename });
 
 describe('Handle unbackported pull requests', () => {
   it('shows missing backports for PR number 8', async () => {
@@ -30,6 +29,10 @@ describe('Handle unbackported pull requests', () => {
 
   it('shows that backport failed because PR number 8 was not backported', async () => {
     const accessToken = await getDevAccessToken();
+    const sandboxPath = getSandboxPath({ filename: __filename });
+    await resetSandbox(sandboxPath);
+    await exec('git init', { cwd: sandboxPath });
+
     const result = await backportRun({
       accessToken: accessToken,
       repoOwner: 'backport-org',
