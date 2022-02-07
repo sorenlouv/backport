@@ -1,4 +1,4 @@
-import * as fs from 'fs/promises';
+import { access } from 'fs/promises';
 import makeDir from 'make-dir';
 import { ValidConfigOptions } from '../options/options';
 import { mockGqlRequest } from '../test/nockHelpers';
@@ -256,7 +256,7 @@ describe('git.integration', () => {
     it('clones the repo', async () => {
       // file should not exist before clone
       await expect(() =>
-        fs.access(`${backportRepo}/my-file.txt`)
+        access(`${backportRepo}/my-file.txt`)
       ).rejects.toThrowError();
 
       await cloneRepo(
@@ -266,7 +266,7 @@ describe('git.integration', () => {
 
       //file should exist after clone
       await expect(() =>
-        fs.access(`${backportRepo}/my-file.txt`)
+        access(`${backportRepo}/my-file.txt`)
       ).not.toThrowError();
     });
   });

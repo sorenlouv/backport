@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { HandledError } from '../../HandledError';
 import { logger } from '../../logger';
 
-export interface GithubError {
+interface GithubError {
   type: string;
   path: string[];
   locations: {
@@ -68,7 +68,10 @@ export async function apiRequestV4<DataResponse>({
         axiosResponse: e.response,
         didSucceed: false,
       });
-      throw new GithubV4Exception(e.message, e.response);
+      throw new GithubV4Exception(
+        `${e.message} (Unhandled Github API v4)`,
+        e.response
+      );
     }
 
     throw e;
@@ -106,7 +109,7 @@ export class GithubV4Exception<DataResponse> extends Error {
     public message: string,
     public axiosResponse: AxiosGithubResponse<DataResponse>
   ) {
-    super(`${message} (Github API v4)`);
+    super(message);
     Error.captureStackTrace(this, HandledError);
     this.name = 'GithubV4Exception';
   }
