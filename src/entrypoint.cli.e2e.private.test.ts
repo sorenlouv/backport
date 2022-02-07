@@ -1,6 +1,9 @@
 import { spawn } from 'child_process';
+import path from 'path';
 import stripAnsi from 'strip-ansi';
+import { exec } from './services/child-process-promisified';
 import { getDevAccessToken } from './test/private/getDevAccessToken';
+import { getSandboxPath, resetSandbox } from './test/sandbox';
 
 const TIMEOUT_IN_SECONDS = 10;
 
@@ -103,18 +106,31 @@ describe('inquirer cli', () => {
   });
 
   it('should list commits based on .git/config when `repoOwner`/`repoName` is missing', async () => {
-    const res = await runBackportAsync([
-      '--skip-remote-config',
-      '--branch',
-      'foo',
-      '--accessToken',
-      devAccessToken,
-    ]);
+    const sandboxPath = getSandboxPath({ filename: __filename });
+    await resetSandbox(sandboxPath);
+    await exec(`git init`, { cwd: sandboxPath });
+    await exec(
+      `git remote add origin git@github.com:backport-org/backport-e2e.git`,
+      { cwd: sandboxPath }
+    );
 
-    const lineCount = res.split('\n').length;
-    expect(lineCount).toBeGreaterThan(10);
+    const res = await runBackportAsync(['--accessToken', devAccessToken], {
+      cwd: sandboxPath,
+      waitForString: 'Select commit',
+    });
 
-    expect(res.includes('Select commit (Use arrow keys)')).toBe(true);
+    expect(res).toMatchInlineSnapshot(`
+      "? Select commit (Use arrow keys)
+      ❯ 1. Add sheep emoji (#9) 7.8
+        2. Change Ulysses to Gretha (conflict) (#8) 7.x
+        3. Add 🍏 emoji (#5) 7.x, 7.8
+        4. Add family emoji (#2) 7.x
+        5. Add \`backport\` dep
+        6. Merge pull request #1 from backport-org/add-heart-emoji
+        7. Update .backportrc.json
+        8. Bump to 8.0.0
+        9. Add package.json"
+    `);
   });
 
   it('should return error when access token is invalid', async () => {
@@ -250,20 +266,29 @@ describe('inquirer cli', () => {
 });
 
 function runBackportAsync(
-  options: string[],
+  cliArgs: string[],
   {
     waitForString,
+    cwd,
   }: {
     waitForString?: string;
+    cwd?: string;
   } = {}
 ) {
-  const proc = spawn('./node_modules/.bin/ts-node', [
-    '--transpile-only',
-    './src/entrypoint.cli.ts',
-    '--log-file-path',
-    '/dev/null',
-    ...options,
-  ]);
+  const tsNodeBinary = path.resolve('./node_modules/.bin/ts-node');
+  const entrypointFile = path.resolve('./src/entrypoint.cli.ts');
+
+  const proc = spawn(
+    tsNodeBinary,
+    [
+      '--transpile-only',
+      entrypointFile,
+      '--log-file-path',
+      '/dev/null',
+      ...cliArgs,
+    ],
+    { cwd }
+  );
 
   const p = new Promise<string>((resolve, reject) => {
     let data = '';
@@ -274,8 +299,8 @@ function runBackportAsync(
       '${data.toString()}'`);
     }, TIMEOUT_IN_SECONDS * 1000);
 
-    proc.stdout.on('data', (dataChunk) => {
-      data += dataChunk;
+    proc.stdout.on('data', (chunk) => {
+      data += chunk;
       const output = data.toString();
 
       if (!waitForString || output.includes(waitForString)) {
@@ -285,6 +310,15 @@ function runBackportAsync(
 
         resolve(strippedOutput);
       }
+    });
+
+    // for debugging only
+    // proc.stderr.on('data', (chunk) => {
+    //   console.log('stderr', chunk.toString());
+    // });
+
+    proc.on('error', (err) => {
+      reject(`runBackportAsync failed with: ${err}`);
     });
   });
 
