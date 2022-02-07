@@ -3,7 +3,7 @@ import os from 'os';
 import nock from 'nock';
 import * as git from '../services/git';
 import { GithubConfigOptionsResponse } from '../services/github/v4/getOptionsFromGithub/query';
-import { RepoOwnerAndNameResponse } from '../services/github/v4/getRepoOwnerAndName';
+import { RepoOwnerAndNameResponse } from '../services/github/v4/getRepoOwnerAndNameFromGitRemotes';
 import * as logger from '../services/logger';
 import { mockConfigFiles } from '../test/mockConfigFiles';
 import { mockGqlRequest } from '../test/nockHelpers';

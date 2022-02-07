@@ -1,7 +1,7 @@
-import * as childProcess from '../../../services/child-process-promisified';
 import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from '../../../test/sandbox';
-import { getRepoOwnerAndName } from './getRepoOwnerAndName';
+import * as childProcess from '../../child-process-promisified';
+import { getRepoOwnerAndNameFromGitRemotes } from './getRepoOwnerAndNameFromGitRemotes';
 
 const sandboxPath = getSandboxPath({ filename: __filename });
 
@@ -23,7 +23,7 @@ describe('fetchRemoteProjectConfig', () => {
       );
 
       expect(
-        await getRepoOwnerAndName({
+        await getRepoOwnerAndNameFromGitRemotes({
           accessToken: devAccessToken,
           cwd: sandboxPath,
         })
@@ -50,7 +50,7 @@ describe('fetchRemoteProjectConfig', () => {
       );
 
       expect(
-        await getRepoOwnerAndName({
+        await getRepoOwnerAndNameFromGitRemotes({
           accessToken: devAccessToken,
           cwd: sandboxPath,
         })
@@ -65,7 +65,7 @@ describe('fetchRemoteProjectConfig', () => {
       await childProcess.exec(`git init`, execOpts);
 
       expect(
-        await getRepoOwnerAndName({
+        await getRepoOwnerAndNameFromGitRemotes({
           accessToken: devAccessToken,
           cwd: sandboxPath,
         })

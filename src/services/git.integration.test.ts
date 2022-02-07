@@ -11,7 +11,7 @@ import {
   getSourceRepoPath,
 } from './git';
 import { getShortSha } from './github/commitFormatters';
-import { RepoOwnerAndNameResponse } from './github/v4/getRepoOwnerAndName';
+import { RepoOwnerAndNameResponse } from './github/v4/getRepoOwnerAndNameFromGitRemotes';
 
 jest.unmock('del');
 jest.unmock('make-dir');

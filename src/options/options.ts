@@ -2,7 +2,7 @@ import { isEmpty } from 'lodash';
 import { HandledError } from '../services/HandledError';
 import { getGlobalConfigPath } from '../services/env';
 import { getOptionsFromGithub } from '../services/github/v4/getOptionsFromGithub/getOptionsFromGithub';
-import { getRepoOwnerAndName } from '../services/github/v4/getRepoOwnerAndName';
+import { getRepoOwnerAndNameFromGitRemotes } from '../services/github/v4/getRepoOwnerAndNameFromGitRemotes';
 import { updateLogger } from './../services/logger';
 import { ConfigFileOptions, TargetBranchChoiceOrString } from './ConfigOptions';
 import { getOptionsFromCliArgs, OptionsFromCliArgs } from './cliArgs';
@@ -114,14 +114,10 @@ async function getRequiredOptions(combined: CombinedOptions) {
   const { accessToken, repoName, repoOwner } = combined;
 
   if (accessToken && repoName && repoOwner) {
-    return {
-      accessToken,
-      repoName: repoName,
-      repoOwner: repoOwner,
-    };
+    return { accessToken, repoName, repoOwner };
   }
 
-  // accessToken must be supplied in config or via cli args
+  // require access token
   if (!accessToken) {
     const globalConfigPath = getGlobalConfigPath();
     throw new HandledError(
@@ -129,7 +125,8 @@ async function getRequiredOptions(combined: CombinedOptions) {
     );
   }
 
-  const gitRemote = await getRepoOwnerAndName({
+  // attempt to retrieve repo-owner and repo-name from git remote
+  const gitRemote = await getRepoOwnerAndNameFromGitRemotes({
     cwd: combined.cwd,
     githubApiBaseUrlV4: combined.githubApiBaseUrlV4,
     accessToken,

@@ -7,7 +7,7 @@ import { HandledError } from './HandledError';
 import { execAsCallback, exec } from './child-process-promisified';
 import { getRepoPath } from './env';
 import { getShortSha } from './github/commitFormatters';
-import { getRepoOwnerAndName } from './github/v4/getRepoOwnerAndName';
+import { getRepoOwnerAndNameFromGitRemotes } from './github/v4/getRepoOwnerAndNameFromGitRemotes';
 import { logger } from './logger';
 import { ExpectedTargetPullRequest } from './sourceCommit/getExpectedTargetPullRequests';
 import { Commit } from './sourceCommit/parseSourceCommit';
@@ -460,7 +460,7 @@ export async function pushBackportBranch({
 }
 
 export async function getSourceRepoPath(options: ValidConfigOptions) {
-  const gitRemote = await getRepoOwnerAndName(options);
+  const gitRemote = await getRepoOwnerAndNameFromGitRemotes(options);
 
   // where to fetch the repo from (either remotely from Github or from a local path)
   const remoteUrl = getRemoteUrl(options, options.repoOwner);

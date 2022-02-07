@@ -3,7 +3,7 @@ import { getRepoInfoFromGitRemotes } from '../../git';
 import { logger } from '../../logger';
 import { apiRequestV4, GithubV4Exception } from './apiRequestV4';
 
-export async function getRepoOwnerAndName({
+export async function getRepoOwnerAndNameFromGitRemotes({
   accessToken,
   githubApiBaseUrlV4,
   cwd,
