@@ -1,8 +1,8 @@
+import * as fs from 'fs/promises';
 import makeDir from 'make-dir';
 import { ValidConfigOptions } from '../options/options';
 import { mockGqlRequest } from '../test/nockHelpers';
 import { getSandboxPath, resetSandbox } from '../test/sandbox';
-import { SpyHelper } from '../types/SpyHelper';
 import * as childProcess from './child-process-promisified';
 import {
   cherrypick,
@@ -234,7 +234,6 @@ describe('git.integration', () => {
     });
     const sourceRepo = `${sandboxPath}/source-repo`;
     const backportRepo = `${sandboxPath}/backport-repo`;
-    let execSpy: SpyHelper<typeof childProcess.execAsCallback>;
 
     beforeEach(async () => {
       await resetSandbox(sandboxPath);
@@ -252,29 +251,36 @@ describe('git.integration', () => {
         content: 'Hello!',
         execOpts,
       });
-
-      execSpy = jest.spyOn(childProcess, 'execAsCallback');
     });
 
     it('clones the repo', async () => {
+      // file should not exist before clone
+      await expect(() =>
+        fs.access(`${backportRepo}/my-file.txt`)
+      ).rejects.toThrowError();
+
       await cloneRepo(
         { sourcePath: sourceRepo, targetPath: backportRepo },
         () => null
       );
 
-      expect(execSpy).toHaveBeenCalledTimes(1);
-      expect(execSpy.mock.calls[0][0].startsWith('git clone ')).toBe(true);
+      //file should exist after clone
+      await expect(() =>
+        fs.access(`${backportRepo}/my-file.txt`)
+      ).not.toThrowError();
     });
   });
 
   describe('getSourceRepoPath', () => {
-    const sandboxPath = getSandboxPath({
-      filename: __filename,
-      specname: 'getSourceRepoPath',
-    });
-    const sourceRepo = `${sandboxPath}/source-repo`;
+    let sourceRepo: string;
 
     beforeEach(async () => {
+      const sandboxPath = getSandboxPath({
+        filename: __filename,
+        specname: 'getSourceRepoPath',
+      });
+      sourceRepo = `${sandboxPath}/source-repo`;
+
       await resetSandbox(sandboxPath);
       await makeDir(sourceRepo);
 
@@ -300,21 +306,21 @@ describe('git.integration', () => {
         cwd: sourceRepo,
         githubApiBaseUrlV4: 'http://localhost/graphql', // required to mock the response
       } as ValidConfigOptions;
-      const sourcePath = await getSourceRepoPath(options);
-      expect(sourcePath).toBe(sourceRepo);
+
+      expect(await getSourceRepoPath(options)).toBe(sourceRepo);
     });
 
     it("returns remote source repo when remotes don't match", async () => {
       const options = {
         accessToken: 'verysecret',
         repoName: 'kibana',
-        repoOwner: 'no-a-match',
+        repoOwner: 'not-a-match',
         cwd: sourceRepo,
         githubApiBaseUrlV4: 'http://localhost/graphql', // required to mock the response
       } as ValidConfigOptions;
-      const sourcePath = await getSourceRepoPath(options);
-      expect(sourcePath).toBe(
-        'https://x-access-token:verysecret@github.com/no-a-match/kibana.git'
+
+      expect(await getSourceRepoPath(options)).toBe(
+        'https://x-access-token:verysecret@github.com/not-a-match/kibana.git'
       );
     });
   });

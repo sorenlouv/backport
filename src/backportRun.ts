@@ -7,6 +7,7 @@ import { runSequentially, Result } from './runSequentially';
 import { HandledError } from './services/HandledError';
 import { getLogfilePath } from './services/env';
 import { createStatusComment } from './services/github/v3/createStatusComment';
+import { GithubV4Exception } from './services/github/v4/apiRequestV4';
 import { consoleLog, initLogger, logger } from './services/logger';
 import { Commit } from './services/sourceCommit/parseSourceCommit';
 import { getCommits } from './ui/getCommits';
@@ -77,7 +78,7 @@ export async function backportRun(
       });
     }
 
-    if (e instanceof HandledError) {
+    if (e instanceof HandledError || e instanceof GithubV4Exception) {
       consoleLog(e.message);
     } else if (e instanceof Error) {
       // output
@@ -97,7 +98,7 @@ export async function backportRun(
         )
       );
 
-      // log file
+      // write to log
       logger.info('Unknown error:', e);
     }
 

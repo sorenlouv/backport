@@ -93,8 +93,8 @@ export function getCommentBody({
   }
 
   const packageVersionSection = `\n<!--- Backport version: ${PACKAGE_VERSION} -->`;
-  const backportPRCommand = `\n### Manual backport\nTo create the backport manually run:\n\`\`\`\n${options.backportBinary} --pr ${pullNumber}\n\`\`\``;
-  const supportSection =
+  const manualBackportCommand = `\n### Manual backport\nTo create the backport manually run:\n\`\`\`\n${options.backportBinary} --pr ${pullNumber}\n\`\`\``;
+  const questionsAndLinkToBackport =
     '\n\n### Questions ?\nPlease refer to the [Backport tool documentation](https://github.com/sqren/backport)';
 
   if (backportResponse.status === 'failure') {
@@ -103,14 +103,14 @@ export function getCommentBody({
       backportResponse.error.errorContext?.code === 'no-branches-exception'
     ) {
       return `## ⚪ Backport skipped
-      The pull request was not backport as there were no branches to backport to. If this is a mistake, please apply the desired version labels or run the backport tool manually.
-      ${backportPRCommand}${supportSection}${packageVersionSection}`;
+      The pull request was not backported as there were no branches to backport to. If this is a mistake, please apply the desired version labels or run the backport tool manually.
+      ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
     }
 
     return `## 💔 Backport failed
 The pull request could not be backported due to the following error:
 \`${backportResponse.error.message}\`
-${backportPRCommand}${supportSection}${packageVersionSection}`;
+${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
   }
 
   const tableBody = backportResponse.results
@@ -181,9 +181,9 @@ ${backportPRCommand}${supportSection}${packageVersionSection}`;
       : '';
 
   const backportPRCommandMessage = !didAllBackportsSucceed
-    ? `${backportPRCommand}`
+    ? `${manualBackportCommand}`
     : '';
 
   return `${header}\n\n${table}
-${backportPRCommandMessage}${autoMergeMessage}${supportSection}${packageVersionSection}`;
+${backportPRCommandMessage}${autoMergeMessage}${questionsAndLinkToBackport}${packageVersionSection}`;
 }
