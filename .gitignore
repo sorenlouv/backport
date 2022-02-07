@@ -5,5 +5,5 @@
 /yarn-error.log
 .DS_Store
 /src/test/private/accessToken.txt
-_tmp_sandbox_*
+/src/test/_tmp_sandbox_
 
