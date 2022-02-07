@@ -111,29 +111,37 @@ export async function getOptions(
 }
 
 async function getRequiredOptions(combined: CombinedOptions) {
-  const accessToken = requireAccessToken(combined);
+  const { accessToken, repoName, repoOwner } = combined;
 
-  if (combined.repoName && combined.repoOwner) {
+  if (accessToken && repoName && repoOwner) {
     return {
       accessToken,
-      repoName: combined.repoName,
-      repoOwner: combined.repoOwner,
+      repoName: repoName,
+      repoOwner: repoOwner,
     };
   }
 
-  const { repoName, repoOwner } = await getRepoOwnerAndName({
+  // accessToken must be supplied in config or via cli args
+  if (!accessToken) {
+    const globalConfigPath = getGlobalConfigPath();
+    throw new HandledError(
+      `Please update your config file: "${globalConfigPath}".\nIt must contain a valid "accessToken".\n\nRead more: ${GLOBAL_CONFIG_DOCS_LINK}`
+    );
+  }
+
+  const gitRemote = await getRepoOwnerAndName({
     cwd: combined.cwd,
     githubApiBaseUrlV4: combined.githubApiBaseUrlV4,
     accessToken,
   });
 
-  if (!repoName) {
+  if (!gitRemote.repoName) {
     throw new HandledError(
       `Please specify a repo name: "--repo-name kibana".\n\nRead more: ${PROJECT_CONFIG_DOCS_LINK}`
     );
   }
 
-  if (!repoOwner) {
+  if (!gitRemote.repoOwner) {
     throw new HandledError(
       `Please specify a repo owner: "--repo-owner elastic".\n\nRead more: ${PROJECT_CONFIG_DOCS_LINK}`
     );
@@ -141,8 +149,8 @@ async function getRequiredOptions(combined: CombinedOptions) {
 
   return {
     accessToken,
-    repoName,
-    repoOwner,
+    repoName: gitRemote.repoName,
+    repoOwner: gitRemote.repoOwner,
   };
 }
 
@@ -159,17 +167,6 @@ function getCombinedOptions({
     ...optionsFromConfigFiles,
     ...optionsFromCliArgs,
   };
-}
-
-function requireAccessToken(combinedOptions: CombinedOptions): string {
-  // accessToken must be supplied in config or via cli args
-  if (!combinedOptions.accessToken) {
-    const globalConfigPath = getGlobalConfigPath();
-    throw new HandledError(
-      `Please update your config file: "${globalConfigPath}".\nIt must contain a valid "accessToken".\n\nRead more: ${GLOBAL_CONFIG_DOCS_LINK}`
-    );
-  }
-  return combinedOptions.accessToken;
 }
 
 function requireTargetBranch(config: {
