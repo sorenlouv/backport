@@ -11,7 +11,7 @@ import {
   OptionsFromConfigFiles,
 } from './config/config';
 
-export const PROJECT_CONFIG_DOCS_LINK =
+const PROJECT_CONFIG_DOCS_LINK =
   'https://github.com/sqren/backport/blob/main/docs/configuration.md#project-config-backportrcjson';
 
 const GLOBAL_CONFIG_DOCS_LINK =
@@ -21,7 +21,7 @@ export type ValidConfigOptions = Readonly<
   Awaited<ReturnType<typeof getOptions>>
 >;
 
-export const defaultConfigOptions = {
+const defaultConfigOptions = {
   assignees: [] as Array<string>,
   autoAssign: false,
   autoMerge: false,

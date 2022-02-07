@@ -46,7 +46,7 @@ export async function fetchPullRequestBySearchQuery(
     query: searchQuery,
     maxNumber: maxNumber,
   };
-  const res = await apiRequestV4<PullRequestBySearchQueryResponse>({
+  const res = await apiRequestV4<ResponseData>({
     githubApiBaseUrlV4,
     accessToken,
     query,
@@ -70,7 +70,7 @@ export async function fetchPullRequestBySearchQuery(
   return commits;
 }
 
-export interface PullRequestBySearchQueryResponse {
+interface ResponseData {
   search: {
     nodes: Array<{
       mergeCommit: SourceCommitWithTargetPullRequest;

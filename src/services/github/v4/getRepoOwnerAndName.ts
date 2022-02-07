@@ -64,7 +64,7 @@ export interface RepoOwnerAndNameResponse {
       };
 }
 
-export const query = /* GraphQL */ `
+const query = /* GraphQL */ `
   query RepoOwnerAndName($repoOwner: String!, $repoName: String!) {
     repository(owner: $repoOwner, name: $repoName) {
       isFork

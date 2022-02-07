@@ -162,7 +162,7 @@ async function backportViaFilesystem({
  * For a single commit: `backport/7.x/commit-abcdef`
  * For multiple: `backport/7.x/pr-1234_commit-abcdef`
  */
-export function getBackportBranchName(targetBranch: string, commits: Commit[]) {
+function getBackportBranchName(targetBranch: string, commits: Commit[]) {
   const refValues = commits
     .map((commit) =>
       commit.pullNumber
