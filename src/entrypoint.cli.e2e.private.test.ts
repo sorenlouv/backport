@@ -8,7 +8,6 @@ import { getSandboxPath, resetSandbox } from './test/sandbox';
 const TIMEOUT_IN_SECONDS = 10;
 
 jest.setTimeout(15000);
-jest.unmock('ora');
 
 describe('inquirer cli', () => {
   let devAccessToken: string;
