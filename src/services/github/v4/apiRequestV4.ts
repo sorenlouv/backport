@@ -98,7 +98,8 @@ function addDebugLogs({
   );
   const logMethod = didSucceed ? logger.verbose : logger.info;
 
-  logMethod('Query:', query);
+  logMethod(`Query name ${gqlQueryName}`);
+  logMethod(`Query: ${query}`);
   logMethod('Variables:', variables);
   logMethod('Response headers:', axiosResponse.headers);
   logMethod('Response data:', axiosResponse.data);

@@ -62,6 +62,8 @@ export async function backportRun(
       backportResponse,
     });
 
+    logger.info('backportResponse', backportResponse);
+
     return backportResponse;
   } catch (e) {
     spinner.stop();
@@ -96,11 +98,10 @@ export async function backportRun(
           })}`
         )
       );
-
-      // write to log
-      logger.info('Unknown error:', e);
-      process.exit(1);
     }
+
+    logger.error('Unhandled exception', e);
+    process.exitCode = 1;
 
     return backportResponse;
   }
