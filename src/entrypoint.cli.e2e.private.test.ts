@@ -126,9 +126,10 @@ describe('inquirer cli', () => {
         4. Add family emoji (#2) 7.x
         5. Add \`backport\` dep
         6. Merge pull request #1 from backport-org/add-heart-emoji
-        7. Update .backportrc.json
-        8. Bump to 8.0.0
-        9. Add package.json"
+        7. Add ❤️ emoji
+        8. Update .backportrc.json
+        9. Bump to 8.0.0
+        10.Add package.json"
     `);
   });
 
@@ -223,11 +224,12 @@ describe('inquirer cli', () => {
         2. Add family emoji (#2) 7.x
         3. Add \`backport\` dep
         4. Merge pull request #1 from backport-org/add-heart-emoji
-        5. Update .backportrc.json
-        6. Bump to 8.0.0
-        7. Add package.json
-        8. Update .backportrc.json
-        9. Create .backportrc.json"
+        5. Add ❤️ emoji
+        6. Update .backportrc.json
+        7. Bump to 8.0.0
+        8. Add package.json
+        9. Update .backportrc.json
+        10.Create .backportrc.json"
     `);
   });
 

@@ -28,7 +28,7 @@ describe('createStatusComment', () => {
         ci: true,
       } as ValidConfigOptions,
       backportResponse: {
-        commits: [{ pullNumber: 100 }],
+        commits: [{ sourcePullRequest: { number: 100 } }],
         status: 'failure',
         error: new Error(
           `Error message containing very secret access token: ${accessToken}.`
@@ -290,21 +290,43 @@ describe('getCommentBody', () => {
             error: new HandledError({
               code: 'merge-conflict-exception',
               commitsWithoutBackports: [
+                //@ts-expect-error
                 {
-                  //@ts-expect-error
                   commit: {
-                    pullNumber: 5,
-                    pullUrl: 'url-to-pr-5',
-                    originalMessage: 'New Zealand commit message',
+                    sourceBranch: 'master',
+                    sourcePullRequest: {
+                      number: 5,
+                      url: 'url-to-pr-5',
+                      mergeCommit: {
+                        sha: '',
+                        message: 'New Zealand commit message',
+                      },
+                    },
+                    sourceCommit: {
+                      committedDate: '',
+                      sha: '',
+                      message: 'New Zealand commit message',
+                    },
+                    expectedTargetPullRequests: [],
                   },
                 },
 
                 {
                   //@ts-expect-error
                   commit: {
-                    pullNumber: 44,
-                    pullUrl: 'url-to-pr-44',
-                    originalMessage: 'Australia commit',
+                    sourcePullRequest: {
+                      number: 44,
+                      url: 'url-to-pr-44',
+                      mergeCommit: {
+                        sha: '',
+                        message: 'Australia commit',
+                      },
+                    },
+                    sourceCommit: {
+                      committedDate: '',
+                      sha: '',
+                      message: 'Australia commit',
+                    },
                   },
                 },
               ],

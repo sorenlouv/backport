@@ -35,7 +35,7 @@ export function getMockSourceCommit({
       owner: { login: 'elastic' },
     },
     committedDate: sourceCommit.commitedDate ?? '2021-12-22T00:00:00Z',
-    oid: sourceCommit.sha ?? defaultSourceCommitSha,
+    sha: sourceCommit.sha ?? defaultSourceCommitSha,
     message: sourceCommit.message,
   };
 
@@ -54,14 +54,14 @@ export function getMockSourceCommit({
       owner: { login: 'elastic' },
     },
     committedDate: sourceCommit.commitedDate ?? '2021-12-22T00:00:00Z',
-    oid: sourceCommit.sha ?? defaultSourceCommitSha,
+    sha: sourceCommit.sha ?? defaultSourceCommitSha,
     message: sourceCommit.message,
     associatedPullRequests: {
       edges: [
         {
           node: {
-            sourceMergeCommit: {
-              oid: sourceCommit.sha ?? defaultSourceCommitSha,
+            mergeCommit: {
+              sha: sourceCommit.sha ?? defaultSourceCommitSha,
               message: sourceCommit.message,
             },
             url: `https://github.com/elastic/kibana/pull/${sourcePullRequest.number}`,
@@ -91,7 +91,7 @@ export function getMockSourceCommit({
                         timelineItem.state === 'MERGED'
                           ? {
                               message: timelineItem.commitMessages[0],
-                              oid: 'target-merge-commit-sha',
+                              sha: 'target-merge-commit-sha',
                             }
                           : null,
 
@@ -105,7 +105,7 @@ export function getMockSourceCommit({
                         edges: timelineItem.commitMessages.map((message) => ({
                           node: {
                             targetCommit: {
-                              oid: 'abc',
+                              sha: 'abc',
                               message: message,
                             },
                           },

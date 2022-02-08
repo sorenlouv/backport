@@ -84,8 +84,7 @@ export async function backportRun(
       // output
       consoleLog('\n');
       consoleLog(chalk.bold('⚠️  Ouch! An unhandled error occured 😿'));
-      consoleLog(`Error message: ${e.message}`);
-
+      consoleLog(e.stack ? e.stack : e.message);
       consoleLog(
         'Please open an issue in https://github.com/sqren/backport/issues or contact me directly on https://twitter.com/sorenlouv'
       );

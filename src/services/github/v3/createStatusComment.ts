@@ -35,13 +35,13 @@ export async function createStatusComment({
 
     await Promise.all(
       backportResponse.commits.map((commit) => {
-        if (!commit.pullNumber) {
+        if (!commit.sourcePullRequest) {
           return;
         }
 
         const body = getCommentBody({
           options,
-          pullNumber: commit.pullNumber,
+          pullNumber: commit.sourcePullRequest.number,
           backportResponse,
         });
 
@@ -54,7 +54,7 @@ export async function createStatusComment({
           baseUrl: options.githubApiBaseUrlV3,
           owner: repoOwner,
           repo: repoName,
-          issue_number: commit.pullNumber,
+          issue_number: commit.sourcePullRequest.number,
           body: redact(options.accessToken, body),
         });
       })
@@ -130,8 +130,8 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
       if (result.error.errorContext?.code === 'merge-conflict-exception') {
         const unmergedBackports =
           result.error.errorContext.commitsWithoutBackports.map((c) => {
-            return ` - [${getFirstLine(c.commit.originalMessage)}](${
-              c.commit.pullUrl
+            return ` - [${getFirstLine(c.commit.sourceCommit.message)}](${
+              c.commit.sourcePullRequest?.url
             })`;
           });
 
