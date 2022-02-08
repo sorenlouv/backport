@@ -60,6 +60,7 @@ type Options = Partial<{
   targetBranchChoices: TargetBranchChoiceOrString[];
   targetBranches: string[];
   targetPRLabels: string[];
+  username: string;
   verbose: boolean;
 }>;
 

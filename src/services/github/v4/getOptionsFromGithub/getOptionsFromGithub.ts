@@ -22,6 +22,7 @@ export async function getOptionsFromGithub(options: {
   githubApiBaseUrlV4?: string;
   repoName: string;
   repoOwner: string;
+  username?: string;
   skipRemoteConfig?: boolean;
   cwd?: string;
 }) {
@@ -67,7 +68,7 @@ export async function getOptionsFromGithub(options: {
     : parseRemoteConfig(latestRemoteConfig);
 
   return {
-    authenticatedUsername: res.viewer.login,
+    authenticatedUsername: options.username ?? res.viewer.login,
     sourceBranch: res.repository.defaultBranchRef.name,
     ...remoteConfig,
     historicalBranchLabelMappings: skipRemoteConfig

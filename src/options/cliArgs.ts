@@ -55,6 +55,13 @@ export function getOptionsFromCliArgs(
       choices: ['merge', 'rebase', 'squash'],
     })
 
+    .option('author', {
+      description: 'Show commits by a specific user',
+      alias: 'author',
+      type: 'string',
+      conflicts: 'all',
+    })
+
     .option('ci', {
       description: 'Disable interactive prompts',
       type: 'boolean',
@@ -306,11 +313,10 @@ export function getOptionsFromCliArgs(
       string: true,
     })
 
-    .option('author', {
-      description: 'Show commits by a specific user',
-      alias: 'author',
+    .option('username', {
+      description:
+        'User repo that branch will be pushed to. Defaults to the authenticated user',
       type: 'string',
-      conflicts: 'all',
     })
 
     .option('verbose', {
