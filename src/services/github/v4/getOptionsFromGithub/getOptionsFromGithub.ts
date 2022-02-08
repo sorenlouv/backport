@@ -169,12 +169,14 @@ function getHistoricalBranchLabelMappings(
 function swallowErrorIfConfigFileIsMissing<T>(error: GithubV4Exception<T>) {
   const { data, errors } = error.axiosResponse.data;
 
-  const wasMissingConfigError = errors?.some(
-    (error) =>
-      error.type === 'NOT_FOUND' &&
-      error.path.join('.') ===
-        'repository.defaultBranchRef.target.history.edges.0.remoteConfig.file'
-  );
+  const wasMissingConfigError = errors?.some((error) => {
+    const isMatch =
+      /^repository.defaultBranchRef.target.history.edges.\d+.remoteConfig.file$/.test(
+        error.path.join('.')
+      );
+
+    return isMatch && error.type === 'NOT_FOUND';
+  });
 
   // swallow error if it's just the config file that's missing
   if (wasMissingConfigError && data != null) {
