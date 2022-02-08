@@ -99,6 +99,7 @@ export async function backportRun(
 
       // write to log
       logger.info('Unknown error:', e);
+      process.exit(1);
     }
 
     return backportResponse;
