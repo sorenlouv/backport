@@ -21,9 +21,8 @@
       "runtimeArgs": ["-r", "ts-node/register/transpile-only"],
       "args": [
         "--branch=6.3",
-        "--repo-owner=owasp",
-        "--repo-name=asvs",
-        "--all"
+        "--repo-owner=backport-org",
+        "--repo-name=backport-demo"
       ],
       "console": "integratedTerminal"
     },
