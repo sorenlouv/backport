@@ -46,17 +46,15 @@ export async function getOptionsFromGithub(options: {
     res = swallowErrorIfConfigFileIsMissing(error);
   }
 
-  // get the original repo (not the fork)
-  const repo = res.repository.isFork ? res.repository.parent : res.repository;
-
   // it is not possible to have a branch named "backport"
-  if (repo.ref?.name === 'backport') {
+  if (res.repository.illegalBackportBranch) {
     throw new HandledError(
       'You must delete the branch "backport" to continue. See https://github.com/sqren/backport/issues/155 for details'
     );
   }
 
-  const historicalRemoteConfigs = repo.defaultBranchRef.target.history.edges;
+  const historicalRemoteConfigs =
+    res.repository.defaultBranchRef.target.history.edges;
   const latestRemoteConfig = historicalRemoteConfigs[0]?.remoteConfig;
   const skipRemoteConfig = await getSkipRemoteConfigFile(
     options.cwd,
@@ -64,10 +62,14 @@ export async function getOptionsFromGithub(options: {
     latestRemoteConfig
   );
 
+  const remoteConfig = skipRemoteConfig
+    ? {}
+    : parseRemoteConfig(latestRemoteConfig);
+
   return {
     authenticatedUsername: res.viewer.login,
-    sourceBranch: repo.defaultBranchRef.name,
-    ...(skipRemoteConfig ? {} : parseRemoteConfig(latestRemoteConfig)),
+    sourceBranch: res.repository.defaultBranchRef.name,
+    ...remoteConfig,
     historicalBranchLabelMappings: skipRemoteConfig
       ? []
       : getHistoricalBranchLabelMappings(historicalRemoteConfigs),

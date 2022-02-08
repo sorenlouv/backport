@@ -252,11 +252,19 @@ export function getOptionsFromCliArgs(
     .option('repoOwner', {
       description: 'Repository owner',
       type: 'string',
+      conflicts: ['repo'],
     })
 
     .option('repoName', {
       description: 'Repository name',
       type: 'string',
+      conflicts: ['repo'],
+    })
+
+    .option('repo', {
+      description: 'Repo owner and name',
+      type: 'string',
+      conflicts: ['repoName', 'repoOwner'],
     })
 
     .option('sha', {
@@ -347,6 +355,9 @@ export function getOptionsFromCliArgs(
     multipleCommits,
     all,
 
+    // repoName and repoOwner
+    repo,
+
     // filters
     author,
     since,
@@ -371,8 +382,17 @@ export function getOptionsFromCliArgs(
     ...restOptions
   } = yargsInstance.parseSync();
 
+  const [repoOwner, repoName] = repo?.split('/') ?? [
+    restOptions.repoOwner,
+    restOptions.repoName,
+  ];
+
   return excludeUndefined({
     ...restOptions,
+
+    // repoName and repoOwner
+    repoOwner,
+    repoName,
 
     // filters
     author: all ? null : author,

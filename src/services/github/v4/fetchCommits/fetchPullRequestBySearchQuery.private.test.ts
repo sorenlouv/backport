@@ -6,8 +6,8 @@ import { fetchPullRequestBySearchQuery } from './fetchPullRequestBySearchQuery';
 describe('fetchPullRequestBySearchQuery', () => {
   let devAccessToken: string;
 
-  beforeAll(async () => {
-    devAccessToken = await getDevAccessToken();
+  beforeAll(() => {
+    devAccessToken = getDevAccessToken();
   });
 
   describe('when filter does not match any PRs', () => {

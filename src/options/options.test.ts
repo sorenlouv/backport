@@ -105,7 +105,7 @@ describe('getOptions', () => {
   });
 
   it('should ensure that "backport" branch does not exist', async () => {
-    mockGithubConfigOptions({ refName: 'backport' });
+    mockGithubConfigOptions({ hasBackportBranch: true });
     await expect(getOptions([], {})).rejects.toThrowError(
       'You must delete the branch "backport" to continue. See https://github.com/sqren/backport/issues/155 for details'
     );
@@ -344,12 +344,12 @@ function mockProjectConfig(projectConfig: ConfigFileOptions) {
 function mockGithubConfigOptions({
   viewerLogin = 'DO_NOT_USE-sqren',
   defaultBranchRef = 'DO_NOT_USE-default-branch-name',
-  refName,
+  hasBackportBranch,
   historicalMappings = [],
 }: {
   viewerLogin?: string;
   defaultBranchRef?: string;
-  refName?: string;
+  hasBackportBranch?: boolean;
   historicalMappings?: Array<{
     committedDate: string;
     branchLabelMapping: Record<string, string>;
@@ -364,9 +364,7 @@ function mockGithubConfigOptions({
           login: viewerLogin,
         },
         repository: {
-          isFork: false,
-          parent: null,
-          ref: refName ? { name: refName } : null,
+          illegalBackportBranch: hasBackportBranch ? { id: 'foo' } : null,
           defaultBranchRef: {
             name: defaultBranchRef,
             target: {

@@ -7,8 +7,8 @@ import { fetchCommitBySha } from './fetchCommitBySha';
 describe('fetchCommitBySha', () => {
   let devAccessToken: string;
 
-  beforeEach(async () => {
-    devAccessToken = await getDevAccessToken();
+  beforeEach(() => {
+    devAccessToken = getDevAccessToken();
   });
 
   describe('snapshot request/response', () => {

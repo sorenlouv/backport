@@ -7,8 +7,8 @@ import { fetchCommitByPullNumber } from './fetchCommitByPullNumber';
 describe('fetchCommitByPullNumber', () => {
   let devAccessToken: string;
 
-  beforeAll(async () => {
-    devAccessToken = await getDevAccessToken();
+  beforeAll(() => {
+    devAccessToken = getDevAccessToken();
   });
 
   describe('snapshot request/response', () => {

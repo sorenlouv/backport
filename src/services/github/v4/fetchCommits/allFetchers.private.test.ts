@@ -11,7 +11,7 @@ describe('allFetchers', () => {
   let commitByAuthor: Commit;
 
   beforeEach(async () => {
-    devAccessToken = await getDevAccessToken();
+    devAccessToken = getDevAccessToken();
 
     const commitsByAuthor = await fetchCommitsByAuthor({
       accessToken: devAccessToken,

@@ -12,8 +12,8 @@ jest.setTimeout(15000);
 describe('inquirer cli', () => {
   let devAccessToken: string;
 
-  beforeAll(async () => {
-    devAccessToken = await getDevAccessToken();
+  beforeAll(() => {
+    devAccessToken = getDevAccessToken();
   });
 
   it('--version', async () => {
@@ -73,6 +73,7 @@ describe('inquirer cli', () => {
             --reviewer                        Add reviewer to the target PR                        [array]
             --repoOwner                       Repository owner                                    [string]
             --repoName                        Repository name                                     [string]
+            --repo                            Repo owner and name                                 [string]
             --sha, --commit                   Commit sha to backport                              [string]
             --sourceBranch                    Specify a non-default branch (normally \\"master\\") to backport
                                               from                                                [string]

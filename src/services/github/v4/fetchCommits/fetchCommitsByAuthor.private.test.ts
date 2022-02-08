@@ -7,8 +7,8 @@ import { fetchCommitsByAuthor } from './fetchCommitsByAuthor';
 describe('fetchCommitsByAuthor', () => {
   let devAccessToken: string;
 
-  beforeAll(async () => {
-    devAccessToken = await getDevAccessToken();
+  beforeAll(() => {
+    devAccessToken = getDevAccessToken();
   });
 
   describe('snapshot request/response', () => {
