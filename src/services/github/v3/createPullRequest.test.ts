@@ -128,7 +128,7 @@ describe('getPullRequestBody', () => {
     `);
   });
 
-  it('when a PR was merged (instead of squashd) and the individual commits are selected', () => {
+  it('when a PR is merged (instead of squashed) and the individual commits are selected', () => {
     expect(
       getPullRequestBody({
         options: {} as ValidConfigOptions,
