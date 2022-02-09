@@ -152,7 +152,7 @@ describe('runSequentially', () => {
       This will backport the following commits from \`master\` to \`7.x\`:
        - [My commit message](foo)
 
-      <!--- Backport version: 1.2.3 -->
+      <!--- Backport version: 1.2.3-mocked -->
 
       ### Questions ?
       Please refer to the [Backport tool documentation](https://github.com/sqren/backport)",

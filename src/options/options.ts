@@ -192,6 +192,8 @@ function throwForRequiredOptions(
   ];
 
   // Disallow empty strings
+  // this is primarily an issue in Github actions where inputs default to empty strings instead of undefined
+  // in those cases failing early provides a better UX
   optionKeys.forEach((optionName) => {
     const option = options[optionName] as string;
     if (option === '') {

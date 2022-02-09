@@ -49,13 +49,7 @@ export function getMockSourceCommit({
   }
 
   return {
-    repository: {
-      name: 'kibana',
-      owner: { login: 'elastic' },
-    },
-    committedDate: sourceCommit.commitedDate ?? '2021-12-22T00:00:00Z',
-    sha: sourceCommit.sha ?? defaultSourceCommitSha,
-    message: sourceCommit.message,
+    ...baseMockCommit,
     associatedPullRequests: {
       edges: [
         {

@@ -74,7 +74,7 @@ describe('getCommentBody', () => {
 
         ### Questions ?
         Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
-        <!--- Backport version: 1.2.3 -->"
+        <!--- Backport version: 1.2.3-mocked -->"
       `);
     });
 
@@ -127,7 +127,7 @@ describe('getCommentBody', () => {
 
         ### Questions ?
         Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
-        <!--- Backport version: 1.2.3 -->"
+        <!--- Backport version: 1.2.3-mocked -->"
       `);
     });
 
@@ -145,7 +145,7 @@ describe('getCommentBody', () => {
 
         ### Questions ?
         Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
-        <!--- Backport version: 1.2.3 -->"
+        <!--- Backport version: 1.2.3-mocked -->"
       `);
     });
   });
@@ -196,7 +196,7 @@ describe('getCommentBody', () => {
 
         ### Questions ?
         Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
-        <!--- Backport version: 1.2.3 -->"
+        <!--- Backport version: 1.2.3-mocked -->"
       `);
     });
 
@@ -254,7 +254,7 @@ describe('getCommentBody', () => {
 
         ### Questions ?
         Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
-        <!--- Backport version: 1.2.3 -->"
+        <!--- Backport version: 1.2.3-mocked -->"
       `);
     });
 
@@ -365,7 +365,7 @@ describe('getCommentBody', () => {
 
         ### Questions ?
         Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
-        <!--- Backport version: 1.2.3 -->"
+        <!--- Backport version: 1.2.3-mocked -->"
       `);
     });
 
@@ -405,7 +405,7 @@ describe('getCommentBody', () => {
 
         ### Questions ?
         Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
-        <!--- Backport version: 1.2.3 -->"
+        <!--- Backport version: 1.2.3-mocked -->"
       `);
     });
 

@@ -126,7 +126,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
          - [My original commit message (#1000)](foo)
          - [My other commit message (#2000)](foo)
 
-        <!--- Backport version: 1.2.3 -->
+        <!--- Backport version: 1.2.3-mocked -->
 
         ### Questions ?
         Please refer to the [Backport tool documentation](https://github.com/sqren/backport)",
@@ -227,7 +227,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         This will backport the following commits from \`7.x\` to \`6.x\`:
          - My original commit message (mySha)
 
-        <!--- Backport version: 1.2.3 -->
+        <!--- Backport version: 1.2.3-mocked -->
 
         ### Questions ?
         Please refer to the [Backport tool documentation](https://github.com/sqren/backport)",
@@ -313,7 +313,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         This will backport the following commits from \`7.x\` to \`6.x\`:
          - My original commit message (mySha)
 
-        <!--- Backport version: 1.2.3 -->
+        <!--- Backport version: 1.2.3-mocked -->
 
         ### Questions ?
         Please refer to the [Backport tool documentation](https://github.com/sqren/backport)",

@@ -4,18 +4,15 @@ import stripAnsi from 'strip-ansi';
 import { exec } from './services/child-process-promisified';
 import { getDevAccessToken } from './test/private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from './test/sandbox';
+import * as packageVersion from './utils/packageVersion';
 
 const TIMEOUT_IN_SECONDS = 10;
 
 jest.setTimeout(15000);
 
+const devAccessToken = getDevAccessToken();
+
 describe('inquirer cli', () => {
-  let devAccessToken: string;
-
-  beforeAll(() => {
-    devAccessToken = getDevAccessToken();
-  });
-
   it('--version', async () => {
     const res = await runBackportAsync([`--version`]);
     expect(res).toContain(process.env.npm_package_version);
@@ -24,6 +21,13 @@ describe('inquirer cli', () => {
   it('-v', async () => {
     const res = await runBackportAsync([`-v`]);
     expect(res).toContain(process.env.npm_package_version);
+  });
+
+  it('PACKAGE_VERSION should match', async () => {
+    // @ts-expect-error
+    expect(packageVersion.UNMOCKED_PACKAGE_VERSION).toBe(
+      process.env.npm_package_version
+    );
   });
 
   it('--help', async () => {
@@ -201,7 +205,7 @@ describe('inquirer cli', () => {
     `);
   });
 
-  it(`should limit commits by since and until`, async () => {
+  it(`should filter commits by "since" and "until"`, async () => {
     jest.setTimeout(TIMEOUT_IN_SECONDS * 1000 * 1.1);
     const output = await runBackportAsync(
       [
@@ -214,25 +218,19 @@ describe('inquirer cli', () => {
         '--accessToken',
         devAccessToken,
         '--since',
-        '2020-08-15T00:00:00.000Z',
+        '2020-08-15T10:00:00.000Z',
         '--until',
-        '2020-08-15T14:00:00.000Z',
+        '2020-08-15T10:30:00.000Z',
       ],
       { waitForString: 'Select commit' }
     );
 
     expect(output).toMatchInlineSnapshot(`
       "? Select commit (Use arrow keys)
-      ❯ 1. Add 🍏 emoji (#5) 7.x, 7.8
-        2. Add family emoji (#2) 7.x
-        3. Add \`backport\` dep
-        4. Merge pull request #1 from backport-org/add-heart-emoji
-        5. Add ❤️ emoji
-        6. Update .backportrc.json
-        7. Bump to 8.0.0
-        8. Add package.json
-        9. Update .backportrc.json
-        10.Create .backportrc.json"
+      ❯ 1. Bump to 8.0.0
+        2. Add package.json
+        3. Update .backportrc.json
+        4. Create .backportrc.json"
     `);
   });
 
@@ -266,6 +264,36 @@ describe('inquirer cli', () => {
         5. Branch off: 7.9.0 (7.x)
         6. Bump to 8.0.0"
     `);
+  });
+
+  describe('repo: different-merge-strategies', () => {
+    it('list all commits regardless how they were merged', async () => {
+      jest.setTimeout(TIMEOUT_IN_SECONDS * 1000 * 1.1);
+      const output = await runBackportAsync(
+        [
+          '--branch',
+          'foo',
+          '--repo-owner',
+          'backport-org',
+          '--repo-name',
+          'different-merge-strategies',
+          '--accessToken',
+          devAccessToken,
+        ],
+        { waitForString: 'Select commit' }
+      );
+
+      expect(output).toMatchInlineSnapshot(`
+        "? Select commit (Use arrow keys)
+        ❯ 1. Using squash to merge commits (#3) 7.x
+          2. Rebase strategy: Second commit 7.x
+          3. Rebase strategy: First commit
+          4. Merge pull request #1 from backport-org/merge-strategy
+          5. Merge strategy: Second commit
+          6. Merge strategy: First commit
+          7. Initial commit"
+      `);
+    });
   });
 });
 

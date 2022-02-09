@@ -86,7 +86,7 @@ describe('backport e2e', () => {
         This will backport the following commits from \`master\` to \`7.x\`:
          - Add ❤️ emoji (5bf29b7d)
 
-        <!--- Backport version: 1.2.3 -->
+        <!--- Backport version: 1.2.3-mocked -->
 
         ### Questions ?
         Please refer to the [Backport tool documentation](https://github.com/sqren/backport)",
@@ -166,7 +166,7 @@ describe('backport e2e', () => {
          - Add ❤️ emoji (5bf29b7d)
          - Add family emoji (#2) (59d6ff1c)
 
-        <!--- Backport version: 1.2.3 -->
+        <!--- Backport version: 1.2.3-mocked -->
 
         ### Questions ?
         Please refer to the [Backport tool documentation](https://github.com/sqren/backport)",
@@ -250,7 +250,7 @@ describe('backport e2e', () => {
         This will backport the following commits from \`master\` to \`7.x\`:
          - Add ❤️ emoji (5bf29b7d)
 
-        <!--- Backport version: 1.2.3 -->
+        <!--- Backport version: 1.2.3-mocked -->
 
         ### Questions ?
         Please refer to the [Backport tool documentation](https://github.com/sqren/backport)",

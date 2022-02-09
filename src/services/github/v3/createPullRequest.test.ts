@@ -36,7 +36,7 @@ describe('getPullRequestBody', () => {
       This will backport the following commits from \`master\` to \`7.x\`:
        - [My commit message (#55)](https://github.com/backport-org/different-merge-strategies/pull/55)
 
-      <!--- Backport version: 1.2.3 -->
+      <!--- Backport version: 1.2.3-mocked -->
 
       ### Questions ?
       Please refer to the [Backport tool documentation](https://github.com/sqren/backport)"
@@ -68,7 +68,7 @@ describe('getPullRequestBody', () => {
       This will backport the following commits from \`main\` to \`7.x\`:
        - My commit message (abcdefgh)
 
-      <!--- Backport version: 1.2.3 -->
+      <!--- Backport version: 1.2.3-mocked -->
 
       ### Questions ?
       Please refer to the [Backport tool documentation](https://github.com/sqren/backport)"
@@ -121,7 +121,7 @@ describe('getPullRequestBody', () => {
        - [My commit message (#55)](https://github.com/backport-org/different-merge-strategies/pull/55)
        - Another commit message (qwertyui)
 
-      <!--- Backport version: 1.2.3 -->
+      <!--- Backport version: 1.2.3-mocked -->
 
       ### Questions ?
       Please refer to the [Backport tool documentation](https://github.com/sqren/backport)"
@@ -185,7 +185,7 @@ describe('getPullRequestBody', () => {
        - [Merge strategy: Second commit](https://github.com/backport-org/different-merge-strategies/pull/1)
        - [Merge strategy: First commit](https://github.com/backport-org/different-merge-strategies/pull/1)
 
-      <!--- Backport version: 1.2.3 -->
+      <!--- Backport version: 1.2.3-mocked -->
 
       ### Questions ?
       Please refer to the [Backport tool documentation](https://github.com/sqren/backport)"
@@ -285,7 +285,7 @@ describe('getPullRequestBody', () => {
        - [My commit message (#55)](https://github.com/backport-org/different-merge-strategies/pull/55)
        - Another commit message (qwertyui)
 
-      <!--- Backport version: 1.2.3 -->
+      <!--- Backport version: 1.2.3-mocked -->
 
       ### Questions ?
       Please refer to the [Backport tool documentation](https://github.com/sqren/backport)

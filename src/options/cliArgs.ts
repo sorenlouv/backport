@@ -314,8 +314,7 @@ export function getOptionsFromCliArgs(
     })
 
     .option('username', {
-      description:
-        'User repo that branch will be pushed to. Defaults to the authenticated user',
+      description: 'Defaults to the authenticated user ',
       type: 'string',
     })
 
