@@ -47,11 +47,11 @@ describe('getOptions', () => {
 
       await expect(() => getOptions([], { ci: true })).rejects
         .toThrowErrorMatchingInlineSnapshot(`
-      "Please update your config file: \\"/myHomeDir/.backport/config.json\\".
-      It must contain a valid \\"accessToken\\".
+                    "Please update your config file: \\"/myHomeDir/.backport/config.json\\".
+                    It must contain a valid \\"accessToken\\".
 
-      Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#global-config-backportconfigjson"
-      `);
+                    Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#global-config-backportconfigjson"
+                  `);
     });
 
     it('when `targetBranches`, `targetBranchChoices` and `branchLabelMapping` are all empty', async () => {
@@ -69,6 +69,34 @@ describe('getOptions', () => {
             `);
     });
 
+    describe('whe option is an empty string', () => {
+      it('throws for "username"', async () => {
+        await expect(() =>
+          getOptions([], { username: '', author: 'sqren' })
+        ).rejects.toThrowErrorMatchingInlineSnapshot(
+          `"\\"username\\" cannot be empty!"`
+        );
+      });
+
+      it('throws for "author"', async () => {
+        await expect(() =>
+          getOptions([], { author: '' })
+        ).rejects.toThrowErrorMatchingInlineSnapshot(
+          `"\\"author\\" cannot be empty!"`
+        );
+      });
+
+      it('throws for "accessToken"', async () => {
+        await expect(() => getOptions([], { accessToken: '' })).rejects
+          .toThrowErrorMatchingInlineSnapshot(`
+                "Please update your config file: \\"/myHomeDir/.backport/config.json\\".
+                It must contain a valid \\"accessToken\\".
+
+                Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#global-config-backportconfigjson"
+              `);
+      });
+    });
+
     describe('when repoName and repoOwner are missing', () => {
       beforeEach(() => {
         mockProjectConfig({ repoName: undefined, repoOwner: undefined });
@@ -79,10 +107,10 @@ describe('getOptions', () => {
 
         await expect(() => getOptions([], {})).rejects
           .toThrowErrorMatchingInlineSnapshot(`
-              "Please specify a repo name: \\"--repo-name kibana\\".
+                              "Please specify a repo name: \\"--repo-name kibana\\".
 
-              Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#project-config-backportrcjson"
-            `);
+                              Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#project-config-backportrcjson"
+                          `);
       });
 
       it('should get repoName from the remote', async () => {

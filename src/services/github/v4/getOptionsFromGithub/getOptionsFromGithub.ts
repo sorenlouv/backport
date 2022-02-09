@@ -17,6 +17,9 @@ import { GithubConfigOptionsResponse, query, RemoteConfig } from './query';
 // - verify the access token
 // - ensure no branch named "backport" exists
 
+export type OptionsFromGithub = Awaited<
+  ReturnType<typeof getOptionsFromGithub>
+>;
 export async function getOptionsFromGithub(options: {
   accessToken: string;
   githubApiBaseUrlV4?: string;
