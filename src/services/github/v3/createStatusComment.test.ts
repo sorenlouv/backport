@@ -395,8 +395,8 @@ describe('getCommentBody', () => {
       const params = getParams({ ci: true });
       expect(getCommentBody(params)).toMatchInlineSnapshot(`
         "## ⚪ Backport skipped
-              The pull request was not backported as there were no branches to backport to. If this is a mistake, please apply the desired version labels or run the backport tool manually.
-              
+        The pull request was not backported as there were no branches to backport to. If this is a mistake, please apply the desired version labels or run the backport tool manually.
+
         ### Manual backport
         To create the backport manually run:
         \`\`\`

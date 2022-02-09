@@ -103,8 +103,8 @@ export function getCommentBody({
       backportResponse.error.errorContext?.code === 'no-branches-exception'
     ) {
       return `## ⚪ Backport skipped
-      The pull request was not backported as there were no branches to backport to. If this is a mistake, please apply the desired version labels or run the backport tool manually.
-      ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
+The pull request was not backported as there were no branches to backport to. If this is a mistake, please apply the desired version labels or run the backport tool manually.
+${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
     }
 
     return `## 💔 Backport failed
