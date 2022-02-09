@@ -47,10 +47,19 @@ export async function backportRun(
 
   try {
     options = await getOptions(processArgs, optionsFromModule);
+    logger.info('Backporting options', options);
+
     spinner.stop();
+
     commits = await getCommits(options);
+    logger.info('Commits', commits);
+
     const targetBranches = await getTargetBranches(options, commits);
+    logger.info('Target branches', targetBranches);
+
     const results = await runSequentially({ options, commits, targetBranches });
+    logger.info('Results', results);
+
     const backportResponse: BackportResponse = {
       status: 'success',
       commits,
@@ -61,8 +70,6 @@ export async function backportRun(
       options,
       backportResponse,
     });
-
-    logger.info('backportResponse', backportResponse);
 
     return backportResponse;
   } catch (e) {
