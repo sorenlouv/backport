@@ -14,7 +14,7 @@
     "branches",
     "branching"
   ],
-  "version": "6.3.0-beta-9",
+  "version": "6.3.0-beta-10",
   "main": "./dist/entrypoint.module.js",
   "types": "dist/entrypoint.module.d.ts",
   "bin": {
@@ -23,11 +23,12 @@
   "license": "MIT",
   "scripts": {
     "postinstall": "test -f ./dist/scripts/runPostinstall.js && node ./dist/scripts/runPostinstall.js || echo 'Dist folder missing'",
-    "version": "yarn extractPackageVersion && git add src/utils/packageVersion.ts && yarn build",
+    "version": "echo \"Bumping version\" && yarn extractPackageVersion && git add src/utils/packageVersion.ts && yarn build",
     "prepare": "husky install",
+    "prepublishOnly": "yarn lint",
     "build": "tsc --project ./tsconfig.prod.json",
     "extractPackageVersion": "node -p \"'export const PACKAGE_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" | prettier > src/utils/packageVersion.ts",
-    "lint": "tsc --project ./tsconfig.test.json && eslint './**/*.{ts,js}'",
+    "lint": "echo \"Running lint\" && tsc --project ./tsconfig.test.json && eslint './**/*.{ts,js}'",
     "start": "ts-node --transpile-only ./src/entrypoint.cli.ts",
     "test-all": "yarn lint && jest --config ./jest.config.all.js",
     "test-mutation": "jest --config ./jest.config.mutation.js",
