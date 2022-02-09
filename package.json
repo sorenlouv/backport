@@ -78,7 +78,8 @@
     "terminal-link": "^2.1.1",
     "utility-types": "^3.10.0",
     "winston": "^3.5.1",
-    "yargs": "^17.3.1"
+    "yargs": "^17.3.1",
+    "yargs-parser": "^21.0.0"
   },
   "devDependencies": {
     "@types/core-js": "^2.5.5",
