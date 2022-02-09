@@ -3,7 +3,7 @@ import { getDevAccessToken } from './test/private/getDevAccessToken';
 
 describe('entrypoint.module', () => {
   it('getCommits', async () => {
-    const accessToken = await getDevAccessToken();
+    const accessToken = getDevAccessToken();
     const commits = await getCommits({
       accessToken: accessToken,
       repoName: 'backport-e2e',

@@ -28,7 +28,7 @@ describe('backport e2e', () => {
   beforeAll(async () => {
     // set alternative homedir
     jest.spyOn(os, 'homedir').mockReturnValue(`${sandboxPath}/homedir`);
-    accessToken = await getDevAccessToken();
+    accessToken = getDevAccessToken();
 
     mockConfigFiles({
       globalConfig: {},

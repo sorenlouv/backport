@@ -8,7 +8,7 @@ jest.setTimeout(15000);
 
 describe('Handle unbackported pull requests', () => {
   it('shows missing backports for PR number 8', async () => {
-    const accessToken = await getDevAccessToken();
+    const accessToken = getDevAccessToken();
     const commits = await getCommits({
       accessToken: accessToken,
       repoOwner: 'backport-org',
@@ -38,7 +38,7 @@ describe('Handle unbackported pull requests', () => {
   });
 
   it('shows that backport failed because PR number 8 was not backported', async () => {
-    const accessToken = await getDevAccessToken();
+    const accessToken = getDevAccessToken();
     const sandboxPath = getSandboxPath({ filename: __filename });
     await resetSandbox(sandboxPath);
     await exec('git init', { cwd: sandboxPath });
