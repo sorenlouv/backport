@@ -23,6 +23,7 @@ export type BackportResponse =
       status: 'failure';
       commits: Commit[];
       error: Error | HandledError;
+      errorMessage: string;
     };
 
 export async function backportRun(
@@ -78,6 +79,7 @@ export async function backportRun(
       status: 'failure',
       commits,
       error: e,
+      errorMessage: e.message,
     };
 
     if (options) {
