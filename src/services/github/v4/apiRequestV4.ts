@@ -111,13 +111,16 @@ type AxiosGithubResponse<DataResponse> = AxiosResponse<
   any
 >;
 export class GithubV4Exception<DataResponse> extends Error {
+  axiosResponse: AxiosGithubResponse<DataResponse> & { request: undefined };
+
   constructor(
     public message: string,
-    public axiosResponse: AxiosGithubResponse<DataResponse>
+    axiosResponse: AxiosGithubResponse<DataResponse>
   ) {
     super(message);
     Error.captureStackTrace(this, HandledError);
     this.name = 'GithubV4Exception';
+    this.axiosResponse = { ...axiosResponse, request: undefined };
   }
 }
 

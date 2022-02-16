@@ -2,6 +2,7 @@ import gql from 'graphql-tag';
 import { isEmpty } from 'lodash';
 import { ValidConfigOptions } from '../../../../options/options';
 import { HandledError } from '../../../HandledError';
+import { swallowMissingConfigFileException } from '../../../remoteConfig';
 import {
   Commit,
   SourceCommitWithTargetPullRequest,
@@ -47,12 +48,18 @@ export async function fetchPullRequestBySearchQuery(
     query: searchQuery,
     maxNumber: maxNumber,
   };
-  const res = await apiRequestV4<ResponseData>({
-    githubApiBaseUrlV4,
-    accessToken,
-    query,
-    variables,
-  });
+
+  let res;
+  try {
+    res = await apiRequestV4<ResponseData>({
+      githubApiBaseUrlV4,
+      accessToken,
+      query,
+      variables,
+    });
+  } catch (e) {
+    res = swallowMissingConfigFileException<ResponseData>(e);
+  }
 
   const commits = res.search.nodes.map((pullRequestNode) => {
     const sourceCommit = pullRequestNode.mergeCommit;

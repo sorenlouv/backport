@@ -1,6 +1,7 @@
 import gql from 'graphql-tag';
 import { ValidConfigOptions } from '../../../../options/options';
 import { HandledError } from '../../../HandledError';
+import { swallowMissingConfigFileException } from '../../../remoteConfig';
 import {
   Commit,
   SourceCommitWithTargetPullRequest,
@@ -44,16 +45,21 @@ export async function fetchCommitByPullNumber(options: {
     ${sourceCommitWithTargetPullRequestFragment}
   `;
 
-  const res = await apiRequestV4<CommitByPullNumberResponse>({
-    githubApiBaseUrlV4,
-    accessToken,
-    query,
-    variables: {
-      repoOwner,
-      repoName,
-      pullNumber,
-    },
-  });
+  let res: CommitByPullNumberResponse;
+  try {
+    res = await apiRequestV4<CommitByPullNumberResponse>({
+      githubApiBaseUrlV4,
+      accessToken,
+      query,
+      variables: {
+        repoOwner,
+        repoName,
+        pullNumber,
+      },
+    });
+  } catch (e) {
+    res = swallowMissingConfigFileException<CommitByPullNumberResponse>(e);
+  }
 
   const pullRequestNode = res.repository.pullRequest;
   if (!pullRequestNode) {

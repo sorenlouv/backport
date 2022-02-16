@@ -1,6 +1,7 @@
 import gql from 'graphql-tag';
 import { ValidConfigOptions } from '../../../../options/options';
 import { HandledError } from '../../../HandledError';
+import { swallowMissingConfigFileException } from '../../../remoteConfig';
 import {
   Commit,
   SourceCommitWithTargetPullRequest,
@@ -39,16 +40,21 @@ export async function fetchCommitBySha(options: {
     ${sourceCommitWithTargetPullRequestFragment}
   `;
 
-  const res = await apiRequestV4<CommitsByShaResponse>({
-    githubApiBaseUrlV4,
-    accessToken,
-    query,
-    variables: {
-      repoOwner,
-      repoName,
-      sha,
-    },
-  });
+  let res: CommitsByShaResponse;
+  try {
+    res = await apiRequestV4<CommitsByShaResponse>({
+      githubApiBaseUrlV4,
+      accessToken,
+      query,
+      variables: {
+        repoOwner,
+        repoName,
+        sha,
+      },
+    });
+  } catch (e) {
+    res = swallowMissingConfigFileException<CommitsByShaResponse>(e);
+  }
 
   const sourceCommit = res.repository.object;
   if (!sourceCommit) {

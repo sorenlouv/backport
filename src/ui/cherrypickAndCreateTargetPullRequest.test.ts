@@ -490,6 +490,11 @@ function setupExecSpyForCherryPick() {
         return { stdout: ``, stderr: '' };
       }
 
+      // getIsMergeCommit
+      if (cmd.startsWith('git rev-list -1 --merges')) {
+        return { stdout: ``, stderr: '' };
+      }
+
       throw new Error(`Missing exec mock for "${cmd}"`);
     });
 }

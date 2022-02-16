@@ -92,7 +92,7 @@ describe('runSequentially', () => {
 
     rpcExecMock = jest
       .spyOn(childProcess, 'exec')
-      .mockResolvedValue({ stdout: 'success', stderr: '' });
+      .mockResolvedValue({ stdout: '', stderr: '' });
     rpcExecOriginalMock = jest.spyOn(childProcess, 'execAsCallback');
 
     const scope = nock('https://api.github.com')
@@ -176,6 +176,7 @@ describe('runSequentially', () => {
       '/myHomeDir/.backport/repositories/elastic/kibana',
       '/myHomeDir/.backport/repositories/elastic/kibana',
       '/myHomeDir/.backport/repositories/elastic/kibana',
+      '/myHomeDir/.backport/repositories/elastic/kibana',
     ]);
   });
 
@@ -189,6 +190,7 @@ describe('runSequentially', () => {
       'git remote add elastic https://x-access-token:myAccessToken@github.com/elastic/kibana.git',
       'git reset --hard && git clean -d --force && git fetch elastic 7.x && git checkout -B backport/7.x/pr-55 elastic/7.x --no-track',
       'git fetch elastic master:master --force',
+      'git rev-list -1 --merges abcd~1..abcd',
       'git cherry-pick -x abcd',
       'git push sqren_authenticated backport/7.x/pr-55:backport/7.x/pr-55 --force',
       'git reset --hard && git checkout my-source-branch-from-options && git branch -D backport/7.x/pr-55',

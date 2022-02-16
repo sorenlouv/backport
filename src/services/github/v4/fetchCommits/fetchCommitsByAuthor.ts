@@ -3,6 +3,7 @@ import { isEmpty, uniqBy, orderBy } from 'lodash';
 import { ValidConfigOptions } from '../../../../options/options';
 import { filterNil } from '../../../../utils/filterEmpty';
 import { HandledError } from '../../../HandledError';
+import { swallowMissingConfigFileException } from '../../../remoteConfig';
 import {
   Commit,
   SourceCommitWithTargetPullRequest,
@@ -12,7 +13,7 @@ import {
 import { apiRequestV4 } from '../apiRequestV4';
 import { fetchAuthorId } from '../fetchAuthorId';
 
-function fetchByCommitPath({
+async function fetchByCommitPath({
   options,
   authorId,
   commitPath,
@@ -89,12 +90,16 @@ function fetchByCommitPath({
     dateUntil,
   };
 
-  return apiRequestV4<CommitByAuthorResponse>({
-    githubApiBaseUrlV4,
-    accessToken,
-    query,
-    variables,
-  });
+  try {
+    return await apiRequestV4<CommitByAuthorResponse>({
+      githubApiBaseUrlV4,
+      accessToken,
+      query,
+      variables,
+    });
+  } catch (e) {
+    return swallowMissingConfigFileException<CommitByAuthorResponse>(e);
+  }
 }
 
 export async function fetchCommitsByAuthor(options: {

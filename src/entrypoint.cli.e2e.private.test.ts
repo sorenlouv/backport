@@ -265,6 +265,77 @@ describe('inquirer cli', () => {
     `);
   });
 
+  describe('repo: repo-with-backportrc-removed (missing .backportrc.json config file)', () => {
+    it('should list commits', async () => {
+      const output = await runBackportAsync(
+        [
+          '--branch',
+          'foo',
+          '--repo',
+          'backport-org/repo-with-backportrc-removed',
+          '--accessToken',
+          devAccessToken,
+        ],
+        { waitForString: 'Select commit' }
+      );
+
+      expect(output).toMatchInlineSnapshot(`
+        "? Select commit (Use arrow keys)
+        ❯ 1. Rename README.me to README.md
+          2. Merge pull request #1 from backport-org/add-readme
+          3. Create README.me
+          4. Delete .backportrc.json
+          5. Create .backportrc.json
+          6. Delete .backportrc.json
+          7. Create .backportrc.json"
+      `);
+    });
+
+    it('should attempt to backport by PR', async () => {
+      const output = await runBackportAsync(
+        [
+          '--branch',
+          'foo',
+          '--repo',
+          'backport-org/repo-with-backportrc-removed',
+          '--pr',
+          '1',
+          '--accessToken',
+          devAccessToken,
+        ],
+        { waitForString: "is invalid or doesn't exist" }
+      );
+
+      expect(output).toMatchInlineSnapshot(`
+        "
+        Backporting to foo:
+        The branch \\"foo\\" is invalid or doesn't exist"
+      `);
+    });
+
+    it('should attempt to backport by commit sha', async () => {
+      const output = await runBackportAsync(
+        [
+          '--branch',
+          'foo',
+          '--repo',
+          'backport-org/repo-with-backportrc-removed',
+          '--sha',
+          'be59df6912a550c8cb49ba3e18be3e512f3d608c',
+          '--accessToken',
+          devAccessToken,
+        ],
+        { waitForString: "is invalid or doesn't exist" }
+      );
+
+      expect(output).toMatchInlineSnapshot(`
+        "
+        Backporting to foo:
+        The branch \\"foo\\" is invalid or doesn't exist"
+      `);
+    });
+  });
+
   describe('repo: different-merge-strategies', () => {
     it('list all commits regardless how they were merged', async () => {
       jest.setTimeout(TIMEOUT_IN_SECONDS * 1000 * 1.1);
@@ -278,19 +349,30 @@ describe('inquirer cli', () => {
           'different-merge-strategies',
           '--accessToken',
           devAccessToken,
+          '-n',
+          '20',
         ],
         { waitForString: 'Select commit' }
       );
 
       expect(output).toMatchInlineSnapshot(`
         "? Select commit (Use arrow keys)
-        ❯ 1. Using squash to merge commits (#3) 7.x
-          2. Rebase strategy: Second commit 7.x
-          3. Rebase strategy: First commit
-          4. Merge pull request #1 from backport-org/merge-strategy
-          5. Merge strategy: Second commit
-          6. Merge strategy: First commit
-          7. Initial commit"
+        ❯ 1. Merge pull request #9 from backport-org/many-merge-commits
+          2. Merge strategy: Eighth of many merges
+          3. Merge strategy: Seventh of many merges
+          4. Merge strategy: Sixth of many merges
+          5. Merge strategy: Fifth of many merges
+          6. Merge strategy: Fourth of many merges
+          7. Merge strategy: Third of many merges
+          8. Merge strategy: Second of many merges
+          9. Merge strategy: First of many merges
+          10.Using squash to merge commits (#3) 7.x
+          11.Rebase strategy: Second commit 7.x
+          12.Rebase strategy: First commit
+          13.Merge pull request #1 from backport-org/merge-strategy
+          14.Merge strategy: Second commit
+          15.Merge strategy: First commit
+          16.Initial commit"
       `);
     });
   });
