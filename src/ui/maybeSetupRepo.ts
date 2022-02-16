@@ -1,4 +1,3 @@
-import { stat } from 'fs/promises';
 import del = require('del');
 import ora = require('ora');
 import { ValidConfigOptions } from '../options/options';
@@ -7,12 +6,13 @@ import {
   addRemote,
   cloneRepo,
   deleteRemote,
+  getGitProjectRoot,
   getSourceRepoPath,
 } from '../services/git';
 
 export async function maybeSetupRepo(options: ValidConfigOptions) {
   const repoPath = getRepoPath(options);
-  const isAlreadyCloned = await getIsRepoCloned(repoPath);
+  const isAlreadyCloned = await getIsRepoCloned(options);
 
   // clone repo if folder does not already exists
   if (!isAlreadyCloned) {
@@ -27,6 +27,8 @@ export async function maybeSetupRepo(options: ValidConfigOptions) {
       const spinnerCloneText = `Cloning repository from ${sourcePathHumanReadable} (one-time operation)`;
       spinner.text = `0% ${spinnerCloneText}`;
 
+      await del(repoPath, { force: true });
+
       await cloneRepo(
         { sourcePath, targetPath: repoPath },
         (progress: number) => {
@@ -37,7 +39,7 @@ export async function maybeSetupRepo(options: ValidConfigOptions) {
       spinner.succeed(`100% ${spinnerCloneText}`);
     } catch (e) {
       spinner.fail();
-      await del(repoPath);
+      await del(repoPath, { force: true });
       throw e;
     }
   }
@@ -56,15 +58,8 @@ export async function maybeSetupRepo(options: ValidConfigOptions) {
   }
 }
 
-async function getIsRepoCloned(path: string): Promise<boolean> {
-  try {
-    const stats = await stat(path);
-    return stats.isDirectory();
-  } catch (e) {
-    if (e.code === 'ENOENT') {
-      return false;
-    }
-
-    throw e;
-  }
+async function getIsRepoCloned(options: ValidConfigOptions): Promise<boolean> {
+  const repoPath = getRepoPath(options);
+  const projectRoot = await getGitProjectRoot(options);
+  return repoPath === projectRoot;
 }

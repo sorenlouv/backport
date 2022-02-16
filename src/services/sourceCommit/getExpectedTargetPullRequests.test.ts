@@ -14,10 +14,10 @@ describe('getExpectedTargetPullRequests', () => {
     });
 
     const branchLabelMapping = {};
-    const expectedTargetPRs = getExpectedTargetPullRequests(
-      mockSourceCommit,
-      branchLabelMapping
-    );
+    const expectedTargetPRs = getExpectedTargetPullRequests({
+      sourceCommit: mockSourceCommit,
+      latestBranchLabelMapping: branchLabelMapping,
+    });
     expect(expectedTargetPRs).toEqual([]);
   });
 
@@ -35,10 +35,10 @@ describe('getExpectedTargetPullRequests', () => {
       ],
     });
     const branchLabelMapping = {};
-    const expectedTargetPRs = getExpectedTargetPullRequests(
-      mockSourceCommit,
-      branchLabelMapping
-    );
+    const expectedTargetPRs = getExpectedTargetPullRequests({
+      sourceCommit: mockSourceCommit,
+      latestBranchLabelMapping: branchLabelMapping,
+    });
     expect(expectedTargetPRs).toEqual([
       {
         branch: '6.x',
@@ -68,10 +68,10 @@ describe('getExpectedTargetPullRequests', () => {
       ],
     });
     const branchLabelMapping = {};
-    const expectedTargetPullRequests = getExpectedTargetPullRequests(
-      mockSourceCommit,
-      branchLabelMapping
-    );
+    const expectedTargetPullRequests = getExpectedTargetPullRequests({
+      sourceCommit: mockSourceCommit,
+      latestBranchLabelMapping: branchLabelMapping,
+    });
     expect(expectedTargetPullRequests).toEqual([]);
   });
 
@@ -90,10 +90,10 @@ describe('getExpectedTargetPullRequests', () => {
       ],
     });
     const branchLabelMapping = {};
-    const expectedTargetPullRequests = getExpectedTargetPullRequests(
-      mockSourceCommit,
-      branchLabelMapping
-    );
+    const expectedTargetPullRequests = getExpectedTargetPullRequests({
+      sourceCommit: mockSourceCommit,
+      latestBranchLabelMapping: branchLabelMapping,
+    });
     expect(expectedTargetPullRequests).toEqual([]);
   });
 
@@ -113,10 +113,10 @@ describe('getExpectedTargetPullRequests', () => {
       ],
     });
     const branchLabelMapping = {};
-    const expectedTargetPullRequests = getExpectedTargetPullRequests(
-      mockSourceCommit,
-      branchLabelMapping
-    );
+    const expectedTargetPullRequests = getExpectedTargetPullRequests({
+      sourceCommit: mockSourceCommit,
+      latestBranchLabelMapping: branchLabelMapping,
+    });
     expect(expectedTargetPullRequests).toEqual([]);
   });
 
@@ -137,10 +137,10 @@ describe('getExpectedTargetPullRequests', () => {
       ],
     });
     const branchLabelMapping = {};
-    const expectedTargetPullRequests = getExpectedTargetPullRequests(
-      mockSourceCommit,
-      branchLabelMapping
-    );
+    const expectedTargetPullRequests = getExpectedTargetPullRequests({
+      sourceCommit: mockSourceCommit,
+      latestBranchLabelMapping: branchLabelMapping,
+    });
     expect(expectedTargetPullRequests).toEqual([
       {
         branch: '6.x',
@@ -172,10 +172,10 @@ describe('getExpectedTargetPullRequests', () => {
       ],
     });
     const branchLabelMapping = {};
-    const expectedTargetPullRequests = getExpectedTargetPullRequests(
-      mockSourceCommit,
-      branchLabelMapping
-    );
+    const expectedTargetPullRequests = getExpectedTargetPullRequests({
+      sourceCommit: mockSourceCommit,
+      latestBranchLabelMapping: branchLabelMapping,
+    });
     expect(expectedTargetPullRequests).toEqual([]);
   });
 
@@ -195,10 +195,10 @@ describe('getExpectedTargetPullRequests', () => {
       ],
     });
     const branchLabelMapping = {};
-    const expectedTargetPullRequests = getExpectedTargetPullRequests(
-      mockSourceCommit,
-      branchLabelMapping
-    );
+    const expectedTargetPullRequests = getExpectedTargetPullRequests({
+      sourceCommit: mockSourceCommit,
+      latestBranchLabelMapping: branchLabelMapping,
+    });
     expect(expectedTargetPullRequests).toEqual([
       {
         branch: '6.x',
@@ -226,10 +226,10 @@ describe('getExpectedTargetPullRequests', () => {
       'v8.0.0': 'master',
       '^v(\\d+).(\\d+).\\d+$': '$1.$2',
     };
-    const expectedTargetPullRequests = getExpectedTargetPullRequests(
-      mockSourceCommit,
-      branchLabelMapping
-    );
+    const expectedTargetPullRequests = getExpectedTargetPullRequests({
+      sourceCommit: mockSourceCommit,
+      latestBranchLabelMapping: branchLabelMapping,
+    });
     expect(expectedTargetPullRequests).toEqual([
       { branch: '7.2', state: 'MISSING' },
       { branch: '7.1', state: 'MISSING' },
@@ -257,10 +257,10 @@ describe('getExpectedTargetPullRequests', () => {
       'v8.0.0': 'master',
       '^v(\\d+).(\\d+).\\d+$': '$1.$2',
     };
-    const expectedTargetPullRequests = getExpectedTargetPullRequests(
-      mockSourceCommit,
-      branchLabelMapping
-    );
+    const expectedTargetPullRequests = getExpectedTargetPullRequests({
+      sourceCommit: mockSourceCommit,
+      latestBranchLabelMapping: branchLabelMapping,
+    });
     expect(expectedTargetPullRequests).toEqual([
       {
         branch: '7.2',
@@ -315,10 +315,10 @@ describe('getExpectedTargetPullRequests', () => {
       },
     });
 
-    const expectedTargetPullRequests = getExpectedTargetPullRequests(
-      mockSourceCommit,
-      branchLabelMapping
-    );
+    const expectedTargetPullRequests = getExpectedTargetPullRequests({
+      sourceCommit: mockSourceCommit,
+      latestBranchLabelMapping: branchLabelMapping,
+    });
 
     expect(expectedTargetPullRequests).toEqual([
       { branch: '5.4', state: 'MISSING' },
@@ -359,10 +359,10 @@ describe('getExpectedTargetPullRequests', () => {
       },
     });
 
-    const expectedTargetPullRequests = getExpectedTargetPullRequests(
-      mockSourceCommit,
-      branchLabelMapping
-    );
+    const expectedTargetPullRequests = getExpectedTargetPullRequests({
+      sourceCommit: mockSourceCommit,
+      latestBranchLabelMapping: branchLabelMapping,
+    });
 
     expect(expectedTargetPullRequests).toEqual([
       { branch: 'dev', state: 'MISSING' },
@@ -384,10 +384,10 @@ describe('getExpectedTargetPullRequests', () => {
       },
     });
 
-    const expectedTargetPullRequests = getExpectedTargetPullRequests(
-      mockSourceCommit,
-      branchLabelMapping
-    );
+    const expectedTargetPullRequests = getExpectedTargetPullRequests({
+      sourceCommit: mockSourceCommit,
+      latestBranchLabelMapping: branchLabelMapping,
+    });
 
     expect(expectedTargetPullRequests).toEqual([
       { branch: 'branch-b', state: 'MISSING' },
@@ -415,10 +415,10 @@ describe('getExpectedTargetPullRequests', () => {
       ],
     });
 
-    const expectedTargetPullRequests = getExpectedTargetPullRequests(
-      mockSourceCommit,
-      branchLabelMapping
-    );
+    const expectedTargetPullRequests = getExpectedTargetPullRequests({
+      sourceCommit: mockSourceCommit,
+      latestBranchLabelMapping: branchLabelMapping,
+    });
 
     expect(expectedTargetPullRequests).toEqual([
       {
@@ -454,10 +454,10 @@ describe('getExpectedTargetPullRequests', () => {
       ],
     });
 
-    const expectedTargetPullRequests = getExpectedTargetPullRequests(
-      mockSourceCommit,
-      branchLabelMapping
-    );
+    const expectedTargetPullRequests = getExpectedTargetPullRequests({
+      sourceCommit: mockSourceCommit,
+      latestBranchLabelMapping: branchLabelMapping,
+    });
 
     expect(expectedTargetPullRequests).toEqual([
       { branch: 'branch-1', state: 'MISSING' },
@@ -488,10 +488,10 @@ describe('getExpectedTargetPullRequests', () => {
       ],
     });
 
-    const expectedTargetPullRequests = getExpectedTargetPullRequests(
-      mockSourceCommit,
-      branchLabelMapping
-    );
+    const expectedTargetPullRequests = getExpectedTargetPullRequests({
+      sourceCommit: mockSourceCommit,
+      latestBranchLabelMapping: branchLabelMapping,
+    });
 
     expect(expectedTargetPullRequests).toEqual([
       {

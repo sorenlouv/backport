@@ -5,7 +5,7 @@ import { swallowMissingConfigFileException } from '../../../remoteConfig';
 import {
   Commit,
   SourceCommitWithTargetPullRequest,
-  sourceCommitWithTargetPullRequestFragment,
+  SourceCommitWithTargetPullRequestFragment,
   parseSourceCommit,
 } from '../../../sourceCommit/parseSourceCommit';
 import { apiRequestV4 } from '../apiRequestV4';
@@ -36,13 +36,13 @@ export async function fetchCommitByPullNumber(options: {
       repository(owner: $repoOwner, name: $repoName) {
         pullRequest(number: $pullNumber) {
           mergeCommit {
-            ...SourceCommitWithTargetPullRequest
+            ...SourceCommitWithTargetPullRequestFragment
           }
         }
       }
     }
 
-    ${sourceCommitWithTargetPullRequestFragment}
+    ${SourceCommitWithTargetPullRequestFragment}
   `;
 
   let res: CommitByPullNumberResponse;

@@ -5,7 +5,7 @@ import { swallowMissingConfigFileException } from '../../../remoteConfig';
 import {
   Commit,
   SourceCommitWithTargetPullRequest,
-  sourceCommitWithTargetPullRequestFragment,
+  SourceCommitWithTargetPullRequestFragment,
   parseSourceCommit,
 } from '../../../sourceCommit/parseSourceCommit';
 import { apiRequestV4 } from '../apiRequestV4';
@@ -32,12 +32,12 @@ export async function fetchCommitBySha(options: {
     query CommitsBySha($repoOwner: String!, $repoName: String!, $sha: String!) {
       repository(owner: $repoOwner, name: $repoName) {
         object(expression: $sha) {
-          ...SourceCommitWithTargetPullRequest
+          ...SourceCommitWithTargetPullRequestFragment
         }
       }
     }
 
-    ${sourceCommitWithTargetPullRequestFragment}
+    ${SourceCommitWithTargetPullRequestFragment}
   `;
 
   let res: CommitsByShaResponse;

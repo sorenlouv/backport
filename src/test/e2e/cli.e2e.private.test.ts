@@ -1,25 +1,23 @@
 import { spawn } from 'child_process';
 import path from 'path';
 import stripAnsi from 'strip-ansi';
-import { exec } from './services/child-process-promisified';
-import { getDevAccessToken } from './test/private/getDevAccessToken';
-import { getSandboxPath, resetSandbox } from './test/sandbox';
-import * as packageVersion from './utils/packageVersion';
+import { exec } from '../../services/child-process-promisified';
+import * as packageVersion from '../../utils/packageVersion';
+import { getDevAccessToken } from '../private/getDevAccessToken';
+import { getSandboxPath, resetSandbox } from '../sandbox';
 
-const TIMEOUT_IN_SECONDS = 10;
-
-jest.setTimeout(15000);
-
+const TIMEOUT_IN_SECONDS = 15;
+jest.setTimeout(TIMEOUT_IN_SECONDS * 1000);
 const devAccessToken = getDevAccessToken();
 
 describe('inquirer cli', () => {
   it('--version', async () => {
-    const res = await runBackportAsync([`--version`]);
+    const res = await runBackportViaCli([`--version`]);
     expect(res).toContain(process.env.npm_package_version);
   });
 
   it('-v', async () => {
-    const res = await runBackportAsync([`-v`]);
+    const res = await runBackportViaCli([`-v`]);
     expect(res).toContain(process.env.npm_package_version);
   });
 
@@ -31,7 +29,7 @@ describe('inquirer cli', () => {
   });
 
   it('--help', async () => {
-    const res = await runBackportAsync([`--help`]);
+    const res = await runBackportViaCli([`--help`]);
     expect(res).toMatchInlineSnapshot(`
       "entrypoint.cli.ts [args]
       Options:
@@ -52,6 +50,7 @@ describe('inquirer cli', () => {
             --dir                             Location where the temporary repository will be stored
                                                                                                   [string]
             --details                         Show details about each commit                     [boolean]
+            --dryRun                          Run backport locally without pushing to Github     [boolean]
             --editor                          Editor to be opened during conflict resolution      [string]
             --skipRemoteConfig                Use local .backportrc.json config instead of loading from
                                               Github                                             [boolean]
@@ -95,7 +94,7 @@ describe('inquirer cli', () => {
   });
 
   it('should return error when branch is missing', async () => {
-    const res = await runBackportAsync([
+    const res = await runBackportViaCli([
       '--skip-remote-config',
       '--repo-owner',
       'backport-org',
@@ -119,7 +118,7 @@ describe('inquirer cli', () => {
       { cwd: sandboxPath }
     );
 
-    const res = await runBackportAsync(['--accessToken', devAccessToken], {
+    const res = await runBackportViaCli(['--accessToken', devAccessToken], {
       cwd: sandboxPath,
       waitForString: 'Select commit',
     });
@@ -140,7 +139,7 @@ describe('inquirer cli', () => {
   });
 
   it('should return error when access token is invalid', async () => {
-    const res = await runBackportAsync([
+    const res = await runBackportViaCli([
       '--branch',
       'foo',
       '--repo-owner',
@@ -156,7 +155,7 @@ describe('inquirer cli', () => {
   });
 
   it(`should return error when repo doesn't exist`, async () => {
-    const res = await runBackportAsync([
+    const res = await runBackportViaCli([
       '--branch',
       'foo',
       '--repo-owner',
@@ -174,8 +173,7 @@ describe('inquirer cli', () => {
   });
 
   it(`should list commits from master`, async () => {
-    jest.setTimeout(TIMEOUT_IN_SECONDS * 1000 * 1.1);
-    const output = await runBackportAsync(
+    const output = await runBackportViaCli(
       [
         '--branch',
         'foo',
@@ -205,8 +203,7 @@ describe('inquirer cli', () => {
   });
 
   it(`should filter commits by "since" and "until"`, async () => {
-    jest.setTimeout(TIMEOUT_IN_SECONDS * 1000 * 1.1);
-    const output = await runBackportAsync(
+    const output = await runBackportViaCli(
       [
         '--branch',
         'foo',
@@ -234,7 +231,7 @@ describe('inquirer cli', () => {
   });
 
   it(`should list commits from 7.x`, async () => {
-    const output = await runBackportAsync(
+    const output = await runBackportViaCli(
       [
         '--branch',
         'foo',
@@ -267,7 +264,7 @@ describe('inquirer cli', () => {
 
   describe('repo: repo-with-backportrc-removed (missing .backportrc.json config file)', () => {
     it('should list commits', async () => {
-      const output = await runBackportAsync(
+      const output = await runBackportViaCli(
         [
           '--branch',
           'foo',
@@ -292,7 +289,7 @@ describe('inquirer cli', () => {
     });
 
     it('should attempt to backport by PR', async () => {
-      const output = await runBackportAsync(
+      const output = await runBackportViaCli(
         [
           '--branch',
           'foo',
@@ -314,7 +311,7 @@ describe('inquirer cli', () => {
     });
 
     it('should attempt to backport by commit sha', async () => {
-      const output = await runBackportAsync(
+      const output = await runBackportViaCli(
         [
           '--branch',
           'foo',
@@ -338,8 +335,7 @@ describe('inquirer cli', () => {
 
   describe('repo: different-merge-strategies', () => {
     it('list all commits regardless how they were merged', async () => {
-      jest.setTimeout(TIMEOUT_IN_SECONDS * 1000 * 1.1);
-      const output = await runBackportAsync(
+      const output = await runBackportViaCli(
         [
           '--branch',
           'foo',
@@ -378,7 +374,7 @@ describe('inquirer cli', () => {
   });
 });
 
-function runBackportAsync(
+function runBackportViaCli(
   cliArgs: string[],
   {
     waitForString,
@@ -431,7 +427,7 @@ function runBackportAsync(
     // });
 
     proc.on('error', (err) => {
-      reject(`runBackportAsync failed with: ${err}`);
+      reject(`runBackportViaCli failed with: ${err}`);
     });
   });
 

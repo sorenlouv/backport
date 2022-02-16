@@ -7,7 +7,7 @@ import { swallowMissingConfigFileException } from '../../../remoteConfig';
 import {
   Commit,
   SourceCommitWithTargetPullRequest,
-  sourceCommitWithTargetPullRequestFragment,
+  SourceCommitWithTargetPullRequestFragment,
   parseSourceCommit,
 } from '../../../sourceCommit/parseSourceCommit';
 import { apiRequestV4 } from '../apiRequestV4';
@@ -66,7 +66,7 @@ async function fetchByCommitPath({
               ) {
                 edges {
                   node {
-                    ...SourceCommitWithTargetPullRequest
+                    ...SourceCommitWithTargetPullRequestFragment
                   }
                 }
               }
@@ -76,7 +76,7 @@ async function fetchByCommitPath({
       }
     }
 
-    ${sourceCommitWithTargetPullRequestFragment}
+    ${SourceCommitWithTargetPullRequestFragment}
   `;
 
   const variables = {

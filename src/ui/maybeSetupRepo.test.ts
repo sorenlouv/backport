@@ -45,7 +45,8 @@ describe('maybeSetupRepo', () => {
       ).rejects.toThrowError('Simulated git clone failure');
 
       expect(del).toHaveBeenCalledWith(
-        '/myHomeDir/.backport/repositories/elastic/kibana'
+        '/myHomeDir/.backport/repositories/elastic/kibana',
+        { force: true }
       );
     });
   });
@@ -144,15 +145,40 @@ describe('maybeSetupRepo', () => {
         authenticatedUsername: 'sqren_authenticated',
         repoName: 'kibana',
         repoOwner: 'elastic',
+        cwd: '/current/folder',
       } as ValidConfigOptions);
 
-      expect(execSpy.mock.calls.map(([cmd]) => cmd)).toEqual([
-        'git remote --verbose',
-        'git remote rm origin',
-        'git remote rm sqren_authenticated',
-        'git remote add sqren_authenticated https://x-access-token:myAccessToken@github.com/sqren_authenticated/kibana.git',
-        'git remote rm elastic',
-        'git remote add elastic https://x-access-token:myAccessToken@github.com/elastic/kibana.git',
+      expect(
+        execSpy.mock.calls.map(([cmd, { cwd }]) => ({ cmd, cwd }))
+      ).toEqual([
+        {
+          cmd: 'git rev-parse --show-toplevel',
+          cwd: '/current/folder',
+        },
+        {
+          cmd: 'git remote --verbose',
+          cwd: '/current/folder',
+        },
+        {
+          cmd: 'git remote rm origin',
+          cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
+        },
+        {
+          cmd: 'git remote rm sqren_authenticated',
+          cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
+        },
+        {
+          cmd: 'git remote add sqren_authenticated https://x-access-token:myAccessToken@github.com/sqren_authenticated/kibana.git',
+          cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
+        },
+        {
+          cmd: 'git remote rm elastic',
+          cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
+        },
+        {
+          cmd: 'git remote add elastic https://x-access-token:myAccessToken@github.com/elastic/kibana.git',
+          cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
+        },
       ]);
     });
   });

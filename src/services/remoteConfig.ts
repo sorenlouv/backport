@@ -5,7 +5,7 @@ import { GithubV4Exception } from './github/v4/apiRequestV4';
 import { logger } from './logger';
 
 export const RemoteConfigHistoryFragment = gql`
-  fragment RemoteConfigHistory on Commit {
+  fragment RemoteConfigHistoryFragment on Commit {
     remoteConfigHistory: history(first: 1, path: ".backportrc.json") {
       edges {
         remoteConfig: node {
@@ -54,7 +54,7 @@ export function parseRemoteConfig(remoteConfig: RemoteConfig) {
 export function swallowMissingConfigFileException<T>(
   error: GithubV4Exception<T>
 ) {
-  const { data, errors } = error.axiosResponse.data;
+  const { data, errors } = error.githubResponse.data;
 
   const missingConfigError = errors?.some((error) => {
     return error.path.includes('remoteConfig') && error.type === 'NOT_FOUND';

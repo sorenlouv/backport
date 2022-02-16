@@ -6,7 +6,7 @@ import { swallowMissingConfigFileException } from '../../../remoteConfig';
 import {
   Commit,
   SourceCommitWithTargetPullRequest,
-  sourceCommitWithTargetPullRequestFragment,
+  SourceCommitWithTargetPullRequestFragment,
   parseSourceCommit,
 } from '../../../sourceCommit/parseSourceCommit';
 import { apiRequestV4 } from '../apiRequestV4';
@@ -31,14 +31,14 @@ export async function fetchPullRequestBySearchQuery(
         nodes {
           ... on PullRequest {
             mergeCommit {
-              ...SourceCommitWithTargetPullRequest
+              ...SourceCommitWithTargetPullRequestFragment
             }
           }
         }
       }
     }
 
-    ${sourceCommitWithTargetPullRequestFragment}
+    ${SourceCommitWithTargetPullRequestFragment}
   `;
 
   const authorFilter = author ? ` author:${author}` : '';
