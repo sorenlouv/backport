@@ -60,6 +60,6 @@ export async function maybeSetupRepo(options: ValidConfigOptions) {
 
 async function getIsRepoCloned(options: ValidConfigOptions): Promise<boolean> {
   const repoPath = getRepoPath(options);
-  const projectRoot = await getGitProjectRoot(options);
+  const projectRoot = await getGitProjectRoot(repoPath);
   return repoPath === projectRoot;
 }

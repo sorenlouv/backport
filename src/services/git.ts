@@ -130,9 +130,11 @@ export async function getRepoInfoFromGitRemotes({ cwd }: { cwd: string }) {
   }
 }
 
-export async function getGitProjectRoot({ cwd }: { cwd: string }) {
+export async function getGitProjectRoot(dir: string) {
   try {
-    const { stdout } = await exec('git rev-parse --show-toplevel', { cwd });
+    const { stdout } = await exec('git rev-parse --show-toplevel', {
+      cwd: dir,
+    });
     return stdout.trim();
   } catch (e) {
     logger.error('An error occurred while retrieving git project root', e);
@@ -523,7 +525,7 @@ export async function getSourceRepoPath(options: ValidConfigOptions) {
   const sourcePath =
     options.repoName === gitRemote.repoName &&
     options.repoOwner === gitRemote.repoOwner
-      ? (await getGitProjectRoot(options)) ?? remoteUrl
+      ? (await getGitProjectRoot(options.cwd)) ?? remoteUrl
       : remoteUrl;
 
   return sourcePath;
