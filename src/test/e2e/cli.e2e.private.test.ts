@@ -12,13 +12,17 @@ const devAccessToken = getDevAccessToken();
 
 describe('inquirer cli', () => {
   it('--version', async () => {
-    const res = await runBackportViaCli([`--version`]);
-    expect(res).toContain(process.env.npm_package_version);
+    const res = await runBackportViaCli([`--version`], {
+      showLoadingSpinner: true,
+    });
+    expect(res).toEqual(process.env.npm_package_version);
   });
 
   it('-v', async () => {
-    const res = await runBackportViaCli([`-v`]);
-    expect(res).toContain(process.env.npm_package_version);
+    const res = await runBackportViaCli([`-v`], {
+      showLoadingSpinner: true,
+    });
+    expect(res).toEqual(process.env.npm_package_version);
   });
 
   it('PACKAGE_VERSION should match', async () => {
@@ -322,13 +326,12 @@ describe('inquirer cli', () => {
           '--accessToken',
           devAccessToken,
         ],
-        { waitForString: "is invalid or doesn't exist" }
+        { waitForString: `Backporting to foo:` }
       );
 
       expect(output).toMatchInlineSnapshot(`
         "
-        Backporting to foo:
-        The branch \\"foo\\" is invalid or doesn't exist"
+        Backporting to foo:"
       `);
     });
   });
@@ -372,14 +375,69 @@ describe('inquirer cli', () => {
       `);
     });
   });
+
+  describe('repo: test-that-repo-can-be-cloned', () => {
+    let sandboxPath: string;
+    beforeAll(async () => {
+      sandboxPath = getSandboxPath({
+        filename: __filename,
+        specname: 'test-cloning',
+      });
+      await resetSandbox(sandboxPath);
+    });
+
+    function run() {
+      return runBackportViaCli(
+        [
+          '--repo',
+          'backport-org/test-that-repo-can-be-cloned',
+          '--branch',
+          'foo',
+          '--pr',
+          '1',
+          '--dir',
+          sandboxPath,
+          '--dry-run',
+          '--accessToken',
+          devAccessToken,
+        ],
+        { showLoadingSpinner: true, waitForString: 'Backporting to foo:' }
+      );
+    }
+
+    it('clones the repo on the very first run', async () => {
+      const output = await run();
+
+      expect(output).toContain('Cloning repository from github.com');
+      expect(output).toMatchInlineSnapshot(`
+        "- Initializing...
+        ? Select pull request Beginning of a beautiful repo (#1)
+        ✔ 100% Cloning repository from github.com (one-time operation)
+        Backporting to foo:"
+      `);
+    });
+
+    it('does not clone the repo on subsequent runs', async () => {
+      const output = await run();
+
+      expect(output).not.toContain('Cloning repository from github.com');
+      expect(output).toMatchInlineSnapshot(`
+        "- Initializing...
+        ? Select pull request Beginning of a beautiful repo (#1)
+        Backporting to foo:"
+      `);
+    });
+  });
 });
 
 function runBackportViaCli(
   cliArgs: string[],
   {
+    showLoadingSpinner,
     waitForString,
     cwd,
   }: {
+    showLoadingSpinner?: boolean;
     waitForString?: string;
     cwd?: string;
   } = {}
@@ -410,21 +468,24 @@ function runBackportViaCli(
 
     proc.stdout.on('data', (chunk) => {
       data += chunk;
-      const output = data.toString();
+      const rawOutput = data.toString();
+
+      // remove ansi codes and whitespace
+      const output = stripAnsi(rawOutput).replace(/\s+$/gm, '');
 
       if (!waitForString || output.includes(waitForString)) {
         clearTimeout(timeout);
-        // remove ansi codes and whitespace
-        const strippedOutput = stripAnsi(output).replace(/\s+$/gm, '');
 
-        resolve(strippedOutput);
+        resolve(output);
       }
     });
 
-    // for debugging only
-    // proc.stderr.on('data', (chunk) => {
-    //   console.log('stderr', chunk.toString());
-    // });
+    // ora (loading spinner) is redirected to stderr
+    if (showLoadingSpinner) {
+      proc.stderr.on('data', (chunk) => {
+        data += chunk;
+      });
+    }
 
     proc.on('error', (err) => {
       reject(`runBackportViaCli failed with: ${err}`);

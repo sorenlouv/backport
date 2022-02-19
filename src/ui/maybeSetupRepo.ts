@@ -1,6 +1,6 @@
 import del = require('del');
-import ora = require('ora');
 import { ValidConfigOptions } from '../options/options';
+import { HandledError } from '../services/HandledError';
 import { getRepoPath } from '../services/env';
 import {
   addRemote,
@@ -9,14 +9,21 @@ import {
   getGitProjectRoot,
   getSourceRepoPath,
 } from '../services/git';
+import { ora } from './ora';
 
 export async function maybeSetupRepo(options: ValidConfigOptions) {
   const repoPath = getRepoPath(options);
   const isAlreadyCloned = await getIsRepoCloned(options);
 
+  if (options.cwd.includes(repoPath)) {
+    throw new HandledError(
+      `Refusing to clone repo into "${repoPath}" when current working directory is "${options.cwd}". Please change backport directory via \`--dir\` option or run backport from another location`
+    );
+  }
+
   // clone repo if folder does not already exists
   if (!isAlreadyCloned) {
-    const spinner = ora().start();
+    const spinner = ora(options.ci).start();
     try {
       const sourcePath = await getSourceRepoPath(options);
 

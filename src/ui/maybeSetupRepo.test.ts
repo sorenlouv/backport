@@ -1,4 +1,3 @@
-import { stat } from 'fs/promises';
 import os from 'os';
 import del from 'del';
 import { ValidConfigOptions } from '../options/options';
@@ -6,7 +5,6 @@ import * as childProcess from '../services/child-process-promisified';
 import * as git from '../services/git';
 import { getOraMock } from '../test/mocks';
 import { maybeSetupRepo } from './maybeSetupRepo';
-const fs = { stat };
 
 describe('maybeSetupRepo', () => {
   let execSpy: jest.SpyInstance;
@@ -41,6 +39,7 @@ describe('maybeSetupRepo', () => {
         maybeSetupRepo({
           repoName: 'kibana',
           repoOwner: 'elastic',
+          cwd: '/path/to/source/repo',
         } as ValidConfigOptions)
       ).rejects.toThrowError('Simulated git clone failure');
 
@@ -98,6 +97,7 @@ describe('maybeSetupRepo', () => {
       await maybeSetupRepo({
         repoName: 'kibana',
         repoOwner: 'elastic',
+        cwd: '/path/to/source/repo',
       } as ValidConfigOptions);
 
       expect(spinnerTextSpy.mock.calls.map((call) => call[0]))
@@ -123,9 +123,6 @@ describe('maybeSetupRepo', () => {
 
   describe('if repo already exists', () => {
     beforeEach(() => {
-      // @ts-expect-error
-      jest.spyOn(fs, 'stat').mockResolvedValue({ isDirectory: () => true });
-
       jest
         .spyOn(childProcess, 'execAsCallback')
         //@ts-expect-error
@@ -145,7 +142,7 @@ describe('maybeSetupRepo', () => {
         authenticatedUsername: 'sqren_authenticated',
         repoName: 'kibana',
         repoOwner: 'elastic',
-        cwd: '/current/folder',
+        cwd: '/path/to/source/repo',
       } as ValidConfigOptions);
 
       expect(
@@ -153,11 +150,11 @@ describe('maybeSetupRepo', () => {
       ).toEqual([
         {
           cmd: 'git rev-parse --show-toplevel',
-          cwd: '/current/folder',
+          cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
         },
         {
           cmd: 'git remote --verbose',
-          cwd: '/current/folder',
+          cwd: '/path/to/source/repo',
         },
         {
           cmd: 'git remote rm origin',
@@ -185,9 +182,6 @@ describe('maybeSetupRepo', () => {
 
   describe('if repo does not exists locally', () => {
     beforeEach(() => {
-      // @ts-expect-error
-      jest.spyOn(fs, 'stat').mockResolvedValue({ isDirectory: () => true });
-
       jest
         .spyOn(childProcess, 'execAsCallback')
         //@ts-expect-error
@@ -207,6 +201,7 @@ describe('maybeSetupRepo', () => {
         gitHostname: 'github.com',
         repoName: 'kibana',
         repoOwner: 'elastic',
+        cwd: '/path/to/source/repo',
       } as ValidConfigOptions);
 
       expect(childProcess.execAsCallback).toHaveBeenCalledWith(
@@ -219,9 +214,6 @@ describe('maybeSetupRepo', () => {
 
   describe('if repo does exist locally', () => {
     beforeEach(() => {
-      // @ts-expect-error
-      jest.spyOn(fs, 'stat').mockResolvedValue({ isDirectory: () => true });
-
       jest
         .spyOn(git, 'getSourceRepoPath')
         .mockResolvedValue('/path/to/source/repo');
@@ -243,12 +235,35 @@ describe('maybeSetupRepo', () => {
       await maybeSetupRepo({
         repoName: 'kibana',
         repoOwner: 'elastic',
+        cwd: '/path/to/source/repo',
       } as ValidConfigOptions);
 
       expect(childProcess.execAsCallback).toHaveBeenCalledWith(
         'git clone /path/to/source/repo /myHomeDir/.backport/repositories/elastic/kibana --progress',
         expect.any(Object),
         expect.any(Function)
+      );
+    });
+  });
+
+  describe('if `repoPath` is a parent of current working directory (cwd)', () => {
+    beforeEach(() => {
+      jest
+        .spyOn(git, 'getSourceRepoPath')
+        .mockResolvedValue('/path/to/source/repo');
+
+      jest.spyOn(childProcess, 'execAsCallback');
+    });
+
+    it('should clone it from local folder', async () => {
+      await expect(() =>
+        maybeSetupRepo({
+          repoName: 'kibana',
+          repoOwner: 'elastic',
+          cwd: '/myHomeDir/.backport/repositories/elastic/kibana/foo',
+        } as ValidConfigOptions)
+      ).rejects.toThrowError(
+        'Refusing to clone repo into "/myHomeDir/.backport/repositories/elastic/kibana" when current working directory is "/myHomeDir/.backport/repositories/elastic/kibana/foo". Please change backport directory via `--dir` option or run backport from another location'
       );
     });
   });

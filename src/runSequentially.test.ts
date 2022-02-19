@@ -169,7 +169,7 @@ describe('runSequentially', () => {
     ).toEqual([
       {
         cmd: 'git rev-parse --show-toplevel',
-        cwd: '/path/to/source/repo',
+        cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
       },
       {
         cmd: 'git remote --verbose',
