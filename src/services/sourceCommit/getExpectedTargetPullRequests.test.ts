@@ -8,37 +8,39 @@ describe('getExpectedTargetPullRequests', () => {
   });
 
   it('should return empty when there is no associated PR', () => {
+    // no associated pull request
+    const sourcePullRequest = null;
+
     const mockSourceCommit = getMockSourceCommit({
       sourceCommit: { message: 'identical messages (#1234)' },
-      sourcePullRequest: null,
+      sourcePullRequest,
     });
 
-    const branchLabelMapping = {};
     const expectedTargetPRs = getExpectedTargetPullRequests({
       sourceCommit: mockSourceCommit,
-      latestBranchLabelMapping: branchLabelMapping,
+      latestBranchLabelMapping: {},
     });
     expect(expectedTargetPRs).toEqual([]);
   });
 
   it('should return a result when sourceCommit message matches the commit of the target pull request', () => {
     const mockSourceCommit = getMockSourceCommit({
-      sourceCommit: { message: 'identical messages (#1234)' },
+      sourceCommit: { message: 'identical messages (#1234)' }, // this message
       sourcePullRequest: { number: 1234 },
       timelineItems: [
         {
           state: 'MERGED',
           targetBranch: '6.x',
-          commitMessages: ['identical messages (#1234)'],
+          commitMessages: ['identical messages (#1234)'], // this message
           number: 5678,
         },
       ],
     });
-    const branchLabelMapping = {};
     const expectedTargetPRs = getExpectedTargetPullRequests({
       sourceCommit: mockSourceCommit,
-      latestBranchLabelMapping: branchLabelMapping,
+      latestBranchLabelMapping: {},
     });
+
     expect(expectedTargetPRs).toEqual([
       {
         branch: '6.x',
@@ -63,14 +65,14 @@ describe('getExpectedTargetPullRequests', () => {
           targetBranch: '6.x',
           commitMessages: ['identical messages (#1234)'],
           number: 5678,
-          repoName: 'foo', // this repo name
+          repoName: 'foo', // this repoName  does not match 'kibana'
         },
       ],
     });
-    const branchLabelMapping = {};
+
     const expectedTargetPullRequests = getExpectedTargetPullRequests({
       sourceCommit: mockSourceCommit,
-      latestBranchLabelMapping: branchLabelMapping,
+      latestBranchLabelMapping: {},
     });
     expect(expectedTargetPullRequests).toEqual([]);
   });
@@ -85,61 +87,57 @@ describe('getExpectedTargetPullRequests', () => {
           targetBranch: '6.x',
           commitMessages: ['identical messages (#1234)'],
           number: 5678,
-          repoOwner: 'foo', // this
+          repoOwner: 'foo', // this repoOwner does not match `elastic`
         },
       ],
     });
-    const branchLabelMapping = {};
+
     const expectedTargetPullRequests = getExpectedTargetPullRequests({
       sourceCommit: mockSourceCommit,
-      latestBranchLabelMapping: branchLabelMapping,
+      latestBranchLabelMapping: {},
     });
     expect(expectedTargetPullRequests).toEqual([]);
   });
 
   it('should return empty when commit messages do not match', () => {
     const mockSourceCommit = getMockSourceCommit({
-      sourceCommit: { message: 'message one (#1234)' },
-      sourcePullRequest: {
-        number: 1234,
-      },
+      sourceCommit: { message: 'message one (#1234)' }, // this commit message
+      sourcePullRequest: { number: 1234 },
       timelineItems: [
         {
           state: 'MERGED',
           targetBranch: '6.x',
-          commitMessages: ['message two (#1234)'],
+          commitMessages: ['message two (#1234)'], // this commit message
           number: 5678,
         },
       ],
     });
-    const branchLabelMapping = {};
+
     const expectedTargetPullRequests = getExpectedTargetPullRequests({
       sourceCommit: mockSourceCommit,
-      latestBranchLabelMapping: branchLabelMapping,
+      latestBranchLabelMapping: {},
     });
     expect(expectedTargetPullRequests).toEqual([]);
   });
 
   it('should return a result if commits messages are different but title includes message and number', () => {
     const mockSourceCommit = getMockSourceCommit({
-      sourceCommit: { message: 'message one (#1234)' },
-      sourcePullRequest: {
-        number: 1234,
-      },
+      sourceCommit: { message: 'message one (#1234)' }, // message
+      sourcePullRequest: { number: 1234 },
       timelineItems: [
         {
           state: 'MERGED',
           targetBranch: '6.x',
-          commitMessages: ['message two (#1234)'],
-          title: 'message one (#1234)',
+          commitMessages: ['message two (#1234)'], // message
+          title: 'message one (#1234)', // title
           number: 5678,
         },
       ],
     });
-    const branchLabelMapping = {};
+
     const expectedTargetPullRequests = getExpectedTargetPullRequests({
       sourceCommit: mockSourceCommit,
-      latestBranchLabelMapping: branchLabelMapping,
+      latestBranchLabelMapping: {},
     });
     expect(expectedTargetPullRequests).toEqual([
       {
@@ -158,9 +156,7 @@ describe('getExpectedTargetPullRequests', () => {
   it('should return empty when only pull request title (but not pull number) matches', () => {
     const mockSourceCommit = getMockSourceCommit({
       sourceCommit: { message: 'message one (#1234)' },
-      sourcePullRequest: {
-        number: 1234,
-      },
+      sourcePullRequest: { number: 1234 },
       timelineItems: [
         {
           state: 'MERGED',
@@ -171,10 +167,10 @@ describe('getExpectedTargetPullRequests', () => {
         },
       ],
     });
-    const branchLabelMapping = {};
+
     const expectedTargetPullRequests = getExpectedTargetPullRequests({
       sourceCommit: mockSourceCommit,
-      latestBranchLabelMapping: branchLabelMapping,
+      latestBranchLabelMapping: {},
     });
     expect(expectedTargetPullRequests).toEqual([]);
   });
@@ -182,9 +178,7 @@ describe('getExpectedTargetPullRequests', () => {
   it('should return a result when first line of a multiline commit message matches', () => {
     const mockSourceCommit = getMockSourceCommit({
       sourceCommit: { message: 'message one (#1234)' },
-      sourcePullRequest: {
-        number: 1234,
-      },
+      sourcePullRequest: { number: 1234 },
       timelineItems: [
         {
           state: 'MERGED',
@@ -194,10 +188,10 @@ describe('getExpectedTargetPullRequests', () => {
         },
       ],
     });
-    const branchLabelMapping = {};
+
     const expectedTargetPullRequests = getExpectedTargetPullRequests({
       sourceCommit: mockSourceCommit,
-      latestBranchLabelMapping: branchLabelMapping,
+      latestBranchLabelMapping: {},
     });
     expect(expectedTargetPullRequests).toEqual([
       {
