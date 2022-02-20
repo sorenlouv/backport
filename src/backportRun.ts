@@ -60,6 +60,8 @@ export async function backportRun(
 
     const results = await runSequentially({ options, commits, targetBranches });
     logger.info('Results', results);
+    
+    throw new Error('hey!');
 
     const backportResponse: BackportResponse = {
       status: 'success',
