@@ -131,9 +131,7 @@ describe('setupRepo', () => {
           //@ts-expect-error
           callback();
 
-          return {
-            stderr: { on: () => null },
-          };
+          return { stderr: { on: () => null } };
         });
     });
 
@@ -145,7 +143,6 @@ describe('setupRepo', () => {
         repoOwner: 'elastic',
         gitUserEmail: 'my-email',
         gitUserName: 'my-username',
-        gitHostname: 'github.com',
         cwd: '/path/to/source/repo',
       } as ValidConfigOptions);
 
@@ -198,8 +195,45 @@ describe('setupRepo', () => {
     });
   });
 
+  describe('if git project does not have user.email or user.name set', () => {
+    it('should throw an error', async () => {
+      jest
+        .spyOn(gitModule, 'getGitProjectRootPath')
+        .mockResolvedValue('/path/to/backport/dir');
+
+      await expect(async () => {
+        await setupRepo({
+          accessToken: 'myAccessToken',
+          gitHostname: 'github.com',
+          repoName: 'kibana',
+          repoOwner: 'elastic',
+          cwd: '/path/to/source/repo',
+          dir: '/path/to/backport/dir',
+        } as ValidConfigOptions);
+      }).rejects.toThrowErrorMatchingInlineSnapshot(`
+              "*** Please tell me who you are.
+              Run
+
+                git config user.name \\"Your Name\\"
+                git config user.email \\"you@example.com\\"
+                
+              Or add it to /myHomeDir/.backport/config.json
+
+                {
+                  \\"accessToken\\": \\"***\\",
+                  \\"gitUserName\\": \\"Your Name\\",
+                  \\"gitUserEmail\\": \\"you@example.com\\"
+                }"
+            `);
+    });
+  });
+
   describe('if repo does not exists locally', () => {
-    beforeEach(() => {
+    let spinnerSuccessSpy: jest.SpyInstance;
+    beforeEach(async () => {
+      const oraMock = getOraMock();
+      spinnerSuccessSpy = jest.spyOn(oraMock, 'succeed');
+
       jest
         .spyOn(childProcess, 'execAsCallback')
         //@ts-expect-error
@@ -207,13 +241,9 @@ describe('setupRepo', () => {
           //@ts-expect-error
           callback();
 
-          return {
-            stderr: { on: () => null },
-          };
+          return { stderr: { on: () => null } };
         });
-    });
 
-    it('should clone it from github.com', async () => {
       await setupRepo({
         accessToken: 'myAccessToken',
         gitUserEmail: 'my-email',
@@ -223,6 +253,12 @@ describe('setupRepo', () => {
         repoOwner: 'elastic',
         cwd: '/path/to/source/repo',
       } as ValidConfigOptions);
+    });
+
+    it('should clone it from github.com', async () => {
+      expect(spinnerSuccessSpy).toHaveBeenCalledWith(
+        '100% Cloning repository from github.com (one-time operation)'
+      );
 
       expect(childProcess.execAsCallback).toHaveBeenCalledWith(
         'git clone https://x-access-token:myAccessToken@github.com/elastic/kibana.git /myHomeDir/.backport/repositories/elastic/kibana --progress',
@@ -232,8 +268,12 @@ describe('setupRepo', () => {
     });
   });
 
-  describe('if repo does exist locally', () => {
-    beforeEach(() => {
+  describe('if repo exists locally', () => {
+    let spinnerSuccessSpy: jest.SpyInstance;
+    beforeEach(async () => {
+      const oraMock = getOraMock();
+      spinnerSuccessSpy = jest.spyOn(oraMock, 'succeed');
+
       jest
         .spyOn(gitModule, 'getLocalRepoPath')
         .mockResolvedValue('/path/to/source/repo');
@@ -249,18 +289,20 @@ describe('setupRepo', () => {
           //@ts-expect-error
           callback();
 
-          return {
-            stderr: { on: () => null },
-          };
+          return { stderr: { on: () => null } };
         });
-    });
 
-    it('should clone it from local folder', async () => {
       await setupRepo({
         repoName: 'kibana',
         repoOwner: 'elastic',
         cwd: '/path/to/source/repo',
       } as ValidConfigOptions);
+    });
+
+    it('should clone it from local folder', async () => {
+      expect(spinnerSuccessSpy).toHaveBeenCalledWith(
+        '100% Cloning repository from /path/to/source/repo (one-time operation)'
+      );
 
       expect(childProcess.execAsCallback).toHaveBeenCalledWith(
         'git clone /path/to/source/repo /myHomeDir/.backport/repositories/elastic/kibana --progress',

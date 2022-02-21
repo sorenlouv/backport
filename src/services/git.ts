@@ -533,6 +533,7 @@ export async function pushBackportBranch({
       `git push ${repoForkOwner} ${backportBranch}:${backportBranch} --force`,
       { cwd: getRepoPath(options) }
     );
+
     spinner.succeed();
     return res;
   } catch (e) {
@@ -552,7 +553,10 @@ export async function pushBackportBranch({
 export async function getLocalRepoPath(options: ValidConfigOptions) {
   const remotes = await getRepoInfoFromGitRemotes({ cwd: options.cwd });
   const hasMatchingGitRemote = remotes.some(
-    (remote) => remote.repoName === options.repoOwner && remote.repoOwner
+    (remote) =>
+      remote.repoName === options.repoName &&
+      remote.repoOwner === options.repoOwner
   );
+
   return hasMatchingGitRemote ? getGitProjectRootPath(options.cwd) : undefined;
 }
