@@ -2,11 +2,11 @@ import os from 'os';
 import del from 'del';
 import { ValidConfigOptions } from '../options/options';
 import * as childProcess from '../services/child-process-promisified';
-import * as git from '../services/git';
+import * as gitModule from '../services/git';
 import { getOraMock } from '../test/mocks';
-import { maybeSetupRepo } from './maybeSetupRepo';
+import { setupRepo } from './setupRepo';
 
-describe('maybeSetupRepo', () => {
+describe('setupRepo', () => {
   let execSpy: jest.SpyInstance;
 
   beforeEach(() => {
@@ -36,7 +36,7 @@ describe('maybeSetupRepo', () => {
         });
 
       await expect(
-        maybeSetupRepo({
+        setupRepo({
           repoName: 'kibana',
           repoOwner: 'elastic',
           cwd: '/path/to/source/repo',
@@ -59,9 +59,7 @@ describe('maybeSetupRepo', () => {
       const spinnerTextSpy = jest.spyOn(oraMock, 'text', 'set');
       const spinnerSuccessSpy = jest.spyOn(oraMock, 'succeed');
 
-      jest
-        .spyOn(git, 'getSourceRepoPath')
-        .mockResolvedValue('/path/to/source/repo');
+      jest.spyOn(gitModule, 'getLocalRepoPath').mockResolvedValue(undefined);
 
       jest
         .spyOn(childProcess, 'execAsCallback')
@@ -94,29 +92,32 @@ describe('maybeSetupRepo', () => {
         onCloneComplete();
       }, 50);
 
-      await maybeSetupRepo({
+      await setupRepo({
         repoName: 'kibana',
         repoOwner: 'elastic',
+        gitUserEmail: 'my-email',
+        gitUserName: 'my-username',
+        gitHostname: 'github.com',
         cwd: '/path/to/source/repo',
       } as ValidConfigOptions);
 
       expect(spinnerTextSpy.mock.calls.map((call) => call[0]))
         .toMatchInlineSnapshot(`
         Array [
-          "0% Cloning repository from /path/to/source/repo (one-time operation)",
-          "1% Cloning repository from /path/to/source/repo (one-time operation)",
-          "9% Cloning repository from /path/to/source/repo (one-time operation)",
-          "18% Cloning repository from /path/to/source/repo (one-time operation)",
-          "90% Cloning repository from /path/to/source/repo (one-time operation)",
-          "90% Cloning repository from /path/to/source/repo (one-time operation)",
-          "91% Cloning repository from /path/to/source/repo (one-time operation)",
-          "92% Cloning repository from /path/to/source/repo (one-time operation)",
-          "100% Cloning repository from /path/to/source/repo (one-time operation)",
+          "0% Cloning repository from github.com (one-time operation)",
+          "1% Cloning repository from github.com (one-time operation)",
+          "9% Cloning repository from github.com (one-time operation)",
+          "18% Cloning repository from github.com (one-time operation)",
+          "90% Cloning repository from github.com (one-time operation)",
+          "90% Cloning repository from github.com (one-time operation)",
+          "91% Cloning repository from github.com (one-time operation)",
+          "92% Cloning repository from github.com (one-time operation)",
+          "100% Cloning repository from github.com (one-time operation)",
         ]
       `);
 
       expect(spinnerSuccessSpy).toHaveBeenCalledWith(
-        '100% Cloning repository from /path/to/source/repo (one-time operation)'
+        '100% Cloning repository from github.com (one-time operation)'
       );
     });
   });
@@ -137,11 +138,14 @@ describe('maybeSetupRepo', () => {
     });
 
     it('should re-create remotes for both source repo and fork', async () => {
-      await maybeSetupRepo({
+      await setupRepo({
         accessToken: 'myAccessToken',
         authenticatedUsername: 'sqren_authenticated',
         repoName: 'kibana',
         repoOwner: 'elastic',
+        gitUserEmail: 'my-email',
+        gitUserName: 'my-username',
+        gitHostname: 'github.com',
         cwd: '/path/to/source/repo',
       } as ValidConfigOptions);
 
@@ -152,9 +156,23 @@ describe('maybeSetupRepo', () => {
           cmd: 'git rev-parse --show-toplevel',
           cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
         },
+        { cmd: 'git remote --verbose', cwd: '/path/to/source/repo' },
         {
-          cmd: 'git remote --verbose',
-          cwd: '/path/to/source/repo',
+          cmd: 'git config user.name',
+          cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
+        },
+        {
+          cmd: 'git config user.email',
+          cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
+        },
+        { cmd: 'git remote --verbose', cwd: '/path/to/source/repo' },
+        {
+          cmd: 'git config user.name my-username',
+          cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
+        },
+        {
+          cmd: 'git config user.email my-email',
+          cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
         },
         {
           cmd: 'git remote rm origin',
@@ -196,8 +214,10 @@ describe('maybeSetupRepo', () => {
     });
 
     it('should clone it from github.com', async () => {
-      await maybeSetupRepo({
+      await setupRepo({
         accessToken: 'myAccessToken',
+        gitUserEmail: 'my-email',
+        gitUserName: 'my-username',
         gitHostname: 'github.com',
         repoName: 'kibana',
         repoOwner: 'elastic',
@@ -215,8 +235,12 @@ describe('maybeSetupRepo', () => {
   describe('if repo does exist locally', () => {
     beforeEach(() => {
       jest
-        .spyOn(git, 'getSourceRepoPath')
+        .spyOn(gitModule, 'getLocalRepoPath')
         .mockResolvedValue('/path/to/source/repo');
+
+      jest
+        .spyOn(gitModule, 'getGitConfig')
+        .mockResolvedValue('email-or-username');
 
       jest
         .spyOn(childProcess, 'execAsCallback')
@@ -232,7 +256,7 @@ describe('maybeSetupRepo', () => {
     });
 
     it('should clone it from local folder', async () => {
-      await maybeSetupRepo({
+      await setupRepo({
         repoName: 'kibana',
         repoOwner: 'elastic',
         cwd: '/path/to/source/repo',
@@ -247,23 +271,16 @@ describe('maybeSetupRepo', () => {
   });
 
   describe('if `repoPath` is a parent of current working directory (cwd)', () => {
-    beforeEach(() => {
-      jest
-        .spyOn(git, 'getSourceRepoPath')
-        .mockResolvedValue('/path/to/source/repo');
-
-      jest.spyOn(childProcess, 'execAsCallback');
-    });
-
     it('should clone it from local folder', async () => {
       await expect(() =>
-        maybeSetupRepo({
+        setupRepo({
           repoName: 'kibana',
           repoOwner: 'elastic',
-          cwd: '/myHomeDir/.backport/repositories/elastic/kibana/foo',
+          cwd: '/myHomeDir/.backport/repositories/owner/repo/foo',
+          dir: '/myHomeDir/.backport/repositories/owner/repo',
         } as ValidConfigOptions)
       ).rejects.toThrowError(
-        'Refusing to clone repo into "/myHomeDir/.backport/repositories/elastic/kibana" when current working directory is "/myHomeDir/.backport/repositories/elastic/kibana/foo". Please change backport directory via `--dir` option or run backport from another location'
+        'Refusing to clone repo into "/myHomeDir/.backport/repositories/owner/repo" when current working directory is "/myHomeDir/.backport/repositories/owner/repo/foo". Please change backport directory via `--dir` option or run backport from another location'
       );
     });
   });

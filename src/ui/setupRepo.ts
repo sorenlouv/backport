@@ -6,12 +6,15 @@ import {
   addRemote,
   cloneRepo,
   deleteRemote,
-  getGitProjectRoot,
-  getSourceRepoPath,
+  getGitConfig,
+  getGitProjectRootPath,
+  getLocalRepoPath,
+  getRemoteUrl,
+  setGitConfig,
 } from '../services/git';
 import { ora } from './ora';
 
-export async function maybeSetupRepo(options: ValidConfigOptions) {
+export async function setupRepo(options: ValidConfigOptions) {
   const repoPath = getRepoPath(options);
   const isAlreadyCloned = await getIsRepoCloned(options);
 
@@ -25,9 +28,12 @@ export async function maybeSetupRepo(options: ValidConfigOptions) {
   if (!isAlreadyCloned) {
     const spinner = ora(options.ci).start();
     try {
-      const sourcePath = await getSourceRepoPath(options);
+      const localRepoPath = await getLocalRepoPath(options);
+      const remoteRepoPath = getRemoteUrl(options, options.repoOwner);
+      const sourcePath = localRepoPath ? localRepoPath : remoteRepoPath;
 
-      const sourcePathHumanReadable = sourcePath.includes(options.gitHostname)
+      // show the full path for local repos, but only the host name for remote repos (to avoid showing the access token)
+      const sourcePathHumanReadable = !localRepoPath
         ? options.gitHostname
         : sourcePath;
 
@@ -51,6 +57,8 @@ export async function maybeSetupRepo(options: ValidConfigOptions) {
     }
   }
 
+  await verifyGitConfig(options);
+
   // delete default "origin" remote to avoid confusion
   await deleteRemote(options, 'origin');
 
@@ -67,6 +75,54 @@ export async function maybeSetupRepo(options: ValidConfigOptions) {
 
 async function getIsRepoCloned(options: ValidConfigOptions): Promise<boolean> {
   const repoPath = getRepoPath(options);
-  const projectRoot = await getGitProjectRoot(repoPath);
+  const projectRoot = await getGitProjectRootPath(repoPath);
   return repoPath === projectRoot;
+}
+
+async function verifyGitConfig(options: ValidConfigOptions): Promise<void> {
+  const repoPath = getRepoPath(options);
+
+  const userName = await getGitConfig({ dir: repoPath, key: 'user.name' });
+  const userEmail = await getGitConfig({ dir: repoPath, key: 'user.email' });
+
+  // return early if user.email and user.name is already set
+  if (userName && userEmail) {
+    return;
+  }
+
+  const localRepoPath = await getLocalRepoPath(options);
+
+  if (!userName) {
+    const userNameToSet = localRepoPath
+      ? (await getGitConfig({ dir: localRepoPath, key: 'user.name' })) ??
+        options.gitUserName
+      : options.gitUserName;
+
+    if (!userNameToSet) {
+      throw new HandledError({ code: 'missing-git-config' });
+    }
+
+    await setGitConfig({
+      dir: repoPath,
+      key: 'user.name',
+      value: userNameToSet,
+    });
+  }
+
+  if (!userEmail) {
+    const userEmailToSet = localRepoPath
+      ? (await getGitConfig({ dir: localRepoPath, key: 'user.email' })) ??
+        options.gitUserEmail
+      : options.gitUserEmail;
+
+    if (!userEmailToSet) {
+      throw new HandledError({ code: 'missing-git-config' });
+    }
+
+    await setGitConfig({
+      dir: repoPath,
+      key: 'user.email',
+      value: userEmailToSet,
+    });
+  }
 }
