@@ -45,6 +45,9 @@ describe('backport e2e', () => {
         targetBranches: ['7.x'],
       });
 
+      // eslint-disable-next-line no-console
+      console.log(res);
+
       // @ts-expect-error
       const pullRequestNumber = res.results[0].pullRequestNumber as number;
 

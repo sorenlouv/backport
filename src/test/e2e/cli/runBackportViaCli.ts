@@ -1,6 +1,6 @@
 import { spawn } from 'child_process';
 import path from 'path';
-import { debounce, DebouncedFunc } from 'lodash';
+import { debounce } from 'lodash';
 import stripAnsi from 'strip-ansi';
 
 const TIMEOUT_IN_SECONDS = 15;
@@ -33,12 +33,11 @@ export function runBackportViaCli(
     { cwd }
   );
 
-  let rejectOnTimeout: DebouncedFunc<any>;
   return new Promise<string>((resolve, reject) => {
     let data = '';
 
     const timeoutSeconds = 2;
-    rejectOnTimeout = debounce(
+    const rejectOnTimeout = debounce(
       () => {
         reject(
           `Expectation '${waitForString}' not found within ${timeoutSeconds} second in:\n\n${data.toString()}`
