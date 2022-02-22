@@ -5,6 +5,8 @@ import { getDevAccessToken } from '../private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from '../sandbox';
 
 jest.unmock('find-up');
+jest.unmock('del');
+jest.unmock('make-dir');
 
 jest.setTimeout(15000);
 
@@ -44,9 +46,6 @@ describe('backport e2e', () => {
         sha: COMMIT_SHA_1,
         targetBranches: ['7.x'],
       });
-
-      // eslint-disable-next-line no-console
-      console.log(res);
 
       // @ts-expect-error
       const pullRequestNumber = res.results[0].pullRequestNumber as number;
