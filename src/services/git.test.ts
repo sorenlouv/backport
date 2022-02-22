@@ -547,6 +547,7 @@ describe('commitChanges', () => {
   } as ValidConfigOptions;
 
   const commit: Commit = {
+    author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
     sourceCommit: {
       message: 'The original commit message',
       committedDate: '2020',

@@ -1,4 +1,5 @@
 import del = require('del');
+import { Commit } from '../entrypoint.module';
 import { ValidConfigOptions } from '../options/options';
 import { HandledError } from '../services/HandledError';
 import { getRepoPath } from '../services/env';
@@ -14,7 +15,10 @@ import {
 } from '../services/git';
 import { ora } from './ora';
 
-export async function setupRepo(options: ValidConfigOptions) {
+export async function setupRepo(
+  options: ValidConfigOptions,
+  commits: Commit[]
+) {
   const repoPath = getRepoPath(options);
   const isAlreadyCloned = await getIsRepoCloned(options);
 
@@ -57,7 +61,7 @@ export async function setupRepo(options: ValidConfigOptions) {
     }
   }
 
-  await verifyGitConfig(options);
+  await setupGitUsernameAndEmail(options, commits);
 
   // delete default "origin" remote to avoid confusion
   await deleteRemote(options, 'origin');
@@ -79,7 +83,10 @@ async function getIsRepoCloned(options: ValidConfigOptions): Promise<boolean> {
   return repoPath === projectRoot;
 }
 
-async function verifyGitConfig(options: ValidConfigOptions): Promise<void> {
+async function setupGitUsernameAndEmail(
+  options: ValidConfigOptions,
+  commits: Commit[]
+): Promise<void> {
   const repoPath = getRepoPath(options);
 
   const userName = await getGitConfig({ dir: repoPath, key: 'user.name' });
@@ -90,39 +97,30 @@ async function verifyGitConfig(options: ValidConfigOptions): Promise<void> {
     return;
   }
 
+  const commitAuthor = commits[0].author;
   const localRepoPath = await getLocalRepoPath(options);
 
   if (!userName) {
-    const userNameToSet = localRepoPath
-      ? (await getGitConfig({ dir: localRepoPath, key: 'user.name' })) ??
-        options.gitUserName
-      : options.gitUserName;
-
-    if (!userNameToSet) {
-      throw new HandledError({ code: 'missing-git-config' });
-    }
+    const gitConfigUsername = localRepoPath
+      ? await getGitConfig({ dir: localRepoPath, key: 'user.name' })
+      : undefined;
 
     await setGitConfig({
       dir: repoPath,
       key: 'user.name',
-      value: userNameToSet,
+      value: gitConfigUsername ?? options.gitUserName ?? commitAuthor.name,
     });
   }
 
   if (!userEmail) {
-    const userEmailToSet = localRepoPath
-      ? (await getGitConfig({ dir: localRepoPath, key: 'user.email' })) ??
-        options.gitUserEmail
-      : options.gitUserEmail;
-
-    if (!userEmailToSet) {
-      throw new HandledError({ code: 'missing-git-config' });
-    }
+    const gitConfigEmail = localRepoPath
+      ? await getGitConfig({ dir: localRepoPath, key: 'user.email' })
+      : undefined;
 
     await setGitConfig({
       dir: repoPath,
       key: 'user.email',
-      value: userEmailToSet,
+      value: gitConfigEmail ?? options.gitUserEmail ?? commitAuthor.email,
     });
   }
 }

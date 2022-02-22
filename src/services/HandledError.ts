@@ -1,5 +1,3 @@
-import dedent from 'dedent';
-import { getGlobalConfigPath } from './env';
 import { Commit } from './sourceCommit/parseSourceCommit';
 
 type ErrorContext =
@@ -11,7 +9,7 @@ type ErrorContext =
       }[];
     }
   | {
-      code: 'no-branches-exception' | 'abort-exception' | 'missing-git-config';
+      code: 'no-branches-exception' | 'abort-exception';
     };
 
 function getMessage(errorContext: ErrorContext | string): string {
@@ -26,20 +24,6 @@ function getMessage(errorContext: ErrorContext | string): string {
       return 'There are no branches to backport to. Aborting.';
     case 'abort-exception':
       return 'Aborted';
-    case 'missing-git-config':
-      return dedent(`*** Please tell me who you are.
-      Run
-
-        git config user.name "Your Name"
-        git config user.email "you@example.com"
-        
-      Or add it to ${getGlobalConfigPath()}
-      
-        {
-          "accessToken": "***",
-          "gitUserName": "Your Name",
-          "gitUserEmail": "you@example.com"
-        }`);
   }
 }
 

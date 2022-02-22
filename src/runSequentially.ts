@@ -32,7 +32,7 @@ export async function runSequentially({
   targetBranches: string[];
 }): Promise<Result[]> {
   logger.verbose('Backport options', options);
-  await setupRepo(options);
+  await setupRepo(options, commits);
   const results = [] as Result[];
   await sequentially(targetBranches, async (targetBranch) => {
     logger.info(`Backporting ${JSON.stringify(commits)} to ${targetBranch}`);
