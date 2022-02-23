@@ -140,6 +140,16 @@ export function getOptionsFromCliArgs(
       type: 'string',
     })
 
+    .option('gitAuthorName', {
+      description: `Set commit author name`,
+      type: 'string',
+    })
+
+    .option('gitAuthorEmail', {
+      description: `Set commit author email`,
+      type: 'string',
+    })
+
     .option('logFilePath', {
       hidden: true,
       description: `Path to log file`,
@@ -319,7 +329,8 @@ export function getOptionsFromCliArgs(
     })
 
     .option('username', {
-      description: 'Defaults to the authenticated user ',
+      description:
+        'The repo owner to push the backport branch to. Defaults to the currently authenticated user',
       type: 'string',
     })
 

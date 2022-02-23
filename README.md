@@ -53,6 +53,7 @@ Add a [project config](https://github.com/sqren/backport/blob/master/docs/config
 ```
 
 Add personal access token to [global config](https://github.com/sqren/backport/blob/master/docs/configuration.md#global-config-backportconfigjson):
+
 ```js
 // ~/.backport/config.json
 {
@@ -77,7 +78,7 @@ See [configuration.md](https://github.com/sqren/backport/blob/master/docs/config
 | Option              | Shorthand notation | Description                                                                | Default                   |
 | ------------------- | ------------------ | -------------------------------------------------------------------------- | ------------------------- |
 | --access-token      |                    | Github access token                                                        |                           |
-| --all               | -a                 | Show commits from any author                                               | false                     |
+| --all               | -a                 | Show commits from any author. Opposite of `--author`                       | false                     |
 | --assignee          | --assign           | Assign users to the target PR                                              |                           |
 | --author            |                    | Filter commits by Github username. Opposite of `--all`                     | _Current user_            |
 | --auto-assign       |                    | Assign current user to the target PR                                       | false                     |
@@ -112,6 +113,7 @@ See [configuration.md](https://github.com/sqren/backport/blob/master/docs/config
 | --target-branch     | -b                 | Target branch(es) to backport to                                           |                           |
 | --target-pr-label   | --label, -l        | Labels added to the target PR                                              |                           |
 | --help              |                    | Show help                                                                  |                           |
+| --username          |                    | The repo owner to push the backport branch to.                             | _Current user_            |
 | -v, --version       |                    | Show version number                                                        |                           |
 
 The CLI options will override the [configuration options](https://github.com/sqren/backport/blob/master/docs/configuration.md).

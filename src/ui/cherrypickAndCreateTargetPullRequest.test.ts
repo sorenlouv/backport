@@ -447,9 +447,9 @@ function setupExecSpyForCherryPick() {
         return { stderr: '', stdout: '' };
       }
 
-      // cherrypick
-      if (cmd === 'git cherry-pick -x mySha') {
-        throw new ExecError({ cmd });
+      // emulate cherrypick exception
+      if (cmd.includes('cherry-pick -x mySha')) {
+        throw new ExecError({ cmd, code: 128 });
       }
 
       // getIsCommitInBranch

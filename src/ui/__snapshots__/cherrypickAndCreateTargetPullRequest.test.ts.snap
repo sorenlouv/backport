@@ -21,7 +21,7 @@ Array [
     },
   ],
   Array [
-    "git cherry-pick -x mySha",
+    "git -c user.name=\\"Søren Louv-Jansen\\" -c user.email=\\"soren.louv@elastic.co\\" cherry-pick -x mySha",
     Object {
       "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
     },
@@ -128,7 +128,7 @@ Array [
     },
   ],
   Array [
-    "git cherry-pick -x mySha",
+    "git -c user.name=\\"Søren Louv-Jansen\\" -c user.email=\\"soren.louv@elastic.co\\" cherry-pick -x mySha",
     Object {
       "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
     },
@@ -146,7 +146,7 @@ Array [
     },
   ],
   Array [
-    "git cherry-pick -x mySha2",
+    "git -c user.name=\\"Søren Louv-Jansen\\" -c user.email=\\"soren.louv@elastic.co\\" cherry-pick -x mySha2",
     Object {
       "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
     },
