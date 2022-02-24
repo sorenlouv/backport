@@ -115,9 +115,9 @@ export function getOptionsFromCliArgs(
       type: 'boolean',
     })
 
-    // push target branch to {authenticatedUsername}/{repoName}
+    // push target branch to {repoForkOwner}/{repoName}
     .option('fork', {
-      description: 'Create backports in fork or origin repo',
+      description: 'Create backports in fork or origin repo. Defaults to true',
       type: 'boolean',
       conflicts: ['noFork'],
     })
@@ -225,7 +225,7 @@ export function getOptionsFromCliArgs(
     .option('noFork', {
       description: 'Create backports in the origin repo',
       type: 'boolean',
-      conflicts: ['fork'],
+      conflicts: ['fork', 'repoForkOwner'],
     })
 
     .option('path', {
@@ -269,6 +269,13 @@ export function getOptionsFromCliArgs(
       description: 'Add reviewer to the target PR',
       type: 'array',
       string: true,
+    })
+
+    .option('repoForkOwner', {
+      description:
+        'The owner of the fork where the backport branch is pushed. Defaults to the currently authenticated user',
+      type: 'string',
+      conflicts: ['noFork'],
     })
 
     .option('repoOwner', {
@@ -326,12 +333,6 @@ export function getOptionsFromCliArgs(
       alias: ['label', 'l'],
       type: 'array',
       string: true,
-    })
-
-    .option('username', {
-      description:
-        'The repo owner to push the backport branch to. Defaults to the currently authenticated user',
-      type: 'string',
     })
 
     .option('verbose', {

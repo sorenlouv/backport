@@ -482,7 +482,7 @@ export async function deleteBackportBranch({
  * Returns the repo owner of the forked repo or the source repo
  */
 export function getRepoForkOwner(options: ValidConfigOptions) {
-  return options.fork ? options.authenticatedUsername : options.repoOwner;
+  return options.fork ? options.repoForkOwner : options.repoOwner;
 }
 
 export async function pushBackportBranch({

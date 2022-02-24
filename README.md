@@ -103,6 +103,7 @@ See [configuration.md](https://github.com/sqren/backport/blob/master/docs/config
 | --pr-filter         |                    | Find PRs using [Github's search syntax][2]                                 |                           |
 | --pr-title          | --title            | Title of pull request                                                      |                           |
 | --pull-number       | --pr               | Backport pull request by number                                            |                           |
+| --repo-fork-owner   |                    | The owner of the fork where the backport branch is pushed.                 | _Current user_            |
 | --repo-name         |                    | Name of repository                                                         |                           |
 | --repo-owner        |                    | Owner of repository                                                        |                           |
 | --reset-author      |                    | Set yourself as commit author                                              |                           |
@@ -113,7 +114,6 @@ See [configuration.md](https://github.com/sqren/backport/blob/master/docs/config
 | --target-branch     | -b                 | Target branch(es) to backport to                                           |                           |
 | --target-pr-label   | --label, -l        | Labels added to the target PR                                              |                           |
 | --help              |                    | Show help                                                                  |                           |
-| --username          |                    | The repo owner to push the backport branch to.                             | _Current user_            |
 | -v, --version       |                    | Show version number                                                        |                           |
 
 The CLI options will override the [configuration options](https://github.com/sqren/backport/blob/master/docs/configuration.md).

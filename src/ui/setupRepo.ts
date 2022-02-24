@@ -59,11 +59,11 @@ export async function setupRepo(options: ValidConfigOptions) {
   await deleteRemote(options, 'origin');
 
   // ensure remote are setup with latest accessToken
-  await deleteRemote(options, options.authenticatedUsername);
-  await addRemote(options, options.authenticatedUsername);
+  await deleteRemote(options, options.repoForkOwner);
+  await addRemote(options, options.repoForkOwner);
 
   // add remote for non-fork repo (if the above is a fork)
-  if (options.authenticatedUsername !== options.repoOwner) {
+  if (options.repoForkOwner !== options.repoOwner) {
     await deleteRemote(options, options.repoOwner);
     await addRemote(options, options.repoOwner);
   }

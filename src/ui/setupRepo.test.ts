@@ -95,8 +95,6 @@ describe('setupRepo', () => {
       await setupRepo({
         repoName: 'kibana',
         repoOwner: 'elastic',
-        gitAuthorEmail: 'my-email',
-        gitAuthorName: 'my-username',
         gitHostname: 'github.com',
         cwd: '/path/to/source/repo',
       } as ValidConfigOptions);
@@ -139,11 +137,11 @@ describe('setupRepo', () => {
       await setupRepo({
         accessToken: 'myAccessToken',
         authenticatedUsername: 'sqren_authenticated',
+        cwd: '/path/to/source/repo',
+        fork: true,
+        repoForkOwner: 'sqren',
         repoName: 'kibana',
         repoOwner: 'elastic',
-        gitAuthorEmail: 'my-email',
-        gitAuthorName: 'my-username',
-        cwd: '/path/to/source/repo',
       } as ValidConfigOptions);
 
       expect(
@@ -159,11 +157,11 @@ describe('setupRepo', () => {
           cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
         },
         {
-          cmd: 'git remote rm sqren_authenticated',
+          cmd: 'git remote rm sqren',
           cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
         },
         {
-          cmd: 'git remote add sqren_authenticated https://x-access-token:myAccessToken@github.com/sqren_authenticated/kibana.git',
+          cmd: 'git remote add sqren https://x-access-token:myAccessToken@github.com/sqren/kibana.git',
           cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
         },
         {
@@ -196,8 +194,6 @@ describe('setupRepo', () => {
 
       await setupRepo({
         accessToken: 'myAccessToken',
-        gitAuthorEmail: 'my-email',
-        gitAuthorName: 'my-username',
         gitHostname: 'github.com',
         repoName: 'kibana',
         repoOwner: 'elastic',

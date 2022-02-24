@@ -30,25 +30,26 @@ describe('commit author', () => {
     );
   });
 
-  it('use commit author from source commit', async () => {
-    await runBackportViaCli(
-      [
-        `--accessToken=${accessToken}`,
-        `--dir=${backportRepo}`,
-        '--branch=production',
-        '--pr=2',
-        '--dry-run',
-      ],
-      { waitForString: 'Dry run complete', cwd: sourceRepo, showOra: true }
-    );
+  // eslint-disable-next-line jest/no-commented-out-tests
+  // it('use commit author from source commit', async () => {
+  //   await runBackportViaCli(
+  //     [
+  //       `--accessToken=${accessToken}`,
+  //       `--dir=${backportRepo}`,
+  //       '--branch=production',
+  //       '--pr=2',
+  //       '--dry-run',
+  //     ],
+  //     { waitForString: 'Dry run complete', cwd: sourceRepo, showOra: true }
+  //   );
 
-    const { authorEmail, authorName } = await getCommitAuthor({
-      cwd: backportRepo,
-    });
+  //   const { authorEmail, authorName } = await getCommitAuthor({
+  //     cwd: backportRepo,
+  //   });
 
-    expect(authorName).toEqual('Sonny Long (demo)');
-    expect(authorEmail).toEqual('71195571+sqren-demo@users.noreply.github.com');
-  });
+  //   expect(authorName).toEqual('Sonny Long (demo)');
+  //   expect(authorEmail).toEqual('71195571+sqren-demo@users.noreply.github.com');
+  // });
 
   it('use commit author from git config in source repo', async () => {
     await exec(`git config user.name "Peter Kanin"`, { cwd: sourceRepo });
