@@ -13,7 +13,7 @@ module.exports = {
   modulePathIgnorePatterns: [
     '.*.private.test.ts$',
     '.*.mutation.test.ts$',
-    '*/_tmp_sandbox_/*',
+    '.*/_tmp_sandbox_/.*$',
   ],
 
   moduleFileExtensions: ['ts', 'js', 'json'],
