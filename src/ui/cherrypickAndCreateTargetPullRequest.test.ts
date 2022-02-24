@@ -189,14 +189,15 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
       const options = {
         assignees: [] as string[],
         authenticatedUsername: 'sqren_authenticated',
+        author: 'sqren',
         fork: true,
         prTitle: '[{targetBranch}] {commitMessages}',
+        repoForkOwner: 'the_fork_owner',
         repoName: 'kibana',
         repoOwner: 'elastic',
         reviewers: [] as string[],
         sourcePRLabels: [] as string[],
         targetPRLabels: ['backport'],
-        author: 'sqren',
       } as ValidConfigOptions;
 
       const commits: Commit[] = [
@@ -244,7 +245,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
 
         ### Questions ?
         Please refer to the [Backport tool documentation](https://github.com/sqren/backport)",
-            "head": "undefined:backport/6.x/commit-mySha",
+            "head": "the_fork_owner:backport/6.x/commit-mySha",
             "title": "[6.x] My original commit message",
           },
         ]

@@ -2,8 +2,8 @@ import { ValidConfigOptions } from '../options/options';
 import { getGitConfig, getLocalRepoPath } from '../services/git';
 
 export type GitConfigAuthor = {
-  name: string | undefined;
-  email: string | undefined;
+  name?: string;
+  email?: string;
 };
 
 export async function getGitConfigAuthor(
