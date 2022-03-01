@@ -107,13 +107,13 @@ export async function fetchCommitsByAuthor(options: {
   author: string | null;
   branchLabelMapping?: ValidConfigOptions['branchLabelMapping'];
   commitPaths?: string[];
+  dateSince: string | null;
+  dateUntil: string | null;
   githubApiBaseUrlV4?: string;
   maxNumber?: number;
   repoName: string;
   repoOwner: string;
   sourceBranch: string;
-  dateSince: string | null;
-  dateUntil: string | null;
 }): Promise<Commit[]> {
   const { sourceBranch, commitPaths = [] } = options;
 

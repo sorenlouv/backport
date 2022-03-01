@@ -156,6 +156,11 @@ export function getOptionsFromCliArgs(
       type: 'string',
     })
 
+    .option('ls', {
+      description: 'List commits instead of backporting them',
+      type: 'boolean',
+    })
+
     .option('mainline', {
       description:
         'Parent id of merge commit. Defaults to 1 when supplied without arguments',

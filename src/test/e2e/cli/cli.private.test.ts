@@ -60,6 +60,7 @@ describe('backport cli', () => {
                                                                                                  [boolean]
             --gitAuthorName                   Set commit author name                              [string]
             --gitAuthorEmail                  Set commit author email                             [string]
+            --ls                              List commits instead of backporting them           [boolean]
             --mainline                        Parent id of merge commit. Defaults to 1 when supplied
                                               without arguments                                   [number]
         -n, --maxNumber, --number             Number of commits to choose from                    [number]
