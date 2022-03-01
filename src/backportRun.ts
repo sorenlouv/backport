@@ -109,7 +109,9 @@ export async function backportRun(
       });
     }
 
-    outputError({ e, logFilePath, ls: options?.ls });
+    if (!options?.ls) {
+      outputError({ e, logFilePath });
+    }
 
     logger.error('Unhandled exception', e);
     process.exitCode = 1;
@@ -121,16 +123,10 @@ export async function backportRun(
 function outputError({
   e,
   logFilePath,
-  ls,
 }: {
   e: HandledError | GithubV4Exception<any> | Error;
   logFilePath?: string;
-  ls?: boolean;
 }) {
-  if (ls) {
-    return;
-  }
-
   if (e instanceof HandledError || e instanceof GithubV4Exception) {
     consoleLog(e.message);
     return;
