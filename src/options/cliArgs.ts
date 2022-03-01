@@ -233,6 +233,11 @@ export function getOptionsFromCliArgs(
       conflicts: ['fork', 'repoForkOwner'],
     })
 
+    .option('onlyMissing', {
+      description: 'Only list commits with missing backports',
+      type: 'boolean',
+    })
+
     .option('path', {
       description: 'Only list commits touching files under the specified path',
       alias: 'p',

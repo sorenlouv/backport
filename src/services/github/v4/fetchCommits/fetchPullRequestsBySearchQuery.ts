@@ -1,5 +1,6 @@
 import gql from 'graphql-tag';
 import { isEmpty } from 'lodash';
+import { filterUnmergedCommits } from '../../../../utils/filterUnmergedCommits';
 import { HandledError } from '../../../HandledError';
 import { swallowMissingConfigFileException } from '../../../remoteConfig';
 import {
@@ -15,6 +16,7 @@ export async function fetchPullRequestsBySearchQuery(options: {
   author: string | null;
   githubApiBaseUrlV4?: string;
   maxNumber?: number;
+  onlyMissing?: boolean;
   prFilter: string;
   repoName: string;
   repoOwner: string;
@@ -82,6 +84,10 @@ export async function fetchPullRequestsBySearchQuery(options: {
       : `No commits found for query:\n    ${searchQuery}`;
 
     throw new HandledError(errorText);
+  }
+
+  if (options.onlyMissing) {
+    return commits.filter(filterUnmergedCommits);
   }
 
   return commits;
