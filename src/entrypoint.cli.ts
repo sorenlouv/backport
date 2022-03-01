@@ -7,7 +7,8 @@ const processArgs = process.argv.slice(2);
 backportRun(processArgs).then((backportResponse) => {
   const argv = yargsParser(processArgs) as ConfigFileOptions;
   const ci = argv.ci;
-  if (ci) {
+  const ls = argv.ls;
+  if (ci || ls) {
     // eslint-disable-next-line no-console
     console.log(JSON.stringify(backportResponse));
   }
