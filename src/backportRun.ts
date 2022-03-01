@@ -110,7 +110,9 @@ export async function backportRun(
     }
 
     if (e instanceof HandledError || e instanceof GithubV4Exception) {
-      consoleLog(e.message);
+      if (!options?.ls) {
+        consoleLog(e.message);
+      }
     } else if (e instanceof Error) {
       // output
       consoleLog('\n');
