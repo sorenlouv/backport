@@ -234,7 +234,7 @@ export function getOptionsFromCliArgs(
     })
 
     .option('onlyMissing', {
-      description: 'Only list commits with missing backports',
+      description: 'Only list commits with missing or unmerged backports',
       type: 'boolean',
     })
 

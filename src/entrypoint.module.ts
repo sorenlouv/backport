@@ -43,6 +43,7 @@ export async function getCommits(options: {
   branchLabelMapping?: ValidConfigOptions['branchLabelMapping'];
   githubApiBaseUrlV4?: string;
   maxNumber?: number;
+  onlyMissing?: boolean;
   prFilter?: string;
   pullNumber?: number;
   sha?: string | string[];
