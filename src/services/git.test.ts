@@ -509,49 +509,6 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
     );
   });
 
-  it('gracefully handles missing git info', async () => {
-    jest
-      .spyOn(childProcess, 'exec')
-
-      // mock getIsMergeCommit(...)
-      .mockResolvedValueOnce({ stderr: '', stdout: '' })
-
-      // mock cherry pick command
-      .mockRejectedValueOnce(
-        new ExecError({
-          killed: false,
-          code: 128,
-          signal: null,
-          cmd: 'git cherry-pick 83ad852b6ba1a64c8047f07201018eb6fb020db8',
-          stdout: '',
-          stderr:
-            '\n*** Please tell me who you are.\n\nRun\n\n  git config --global user.email "you@example.com"\n  git config --global user.name "Your Name"\n\nto set your account\'s default identity.\nOmit --global to set the identity only in this repository.\n\nfatal: empty ident name (for <foo@bar.net>) not allowed\n',
-        })
-      );
-
-    await expect(
-      cherrypick({
-        options,
-        sha: 'abcd',
-        commitAuthor,
-      })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`
-            "
-            *** Please tell me who you are.
-
-            Run
-
-              git config --global user.email \\"you@example.com\\"
-              git config --global user.name \\"Your Name\\"
-
-            to set your account's default identity.
-            Omit --global to set the identity only in this repository.
-
-            fatal: empty ident name (for <foo@bar.net>) not allowed
-            "
-          `);
-  });
-
   it('should re-throw non-cherrypick errors', async () => {
     jest
       .spyOn(childProcess, 'exec')

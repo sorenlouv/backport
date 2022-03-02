@@ -345,11 +345,6 @@ export function getOptionsFromCliArgs(
       string: true,
     })
 
-    .option('verbose', {
-      description: 'Show additional debug information',
-      type: 'boolean',
-    })
-
     // cli-only
     .option('verify', {
       description: `Opposite of no-verify`,

@@ -30,21 +30,21 @@ jest.mock('del', () => {
 
 mockOra();
 
-// silence logger
 jest.mock('../../services/logger', () => {
   const spy = jest.fn();
+  const logger = {
+    spy: spy,
+    info: (msg: string, meta: unknown) => spy(`[INFO] ${msg}`, meta),
+    verbose: (msg: string, meta: unknown) => spy(`[VERBOSE] ${msg}`, meta),
+    warn: (msg: string, meta: unknown) => spy(`[WARN] ${msg}`, meta),
+    error: (msg: string, meta: unknown) => spy(`[ERROR] ${msg}`, meta),
+    debug: (msg: string, meta: unknown) => spy(`[DEBUG] ${msg}`, meta),
+  };
   return {
-    initLogger: jest.fn(),
+    initLogger: jest.fn(() => logger),
     redactAccessToken: jest.fn((str: string) => str),
     consoleLog: jest.fn(),
-    updateLogger: jest.fn(),
-    logger: {
-      spy: spy,
-      info: (msg: string, meta: unknown) => spy(`[INFO] ${msg}`, meta),
-      verbose: (msg: string, meta: unknown) => spy(`[VERBOSE] ${msg}`, meta),
-      warn: (msg: string, meta: unknown) => spy(`[WARN] ${msg}`, meta),
-      error: (msg: string, meta: unknown) => spy(`[ERROR] ${msg}`, meta),
-      debug: (msg: string, meta: unknown) => spy(`[DEBUG] ${msg}`, meta),
-    },
+    setAccessToken: jest.fn(),
+    logger,
   };
 });

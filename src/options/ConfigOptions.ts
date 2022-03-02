@@ -64,7 +64,6 @@ type Options = Partial<{
   targetBranchChoices: TargetBranchChoiceOrString[];
   targetBranches: string[];
   targetPRLabels: string[];
-  verbose: boolean;
 }>;
 
 export type ConfigFileOptions = Options &

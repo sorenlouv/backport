@@ -31,7 +31,7 @@ const BRANCH_WITH_TWO_COMMITS = `backport/7.x/commit-${getShortSha(
   COMMIT_SHA_1
 )}_commit-${getShortSha(COMMIT_SHA_2)}`;
 
-describe('backport e2e', () => {
+describe('entrypoint.module', () => {
   describe('when a single commit is backported', () => {
     let res: BackportResponse;
     let pullRequestResponse: Awaited<ReturnType<typeof octokit.pulls.get>>;

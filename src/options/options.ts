@@ -6,7 +6,7 @@ import {
   OptionsFromGithub,
 } from '../services/github/v4/getOptionsFromGithub/getOptionsFromGithub';
 import { getRepoOwnerAndNameFromGitRemotes } from '../services/github/v4/getRepoOwnerAndNameFromGitRemotes';
-import { updateLogger } from './../services/logger';
+import { setAccessToken } from './../services/logger';
 import { ConfigFileOptions, TargetBranchChoiceOrString } from './ConfigOptions';
 import { getOptionsFromCliArgs, OptionsFromCliArgs } from './cliArgs';
 import {
@@ -50,7 +50,6 @@ const defaultConfigOptions = {
   targetBranchChoices: [] as TargetBranchChoiceOrString[],
   targetBranches: [] as string[],
   targetPRLabels: [] as string[],
-  verbose: false,
 };
 
 export async function getOptions(
@@ -75,7 +74,7 @@ export async function getOptions(
   );
 
   // update logger
-  updateLogger({ accessToken, verbose: combined.verbose });
+  setAccessToken(accessToken);
 
   const optionsFromGithub = await getOptionsFromGithub({
     ...combined,

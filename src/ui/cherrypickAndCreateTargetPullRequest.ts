@@ -322,14 +322,14 @@ async function listConflictingAndUnstagedFiles({
       )}`
     : '';
 
-  const res = await confirmPrompt(`${header}
+  const didConfirm = await confirmPrompt(`${header}
 
 ${conflictSection}
 ${unstagedSection}
 
 Press ENTER when the conflicts are resolved and files are staged`);
 
-  if (!res) {
+  if (!didConfirm) {
     throw new HandledError({ code: 'abort-exception' });
   }
 

@@ -8,7 +8,7 @@ const TIMEOUT_IN_SECONDS = 15;
 jest.setTimeout(TIMEOUT_IN_SECONDS * 1000);
 const accessToken = getDevAccessToken();
 
-describe('backport cli', () => {
+describe('entrypoint cli', () => {
   it('--version', async () => {
     const res = await runBackportViaCli([`--version`], {
       showOra: true,
@@ -94,7 +94,6 @@ describe('backport cli', () => {
         -b, --targetBranch, --branch          Branch(es) to backport to                            [array]
             --targetBranchChoice              List branches to backport to                         [array]
         -l, --targetPRLabel, --label          Add labels to the target (backport) PR               [array]
-            --verbose                         Show additional debug information                  [boolean]
             --verify                          Opposite of no-verify                              [boolean]
             --help                            Show help                                          [boolean]
       For bugs, feature requests or questions: https://github.com/sqren/backport/issues

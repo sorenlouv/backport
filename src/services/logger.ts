@@ -15,12 +15,7 @@ export function initLogger({
   accessToken?: string;
   logFilePath?: string;
 }) {
-  const fileTransport = getFileTransport({ logFilePath });
-
-  if (accessToken) {
-    _accessToken = accessToken;
-  }
-
+  _accessToken = accessToken;
   _ci = ci;
 
   logger = winston.createLogger({
@@ -31,7 +26,11 @@ export function initLogger({
         fillExcept: ['message', 'level', 'timestamp', 'label'],
       })
     ),
-    transports: fileTransport,
+    transports: new winston.transports.File({
+      filename: getLogfilePath({ logFilePath }),
+      level: 'debug',
+      format: format.combine(format.json()),
+    }),
   });
 
   return logger;
@@ -45,18 +44,8 @@ export function consoleLog(message: string) {
   }
 }
 
-export function updateLogger({
-  accessToken,
-  verbose,
-}: {
-  accessToken: string;
-  verbose?: boolean;
-}) {
-  // set access token
+export function setAccessToken(accessToken: string) {
   _accessToken = accessToken;
-
-  // set log level
-  logger.level = verbose ? 'debug' : 'info';
 }
 
 function redactAccessToken(str: string) {
@@ -66,14 +55,6 @@ function redactAccessToken(str: string) {
   }
 
   return str;
-}
-
-function getFileTransport({ logFilePath }: { logFilePath?: string }) {
-  return new winston.transports.File({
-    filename: getLogfilePath({ logFilePath }),
-    level: 'debug',
-    format: format.combine(format.json()),
-  });
 }
 
 // log levels:
