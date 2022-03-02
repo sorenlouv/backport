@@ -8,7 +8,7 @@
 
 ## 🎉 New! The Backport Tool as a Github Action 🎉
 
-A [Github Action](https://github.com/elastic/kibana-github-actions/tree/main/backport) around The Backport Tool now exists. It makes it a breeze to get automatic backports when pull requests are merged.
+A [Github Action](https://github.com/sqren/backport-github-action) around The Backport Tool now exists. It makes it a breeze to get automatic backports when pull requests are merged.
 
 # Backport CLI tool
 
@@ -243,10 +243,6 @@ console.log(commits);
 }]
 */
 ```
-
-## The Backport Tool as a Github Action
-
-A [Github Action](https://github.com/elastic/kibana-github-actions/tree/main/backport) around The Backport Tool for automatically creating backports when pull requests are merged.
 
 ## What is backporting?
 
