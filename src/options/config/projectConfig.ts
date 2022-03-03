@@ -4,12 +4,12 @@ import { ConfigFileOptions } from '../ConfigOptions';
 import { readConfigFile } from '../config/readConfigFile';
 
 export async function getProjectConfig({
-  configFile,
+  projectConfigFile,
 }: {
-  configFile: string | undefined;
+  projectConfigFile: string | undefined;
 }): Promise<ConfigFileOptions | undefined> {
-  const filepath = configFile
-    ? path.resolve(configFile)
+  const filepath = projectConfigFile
+    ? path.resolve(projectConfigFile)
     : await findUp('.backportrc.json');
 
   if (!filepath) {

@@ -35,7 +35,7 @@ describe('entrypoint cli', () => {
     expect(res).toMatchInlineSnapshot(`
       "entrypoint.cli.ts [args]
       Options:
-        -v, -V, --version                     Show version number                                [boolean]
+        -v, --version                         Show version number                                [boolean]
             --accessToken, --accesstoken      Github access token                                 [string]
         -a, --all                             List all commits                                   [boolean]
             --assignee, --assign              Add assignees to the target pull request             [array]
@@ -46,7 +46,7 @@ describe('entrypoint cli', () => {
             --ci                              Disable interactive prompts                        [boolean]
             --cherrypickRef                   Append commit message with \\"(cherry picked from commit...)
                                                                                                  [boolean]
-            --configFile, --config            Path to project config                              [string]
+            --projectConfigFile, --config     Path to project config                              [string]
             --since                           ISO-8601 date for filtering commits                 [string]
             --until                           ISO-8601 date for filtering commits                 [string]
             --dir                             Location where the temporary repository will be stored
@@ -84,8 +84,6 @@ describe('entrypoint cli', () => {
             --reviewer                        Add reviewer to the target PR                        [array]
             --repoForkOwner                   The owner of the fork where the backport branch is pushed.
                                               Defaults to the currently authenticated user        [string]
-            --repoOwner                       Repository owner                                    [string]
-            --repoName                        Repository name                                     [string]
             --repo                            Repo owner and name                                 [string]
             --sha, --commit                   Commit sha to backport                              [string]
             --sourceBranch                    Specify a non-default branch (normally \\"master\\") to backport

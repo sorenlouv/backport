@@ -19,7 +19,7 @@ export type Result =
       // only set for failure
       status: 'failure';
       targetBranch: string;
-      error: HandledError;
+      error: HandledError | Error;
     };
 
 export async function runSequentially({

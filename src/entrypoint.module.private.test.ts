@@ -1,10 +1,131 @@
-import { Commit, getCommits } from './entrypoint.module';
+import {
+  BackportFailureResponse,
+  BackportSuccessResponse,
+} from './backportRun';
+import { backportRun, Commit, getCommits } from './entrypoint.module';
 import { getDevAccessToken } from './test/private/getDevAccessToken';
 
+const accessToken = getDevAccessToken();
+
+jest.unmock('del');
+jest.unmock('make-dir');
+jest.unmock('find-up');
+
 describe('entrypoint.module', () => {
+  describe('backportRun', () => {
+    describe('when running into merge conflict', () => {
+      let response: BackportSuccessResponse;
+      beforeAll(async () => {
+        response = (await backportRun({
+          repoOwner: 'backport-org',
+          repoName: 'repo-with-conflicts',
+          ci: true,
+          accessToken,
+          pullNumber: 12,
+          targetBranches: ['7.x'],
+        })) as BackportSuccessResponse;
+      });
+
+      it('should have overall status=success', async () => {
+        expect(response.status).toBe('success');
+      });
+
+      it('should have a failed result', () => {
+        expect(response.results[0].status).toBe('failure');
+      });
+
+      it('should have correct error code', () => {
+        //@ts-expect-error
+        expect(response.results[0].error.errorContext.code).toBe(
+          'merge-conflict-exception'
+        );
+      });
+
+      it('contains a list of conflicting files', () => {
+        //@ts-expect-error
+        expect(response.results[0].error.errorContext.conflictingFiles).toEqual(
+          ['la-liga.md']
+        );
+      });
+    });
+
+    describe('when missing branches to backport to', () => {
+      let response: BackportFailureResponse;
+      beforeAll(async () => {
+        response = (await backportRun({
+          repoOwner: 'backport-org',
+          repoName: 'repo-with-conflicts',
+          ci: true,
+          accessToken,
+          pullNumber: 12,
+        })) as BackportFailureResponse;
+      });
+
+      it('should return conflict in response', async () => {
+        expect(response.status).toBe('failure');
+        //@ts-expect-error
+        expect(response.error.errorContext.code).toBe('no-branches-exception');
+      });
+    });
+
+    describe('when backporting', () => {
+      let response: BackportSuccessResponse;
+      beforeAll(async () => {
+        response = (await backportRun({
+          repoOwner: 'backport-org',
+          repoName: 'repo-with-conflicts',
+          ci: true,
+          accessToken,
+          pullNumber: 8,
+          dryRun: true,
+        })) as BackportSuccessResponse;
+      });
+
+      it('should return successful backport response', async () => {
+        expect(response.status).toBe('success');
+        expect(response).toEqual({
+          status: 'success',
+          results: [
+            {
+              status: 'success',
+              didUpdate: false,
+              pullRequestNumber: 1337,
+              pullRequestUrl: 'https://localhost/dry-run',
+              targetBranch: '7.x',
+            },
+          ],
+          commits: [
+            {
+              author: {
+                email: 'sorenlouv@gmail.com',
+                name: 'Søren Louv-Jansen',
+              },
+              expectedTargetPullRequests: [
+                { branch: '7.x', state: 'NOT_CREATED' },
+              ],
+              sourceBranch: 'main',
+              sourceCommit: {
+                committedDate: '2021-12-16T00:03:34Z',
+                message: 'Change Barca to Braithwaite (#8)',
+                sha: '343402a748be2375325b2730fa979bcea5b96ba1',
+              },
+              sourcePullRequest: {
+                mergeCommit: {
+                  message: 'Change Barca to Braithwaite (#8)',
+                  sha: '343402a748be2375325b2730fa979bcea5b96ba1',
+                },
+                number: 8,
+                url: 'https://github.com/backport-org/repo-with-conflicts/pull/8',
+              },
+            },
+          ],
+        });
+      });
+    });
+  });
+
   describe('getCommits', () => {
     it('pullNumber', async () => {
-      const accessToken = getDevAccessToken();
       const commits = await getCommits({
         accessToken: accessToken,
         repoName: 'kibana',
@@ -61,7 +182,6 @@ describe('entrypoint.module', () => {
     });
 
     it('sha', async () => {
-      const accessToken = getDevAccessToken();
       const commits = await getCommits({
         accessToken: accessToken,
         repoName: 'kibana',
@@ -119,7 +239,6 @@ describe('entrypoint.module', () => {
     });
 
     it('prFilter', async () => {
-      const accessToken = getDevAccessToken();
       const commits = await getCommits({
         accessToken: accessToken,
         repoName: 'kibana',
@@ -465,7 +584,6 @@ describe('entrypoint.module', () => {
     });
 
     it('author', async () => {
-      const accessToken = getDevAccessToken();
       const commits = await getCommits({
         accessToken: accessToken,
         repoName: 'kibana',
@@ -596,7 +714,6 @@ describe('entrypoint.module', () => {
     });
 
     it('throws when missing a filter', async () => {
-      const accessToken = getDevAccessToken();
       await expect(() =>
         getCommits({
           accessToken: accessToken,

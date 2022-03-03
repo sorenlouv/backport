@@ -15,23 +15,32 @@ import { getTargetBranches } from './ui/getTargetBranches';
 import { ora } from './ui/ora';
 import { setupRepo } from './ui/setupRepo';
 
-export type BackportResponse =
-  | {
-      status: 'success';
-      commits: Commit[];
-      results: Result[];
-    }
-  | {
-      status: 'failure';
-      commits: Commit[];
-      error: Error | HandledError;
-      errorMessage: string;
-    };
+export type BackportSuccessResponse = {
+  status: 'success';
+  commits: Commit[];
+  results: Result[];
+};
 
-export async function backportRun(
-  processArgs: string[],
-  optionsFromModule: ConfigFileOptions = {}
-): Promise<BackportResponse> {
+export type BackportFailureResponse = {
+  status: 'failure';
+  commits: Commit[];
+  error: Error | HandledError;
+  errorMessage: string;
+};
+
+export type BackportResponse =
+  | BackportSuccessResponse
+  | BackportFailureResponse;
+
+export async function backportRun({
+  processArgs,
+  optionsFromModule = {},
+  mode,
+}: {
+  processArgs: string[];
+  optionsFromModule?: ConfigFileOptions;
+  mode: 'nodeModule' | 'cli';
+}): Promise<BackportResponse> {
   const argv = yargsParser(processArgs) as ConfigFileOptions;
   const ci = argv.ci ?? optionsFromModule.ci;
   const ls = argv.ls ?? optionsFromModule.ls;
@@ -114,7 +123,7 @@ export async function backportRun(
     }
 
     logger.error('Unhandled exception', e);
-    if (isCriticalError(e)) {
+    if (mode === 'cli' && isCriticalError(e)) {
       process.exitCode = 1;
     }
 
@@ -158,7 +167,7 @@ function isCriticalError(e: Error | HandledError) {
     return true;
   }
 
-  if (e.errorContext?.code === 'no-branches-exception') {
+  if (e.errorContext.code === 'no-branches-exception') {
     return false;
   }
 

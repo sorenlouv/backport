@@ -7,6 +7,7 @@ export function getOptionsFromCliArgs(
   { exitOnError = true }: { exitOnError?: boolean } = {}
 ) {
   const yargsInstance = yargs(processArgs)
+    .strict()
     .parserConfiguration({
       'strip-dashed': true,
       'strip-aliased': true,
@@ -73,7 +74,7 @@ export function getOptionsFromCliArgs(
       conflicts: ['noCherrypickRef'],
     })
 
-    .option('configFile', {
+    .option('projectConfigFile', {
       alias: 'config',
       description: 'Path to project config',
       type: 'string',
@@ -289,12 +290,14 @@ export function getOptionsFromCliArgs(
     })
 
     .option('repoOwner', {
+      hidden: true,
       description: 'Repository owner',
       type: 'string',
       conflicts: ['repo'],
     })
 
     .option('repoName', {
+      hidden: true,
       description: 'Repository name',
       type: 'string',
       conflicts: ['repo'],
@@ -352,7 +355,6 @@ export function getOptionsFromCliArgs(
     })
 
     .alias('version', 'v')
-    .alias('version', 'V')
     .help()
 
     .epilogue(
