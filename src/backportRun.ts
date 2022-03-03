@@ -163,11 +163,10 @@ function outputError({
 }
 
 function isCriticalError(e: Error | HandledError) {
-  if (!(e instanceof HandledError)) {
-    return true;
-  }
-
-  if (e.errorContext.code === 'no-branches-exception') {
+  if (
+    e instanceof HandledError &&
+    e.errorContext.code === 'no-branches-exception'
+  ) {
     return false;
   }
 
