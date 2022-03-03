@@ -20,11 +20,11 @@ export async function getOptionsFromConfigFiles({
     optionsFromCliArgs.ci ?? optionsFromModule.ci ?? defaultConfigOptions.ci;
 
   // ci: cli and module only flag
-  const configFile =
-    optionsFromCliArgs.configFile ?? optionsFromModule.configFile;
+  const projectConfigFile =
+    optionsFromCliArgs.projectConfigFile ?? optionsFromModule.projectConfigFile;
 
   const [projectConfig, globalConfig] = await Promise.all([
-    getProjectConfig({ configFile }),
+    getProjectConfig({ projectConfigFile }),
     ci ? undefined : getGlobalConfig(),
   ]);
 

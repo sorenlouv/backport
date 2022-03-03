@@ -29,7 +29,11 @@ export function backportRun(
   //
   processArgs: string[] = []
 ) {
-  return run(processArgs, excludeUndefined(options));
+  return run({
+    processArgs,
+    optionsFromModule: excludeUndefined(options),
+    isCliMode: false,
+  });
 }
 
 export async function getCommits(options: {

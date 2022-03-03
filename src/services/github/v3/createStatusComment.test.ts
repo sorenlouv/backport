@@ -1,5 +1,8 @@
 import nock from 'nock';
-import { BackportResponse } from '../../../backportRun';
+import {
+  BackportResponse,
+  BackportSuccessResponse,
+} from '../../../backportRun';
 import { ValidConfigOptions } from '../../../options/options';
 import { HandledError } from '../../HandledError';
 import { createStatusComment, getCommentBody } from './createStatusComment';
@@ -175,7 +178,7 @@ describe('getCommentBody', () => {
             error: new Error('My boom error!'),
           },
         ],
-      } as BackportResponse,
+      } as BackportSuccessResponse,
     });
 
     it('posts a comment on CI', () => {
@@ -289,6 +292,7 @@ describe('getCommentBody', () => {
             targetBranch: '7.1',
             error: new HandledError({
               code: 'merge-conflict-exception',
+              conflictingFiles: ['readme.md'],
               commitsWithoutBackports: [
                 {
                   formatted: 'some-formatted-text',
@@ -347,6 +351,7 @@ describe('getCommentBody', () => {
             targetBranch: '7.2',
             error: new HandledError({
               code: 'merge-conflict-exception',
+              conflictingFiles: ['my-file.txt'],
               commitsWithoutBackports: [],
             }),
           },

@@ -30,9 +30,9 @@ type Options = Partial<{
   cherrypickRef: boolean;
   ci: boolean; // only available via cli and module options (not project or global config)
   commitPaths: string[];
-  configFile: string; // only available via cli and module options (not project or global config)
   details: boolean;
   dir: string;
+  dryRun: boolean;
   editor: string;
   fork: boolean;
   gitAuthorEmail: string;
@@ -49,6 +49,7 @@ type Options = Partial<{
   noVerify: boolean;
   prDescription: string;
   prFilter: string;
+  projectConfigFile: string; // only available via cli and module options (not project or global config)
   prTitle: string;
   publishStatusComment: boolean;
   pullNumber: number;
@@ -64,7 +65,6 @@ type Options = Partial<{
   targetBranchChoices: TargetBranchChoiceOrString[];
   targetBranches: string[];
   targetPRLabels: string[];
-  verbose: boolean;
 }>;
 
 export type ConfigFileOptions = Options &

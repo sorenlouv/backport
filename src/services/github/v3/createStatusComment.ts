@@ -100,7 +100,7 @@ export function getCommentBody({
   if (backportResponse.status === 'failure') {
     if (
       backportResponse.error instanceof HandledError &&
-      backportResponse.error.errorContext?.code === 'no-branches-exception'
+      backportResponse.error.errorContext.code === 'no-branches-exception'
     ) {
       return `## ⚪ Backport skipped
 The pull request was not backported as there were no branches to backport to. If this is a mistake, please apply the desired version labels or run the backport tool manually.
@@ -127,7 +127,10 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
         ];
       }
 
-      if (result.error.errorContext?.code === 'merge-conflict-exception') {
+      if (
+        result.error instanceof HandledError &&
+        result.error.errorContext.code === 'merge-conflict-exception'
+      ) {
         const unmergedBackports =
           result.error.errorContext.commitsWithoutBackports.map((c) => {
             return ` - [${getFirstLine(c.commit.sourceCommit.message)}](${

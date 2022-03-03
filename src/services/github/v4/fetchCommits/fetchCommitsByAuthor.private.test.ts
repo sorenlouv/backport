@@ -4,13 +4,9 @@ import { Commit } from '../../../sourceCommit/parseSourceCommit';
 import * as apiRequestV4Module from '../apiRequestV4';
 import { fetchCommitsByAuthor } from './fetchCommitsByAuthor';
 
+const accessToken = getDevAccessToken();
+
 describe('fetchCommitsByAuthor', () => {
-  let devAccessToken: string;
-
-  beforeAll(() => {
-    devAccessToken = getDevAccessToken();
-  });
-
   describe('snapshot request/response', () => {
     let spy: jest.SpyInstance;
     let commits: Commit[];
@@ -18,7 +14,7 @@ describe('fetchCommitsByAuthor', () => {
     beforeEach(async () => {
       spy = jest.spyOn(apiRequestV4Module, 'apiRequestV4');
       commits = await fetchCommitsByAuthor({
-        accessToken: devAccessToken,
+        accessToken,
         author: 'sqren',
         maxNumber: 10,
         repoName: 'kibana',
@@ -53,7 +49,7 @@ describe('fetchCommitsByAuthor', () => {
 
   describe('commitPaths', () => {
     const getOptions = () => ({
-      accessToken: devAccessToken,
+      accessToken,
       author: 'sqren',
       maxNumber: 10,
       repoName: 'repo-with-different-commit-paths',
@@ -139,7 +135,7 @@ describe('fetchCommitsByAuthor', () => {
     let res: Awaited<ReturnType<typeof fetchCommitsByAuthor>>;
     beforeEach(async () => {
       res = await fetchCommitsByAuthor({
-        accessToken: devAccessToken,
+        accessToken,
         commitPaths: [],
         maxNumber: 10,
         repoName: 'backport-e2e',

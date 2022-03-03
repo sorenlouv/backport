@@ -4,14 +4,9 @@ import * as childProcess from '../../child-process-promisified';
 import { getRepoOwnerAndNameFromGitRemotes } from './getRepoOwnerAndNameFromGitRemotes';
 
 const sandboxPath = getSandboxPath({ filename: __filename });
+const accessToken = getDevAccessToken();
 
 describe('fetchRemoteProjectConfig', () => {
-  let devAccessToken: string;
-
-  beforeEach(() => {
-    devAccessToken = getDevAccessToken();
-  });
-
   describe('when the remote is a fork', () => {
     it('retrives the original owner from github', async () => {
       await resetSandbox(sandboxPath);
@@ -24,7 +19,7 @@ describe('fetchRemoteProjectConfig', () => {
 
       expect(
         await getRepoOwnerAndNameFromGitRemotes({
-          accessToken: devAccessToken,
+          accessToken,
           cwd: sandboxPath,
         })
       ).toEqual({
@@ -51,7 +46,7 @@ describe('fetchRemoteProjectConfig', () => {
 
       expect(
         await getRepoOwnerAndNameFromGitRemotes({
-          accessToken: devAccessToken,
+          accessToken,
           cwd: sandboxPath,
         })
       ).toEqual({});
@@ -66,7 +61,7 @@ describe('fetchRemoteProjectConfig', () => {
 
       expect(
         await getRepoOwnerAndNameFromGitRemotes({
-          accessToken: devAccessToken,
+          accessToken,
           cwd: sandboxPath,
         })
       ).toEqual({});

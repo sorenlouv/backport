@@ -4,13 +4,9 @@ import { Commit } from '../../../sourceCommit/parseSourceCommit';
 import * as apiRequestV4Module from '../apiRequestV4';
 import { fetchCommitByPullNumber } from './fetchCommitByPullNumber';
 
+const accessToken = getDevAccessToken();
+
 describe('fetchCommitByPullNumber', () => {
-  let devAccessToken: string;
-
-  beforeAll(() => {
-    devAccessToken = getDevAccessToken();
-  });
-
   describe('snapshot request/response', () => {
     let spy: jest.SpyInstance;
     let commit: Commit;
@@ -21,7 +17,7 @@ describe('fetchCommitByPullNumber', () => {
       commit = await fetchCommitByPullNumber({
         repoOwner: 'elastic',
         repoName: 'kibana',
-        accessToken: devAccessToken,
+        accessToken,
         pullNumber: 121633,
         sourceBranch: 'master',
       });
@@ -50,7 +46,7 @@ describe('fetchCommitByPullNumber', () => {
   describe('when PR was merged', () => {
     it('is returned', async () => {
       const options = {
-        accessToken: devAccessToken,
+        accessToken,
         pullNumber: 5,
         repoName: 'backport-e2e',
         repoOwner: 'backport-org',
@@ -104,7 +100,7 @@ describe('fetchCommitByPullNumber', () => {
   describe('when PR is still open', () => {
     it('throws an error', async () => {
       const options = {
-        accessToken: devAccessToken,
+        accessToken,
         pullNumber: 11,
         repoName: 'backport-e2e',
         repoOwner: 'backport-org',
@@ -120,7 +116,7 @@ describe('fetchCommitByPullNumber', () => {
   describe('when PR does not exist', () => {
     it('throws an error', async () => {
       const options = {
-        accessToken: devAccessToken,
+        accessToken,
         pullNumber: 9999999999999,
         repoName: 'backport-e2e',
         repoOwner: 'backport-org',

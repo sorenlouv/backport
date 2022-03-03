@@ -295,11 +295,6 @@ export async function cherrypick({
       );
     }
 
-    // git info missing
-    if (e.message.includes('Please tell me who you are')) {
-      throw new HandledError(e.message);
-    }
-
     if (e.message.includes(`bad object ${sha}`)) {
       throw new HandledError(
         `Cherrypick failed because commit "${sha}" was not found`

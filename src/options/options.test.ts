@@ -170,11 +170,11 @@ describe('getOptions', () => {
     expect(options.autoFixConflicts).toBe(myFn);
   });
 
-  it('should call updateLogger', async () => {
+  it('should call setAccessToken', async () => {
     mockGithubConfigOptions({});
     await getOptions([], {});
 
-    expect(logger.updateLogger).toHaveBeenCalledTimes(1);
+    expect(logger.setAccessToken).toHaveBeenCalledTimes(1);
   });
 
   it('should return options', async () => {
@@ -219,7 +219,6 @@ describe('getOptions', () => {
       targetBranchChoices: ['7.9', '8.0'],
       targetBranches: [],
       targetPRLabels: [],
-      verbose: false,
     });
   });
 

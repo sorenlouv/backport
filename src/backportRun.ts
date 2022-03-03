@@ -7,7 +7,7 @@ import { HandledError } from './services/HandledError';
 import { getLogfilePath } from './services/env';
 import { createStatusComment } from './services/github/v3/createStatusComment';
 import { GithubV4Exception } from './services/github/v4/apiRequestV4';
-import { consoleLog, initLogger, logger } from './services/logger';
+import { consoleLog, initLogger } from './services/logger';
 import { Commit } from './services/sourceCommit/parseSourceCommit';
 import { getCommits } from './ui/getCommits';
 import { getGitConfigAuthor } from './ui/getGitConfigAuthor';
@@ -15,34 +15,41 @@ import { getTargetBranches } from './ui/getTargetBranches';
 import { ora } from './ui/ora';
 import { setupRepo } from './ui/setupRepo';
 
-export type BackportResponse =
-  | {
-      status: 'success';
-      commits: Commit[];
-      results: Result[];
-    }
-  | {
-      status: 'failure';
-      commits: Commit[];
-      error: Error | HandledError;
-      errorMessage: string;
-    };
+export type BackportSuccessResponse = {
+  status: 'success';
+  commits: Commit[];
+  results: Result[];
+};
 
-export async function backportRun(
-  processArgs: string[],
-  optionsFromModule: ConfigFileOptions = {}
-): Promise<BackportResponse> {
+export type BackportFailureResponse = {
+  status: 'failure';
+  commits: Commit[];
+  error: Error | HandledError;
+  errorMessage: string;
+};
+
+export type BackportResponse =
+  | BackportSuccessResponse
+  | BackportFailureResponse;
+
+export async function backportRun({
+  processArgs,
+  optionsFromModule = {},
+  isCliMode,
+}: {
+  processArgs: string[];
+  optionsFromModule?: ConfigFileOptions;
+  isCliMode: boolean;
+}): Promise<BackportResponse> {
   const argv = yargsParser(processArgs) as ConfigFileOptions;
   const ci = argv.ci ?? optionsFromModule.ci;
   const ls = argv.ls ?? optionsFromModule.ls;
-
   const logFilePath = argv.logFilePath ?? optionsFromModule.logFilePath;
+  const logger = initLogger({ ci, logFilePath });
 
-  initLogger({ ci, logFilePath });
-
-  // don't show spinner for yargs commands that exit the process without stopping the spinner first
   const spinner = ora(ci);
 
+  // don't show spinner for yargs commands that exit the process without stopping the spinner first
   if (!argv.help && !argv.version && !argv.v) {
     spinner.start('Initializing...');
   }
@@ -116,7 +123,9 @@ export async function backportRun(
     }
 
     logger.error('Unhandled exception', e);
-    process.exitCode = 1;
+    if (isCliMode && isCriticalError(e)) {
+      process.exitCode = 1;
+    }
 
     return backportResponse;
   }
@@ -151,4 +160,15 @@ function outputError({
       )
     );
   }
+}
+
+function isCriticalError(e: Error | HandledError) {
+  if (
+    e instanceof HandledError &&
+    e.errorContext.code === 'no-branches-exception'
+  ) {
+    return false;
+  }
+
+  return true;
 }

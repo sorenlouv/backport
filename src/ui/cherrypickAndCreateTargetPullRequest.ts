@@ -223,17 +223,22 @@ async function waitForCherrypick(
     autoResolveSpinner.fail();
   }
 
+  const conflictingFilesRelative = conflictingFiles
+    .map((f) => f.relative)
+    .slice(0, 50);
+
   const commitsWithoutBackports = await getCommitsWithoutBackports({
     options,
     commit,
     targetBranch,
-    conflictingFiles: conflictingFiles.map((f) => f.relative).slice(0, 50),
+    conflictingFiles: conflictingFilesRelative,
   });
 
   if (options.ci) {
     throw new HandledError({
       code: 'merge-conflict-exception',
       commitsWithoutBackports,
+      conflictingFiles: conflictingFilesRelative,
     });
   }
 
@@ -322,14 +327,14 @@ async function listConflictingAndUnstagedFiles({
       )}`
     : '';
 
-  const res = await confirmPrompt(`${header}
+  const didConfirm = await confirmPrompt(`${header}
 
 ${conflictSection}
 ${unstagedSection}
 
 Press ENTER when the conflicts are resolved and files are staged`);
 
-  if (!res) {
+  if (!didConfirm) {
     throw new HandledError({ code: 'abort-exception' });
   }
 

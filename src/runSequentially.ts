@@ -19,7 +19,7 @@ export type Result =
       // only set for failure
       status: 'failure';
       targetBranch: string;
-      error: HandledError;
+      error: HandledError | Error;
     };
 
 export async function runSequentially({
@@ -56,7 +56,6 @@ export async function runSequentially({
         pullRequestNumber: number,
       });
     } catch (e) {
-      process.exitCode = 1;
       results.push({
         targetBranch,
         status: 'failure',
