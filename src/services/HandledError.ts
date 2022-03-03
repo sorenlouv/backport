@@ -10,7 +10,7 @@ type ErrorContext =
       }[];
     }
   | {
-      code: 'custom';
+      code: 'custom-exception';
       message: string;
     }
   | {
@@ -27,7 +27,7 @@ function getMessage(errorContext: ErrorContext): string {
       return 'There are no branches to backport to. Aborting.';
     case 'abort-exception':
       return 'Aborted';
-    case 'custom':
+    case 'custom-exception':
       return errorContext.message;
   }
 }
@@ -37,7 +37,7 @@ export class HandledError extends Error {
   constructor(errorContextOrString: ErrorContext | string) {
     const errorContext: ErrorContext =
       typeof errorContextOrString === 'string'
-        ? { code: 'custom', message: errorContextOrString }
+        ? { code: 'custom-exception', message: errorContextOrString }
         : errorContextOrString;
     const message = getMessage(errorContext);
     super(message);
