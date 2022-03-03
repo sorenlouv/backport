@@ -2,17 +2,13 @@ import { getDevAccessToken } from '../../../../test/private/getDevAccessToken';
 import { Commit } from '../../../sourceCommit/parseSourceCommit';
 import { fetchPullRequestsBySearchQuery } from './fetchPullRequestsBySearchQuery';
 
+const accessToken = getDevAccessToken();
+
 describe('fetchPullRequestsBySearchQuery', () => {
-  let devAccessToken: string;
-
-  beforeAll(() => {
-    devAccessToken = getDevAccessToken();
-  });
-
   describe('when filter does not match any PRs', () => {
     it('throws an error', async () => {
       const options = {
-        accessToken: devAccessToken,
+        accessToken,
         maxNumber: 10,
         prFilter: 'label:non-existing',
         repoName: 'backport-e2e',
@@ -34,7 +30,7 @@ describe('fetchPullRequestsBySearchQuery', () => {
   describe('when filter matches PRs', () => {
     it('returns the merge commits for those PRs', async () => {
       const options = {
-        accessToken: devAccessToken,
+        accessToken,
         maxNumber: 10,
         prFilter: 'label:v7.8.0',
         repoName: 'backport-e2e',

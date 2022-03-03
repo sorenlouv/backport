@@ -4,13 +4,9 @@ import { Commit } from '../../../sourceCommit/parseSourceCommit';
 import * as apiRequestV4Module from '../apiRequestV4';
 import { fetchCommitBySha } from './fetchCommitBySha';
 
+const accessToken = getDevAccessToken();
+
 describe('fetchCommitBySha', () => {
-  let devAccessToken: string;
-
-  beforeEach(() => {
-    devAccessToken = getDevAccessToken();
-  });
-
   describe('snapshot request/response', () => {
     let spy: jest.SpyInstance;
     let commit: Commit;
@@ -21,7 +17,7 @@ describe('fetchCommitBySha', () => {
       commit = await fetchCommitBySha({
         repoOwner: 'elastic',
         repoName: 'kibana',
-        accessToken: devAccessToken,
+        accessToken,
         sha: 'd421ddcf6157150596581c7885afa3690cec6339',
         sourceBranch: 'main',
       });
@@ -82,7 +78,7 @@ describe('fetchCommitBySha', () => {
       await fetchCommitBySha({
         repoOwner: 'elastic',
         repoName: 'kibana',
-        accessToken: devAccessToken,
+        accessToken,
         sha: 'cb6fbc0',
         sourceBranch: 'master',
       })
@@ -94,7 +90,7 @@ describe('fetchCommitBySha', () => {
       fetchCommitBySha({
         repoOwner: 'elastic',
         repoName: 'kibana',
-        accessToken: devAccessToken,
+        accessToken,
         sha: 'fc22f59',
         sourceBranch: 'main',
       })
@@ -108,7 +104,7 @@ describe('fetchCommitBySha', () => {
       fetchCommitBySha({
         repoOwner: 'elastic',
         repoName: 'kibana',
-        accessToken: devAccessToken,
+        accessToken,
         sha: 'myCommitSha',
         sourceBranch: 'main',
       })

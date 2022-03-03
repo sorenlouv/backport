@@ -2,11 +2,10 @@ import os from 'os';
 import { getDevAccessToken } from '../../../../test/private/getDevAccessToken';
 import { getOptionsFromGithub } from './getOptionsFromGithub';
 
-describe('getOptionsFromGithub', () => {
-  let devAccessToken: string;
+const accessToken = getDevAccessToken();
 
+describe('getOptionsFromGithub', () => {
   beforeAll(async () => {
-    devAccessToken = getDevAccessToken();
     jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
   });
 
@@ -33,7 +32,7 @@ describe('getOptionsFromGithub', () => {
       it('returns the options', async () => {
         const combinedOptions = {
           author: 'sqren',
-          accessToken: devAccessToken,
+          accessToken,
           repoOwner: 'backport-org',
           repoName: 'backport-e2e',
           cwd: process.cwd(),
@@ -64,7 +63,7 @@ describe('getOptionsFromGithub', () => {
     it('returns original repoOwner', async () => {
       const combinedOptions = {
         author: 'sqren',
-        accessToken: devAccessToken,
+        accessToken,
         repoOwner: 'sqren',
         repoName: 'backport-e2e',
         cwd: process.cwd(),
@@ -81,7 +80,7 @@ describe('getOptionsFromGithub', () => {
       it('uses the default branch of the repo', async () => {
         const combinedOptions = {
           author: 'sqren',
-          accessToken: devAccessToken,
+          accessToken,
           repoOwner: 'backport-org',
           repoName: 'repo-with-non-standard-main-branch',
           cwd: process.cwd(),
@@ -99,7 +98,7 @@ describe('getOptionsFromGithub', () => {
       it('shows a warning', async () => {
         const combinedOptions = {
           author: 'sqren',
-          accessToken: devAccessToken,
+          accessToken,
           repoOwner: 'backport-org',
           repoName: 'repo-with-branch-named-backport',
           cwd: process.cwd(),
@@ -118,7 +117,7 @@ describe('getOptionsFromGithub', () => {
     it('does not throw', async () => {
       const combinedOptions = {
         author: 'sqren',
-        accessToken: devAccessToken,
+        accessToken,
         repoOwner: 'backport-org',
         repoName: 'repo-with-backportrc-removed',
         cwd: process.cwd(),

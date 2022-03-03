@@ -2,17 +2,13 @@ import { ValidConfigOptions } from '../../../options/options';
 import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
 import { fetchAuthorId } from './fetchAuthorId';
 
+const accessToken = getDevAccessToken();
+
 describe('fetchAuthorId', () => {
-  let devAccessToken: string;
-
-  beforeAll(() => {
-    devAccessToken = getDevAccessToken();
-  });
-
   describe('author = null', () => {
     it('returns null', async () => {
       const options = {
-        accessToken: devAccessToken,
+        accessToken,
         author: null,
       } as ValidConfigOptions;
 
@@ -23,7 +19,7 @@ describe('fetchAuthorId', () => {
   describe('author is "sqren"', () => {
     it('returns author id', async () => {
       const options = {
-        accessToken: devAccessToken,
+        accessToken,
         author: 'sqren',
       } as ValidConfigOptions;
 

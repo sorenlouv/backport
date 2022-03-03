@@ -5,15 +5,14 @@ import { fetchCommitBySha } from './fetchCommitBySha';
 import { fetchCommitsByAuthor } from './fetchCommitsByAuthor';
 import { fetchPullRequestsBySearchQuery } from './fetchPullRequestsBySearchQuery';
 
+const accessToken = getDevAccessToken();
+
 describe('allFetchers', () => {
-  let devAccessToken: string;
   let commitByAuthor: Commit;
 
   beforeEach(async () => {
-    devAccessToken = getDevAccessToken();
-
     const commitsByAuthor = await fetchCommitsByAuthor({
-      accessToken: devAccessToken,
+      accessToken,
       author: 'sqren',
       maxNumber: 1,
       repoName: 'kibana',
@@ -35,7 +34,7 @@ describe('allFetchers', () => {
     const commitByPullNumber = await fetchCommitByPullNumber({
       repoOwner: 'elastic',
       repoName: 'kibana',
-      accessToken: devAccessToken,
+      accessToken,
       pullNumber: commitByAuthor.sourcePullRequest.number,
       sourceBranch: 'master',
     });
@@ -47,7 +46,7 @@ describe('allFetchers', () => {
     const commitBySha = await fetchCommitBySha({
       repoOwner: 'elastic',
       repoName: 'kibana',
-      accessToken: devAccessToken,
+      accessToken,
       sha: commitByAuthor.sourceCommit.sha,
       sourceBranch: 'main',
     });
@@ -59,7 +58,7 @@ describe('allFetchers', () => {
     const commitsBySearchQuery = await fetchPullRequestsBySearchQuery({
       repoOwner: 'elastic',
       repoName: 'kibana',
-      accessToken: devAccessToken,
+      accessToken,
       maxNumber: 1,
       prFilter: `created:2021-12-20..2021-12-20`,
       sourceBranch: 'main',

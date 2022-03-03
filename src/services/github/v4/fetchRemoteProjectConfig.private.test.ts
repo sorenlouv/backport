@@ -1,18 +1,14 @@
 import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
 import { fetchRemoteProjectConfig } from './fetchRemoteProjectConfig';
 
+const accessToken = getDevAccessToken();
+
 describe('fetchRemoteProjectConfig', () => {
-  let devAccessToken: string;
-
-  beforeEach(() => {
-    devAccessToken = getDevAccessToken();
-  });
-
   it('returns the backport config from "main" branch', async () => {
     const projectConfig = await fetchRemoteProjectConfig({
       repoOwner: 'backport-org',
       repoName: 'repo-with-project-config',
-      accessToken: devAccessToken,
+      accessToken,
       sourceBranch: 'main',
     });
 
@@ -34,7 +30,7 @@ describe('fetchRemoteProjectConfig', () => {
     const projectConfig = await fetchRemoteProjectConfig({
       repoOwner: 'backport-org',
       repoName: 'repo-with-project-config',
-      accessToken: devAccessToken,
+      accessToken,
       sourceBranch: 'branch-with-legacy-config',
     });
 
@@ -49,7 +45,7 @@ describe('fetchRemoteProjectConfig', () => {
     const promise = fetchRemoteProjectConfig({
       repoOwner: 'backport-org',
       repoName: 'repo-with-project-config',
-      accessToken: devAccessToken,
+      accessToken,
       sourceBranch: 'branch-with-no-config',
     });
 

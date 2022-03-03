@@ -2,17 +2,13 @@ import { ValidConfigOptions } from '../../../options/options';
 import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
 import { fetchExistingPullRequest } from './fetchExistingPullRequest';
 
+const accessToken = getDevAccessToken();
+
 describe('fetchExistingPullRequest', () => {
-  let devAccessToken: string;
-
-  beforeAll(() => {
-    devAccessToken = getDevAccessToken();
-  });
-
   describe('when PR does not exist', () => {
     it('returns undefined', async () => {
       const options = {
-        accessToken: devAccessToken,
+        accessToken,
       } as ValidConfigOptions;
 
       const prPayload = {
@@ -33,7 +29,7 @@ describe('fetchExistingPullRequest', () => {
   describe('when PR exists', () => {
     it('returns the PR number and url', async () => {
       const options = {
-        accessToken: devAccessToken,
+        accessToken,
       } as ValidConfigOptions;
 
       const prPayload = {
