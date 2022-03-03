@@ -32,7 +32,7 @@ export function backportRun(
   return run({
     processArgs,
     optionsFromModule: excludeUndefined(options),
-    mode: 'nodeModule',
+    isCliMode: false,
   });
 }
 

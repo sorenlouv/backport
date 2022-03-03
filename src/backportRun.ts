@@ -35,11 +35,11 @@ export type BackportResponse =
 export async function backportRun({
   processArgs,
   optionsFromModule = {},
-  mode,
+  isCliMode,
 }: {
   processArgs: string[];
   optionsFromModule?: ConfigFileOptions;
-  mode: 'nodeModule' | 'cli';
+  isCliMode: boolean;
 }): Promise<BackportResponse> {
   const argv = yargsParser(processArgs) as ConfigFileOptions;
   const ci = argv.ci ?? optionsFromModule.ci;
@@ -123,7 +123,7 @@ export async function backportRun({
     }
 
     logger.error('Unhandled exception', e);
-    if (mode === 'cli' && isCriticalError(e)) {
+    if (isCliMode && isCriticalError(e)) {
       process.exitCode = 1;
     }
 
