@@ -15,6 +15,12 @@ import { getTargetBranches } from './ui/getTargetBranches';
 import { ora } from './ui/ora';
 import { setupRepo } from './ui/setupRepo';
 
+export type BackportAbortResponse = {
+  status: 'aborted';
+  commits: Commit[];
+  error: HandledError;
+};
+
 export type BackportSuccessResponse = {
   status: 'success';
   commits: Commit[];
@@ -30,7 +36,8 @@ export type BackportFailureResponse = {
 
 export type BackportResponse =
   | BackportSuccessResponse
-  | BackportFailureResponse;
+  | BackportFailureResponse
+  | BackportAbortResponse;
 
 export async function backportRun({
   processArgs,
@@ -74,8 +81,24 @@ export async function backportRun({
       };
     }
 
-    const targetBranches = await getTargetBranches(options, commits);
-    logger.info('Target branches', targetBranches);
+    let targetBranches: string[];
+    try {
+      targetBranches = await getTargetBranches(options, commits);
+      logger.info('Target branches', targetBranches);
+    } catch (e) {
+      if (
+        e instanceof HandledError &&
+        e.errorContext.code === 'no-branches-exception'
+      ) {
+        return {
+          status: 'aborted',
+          commits,
+          error: e,
+        };
+      }
+
+      throw e;
+    }
 
     const [gitConfigAuthor] = await Promise.all([
       getGitConfigAuthor(options),
@@ -123,7 +146,7 @@ export async function backportRun({
     }
 
     logger.error('Unhandled exception', e);
-    if (isCliMode && isCriticalError(e)) {
+    if (isCliMode) {
       process.exitCode = 1;
     }
 
@@ -160,15 +183,4 @@ function outputError({
       )
     );
   }
-}
-
-function isCriticalError(e: Error | HandledError) {
-  if (
-    e instanceof HandledError &&
-    e.errorContext.code === 'no-branches-exception'
-  ) {
-    return false;
-  }
-
-  return true;
 }

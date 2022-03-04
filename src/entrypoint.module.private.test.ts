@@ -39,6 +39,11 @@ describe('entrypoint.module', () => {
         expect(response.results[0].error.errorContext.code).toBe(
           'merge-conflict-exception'
         );
+
+        //@ts-expect-error
+        expect(response.results[0].error.message).toBe(
+          'Commit could not be cherrypicked due to conflicts in: la-liga.md'
+        );
       });
 
       it('contains a list of conflicting files', () => {
@@ -61,10 +66,13 @@ describe('entrypoint.module', () => {
         })) as BackportFailureResponse;
       });
 
-      it('should return conflict in response', async () => {
-        expect(response.status).toBe('failure');
+      it('should correct error code', async () => {
+        expect(response.status).toBe('aborted');
         //@ts-expect-error
         expect(response.error.errorContext.code).toBe('no-branches-exception');
+        expect(response.error.message).toBe(
+          'There are no branches to backport to. Aborting.'
+        );
       });
     });
 
