@@ -1,4 +1,5 @@
 import { exec } from '../../../services/child-process-promisified';
+import { getBackportDirPath } from '../../../services/env';
 import * as packageVersion from '../../../utils/packageVersion';
 import { getDevAccessToken } from '../../private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
@@ -161,6 +162,36 @@ describe('entrypoint cli', () => {
     expect(res).toMatchInlineSnapshot(
       `"The repository \\"foo/bar\\" doesn't exist"`
     );
+  });
+
+  it(`should output merge conflict`, async () => {
+    const res = await runBackportViaCli(
+      [
+        '--repo=backport-org/repo-with-conflicts',
+        '--pr=12',
+        '--branch=7.x',
+        `--accessToken=${accessToken}`,
+      ],
+      {
+        waitForString: 'Press ENTER when the conflicts',
+      }
+    );
+
+    const backportDir = getBackportDirPath();
+    expect(res.replaceAll(backportDir, '<HOMEDIR>')).toMatchInlineSnapshot(`
+      "
+      Backporting to 7.x:
+      The commit could not be backported due to conflicts
+      Please fix the conflicts in <HOMEDIR>/repositories/backport-org/repo-with-conflicts
+      Hint: Before fixing the conflicts manually you should consider backporting the following pull requests to \\"7.x\\":
+       - Change Barca to Braithwaite (#8) (backport missing)
+         https://github.com/backport-org/repo-with-conflicts/pull/8
+      ? Fix the following conflicts manually:
+      Conflicting files:
+       - <HOMEDIR>/repositories/backport-org/repo-with-conflicts/la-liga.
+      md
+      Press ENTER when the conflicts are resolved and files are staged (Y/n)"
+    `);
   });
 
   it(`should list commits from master`, async () => {

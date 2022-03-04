@@ -19,6 +19,7 @@ export type BackportAbortResponse = {
   status: 'aborted';
   commits: Commit[];
   error: HandledError;
+  errorMessage: string;
 };
 
 export type BackportSuccessResponse = {
@@ -54,21 +55,24 @@ export async function backportRun({
   const logFilePath = argv.logFilePath ?? optionsFromModule.logFilePath;
   const logger = initLogger({ ci, logFilePath });
 
-  const spinner = ora(ci);
-
-  // don't show spinner for yargs commands that exit the process without stopping the spinner first
-  if (!argv.help && !argv.version && !argv.v) {
-    spinner.start('Initializing...');
-  }
-
   let options: ValidConfigOptions | null = null;
   let commits: Commit[] = [];
 
   try {
-    options = await getOptions(processArgs, optionsFromModule);
-    logger.info('Backporting options', options);
+    const spinner = ora(ci);
+    try {
+      // don't show spinner for yargs commands that exit the process without stopping the spinner first
+      if (!argv.help && !argv.version && !argv.v) {
+        spinner.start('Initializing...');
+      }
 
-    spinner.stop();
+      options = await getOptions(processArgs, optionsFromModule);
+      logger.info('Backporting options', options);
+      spinner.stop();
+    } catch (e) {
+      spinner.stop();
+      throw e;
+    }
 
     commits = await getCommits(options);
     logger.info('Commits', commits);
@@ -78,27 +82,11 @@ export async function backportRun({
         status: 'success',
         commits,
         results: [],
-      };
+      } as BackportResponse;
     }
 
-    let targetBranches: string[];
-    try {
-      targetBranches = await getTargetBranches(options, commits);
-      logger.info('Target branches', targetBranches);
-    } catch (e) {
-      if (
-        e instanceof HandledError &&
-        e.errorContext.code === 'no-branches-exception'
-      ) {
-        return {
-          status: 'aborted',
-          commits,
-          error: e,
-        };
-      }
-
-      throw e;
-    }
+    const targetBranches = await getTargetBranches(options, commits);
+    logger.info('Target branches', targetBranches);
 
     const [gitConfigAuthor] = await Promise.all([
       getGitConfigAuthor(options),
@@ -118,27 +106,32 @@ export async function backportRun({
       commits,
       results,
     };
-
-    await createStatusComment({
-      options,
-      backportResponse,
-    });
-
+    await createStatusComment({ options, backportResponse });
     return backportResponse;
   } catch (e) {
-    spinner.stop();
-    const backportResponse: BackportResponse = {
-      status: 'failure',
-      commits,
-      error: e,
-      errorMessage: e.message,
-    };
+    let backportResponse: BackportResponse;
+
+    if (
+      e instanceof HandledError &&
+      e.errorContext.code === 'no-branches-exception'
+    ) {
+      backportResponse = {
+        status: 'aborted',
+        commits,
+        error: e,
+        errorMessage: e.message,
+      };
+    } else {
+      backportResponse = {
+        status: 'failure',
+        commits,
+        error: e,
+        errorMessage: e.message,
+      };
+    }
 
     if (options) {
-      await createStatusComment({
-        options,
-        backportResponse,
-      });
+      await createStatusComment({ options, backportResponse });
     }
 
     if (!ls) {

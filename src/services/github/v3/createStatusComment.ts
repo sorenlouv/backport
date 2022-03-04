@@ -51,7 +51,7 @@ export async function createStatusComment({
         }
 
         return octokit.issues.createComment({
-          baseUrl: options.githubApiBaseUrlV3,
+          baseUrl: githubApiBaseUrlV3,
           owner: repoOwner,
           repo: repoName,
           issue_number: commit.sourcePullRequest.number,
