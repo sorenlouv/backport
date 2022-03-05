@@ -59,7 +59,9 @@ describe('setupRepo', () => {
       const spinnerTextSpy = jest.spyOn(oraMock, 'text', 'set');
       const spinnerSuccessSpy = jest.spyOn(oraMock, 'succeed');
 
-      jest.spyOn(gitModule, 'getLocalRepoPath').mockResolvedValue(undefined);
+      jest
+        .spyOn(gitModule, 'getLocalSourceRepoPath')
+        .mockResolvedValue(undefined);
 
       jest
         .spyOn(childProcess, 'execAsCallback')
@@ -221,7 +223,7 @@ describe('setupRepo', () => {
       spinnerSuccessSpy = jest.spyOn(oraMock, 'succeed');
 
       jest
-        .spyOn(gitModule, 'getLocalRepoPath')
+        .spyOn(gitModule, 'getLocalSourceRepoPath')
         .mockResolvedValue('/path/to/source/repo');
 
       jest

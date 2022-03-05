@@ -64,6 +64,10 @@ export function runBackportViaCli(
       }
     };
 
+    // proc.on('exit', (code) => {
+    //   console.log('child exit code (spawn)', code);
+    // });
+
     proc.stdout.on('data', onChunk);
 
     // ora (loading spinner) is redirected to stderr

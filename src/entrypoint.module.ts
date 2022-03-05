@@ -20,19 +20,20 @@ export { getGlobalConfig as getLocalGlobalConfig } from './options/config/global
 export function backportRun(
   options: ConfigFileOptions,
 
-  // cli args will not automatically be forwarded when it is consumed as a module
+  // cli args will not automatically be forwarded when backport is consumed as a module
   // It is simple to forward args manually via `process.argv`:
   //
-  // import { backportRun } from `backport
+  // import { backportRun } from 'backport'
   // const args = process.argv.slice(2);
   // backportRun(options, args)
   //
-  processArgs: string[] = []
+  processArgs: string[] = [],
+  exitCodeOnFailure = true
 ) {
   return run({
     processArgs,
     optionsFromModule: excludeUndefined(options),
-    isCliMode: false,
+    exitCodeOnFailure,
   });
 }
 

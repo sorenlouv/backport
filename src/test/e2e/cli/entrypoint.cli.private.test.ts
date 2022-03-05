@@ -100,7 +100,7 @@ describe('entrypoint cli', () => {
     `);
   });
 
-  it('should return error when branch is missing', async () => {
+  it('should output error when branch is missing', async () => {
     const res = await runBackportViaCli([
       '--skip-remote-config',
       '--repo=backport-org/backport-e2e',
@@ -110,6 +110,17 @@ describe('entrypoint cli', () => {
       "Please specify a target branch: \\"--branch 6.1\\".
       Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#project-config-backportrcjson"
     `);
+  });
+
+  it('should output error when access token is invalid', async () => {
+    const res = await runBackportViaCli([
+      '--branch=foo',
+      '--repo=foo/bar',
+      '--accessToken=some-token',
+    ]);
+    expect(res).toContain(
+      'Please check your access token and make sure it is valid'
+    );
   });
 
   it('should list commits based on .git/config when `repoOwner`/`repoName` is missing', async () => {
@@ -141,18 +152,7 @@ describe('entrypoint cli', () => {
     `);
   });
 
-  it('should return error when access token is invalid', async () => {
-    const res = await runBackportViaCli([
-      '--branch=foo',
-      '--repo=foo/bar',
-      '--accessToken=some-token',
-    ]);
-    expect(res).toContain(
-      'Please check your access token and make sure it is valid'
-    );
-  });
-
-  it(`should return error when repo doesn't exist`, async () => {
+  it(`should output error when repo doesn't exist`, async () => {
     const res = await runBackportViaCli([
       '--branch=foo',
       '--repo=foo/bar',
@@ -162,6 +162,44 @@ describe('entrypoint cli', () => {
     expect(res).toMatchInlineSnapshot(
       `"The repository \\"foo/bar\\" doesn't exist"`
     );
+  });
+
+  it(`should output error when given branch is invalid`, async () => {
+    const res = await runBackportViaCli(
+      [
+        '--branch=foo',
+        '--repo=backport-org/backport-e2e',
+        '--pr=9',
+        `--accessToken=${accessToken}`,
+      ],
+      { waitForString: "is invalid or doesn't exist" }
+    );
+    expect(res).toMatchInlineSnapshot(`
+      "
+      Backporting to foo:
+      The branch \\"foo\\" is invalid or doesn't exist"
+    `);
+  });
+
+  it.only(`should output error unknown exception occurs`, async () => {
+    const sandboxPath = getSandboxPath({ filename: __filename });
+    await resetSandbox(sandboxPath);
+    const res = await runBackportViaCli(
+      [
+        '--repo=backport-org/repo-with-conflicts',
+        '--pr=8',
+        `--dir=${sandboxPath}`,
+        '--branch=foo',
+        `--accessToken=${accessToken}`,
+      ],
+      {
+        waitForString: 'meuw',
+      }
+    );
+    expect(res).toMatchInlineSnapshot(`
+      "
+      Backporting to foo:"
+    `);
   });
 
   it(`should output merge conflict`, async () => {

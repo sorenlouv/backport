@@ -74,6 +74,12 @@ export function getOptionsFromCliArgs(
       conflicts: ['noCherrypickRef'],
     })
 
+    .option('cwd', {
+      hidden: true,
+      description: 'Path to source repo',
+      type: 'string',
+    })
+
     .option('projectConfigFile', {
       alias: 'config',
       description: 'Path to project config',
@@ -91,7 +97,7 @@ export function getOptionsFromCliArgs(
     })
 
     .option('dir', {
-      description: 'Location where the temporary repository will be stored',
+      description: 'Path to temporary backport repo',
       type: 'string',
     })
 

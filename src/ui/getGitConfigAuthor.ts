@@ -1,5 +1,5 @@
 import { ValidConfigOptions } from '../options/options';
-import { getGitConfig, getLocalRepoPath } from '../services/git';
+import { getGitConfig, getLocalSourceRepoPath } from '../services/git';
 
 export type GitConfigAuthor = {
   name?: string;
@@ -9,7 +9,7 @@ export type GitConfigAuthor = {
 export async function getGitConfigAuthor(
   options: ValidConfigOptions
 ): Promise<GitConfigAuthor | undefined> {
-  const localRepoPath = await getLocalRepoPath(options);
+  const localRepoPath = await getLocalSourceRepoPath(options);
   if (!localRepoPath) {
     return;
   }

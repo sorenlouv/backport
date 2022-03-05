@@ -19,7 +19,6 @@ export type BackportAbortResponse = {
   status: 'aborted';
   commits: Commit[];
   error: HandledError;
-  errorMessage: string;
 };
 
 export type BackportSuccessResponse = {
@@ -43,11 +42,11 @@ export type BackportResponse =
 export async function backportRun({
   processArgs,
   optionsFromModule = {},
-  isCliMode,
+  exitCodeOnFailure,
 }: {
   processArgs: string[];
   optionsFromModule?: ConfigFileOptions;
-  isCliMode: boolean;
+  exitCodeOnFailure: boolean;
 }): Promise<BackportResponse> {
   const argv = yargsParser(processArgs) as ConfigFileOptions;
   const ci = argv.ci ?? optionsFromModule.ci;
@@ -119,7 +118,6 @@ export async function backportRun({
         status: 'aborted',
         commits,
         error: e,
-        errorMessage: e.message,
       };
     } else {
       backportResponse = {
@@ -138,10 +136,12 @@ export async function backportRun({
       outputError({ e, logFilePath });
     }
 
-    logger.error('Unhandled exception', e);
-    if (isCliMode) {
+    // only change exit code for failures while in cli mode
+    if (exitCodeOnFailure && backportResponse.status === 'failure') {
       process.exitCode = 1;
     }
+
+    logger.error('Unhandled exception', e);
 
     return backportResponse;
   }

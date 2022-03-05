@@ -9,7 +9,7 @@ import {
   getCommitsInMergeCommit,
   getIsCommitInBranch,
   getIsMergeCommit,
-  getLocalRepoPath,
+  getLocalSourceRepoPath,
 } from './git';
 import { getShortSha } from './github/commitFormatters';
 
@@ -247,13 +247,13 @@ describe('git.integration', () => {
     });
   });
 
-  describe('getLocalRepoPath', () => {
+  describe('getLocalSourceRepoPath', () => {
     let sandboxPath: string;
 
     beforeEach(async () => {
       sandboxPath = getSandboxPath({
         filename: __filename,
-        specname: 'getLocalRepoPath',
+        specname: 'getLocalSourceRepoPath',
       });
       await resetSandbox(sandboxPath);
 
@@ -279,7 +279,7 @@ describe('git.integration', () => {
         githubApiBaseUrlV4: 'http://localhost/graphql', // required to mock the response
       } as ValidConfigOptions;
 
-      expect(await getLocalRepoPath(options)).toBe(sandboxPath);
+      expect(await getLocalSourceRepoPath(options)).toBe(sandboxPath);
     });
 
     it('returns undefined when no remotes match', async () => {
@@ -290,7 +290,7 @@ describe('git.integration', () => {
         githubApiBaseUrlV4: 'http://localhost/graphql', // required to mock the response
       } as ValidConfigOptions;
 
-      expect(await getLocalRepoPath(options)).toBe(undefined);
+      expect(await getLocalSourceRepoPath(options)).toBe(undefined);
     });
   });
 

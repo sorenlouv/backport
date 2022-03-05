@@ -515,7 +515,7 @@ export async function pushBackportBranch({
 }
 
 // retrieve path to local repo (cwd) if it matches `repoName` / `repoOwner`
-export async function getLocalRepoPath(options: ValidConfigOptions) {
+export async function getLocalSourceRepoPath(options: ValidConfigOptions) {
   const remotes = await getRepoInfoFromGitRemotes({ cwd: options.cwd });
   const hasMatchingGitRemote = remotes.some(
     (remote) =>
