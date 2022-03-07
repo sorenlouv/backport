@@ -170,13 +170,12 @@ describe('getCommentBody', () => {
         status: 'success',
         results: [
           {
-            status: 'failure',
+            status: 'unhandled-error',
             targetBranch: '7.x',
             error: new Error('My boom error!'),
           },
-
           {
-            status: 'failure',
+            status: 'unhandled-error',
             targetBranch: '7.1',
             error: new Error('My boom error!'),
           },

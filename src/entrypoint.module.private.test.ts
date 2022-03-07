@@ -30,8 +30,8 @@ describe('entrypoint.module', () => {
         expect(response.status).toBe('success');
       });
 
-      it('should have a failed result', () => {
-        expect(response.results[0].status).toBe('failure');
+      it('should fail with "handled-error"', () => {
+        expect(response.results[0].status).toBe('handled-error');
       });
 
       it('should have correct error code', () => {

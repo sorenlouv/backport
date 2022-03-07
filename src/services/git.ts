@@ -4,7 +4,12 @@ import { ValidConfigOptions } from '../options/options';
 import { ora } from '../ui/ora';
 import { filterNil } from '../utils/filterEmpty';
 import { HandledError } from './HandledError';
-import { execAsCallback, exec } from './child-process-promisified';
+import {
+  execAsCallback,
+  exec,
+  spawn,
+  SpawnError,
+} from './child-process-promisified';
 import { getRepoPath } from './env';
 import { getShortSha } from './github/commitFormatters';
 import { logger } from './logger';
@@ -148,17 +153,20 @@ export async function getIsCommitInBranch(
   commitSha: string
 ) {
   try {
-    await exec(`git merge-base --is-ancestor ${commitSha} HEAD`, {
-      cwd: getRepoPath(options),
-    });
+    const cwd = getRepoPath(options);
+    await spawn('git', ['merge-base', '--is-ancestor', commitSha, 'HEAD'], cwd);
     return true;
   } catch (e) {
-    const isExecError = e.cmd && e.code > 0;
-    // re-throw if error is not an exec related error
-    if (!isExecError) {
-      throw e;
+    const isSpawnError = e instanceof SpawnError;
+    const commitNotInBranch = e.code === 1 && e.stderr === '';
+    const commitNotExist =
+      e.code === 128 && e.stderr.includes('Not a valid object name');
+
+    if (isSpawnError && (commitNotInBranch || commitNotExist)) {
+      return false;
     }
-    return false;
+
+    throw e;
   }
 }
 
@@ -167,13 +175,19 @@ export async function deleteRemote(
   remoteName: string
 ) {
   try {
-    await exec(`git remote rm ${remoteName}`, { cwd: getRepoPath(options) });
+    const cwd = getRepoPath(options);
+    await spawn('git', ['remote', 'rm', remoteName], cwd);
   } catch (e) {
-    const isExecError = e.cmd && e.code > 0;
-    // re-throw if error is not an exec related error
-    if (!isExecError) {
-      throw e;
+    if (
+      e instanceof SpawnError &&
+      e.code === 2 &&
+      e.stderr.includes('No such remote')
+    ) {
+      return;
     }
+
+    // re-throw
+    throw e;
   }
 }
 
@@ -182,9 +196,11 @@ export async function addRemote(
   remoteName: string
 ) {
   try {
-    await exec(
-      `git remote add ${remoteName} ${getRemoteUrl(options, remoteName)}`,
-      { cwd: getRepoPath(options) }
+    const cwd = getRepoPath(options);
+    await spawn(
+      'git',
+      ['remote', 'add', remoteName, getRemoteUrl(options, remoteName)],
+      cwd
     );
   } catch (e) {
     // note: swallowing error
@@ -193,9 +209,12 @@ export async function addRemote(
 }
 
 export async function fetchBranch(options: ValidConfigOptions, branch: string) {
-  await exec(`git fetch ${options.repoOwner} ${branch}:${branch} --force`, {
-    cwd: getRepoPath(options),
-  });
+  const cwd = getRepoPath(options);
+  await spawn(
+    'git',
+    ['fetch', options.repoOwner, `${branch}:${branch}`, '--force'],
+    cwd
+  );
 }
 
 export async function getIsMergeCommit(
@@ -232,6 +251,30 @@ export async function getCommitsInMergeCommit(
   }
 }
 
+async function getShaOrRange(
+  options: ValidConfigOptions,
+  sha: string
+): Promise<string> {
+  if (!options.mainline) {
+    try {
+      const isMergeCommit = await getIsMergeCommit(options, sha);
+      if (isMergeCommit) {
+        const shas = await getCommitsInMergeCommit(options, sha);
+        return `${last(shas)}^..${first(shas)}`;
+      }
+    } catch (e) {
+      // swallow error if it's a 128 exit code
+      // exit 128 happens when the cherrypicked commit is empty which is handled below
+      // (128 also applies to many other types of errors)
+      if (e.code !== 128) {
+        throw e;
+      }
+    }
+  }
+
+  return sha;
+}
+
 export async function cherrypick({
   options,
   sha,
@@ -247,34 +290,30 @@ export async function cherrypick({
   unstagedFiles: string[];
   needsResolving: boolean;
 }> {
-  const mainlinArg =
-    options.mainline != undefined ? ` --mainline ${options.mainline}` : '';
-  const cherrypickRefArg = options.cherrypickRef === false ? '' : ' -x';
-
-  let shaOrRange = sha;
-
-  if (!options.mainline) {
-    try {
-      const isMergeCommit = await getIsMergeCommit(options, sha);
-      if (isMergeCommit) {
-        const shas = await getCommitsInMergeCommit(options, sha);
-        shaOrRange = `${last(shas)}^..${first(shas)}`;
-      }
-    } catch (e) {
-      // swallow error if it's a known error
-      // exit 128 will happen for many things, among others when the cherrypicked commit is empty
-      if (e.code !== 128) {
-        throw e;
-      }
-    }
-  }
-
-  const cmd = `git -c user.name="${commitAuthor.name}" -c user.email="${commitAuthor.email}" cherry-pick${cherrypickRefArg}${mainlinArg} ${shaOrRange}`;
+  const shaOrRange = await getShaOrRange(options, sha);
+  const cmdArgs = [
+    '-c',
+    `user.name="${commitAuthor.name}"`,
+    '-c',
+    `user.email="${commitAuthor.email}"`,
+    `cherry-pick`,
+    ...(options.mainline != undefined
+      ? ['--mainline', `${options.mainline}`]
+      : []),
+    ...(options.cherrypickRef === false ? [] : ['-x']),
+    shaOrRange,
+  ];
 
   try {
-    await exec(cmd, { cwd: getRepoPath(options) });
+    const cwd = getRepoPath(options);
+    await spawn('git', cmdArgs, cwd);
     return { conflictingFiles: [], unstagedFiles: [], needsResolving: false };
   } catch (e) {
+    const isSpawnError = e instanceof SpawnError;
+    if (!isSpawnError) {
+      throw e;
+    }
+
     // missing `mainline` option
     if (e.message.includes('is a merge but no -m option was given')) {
       throw new HandledError(
@@ -301,7 +340,10 @@ export async function cherrypick({
       );
     }
 
-    const isCherryPickError = e.cmd?.includes('cherry-pick') && e.code > 0;
+    const isCherryPickError =
+      e.code === 1 &&
+      e.stderr.includes('After resolving the conflicts, mark them with');
+
     if (isCherryPickError) {
       const [conflictingFiles, unstagedFiles] = await Promise.all([
         getConflictingFiles(options),
@@ -312,7 +354,7 @@ export async function cherrypick({
         return { conflictingFiles, unstagedFiles, needsResolving: true };
     }
 
-    // re-throw error if there are no conflicts to solve
+    // re-throw error if it didn't match the handled cases above
     throw e;
   }
 }
@@ -321,13 +363,13 @@ export async function commitChanges(
   commit: Commit,
   options: ValidConfigOptions
 ) {
-  const noVerifyFlag = options.noVerify ? ` --no-verify` : '';
+  const noVerifyFlag = options.noVerify ? ['--no-verify'] : [];
 
   try {
-    await exec(`git commit --no-edit${noVerifyFlag}`, {
-      cwd: getRepoPath(options),
-    });
+    const cwd = getRepoPath(options);
+    await spawn('git', ['commit', '--no-edit', ...noVerifyFlag], cwd);
   } catch (e) {
+    console.log(e);
     if (e.stdout?.includes('nothing to commit')) {
       logger.info(
         `Could not run "git commit". Probably because the changes were manually committed`,
@@ -433,18 +475,27 @@ export async function createBackportBranch({
   const spinner = ora(options.ci, 'Pulling latest changes').start();
 
   try {
-    const res = await exec(
-      `git reset --hard && git clean -d --force && git fetch ${options.repoOwner} ${targetBranch} && git checkout -B ${backportBranch} ${options.repoOwner}/${targetBranch} --no-track`,
-      { cwd: getRepoPath(options) }
+    const cwd = getRepoPath(options);
+    await spawn('git', ['reset', '--hard'], cwd);
+    await spawn('git', ['clean', '-d', '--force'], cwd);
+    await spawn('git', ['fetch', options.repoOwner, targetBranch], cwd);
+    await exec(
+      `git checkout -B ${backportBranch} ${options.repoOwner}/${targetBranch} --no-track`,
+      { cwd }
     );
+
     spinner.succeed();
-    return res;
   } catch (e) {
     spinner.fail();
 
     const isBranchInvalid =
       e.stderr?.toLowerCase().includes(`couldn't find remote ref`) ||
-      e.stderr?.toLowerCase().includes(`invalid refspec`);
+      e.stderr?.toLowerCase().includes(`invalid refspec`) ||
+      e.stderr
+        ?.toLowerCase()
+        .includes(
+          `is not a commit and a branch '${backportBranch}' cannot be created from it`
+        );
 
     if (isBranchInvalid) {
       throw new HandledError(
@@ -464,11 +515,11 @@ export async function deleteBackportBranch({
   backportBranch: string;
 }) {
   const spinner = ora(options.ci).start();
+  const cwd = getRepoPath(options);
 
-  await exec(
-    `git reset --hard && git checkout ${options.sourceBranch} && git branch -D ${backportBranch}`,
-    { cwd: getRepoPath(options) }
-  );
+  await spawn('git', ['reset', '--hard'], cwd);
+  await spawn('git', ['checkout', options.sourceBranch], cwd);
+  await spawn('git', ['branch', '--delete', '--force', backportBranch], cwd);
 
   spinner.stop();
 }

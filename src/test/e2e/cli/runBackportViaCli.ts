@@ -64,9 +64,14 @@ export function runBackportViaCli(
       }
     };
 
-    // proc.on('exit', (code) => {
-    //   console.log('child exit code (spawn)', code);
-    // });
+    proc.on('exit', (code) => {
+      rejectOnTimeout.cancel();
+      if (code !== null && code === 0) {
+        resolve(data.toString());
+      } else {
+        reject(code);
+      }
+    });
 
     proc.stdout.on('data', onChunk);
 

@@ -440,8 +440,16 @@ function setupExecSpyForCherryPick() {
     .spyOn(childProcess, 'exec')
 
     .mockImplementation(async (cmd) => {
-      // createFeatureBranch
-      if (cmd.includes('git checkout -B')) {
+      // createBackportBranch
+      if (cmd === 'git reset --hard') {
+        return { stdout: '', stderr: '' };
+      }
+
+      if (cmd === 'git clean -d --force') {
+        return { stdout: '', stderr: '' };
+      }
+
+      if (cmd.startsWith('git checkout')) {
         return { stdout: 'create feature branch succeeded', stderr: '' };
       }
 
@@ -499,7 +507,7 @@ function setupExecSpyForCherryPick() {
       }
 
       // deleteFeatureBranch
-      if (cmd.includes('git branch -D ')) {
+      if (cmd.startsWith('git branch -D ')) {
         return { stdout: ``, stderr: '' };
       }
 

@@ -1,12 +1,12 @@
-import child_process from 'child_process';
+import childProcess from 'child_process';
 import { promisify } from 'util';
 import { logger } from './logger';
+const execPromisified = promisify(childProcess.exec);
 
 export async function exec(
   cmd: string,
-  options: child_process.ExecOptions & { cwd: string }
+  options: childProcess.ExecOptions & { cwd: string }
 ) {
-  const execPromisified = promisify(child_process.exec);
   try {
     const res = await execPromisified(cmd, {
       maxBuffer: 100 * 1024 * 1024,
@@ -20,8 +20,50 @@ export async function exec(
   }
 }
 
+export async function spawn(cmd: string, cmdArgs: string[], cwd: string) {
+  return new Promise(function (resolve, reject) {
+    const subprocess = childProcess.spawn(cmd, cmdArgs, { cwd });
+    let stderr = '';
+    let stdout = '';
+
+    subprocess.stdout.on('data', (data) => {
+      stdout += data;
+    });
+
+    subprocess.stderr.on('data', (data) => {
+      stderr += data;
+    });
+
+    subprocess.on('close', (code) => {
+      if (code === 0) {
+        resolve({ cmdArgs, code, stderr, stdout });
+      } else {
+        reject(new SpawnError(cmdArgs, code, stderr, stdout));
+      }
+    });
+
+    subprocess.on('error', (err) => {
+      reject(err);
+    });
+  });
+}
+
 export const execAsCallback = (
-  ...args: Parameters<typeof child_process.exec>
+  ...args: Parameters<typeof childProcess.exec>
 ) => {
-  return child_process.exec(...args);
+  return childProcess.exec(...args);
 };
+
+export class SpawnError extends Error {
+  constructor(
+    public cmdArgs: string[],
+    public code: number | null,
+    public stderr: string,
+    public stdout: string
+  ) {
+    super(`SpawnError (code: ${code}): ${stderr}`);
+    Error.captureStackTrace(this, SpawnError);
+    this.name = 'SpawnError';
+    this.message = `SpawnError (code: ${code}): ${stderr}`;
+  }
+}

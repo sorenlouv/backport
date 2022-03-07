@@ -50,8 +50,7 @@ describe('entrypoint cli', () => {
             --projectConfigFile, --config     Path to project config                              [string]
             --since                           ISO-8601 date for filtering commits                 [string]
             --until                           ISO-8601 date for filtering commits                 [string]
-            --dir                             Location where the temporary repository will be stored
-                                                                                                  [string]
+            --dir                             Path to temporary backport repo                     [string]
             --details                         Show details about each commit                     [boolean]
             --dryRun                          Run backport locally without pushing to Github     [boolean]
             --editor                          Editor to be opened during conflict resolution      [string]
@@ -181,27 +180,6 @@ describe('entrypoint cli', () => {
     `);
   });
 
-  it.only(`should output error unknown exception occurs`, async () => {
-    const sandboxPath = getSandboxPath({ filename: __filename });
-    await resetSandbox(sandboxPath);
-    const res = await runBackportViaCli(
-      [
-        '--repo=backport-org/repo-with-conflicts',
-        '--pr=8',
-        `--dir=${sandboxPath}`,
-        '--branch=foo',
-        `--accessToken=${accessToken}`,
-      ],
-      {
-        waitForString: 'meuw',
-      }
-    );
-    expect(res).toMatchInlineSnapshot(`
-      "
-      Backporting to foo:"
-    `);
-  });
-
   it(`should output merge conflict`, async () => {
     const res = await runBackportViaCli(
       [
@@ -209,12 +187,12 @@ describe('entrypoint cli', () => {
         '--pr=12',
         '--branch=7.x',
         `--accessToken=${accessToken}`,
+        '--dry-run',
       ],
       {
         waitForString: 'Press ENTER when the conflicts',
       }
     );
-
     const backportDir = getBackportDirPath();
     expect(res.replaceAll(backportDir, '<HOMEDIR>')).toMatchInlineSnapshot(`
       "

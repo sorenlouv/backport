@@ -3,7 +3,25 @@
 exports[`cherrypickAndCreateTargetPullRequest when cherry-picking fails calls exec correctly 1`] = `
 Array [
   Array [
-    "git reset --hard && git clean -d --force && git fetch elastic 6.x && git checkout -B backport/6.x/commit-mySha elastic/6.x --no-track",
+    "git reset --hard",
+    Object {
+      "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
+    },
+  ],
+  Array [
+    "git clean -d --force",
+    Object {
+      "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
+    },
+  ],
+  Array [
+    "git fetch elastic 6.x",
+    Object {
+      "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
+    },
+  ],
+  Array [
+    "git checkout -B backport/6.x/commit-mySha elastic/6.x --no-track",
     Object {
       "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
     },
@@ -99,7 +117,19 @@ Array [
     },
   ],
   Array [
-    "git reset --hard && git checkout myDefaultSourceBranch && git branch -D backport/6.x/commit-mySha",
+    "git reset --hard",
+    Object {
+      "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
+    },
+  ],
+  Array [
+    "git checkout myDefaultSourceBranch",
+    Object {
+      "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
+    },
+  ],
+  Array [
+    "git branch -D backport/6.x/commit-mySha",
     Object {
       "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
     },
@@ -110,7 +140,25 @@ Array [
 exports[`cherrypickAndCreateTargetPullRequest when commit has a pull request reference should make correct git commands 1`] = `
 Array [
   Array [
-    "git reset --hard && git clean -d --force && git fetch elastic 6.x && git checkout -B backport/6.x/pr-1000_pr-2000 elastic/6.x --no-track",
+    "git reset --hard",
+    Object {
+      "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
+    },
+  ],
+  Array [
+    "git clean -d --force",
+    Object {
+      "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
+    },
+  ],
+  Array [
+    "git fetch elastic 6.x",
+    Object {
+      "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
+    },
+  ],
+  Array [
+    "git checkout -B backport/6.x/pr-1000_pr-2000 elastic/6.x --no-track",
     Object {
       "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
     },
@@ -158,7 +206,19 @@ Array [
     },
   ],
   Array [
-    "git reset --hard && git checkout myDefaultSourceBranch && git branch -D backport/6.x/pr-1000_pr-2000",
+    "git reset --hard",
+    Object {
+      "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
+    },
+  ],
+  Array [
+    "git checkout myDefaultSourceBranch",
+    Object {
+      "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
+    },
+  ],
+  Array [
+    "git branch -D backport/6.x/pr-1000_pr-2000",
     Object {
       "cwd": "/myHomeDir/.backport/repositories/elastic/kibana",
     },

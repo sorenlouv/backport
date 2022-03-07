@@ -203,6 +203,61 @@ describe('git.integration', () => {
     });
   });
 
+  describe('commitChanges', () => {
+    beforeEach(async () => {
+      await resetSandbox(sandboxPath);
+      const execOpts = { cwd: sandboxPath };
+
+      // create and commit first file
+      await childProcess.exec('git init', execOpts);
+      firstSha = await createAndCommitFile({
+        filename: 'foo.md',
+        content: 'My first file',
+        execOpts,
+      });
+
+      // create 7.x branch (but stay on `main` branch)
+      await childProcess.exec('git branch 7.x', execOpts);
+
+      // create and commit second file
+      secondSha = await createAndCommitFile({
+        filename: 'bar.md',
+        content: 'My second file',
+        execOpts,
+      });
+
+      // checkout 7.x
+      await childProcess.exec('git checkout 7.x', execOpts);
+    });
+
+    it('should contain the first commit', async () => {
+      const isFirstCommitInBranch = await getIsCommitInBranch(
+        { dir: sandboxPath } as ValidConfigOptions,
+        firstSha
+      );
+
+      expect(isFirstCommitInBranch).toEqual(true);
+    });
+
+    it('should not contain the second commit', async () => {
+      const isSecondCommitInBranch = await getIsCommitInBranch(
+        { dir: sandboxPath } as ValidConfigOptions,
+        secondSha
+      );
+
+      expect(isSecondCommitInBranch).toEqual(false);
+    });
+
+    it('should not contain a random commit', async () => {
+      const isSecondCommitInBranch = await getIsCommitInBranch(
+        { dir: sandboxPath } as ValidConfigOptions,
+        'abcdefg'
+      );
+
+      expect(isSecondCommitInBranch).toEqual(false);
+    });
+  });
+
   describe('cloneRepo', () => {
     const sandboxPath = getSandboxPath({
       filename: __filename,
