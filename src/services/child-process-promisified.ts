@@ -20,17 +20,26 @@ export async function exec(
   }
 }
 
-export async function spawn(cmd: string, cmdArgs: string[], cwd: string) {
+export async function spawn(
+  cmd: string,
+  cmdArgs: string[],
+  cwd: string
+): Promise<{
+  cmdArgs: string[];
+  code: number;
+  stderr: string;
+  stdout: string;
+}> {
   return new Promise(function (resolve, reject) {
     const subprocess = childProcess.spawn(cmd, cmdArgs, { cwd });
     let stderr = '';
     let stdout = '';
 
-    subprocess.stdout.on('data', (data) => {
+    subprocess.stdout.on('data', (data: string) => {
       stdout += data;
     });
 
-    subprocess.stderr.on('data', (data) => {
+    subprocess.stderr.on('data', (data: string) => {
       stderr += data;
     });
 
@@ -61,7 +70,7 @@ export class SpawnError extends Error {
     public stderr: string,
     public stdout: string
   ) {
-    super(`SpawnError (code: ${code}): ${stderr}`);
+    super(`SpawnError\nCode: ${code})\nArgs: ${cmdArgs}\n\n${stderr}`);
     Error.captureStackTrace(this, SpawnError);
     this.name = 'SpawnError';
     this.message = `SpawnError (code: ${code}): ${stderr}`;

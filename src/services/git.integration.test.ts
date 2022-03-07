@@ -1,15 +1,26 @@
 import { access } from 'fs/promises';
+import fs from 'fs/promises';
+import path from 'path';
 import makeDir from 'make-dir';
+import { Commit } from '../entrypoint.module';
 import { ValidConfigOptions } from '../options/options';
 import { getSandboxPath, resetSandbox } from '../test/sandbox';
 import * as childProcess from './child-process-promisified';
 import {
   cherrypick,
   cloneRepo,
+  commitChanges,
+  createBackportBranch,
   getCommitsInMergeCommit,
+  getGitConfig,
+  getGitProjectRootPath,
   getIsCommitInBranch,
   getIsMergeCommit,
+  getLocalConfigFileCommitDate,
   getLocalSourceRepoPath,
+  isLocalConfigFileModified,
+  isLocalConfigFileUntracked,
+  pushBackportBranch,
 } from './git';
 import { getShortSha } from './github/commitFormatters';
 
@@ -22,40 +33,39 @@ describe('git.integration', () => {
   describe('getIsCommitInBranch', () => {
     let firstSha: string;
     let secondSha: string;
-    const sandboxPath = getSandboxPath({
+    const cwd = getSandboxPath({
       filename: __filename,
       specname: 'getIsCommitInBranch',
     });
 
     beforeEach(async () => {
-      await resetSandbox(sandboxPath);
-      const execOpts = { cwd: sandboxPath };
+      await resetSandbox(cwd);
 
       // create and commit first file
-      await childProcess.exec('git init', execOpts);
+      await gitInit(cwd);
       firstSha = await createAndCommitFile({
         filename: 'foo.md',
         content: 'My first file',
-        execOpts,
+        cwd,
       });
 
       // create 7.x branch (but stay on `main` branch)
-      await childProcess.exec('git branch 7.x', execOpts);
+      await childProcess.spawn('git', ['branch', '7.x'], cwd);
 
       // create and commit second file
       secondSha = await createAndCommitFile({
         filename: 'bar.md',
         content: 'My second file',
-        execOpts,
+        cwd,
       });
 
       // checkout 7.x
-      await childProcess.exec('git checkout 7.x', execOpts);
+      await childProcess.spawn('git', ['checkout', '7.x'], cwd);
     });
 
     it('should contain the first commit', async () => {
       const isFirstCommitInBranch = await getIsCommitInBranch(
-        { dir: sandboxPath } as ValidConfigOptions,
+        { dir: cwd } as ValidConfigOptions,
         firstSha
       );
 
@@ -64,7 +74,7 @@ describe('git.integration', () => {
 
     it('should not contain the second commit', async () => {
       const isSecondCommitInBranch = await getIsCommitInBranch(
-        { dir: sandboxPath } as ValidConfigOptions,
+        { dir: cwd } as ValidConfigOptions,
         secondSha
       );
 
@@ -73,7 +83,7 @@ describe('git.integration', () => {
 
     it('should not contain a random commit', async () => {
       const isSecondCommitInBranch = await getIsCommitInBranch(
-        { dir: sandboxPath } as ValidConfigOptions,
+        { dir: cwd } as ValidConfigOptions,
         'abcdefg'
       );
 
@@ -81,11 +91,126 @@ describe('git.integration', () => {
     });
   });
 
+  describe('getGitConfig', () => {
+    const cwd = getSandboxPath({
+      filename: __filename,
+      specname: 'getGitConfig',
+    });
+
+    beforeEach(async () => {
+      await resetSandbox(cwd);
+      await gitInit(cwd);
+      await childProcess.exec(`git config user.name "John Doe"`, { cwd });
+      await childProcess.exec(`git config user.email "john@jubii.dk"`, { cwd });
+    });
+
+    it('should retrive name', async () => {
+      const name = await getGitConfig({
+        dir: cwd,
+        key: 'user.name',
+      });
+
+      expect(name).toEqual('John Doe');
+    });
+
+    it('should retrive  email', async () => {
+      const email = await getGitConfig({
+        dir: cwd,
+        key: 'user.email',
+      });
+
+      expect(email).toEqual('john@jubii.dk');
+    });
+  });
+
+  describe('createBackportBranch', () => {
+    const cwd = getSandboxPath({
+      filename: __filename,
+      specname: 'createBackportBranch',
+    });
+
+    beforeEach(async () => {
+      await resetSandbox(cwd);
+      await gitClone(
+        'https://github.com/backport-org/repo-with-conflicts.git',
+        cwd
+      );
+    });
+
+    it('creates the backport branch when `targetBranch` exists', async () => {
+      await createBackportBranch({
+        options: {
+          repoOwner: 'origin',
+          dir: cwd,
+        } as ValidConfigOptions,
+        targetBranch: '7.x',
+        backportBranch: 'my-backport-branch',
+      });
+
+      expect(await getCurrentBranchName(cwd)).toEqual('my-backport-branch');
+    });
+
+    it('throws a handled error when `targetBranch` does not exist', async () => {
+      await expect(async () => {
+        await createBackportBranch({
+          options: {
+            repoOwner: 'origin',
+            dir: cwd,
+          } as ValidConfigOptions,
+          targetBranch: 'foo',
+          backportBranch: 'my-backport-branch',
+        });
+      }).rejects.toThrowError('The branch "foo" is invalid or doesn\'t exist');
+    });
+  });
+
+  describe('pushBackportBranch', () => {
+    const cwd = getSandboxPath({
+      filename: __filename,
+      specname: 'pushBackportBranch',
+    });
+
+    beforeEach(async () => {
+      await resetSandbox(cwd);
+      await gitClone(
+        'https://github.com/backport-org/repo-with-conflicts.git',
+        cwd
+      );
+      await createBackportBranch({
+        options: {
+          repoOwner: 'origin',
+          dir: cwd,
+        } as ValidConfigOptions,
+        targetBranch: '7.x',
+        backportBranch: 'my-backport-branch',
+      });
+      await childProcess.exec(
+        'git remote add sqren https://github.com/sqren/repo-with-conflicts.git',
+        { cwd }
+      );
+    });
+
+    it('throws error when repo does not exist', async () => {
+      await expect(async () => {
+        await pushBackportBranch({
+          options: {
+            repoOwner: 'sqren',
+            repoName: 'repo-with-conflicts',
+            dir: cwd,
+          } as ValidConfigOptions,
+          backportBranch: 'my-backport-branch',
+        });
+      }).rejects.toThrowError(
+        'Error pushing to https://github.com/sqren/repo-with-conflicts. Repository does not exist. Either fork the source repository (https://github.com/sqren/repo-with-conflicts) or disable fork mode "--no-fork".  Read more about "fork mode" in the docs: https://github.com/sqren/backport/blob/3a182b17e0e7237c12915895aea9d71f49eb2886/docs/configuration.md#fork'
+      );
+    });
+  });
+
   describe('cherrypick', () => {
     let firstSha: string;
     let secondSha: string;
     let fourthSha: string;
-    let execOpts: { cwd: string };
+    let cwd: string;
     const sandboxPath = getSandboxPath({
       filename: __filename,
       specname: 'cherrypick',
@@ -93,49 +218,49 @@ describe('git.integration', () => {
 
     beforeEach(async () => {
       await resetSandbox(sandboxPath);
-      execOpts = { cwd: sandboxPath };
+      cwd = sandboxPath;
 
       // create and commit first file
-      await childProcess.exec('git init', execOpts);
+      await gitInit(cwd);
       firstSha = await createAndCommitFile({
         filename: 'foo.md',
         content: 'Creating first file',
-        execOpts,
+        cwd,
       });
 
       // create 7.x branch (but stay on `main` branch)
-      await childProcess.exec('git branch 7.x', execOpts);
+      await childProcess.spawn('git', ['branch', '7.x'], cwd);
 
       // create and commit second file
       secondSha = await createAndCommitFile({
         filename: 'bar.md',
         content: 'Creating second file\nHello',
-        execOpts,
+        cwd,
       });
 
       // edit first file
       await createAndCommitFile({
         filename: 'foo.md',
         content: 'Changing first file',
-        execOpts,
+        cwd,
       });
 
       // edit first file
       fourthSha = await createAndCommitFile({
         filename: 'foo.md',
         content: 'Some more changes to the first file',
-        execOpts,
+        cwd,
       });
 
       // checkout 7.x
-      await childProcess.exec('git checkout 7.x', execOpts);
+      await childProcess.spawn('git', ['checkout', '7.x'], cwd);
     });
 
     it('should not cherrypick commit that already exists', async () => {
       const shortSha = getShortSha(firstSha);
-      return expect(() =>
+      await expect(() =>
         cherrypick({
-          options: { dir: sandboxPath } as ValidConfigOptions,
+          options: { dir: cwd } as ValidConfigOptions,
           sha: firstSha,
           commitAuthor: { name: 'Soren L', email: 'soren@mail.dk' },
         })
@@ -148,7 +273,7 @@ describe('git.integration', () => {
       const res = await cherrypick({
         options: {
           cherrypickRef: false,
-          dir: sandboxPath,
+          dir: cwd,
         } as ValidConfigOptions,
         sha: secondSha,
         commitAuthor,
@@ -159,8 +284,7 @@ describe('git.integration', () => {
         unstagedFiles: [],
       });
 
-      const message = await getCurrentMessage(execOpts);
-
+      const message = await getMostRecentCommitMessage(cwd);
       expect(message).toEqual(`Update bar.md`);
     });
 
@@ -168,7 +292,7 @@ describe('git.integration', () => {
       const res = await cherrypick({
         options: {
           cherrypickRef: true,
-          dir: sandboxPath,
+          dir: cwd,
         } as ValidConfigOptions,
         sha: secondSha,
         commitAuthor,
@@ -179,7 +303,7 @@ describe('git.integration', () => {
         unstagedFiles: [],
       });
 
-      const message = await getCurrentMessage(execOpts);
+      const message = await getMostRecentCommitMessage(cwd);
 
       expect(message).toEqual(
         `Update bar.md\n\n(cherry picked from commit ${secondSha})`
@@ -188,7 +312,7 @@ describe('git.integration', () => {
 
     it('should cherrypick commit with conflicts', async () => {
       const res = await cherrypick({
-        options: { dir: sandboxPath } as ValidConfigOptions,
+        options: { dir: cwd } as ValidConfigOptions,
         sha: fourthSha,
         commitAuthor,
       });
@@ -204,57 +328,88 @@ describe('git.integration', () => {
   });
 
   describe('commitChanges', () => {
+    const cwd = getSandboxPath({
+      filename: __filename,
+      specname: 'commitChanges',
+    });
+
     beforeEach(async () => {
-      await resetSandbox(sandboxPath);
-      const execOpts = { cwd: sandboxPath };
+      await resetSandbox(cwd);
+    });
 
-      // create and commit first file
-      await childProcess.exec('git init', execOpts);
-      firstSha = await createAndCommitFile({
-        filename: 'foo.md',
-        content: 'My first file',
-        execOpts,
+    it('should return without error if user already committed manually (and there therefore is nothing to commit)', async () => {
+      const options = { dir: cwd } as ValidConfigOptions;
+      const commit = { sourceCommit: { message: 'my message' } } as Commit;
+      await gitInit(cwd);
+      await createAndCommitFile({
+        content: 'foo',
+        filename: 'my-file-1.txt',
+        cwd,
       });
 
-      // create 7.x branch (but stay on `main` branch)
-      await childProcess.exec('git branch 7.x', execOpts);
+      expect(async () => {
+        return await commitChanges(commit, options);
+      }).not.toThrowError();
 
-      // create and commit second file
-      secondSha = await createAndCommitFile({
-        filename: 'bar.md',
-        content: 'My second file',
-        execOpts,
+      const message = await getMostRecentCommitMessage(cwd);
+      expect(message).toBe('Update my-file-1.txt');
+    });
+
+    it('should return without error if user aborts the cherrypick process', async () => {
+      const options = { dir: cwd } as ValidConfigOptions;
+      const commit = {
+        sourceCommit: { message: 'my fallback commit message' },
+      } as Commit;
+
+      await gitInit(cwd);
+      await createAndStageFile({
+        content: 'foo',
+        filename: 'my-file-2.txt',
+        cwd,
       });
 
-      // checkout 7.x
-      await childProcess.exec('git checkout 7.x', execOpts);
+      await commitChanges(commit, options);
+
+      const message = await getMostRecentCommitMessage(cwd);
+      expect(message).toBe('my fallback commit message');
     });
 
-    it('should contain the first commit', async () => {
-      const isFirstCommitInBranch = await getIsCommitInBranch(
-        { dir: sandboxPath } as ValidConfigOptions,
-        firstSha
+    it('should commit cherypicked changes after conflicts have been resolved', async () => {
+      const options = { dir: cwd } as ValidConfigOptions;
+      const commit = {
+        sourceCommit: { message: 'my fallback commit message' },
+      } as Commit;
+
+      await gitClone(
+        'https://github.com/backport-org/repo-with-conflicts.git',
+        cwd
       );
 
-      expect(isFirstCommitInBranch).toEqual(true);
-    });
+      await childProcess.exec('git checkout 7.x', { cwd });
 
-    it('should not contain the second commit', async () => {
-      const isSecondCommitInBranch = await getIsCommitInBranch(
-        { dir: sandboxPath } as ValidConfigOptions,
-        secondSha
-      );
+      // cherry-pick file
+      try {
+        await childProcess.spawn(
+          'git',
+          ['cherry-pick', '3a0934d1f646e4a50571cb4b137ad2b08d2e7b18'],
+          cwd
+        );
+      } catch (e) {
+        // swallow
+      }
 
-      expect(isSecondCommitInBranch).toEqual(false);
-    });
+      // disregard conflicts and stage all files
+      await childProcess.exec('git add -A', { cwd });
 
-    it('should not contain a random commit', async () => {
-      const isSecondCommitInBranch = await getIsCommitInBranch(
-        { dir: sandboxPath } as ValidConfigOptions,
-        'abcdefg'
-      );
+      await commitChanges(commit, options);
 
-      expect(isSecondCommitInBranch).toEqual(false);
+      const message = await getMostRecentCommitMessage(cwd);
+      expect(message).toMatchInlineSnapshot(`
+        "Add 🇩🇰 (#12)
+
+        # Conflicts:
+        #	la-liga.md"
+      `);
     });
   });
 
@@ -270,17 +425,18 @@ describe('git.integration', () => {
       await resetSandbox(sandboxPath);
       await makeDir(sourceRepo);
 
-      const execOpts = { cwd: sourceRepo };
-      await childProcess.exec(`git init`, execOpts);
-      await childProcess.exec(
-        `git remote add origin git@github.com:elastic/kibana.git`,
-        execOpts
+      const cwd = sourceRepo;
+      await gitInit(cwd);
+      await childProcess.spawn(
+        'git',
+        ['remote', 'add', 'origin', 'git@github.com:elastic/kibana.git'],
+        cwd
       );
 
       await createAndCommitFile({
         filename: 'my-file.txt',
         content: 'Hello!',
-        execOpts,
+        cwd,
       });
     });
 
@@ -302,27 +458,91 @@ describe('git.integration', () => {
     });
   });
 
-  describe('getLocalSourceRepoPath', () => {
-    let sandboxPath: string;
+  describe('getLocalConfigFileCommitDate', () => {
+    let cwd: string;
 
     beforeEach(async () => {
-      sandboxPath = getSandboxPath({
+      cwd = getSandboxPath({
+        filename: __filename,
+        specname: 'getLocalConfigFileCommitDate',
+      });
+      await resetSandbox(cwd);
+      await gitInit(cwd);
+    });
+
+    it('get the commit date for project config', async () => {
+      const timeBefore = Math.floor(Date.now() / 1000) * 1000; // round to nearest second
+      await createAndCommitFile({
+        filename: '.backportrc.json',
+        content: 'foo',
+        cwd,
+      });
+      const timeAfter = Math.ceil(Date.now() / 1000) * 1000; // round to nearest second
+      const commitedDate = await getLocalConfigFileCommitDate({ cwd });
+
+      expect(commitedDate).toBeGreaterThanOrEqual(timeBefore);
+      expect(commitedDate).toBeLessThanOrEqual(timeAfter);
+    });
+  });
+
+  describe('isLocalConfigFileUntracked', () => {
+    let cwd: string;
+
+    beforeEach(async () => {
+      cwd = getSandboxPath({
+        filename: __filename,
+        specname: 'isLocalConfigFileUntracked',
+      });
+      await resetSandbox(cwd);
+      await gitInit(cwd);
+    });
+
+    it('is not untracked when committed', async () => {
+      await createAndCommitFile({
+        filename: '.backportrc.json',
+        content: 'foo',
+        cwd,
+      });
+      const isUntracked = await isLocalConfigFileUntracked({ cwd });
+      expect(isUntracked).toBe(false);
+    });
+
+    it('is not untracked when staged', async () => {
+      await createAndStageFile({
+        filename: '.backportrc.json',
+        content: 'foo',
+        cwd,
+      });
+      const isUntracked = await isLocalConfigFileUntracked({ cwd });
+      expect(isUntracked).toBe(false);
+    });
+
+    it('is untracked when neither staged nor committed', async () => {
+      await fs.writeFile(path.join(cwd, '.backportrc.json'), 'foo');
+      const isUntracked = await isLocalConfigFileUntracked({ cwd });
+      expect(isUntracked).toBe(true);
+    });
+  });
+
+  describe('getLocalSourceRepoPath', () => {
+    let cwd: string;
+
+    beforeEach(async () => {
+      cwd = getSandboxPath({
         filename: __filename,
         specname: 'getLocalSourceRepoPath',
       });
-      await resetSandbox(sandboxPath);
-
-      const execOpts = { cwd: sandboxPath };
-      await childProcess.exec(`git init`, execOpts);
-
-      await childProcess.exec(
-        `git remote add sqren git@github.com:sqren/kibana.git`,
-        execOpts
+      await resetSandbox(cwd);
+      await gitInit(cwd);
+      await childProcess.spawn(
+        'git',
+        ['remote', 'add', 'sqren', 'git@github.com:sqren/kibana.git'],
+        cwd
       );
-
-      await childProcess.exec(
-        `git remote add elastic git@github.com:elastic/kibana.git`,
-        execOpts
+      await childProcess.spawn(
+        'git',
+        ['remote', 'add', 'elastic', 'git@github.com:elastic/kibana.git'],
+        cwd
       );
     });
 
@@ -330,22 +550,71 @@ describe('git.integration', () => {
       const options = {
         repoName: 'kibana',
         repoOwner: 'elastic',
-        cwd: sandboxPath,
+        cwd,
         githubApiBaseUrlV4: 'http://localhost/graphql', // required to mock the response
       } as ValidConfigOptions;
 
-      expect(await getLocalSourceRepoPath(options)).toBe(sandboxPath);
+      expect(await getLocalSourceRepoPath(options)).toBe(cwd);
     });
 
     it('returns undefined when no remotes match', async () => {
       const options = {
         repoName: 'kibana',
         repoOwner: 'not-a-match',
-        cwd: sandboxPath,
+        cwd,
         githubApiBaseUrlV4: 'http://localhost/graphql', // required to mock the response
       } as ValidConfigOptions;
 
       expect(await getLocalSourceRepoPath(options)).toBe(undefined);
+    });
+  });
+
+  describe('getGitProjectRootPath', () => {
+    let sandboxPath: string;
+    let subDirectory: string;
+
+    beforeEach(async () => {
+      sandboxPath = getSandboxPath({
+        filename: __filename,
+        specname: 'getGitProjectRootPath',
+      });
+      subDirectory = `${sandboxPath}/foo-dir`;
+      await resetSandbox(sandboxPath);
+      await gitInit(sandboxPath);
+      makeDir(subDirectory);
+    });
+
+    it('returns the root dir', async () => {
+      const rootPath = await getGitProjectRootPath(subDirectory);
+      expect(rootPath).toBe(sandboxPath);
+      expect(rootPath).not.toBe(subDirectory);
+    });
+  });
+
+  describe('isLocalConfigFileModified', () => {
+    let cwd: string;
+
+    beforeEach(async () => {
+      cwd = getSandboxPath({
+        filename: __filename,
+        specname: 'isLocalConfigFileModified',
+      });
+      await resetSandbox(cwd);
+      await gitClone(
+        'https://github.com/backport-org/repo-with-project-config.git',
+        cwd
+      );
+    });
+
+    it('returns false when file is unchanged', async () => {
+      const isModified = await isLocalConfigFileModified({ cwd });
+      expect(isModified).toBe(false);
+    });
+
+    it('returns true when file is changed', async () => {
+      await fs.writeFile(path.join(cwd, '.backportrc.json'), 'foo');
+      const isModified = await isLocalConfigFileModified({ cwd });
+      expect(isModified).toBe(true);
     });
   });
 
@@ -355,24 +624,24 @@ describe('git.integration', () => {
     const SQUASH_COMMIT_HASH = '74a76fa64b34e3ffe8f2a3f73840e1b42fd07299';
     const REBASE_COMMIT_HASH = '9059ae0ca31caa2eebc035f2542842d6c2fde83b';
 
-    let sandboxPath: string;
+    let cwd: string;
     beforeAll(async () => {
-      sandboxPath = getSandboxPath({
+      cwd = getSandboxPath({
         filename: __filename,
         specname: 'different-merge-strategies',
       });
-      await resetSandbox(sandboxPath);
+      await resetSandbox(cwd);
 
-      await childProcess.exec(
-        'git clone https://github.com/backport-org/different-merge-strategies.git ./',
-        { cwd: sandboxPath }
+      await gitClone(
+        'https://github.com/backport-org/different-merge-strategies.git',
+        cwd
       );
     });
 
     describe('getIsMergeCommit', () => {
       it('returns true for first merge commit', async () => {
         const res = await getIsMergeCommit(
-          { dir: sandboxPath } as ValidConfigOptions,
+          { dir: cwd } as ValidConfigOptions,
           MERGE_COMMIT_HASH_1
         );
 
@@ -381,7 +650,7 @@ describe('git.integration', () => {
 
       it('returns true for second merge commit', async () => {
         const res = await getIsMergeCommit(
-          { dir: sandboxPath } as ValidConfigOptions,
+          { dir: cwd } as ValidConfigOptions,
           MERGE_COMMIT_HASH_2
         );
 
@@ -390,7 +659,7 @@ describe('git.integration', () => {
 
       it('returns false for rebased commits', async () => {
         const res = await getIsMergeCommit(
-          { dir: sandboxPath } as ValidConfigOptions,
+          { dir: cwd } as ValidConfigOptions,
           REBASE_COMMIT_HASH
         );
 
@@ -399,7 +668,7 @@ describe('git.integration', () => {
 
       it('returns false for squashed commits', async () => {
         const res = await getIsMergeCommit(
-          { dir: sandboxPath } as ValidConfigOptions,
+          { dir: cwd } as ValidConfigOptions,
           SQUASH_COMMIT_HASH
         );
 
@@ -410,7 +679,7 @@ describe('git.integration', () => {
     describe('getCommitsInMergeCommit', () => {
       it('returns a list of commit hashes - excluding the merge hash itself', async () => {
         const res = await getCommitsInMergeCommit(
-          { dir: sandboxPath } as ValidConfigOptions,
+          { dir: cwd } as ValidConfigOptions,
           MERGE_COMMIT_HASH_1
         );
 
@@ -430,7 +699,7 @@ describe('git.integration', () => {
 
       it('returns empty for squash commits', async () => {
         const res = await getCommitsInMergeCommit(
-          { dir: sandboxPath } as ValidConfigOptions,
+          { dir: cwd } as ValidConfigOptions,
           SQUASH_COMMIT_HASH
         );
 
@@ -443,30 +712,93 @@ describe('git.integration', () => {
 async function createAndCommitFile({
   filename,
   content,
-  execOpts,
+  cwd,
 }: {
   filename: string;
   content: string;
-  execOpts: { cwd: string };
+  cwd: string;
 }) {
-  await childProcess.exec(`echo "${content}" > "${filename}"`, execOpts);
-  await childProcess.exec(
-    `git add -A && git commit -m 'Update ${filename}'`,
-    execOpts
+  await createAndStageFile({ filename, content, cwd });
+  await childProcess.spawn(
+    'git',
+    ['commit', `--message=Update ${filename}`],
+    cwd
   );
 
-  return getCurrentSha(execOpts);
+  return getCurrentSha(cwd);
 }
 
-async function getCurrentSha(execOpts: { cwd: string }) {
-  const { stdout } = await childProcess.exec('git rev-parse HEAD', execOpts);
+async function createAndStageFile({
+  filename,
+  content,
+  cwd,
+}: {
+  filename: string;
+  content: string;
+  cwd: string;
+}) {
+  try {
+    await fs.writeFile(path.join(cwd, filename), content);
+    await childProcess.spawn('git', ['add', `${filename}`], cwd);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log('"createAndStageFile" threw an error', {
+      filename,
+      content,
+      cwd,
+    });
+    throw e;
+  }
+}
+
+async function getCurrentSha(cwd: string) {
+  const { stdout } = await childProcess.spawn(
+    'git',
+    ['rev-parse', 'HEAD'],
+    cwd
+  );
   return stdout.trim();
 }
 
-async function getCurrentMessage(execOpts: { cwd: string }) {
+async function getCurrentBranchName(cwd: string) {
   const { stdout } = await childProcess.exec(
-    'git --no-pager log -1 --pretty=%B',
-    execOpts
+    'git rev-parse --abbrev-ref HEAD',
+    { cwd }
   );
   return stdout.trim();
+}
+
+async function getMostRecentCommitMessage(cwd: string) {
+  try {
+    const { stdout } = await childProcess.spawn(
+      'git',
+      ['--no-pager', 'log', '-1', '--pretty=%B'],
+      cwd
+    );
+    return stdout.trim();
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log('"getMostRecentCommitMessage" threw an error', cwd);
+    throw e;
+  }
+}
+
+async function gitClone(repoUrl: string, cwd: string) {
+  try {
+    return await childProcess.spawn('git', ['clone', repoUrl, './'], cwd);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log('Git clone failed');
+    throw e;
+  }
+}
+
+async function gitInit(cwd: string) {
+  try {
+    await childProcess.spawn('git', ['init'], cwd);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log('Git init failed');
+    throw e;
+  }
 }

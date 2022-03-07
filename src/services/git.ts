@@ -74,7 +74,7 @@ export async function cloneRepo(
 export async function getLocalConfigFileCommitDate({ cwd }: { cwd: string }) {
   try {
     const { stdout } = await exec(
-      'git --no-pager log -1 --format=%cd .backportrc.js*',
+      'git --no-pager log -1 --format=%cd .backportrc.json',
       { cwd }
     );
 
@@ -91,7 +91,7 @@ export async function isLocalConfigFileUntracked({ cwd }: { cwd: string }) {
   try {
     // list untracked files
     const { stdout } = await exec(
-      'git ls-files .backportrc.js*  --exclude-standard --others',
+      'git ls-files .backportrc.json --exclude-standard --others',
       { cwd }
     );
 
@@ -104,13 +104,13 @@ export async function isLocalConfigFileUntracked({ cwd }: { cwd: string }) {
 export async function isLocalConfigFileModified({ cwd }: { cwd: string }) {
   try {
     const { stdout } = await exec(
-      'git  --no-pager diff HEAD --name-only  .backportrc.js*',
+      'git  --no-pager diff HEAD --name-only .backportrc.json',
       { cwd }
     );
 
     return !!stdout;
   } catch (e) {
-    return;
+    return false;
   }
 }
 
@@ -221,9 +221,12 @@ export async function getIsMergeCommit(
   options: ValidConfigOptions,
   sha: string
 ) {
-  const res = await exec(`git rev-list -1 --merges ${sha}~1..${sha}`, {
-    cwd: getRepoPath(options),
-  });
+  const cwd = getRepoPath(options);
+  const res = await spawn(
+    'git',
+    ['rev-list', '-1', '--merges', `${sha}~1..${sha}`],
+    cwd
+  );
 
   return res.stdout !== '';
 }
@@ -233,11 +236,11 @@ export async function getCommitsInMergeCommit(
   sha: string
 ) {
   try {
-    const res = await exec(
-      `git --no-pager log ${sha}^1..${sha}^2  --pretty=format:"%H"`,
-      {
-        cwd: getRepoPath(options),
-      }
+    const cwd = getRepoPath(options);
+    const res = await spawn(
+      'git',
+      ['--no-pager', 'log', `${sha}^1..${sha}^2`, '--pretty=format:%H'],
+      cwd
     );
 
     return res.stdout.split('\n');
@@ -364,12 +367,19 @@ export async function commitChanges(
   options: ValidConfigOptions
 ) {
   const noVerifyFlag = options.noVerify ? ['--no-verify'] : [];
+  const cwd = getRepoPath(options);
 
   try {
-    const cwd = getRepoPath(options);
-    await spawn('git', ['commit', '--no-edit', ...noVerifyFlag], cwd);
+    await spawn(
+      'git',
+      [
+        'commit',
+        '--no-edit', // Use the selected commit message without launching an editor.
+        ...noVerifyFlag, // bypass pre-commit and commit-msg hooks
+      ],
+      cwd
+    );
   } catch (e) {
-    console.log(e);
     if (e.stdout?.includes('nothing to commit')) {
       logger.info(
         `Could not run "git commit". Probably because the changes were manually committed`,
@@ -381,12 +391,16 @@ export async function commitChanges(
     // manually set the commit message if the inferred commit message is empty
     // this can happen if the user runs `git reset HEAD` and thereby aborts the cherrypick process
     if (e.stderr?.includes('Aborting commit due to empty commit message')) {
-      await exec(
-        `git commit -m "${commit.sourceCommit.message}" ${noVerifyFlag}`,
-        {
-          cwd: getRepoPath(options),
-        }
+      await spawn(
+        'git',
+        [
+          'commit',
+          `--message=${commit.sourceCommit.message}`,
+          ...noVerifyFlag, // bypass pre-commit and commit-msg hooks
+        ],
+        cwd
       );
+
       return;
     }
 
@@ -453,8 +467,9 @@ export async function getGitConfig({
   key: 'user.name' | 'user.email';
 }) {
   try {
-    const res = await exec(`git config ${key}`, { cwd: dir });
-    return res.stdout;
+    const cwd = dir;
+    const res = await spawn('git', ['config', key], cwd);
+    return res.stdout.trim();
   } catch (e) {
     return;
   }
@@ -476,12 +491,20 @@ export async function createBackportBranch({
 
   try {
     const cwd = getRepoPath(options);
+
     await spawn('git', ['reset', '--hard'], cwd);
     await spawn('git', ['clean', '-d', '--force'], cwd);
     await spawn('git', ['fetch', options.repoOwner, targetBranch], cwd);
-    await exec(
-      `git checkout -B ${backportBranch} ${options.repoOwner}/${targetBranch} --no-track`,
-      { cwd }
+    await spawn(
+      'git',
+      [
+        'checkout',
+        '-B',
+        backportBranch,
+        `${options.repoOwner}/${targetBranch}`,
+        '--no-track',
+      ],
+      cwd
     );
 
     spinner.succeed();
@@ -545,9 +568,11 @@ export async function pushBackportBranch({
   ).start();
 
   try {
-    const res = await exec(
-      `git push ${repoForkOwner} ${backportBranch}:${backportBranch} --force`,
-      { cwd: getRepoPath(options) }
+    const cwd = getRepoPath(options);
+    const res = await spawn(
+      'git',
+      ['push', repoForkOwner, `${backportBranch}:${backportBranch}`, '--force'],
+      cwd
     );
 
     spinner.succeed();
