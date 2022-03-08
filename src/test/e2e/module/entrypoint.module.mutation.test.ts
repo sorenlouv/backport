@@ -407,6 +407,8 @@ async function deleteBranchOnGithub({
     // console.log(
     //   `Could not delete ${repoOwner}:heads/${branchName} (${e.message})`
     // );
+
+    //@ts-expect-error
     if (e.message === 'Reference does not exist') {
       return;
     }

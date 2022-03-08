@@ -3,6 +3,9 @@ module.exports = {
     es6: true,
     node: true,
   },
+  globals: {
+    NodeJS: true,
+  },
   ignorePatterns: ['dist/', 'node_modules/'],
   plugins: ['@typescript-eslint', 'jest', 'import'],
   parser: '@typescript-eslint/parser', // Specifies the ESLint parser

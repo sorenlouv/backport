@@ -4,17 +4,18 @@ import { ValidConfigOptions } from '../options/options';
 import * as childProcess from '../services/child-process-promisified';
 import * as gitModule from '../services/git';
 import { getOraMock } from '../test/mocks';
+import { SpyHelper } from '../types/SpyHelper';
 import { setupRepo } from './setupRepo';
 
 describe('setupRepo', () => {
-  let execSpy: jest.SpyInstance;
+  let spawnSpy: SpyHelper<typeof childProcess.spawn>;
 
   beforeEach(() => {
     jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
 
-    execSpy = jest
-      .spyOn(childProcess, 'exec')
-      .mockResolvedValue({ stderr: '', stdout: '' });
+    spawnSpy = jest
+      .spyOn(childProcess, 'spawn')
+      .mockResolvedValue({ stderr: '', stdout: '', code: 0, cmdArgs: [] });
   });
 
   afterEach(() => {
@@ -25,15 +26,13 @@ describe('setupRepo', () => {
     it('should delete repo', async () => {
       expect.assertions(2);
 
-      execSpy = jest
-        .spyOn(childProcess, 'execAsCallback')
-        .mockImplementation((cmd) => {
-          if (cmd.startsWith('git clone')) {
-            throw new Error('Simulated git clone failure');
-          }
+      jest.spyOn(childProcess, 'execAsCallback').mockImplementation((cmd) => {
+        if (cmd.startsWith('git clone')) {
+          throw new Error('Simulated git clone failure');
+        }
 
-          throw new Error('unknown error');
-        });
+        throw new Error('unknown error');
+      });
 
       await expect(
         setupRepo({
@@ -147,7 +146,10 @@ describe('setupRepo', () => {
       } as ValidConfigOptions);
 
       expect(
-        execSpy.mock.calls.map(([cmd, { cwd }]) => ({ cmd, cwd }))
+        spawnSpy.mock.calls.map(([cmd, cmdArgs, cwd]) => ({
+          cmd: `${cmd} ${cmdArgs.join(' ')}`,
+          cwd,
+        }))
       ).toEqual([
         {
           cmd: 'git rev-parse --show-toplevel',

@@ -115,13 +115,15 @@ export async function backportRun({
         commits,
         error: e,
       };
-    } else {
+    } else if (e instanceof Error) {
       backportResponse = {
         status: 'failure',
         commits,
         error: e,
         errorMessage: e.message,
       };
+    } else {
+      throw e;
     }
 
     if (options) {

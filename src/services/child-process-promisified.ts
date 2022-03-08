@@ -7,17 +7,12 @@ export async function exec(
   cmd: string,
   options: childProcess.ExecOptions & { cwd: string }
 ) {
-  try {
-    const res = await execPromisified(cmd, {
-      maxBuffer: 100 * 1024 * 1024,
-      ...options,
-    });
-    logger.verbose(`exec success '${cmd}':`, res);
-    return res;
-  } catch (e) {
-    logger.info(`exec error '${cmd}': ${JSON.stringify(e, null, 2)}`);
-    throw e;
-  }
+  const res = await execPromisified(cmd, {
+    maxBuffer: 100 * 1024 * 1024,
+    ...options,
+  });
+
+  return res;
 }
 
 export async function spawn(
@@ -26,7 +21,7 @@ export async function spawn(
   cwd: string
 ): Promise<{
   cmdArgs: string[];
-  code: number;
+  code: number | null;
   stderr: string;
   stdout: string;
 }> {
@@ -44,10 +39,13 @@ export async function spawn(
     });
 
     subprocess.on('close', (code) => {
-      if (code === 0) {
+      if (code === 0 || code === null) {
+        logger.verbose(`spawn success "${cmdArgs}"`);
         resolve({ cmdArgs, code, stderr, stdout });
       } else {
-        reject(new SpawnError(cmdArgs, code, stderr, stdout));
+        const err = new SpawnError({ cmdArgs, code, stderr, stdout });
+        logger.info('spawn error', err);
+        reject(err);
       }
     });
 
@@ -63,16 +61,24 @@ export const execAsCallback = (
   return childProcess.exec(...args);
 };
 
+export type SpawnErrorContext = {
+  cmdArgs: string[];
+  code: number;
+  stderr: string;
+  stdout: string;
+};
+
 export class SpawnError extends Error {
-  constructor(
-    public cmdArgs: string[],
-    public code: number | null,
-    public stderr: string,
-    public stdout: string
-  ) {
-    super(`SpawnError\nCode: ${code})\nArgs: ${cmdArgs}\n\n${stderr}`);
+  context: SpawnErrorContext;
+  constructor(context: SpawnErrorContext) {
+    const message = `Code: ${context.code}; Args: ${JSON.stringify(
+      context.cmdArgs
+    )}; ${context.stderr.trim()}`;
+
+    super(message);
     Error.captureStackTrace(this, SpawnError);
     this.name = 'SpawnError';
-    this.message = `SpawnError (code: ${code}): ${stderr}`;
+    this.message = message;
+    this.context = context;
   }
 }

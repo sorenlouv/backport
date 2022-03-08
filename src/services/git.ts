@@ -4,12 +4,7 @@ import { ValidConfigOptions } from '../options/options';
 import { ora } from '../ui/ora';
 import { filterNil } from '../utils/filterEmpty';
 import { HandledError } from './HandledError';
-import {
-  execAsCallback,
-  exec,
-  spawn,
-  SpawnError,
-} from './child-process-promisified';
+import { execAsCallback, spawn, SpawnError } from './child-process-promisified';
 import { getRepoPath } from './env';
 import { getShortSha } from './github/commitFormatters';
 import { logger } from './logger';
@@ -73,9 +68,10 @@ export async function cloneRepo(
 
 export async function getLocalConfigFileCommitDate({ cwd }: { cwd: string }) {
   try {
-    const { stdout } = await exec(
-      'git --no-pager log -1 --format=%cd .backportrc.json',
-      { cwd }
+    const { stdout } = await spawn(
+      'git',
+      ['--no-pager', 'log', '-1', '--format=%cd', '.backportrc.json'],
+      cwd
     );
 
     const timestamp = Date.parse(stdout);
@@ -90,9 +86,10 @@ export async function getLocalConfigFileCommitDate({ cwd }: { cwd: string }) {
 export async function isLocalConfigFileUntracked({ cwd }: { cwd: string }) {
   try {
     // list untracked files
-    const { stdout } = await exec(
-      'git ls-files .backportrc.json --exclude-standard --others',
-      { cwd }
+    const { stdout } = await spawn(
+      'git',
+      ['ls-files', '.backportrc.json', '--exclude-standard', '--others'],
+      cwd
     );
 
     return !!stdout;
@@ -103,9 +100,10 @@ export async function isLocalConfigFileUntracked({ cwd }: { cwd: string }) {
 
 export async function isLocalConfigFileModified({ cwd }: { cwd: string }) {
   try {
-    const { stdout } = await exec(
-      'git  --no-pager diff HEAD --name-only .backportrc.json',
-      { cwd }
+    const { stdout } = await spawn(
+      'git',
+      ['--no-pager', 'diff', 'HEAD', '--name-only', '.backportrc.json'],
+      cwd
     );
 
     return !!stdout;
@@ -116,7 +114,7 @@ export async function isLocalConfigFileModified({ cwd }: { cwd: string }) {
 
 export async function getRepoInfoFromGitRemotes({ cwd }: { cwd: string }) {
   try {
-    const { stdout } = await exec('git remote --verbose', { cwd });
+    const { stdout } = await spawn('git', ['remote', '--verbose'], cwd);
     const remotes = stdout
       .split('\n')
       .map((line) => {
@@ -138,9 +136,12 @@ export async function getRepoInfoFromGitRemotes({ cwd }: { cwd: string }) {
 
 export async function getGitProjectRootPath(dir: string) {
   try {
-    const { stdout } = await exec('git rev-parse --show-toplevel', {
-      cwd: dir,
-    });
+    const cwd = dir;
+    const { stdout } = await spawn(
+      'git',
+      ['rev-parse', '--show-toplevel'],
+      cwd
+    );
     return stdout.trim();
   } catch (e) {
     logger.error('An error occurred while retrieving git project root', e);
@@ -158,12 +159,15 @@ export async function getIsCommitInBranch(
     return true;
   } catch (e) {
     const isSpawnError = e instanceof SpawnError;
-    const commitNotInBranch = e.code === 1 && e.stderr === '';
-    const commitNotExist =
-      e.code === 128 && e.stderr.includes('Not a valid object name');
+    if (isSpawnError) {
+      const commitNotInBranch = e.context.code === 1 && e.context.stderr === '';
+      const commitNotExist =
+        e.context.code === 128 &&
+        e.context.stderr.includes('Not a valid object name');
 
-    if (isSpawnError && (commitNotInBranch || commitNotExist)) {
-      return false;
+      if (commitNotInBranch || commitNotExist) {
+        return false;
+      }
     }
 
     throw e;
@@ -178,10 +182,12 @@ export async function deleteRemote(
     const cwd = getRepoPath(options);
     await spawn('git', ['remote', 'rm', remoteName], cwd);
   } catch (e) {
+    const isSpawnError = e instanceof SpawnError;
+
     if (
-      e instanceof SpawnError &&
-      e.code === 2 &&
-      e.stderr.includes('No such remote')
+      isSpawnError &&
+      e.context.code > 0 &&
+      e.context.stderr.includes('No such remote')
     ) {
       return;
     }
@@ -245,8 +251,10 @@ export async function getCommitsInMergeCommit(
 
     return res.stdout.split('\n');
   } catch (e) {
+    const isSpawnError = e instanceof SpawnError;
+
     // swallow error
-    if (e.code === 128) {
+    if (isSpawnError && e.context.code === 128) {
       return [];
     }
 
@@ -266,10 +274,12 @@ async function getShaOrRange(
         return `${last(shas)}^..${first(shas)}`;
       }
     } catch (e) {
+      const isSpawnError = e instanceof SpawnError;
+
       // swallow error if it's a 128 exit code
       // exit 128 happens when the cherrypicked commit is empty which is handled below
       // (128 also applies to many other types of errors)
-      if (e.code !== 128) {
+      if (!isSpawnError || e.context.code !== 128) {
         throw e;
       }
     }
@@ -313,48 +323,44 @@ export async function cherrypick({
     return { conflictingFiles: [], unstagedFiles: [], needsResolving: false };
   } catch (e) {
     const isSpawnError = e instanceof SpawnError;
-    if (!isSpawnError) {
-      throw e;
-    }
+    if (isSpawnError) {
+      // missing `mainline` option
+      if (e.message.includes('is a merge but no -m option was given')) {
+        throw new HandledError(
+          'Cherrypick failed because the selected commit was a merge commit. Please try again by specifying the parent with the `mainline` argument:\n\n> backport --mainline\n\nor:\n\n> backport --mainline <parent-number>\n\nOr refer to the git documentation for more information: https://git-scm.com/docs/git-cherry-pick#Documentation/git-cherry-pick.txt---mainlineparent-number'
+        );
+      }
 
-    // missing `mainline` option
-    if (e.message.includes('is a merge but no -m option was given')) {
-      throw new HandledError(
-        'Cherrypick failed because the selected commit was a merge commit. Please try again by specifying the parent with the `mainline` argument:\n\n> backport --mainline\n\nor:\n\n> backport --mainline <parent-number>\n\nOr refer to the git documentation for more information: https://git-scm.com/docs/git-cherry-pick#Documentation/git-cherry-pick.txt---mainlineparent-number'
-      );
-    }
+      // commit was already backported
+      if (e.message.includes('The previous cherry-pick is now empty')) {
+        const shortSha = getShortSha(sha);
 
-    // commit was already backported
-    if (e.message.includes('The previous cherry-pick is now empty')) {
-      const shortSha = getShortSha(sha);
+        throw new HandledError(
+          `Cherrypick failed because the selected commit (${shortSha}) is empty. ${
+            mergedTargetPullRequest?.url
+              ? `It looks like the commit was already backported in ${mergedTargetPullRequest.url}`
+              : 'Did you already backport this commit? '
+          }`
+        );
+      }
 
-      throw new HandledError(
-        `Cherrypick failed because the selected commit (${shortSha}) is empty. ${
-          mergedTargetPullRequest?.url
-            ? `It looks like the commit was already backported in ${mergedTargetPullRequest.url}`
-            : 'Did you already backport this commit? '
-        }`
-      );
-    }
+      if (e.message.includes(`bad object ${sha}`)) {
+        throw new HandledError(
+          `Cherrypick failed because commit "${sha}" was not found`
+        );
+      }
 
-    if (e.message.includes(`bad object ${sha}`)) {
-      throw new HandledError(
-        `Cherrypick failed because commit "${sha}" was not found`
-      );
-    }
+      const isCherryPickError =
+        e.context.cmdArgs.includes('cherry-pick') && e.context.code > 0;
+      if (isCherryPickError) {
+        const [conflictingFiles, unstagedFiles] = await Promise.all([
+          getConflictingFiles(options),
+          getUnstagedFiles(options),
+        ]);
 
-    const isCherryPickError =
-      e.code === 1 &&
-      e.stderr.includes('After resolving the conflicts, mark them with');
-
-    if (isCherryPickError) {
-      const [conflictingFiles, unstagedFiles] = await Promise.all([
-        getConflictingFiles(options),
-        getUnstagedFiles(options),
-      ]);
-
-      if (!isEmpty(conflictingFiles) || !isEmpty(unstagedFiles))
-        return { conflictingFiles, unstagedFiles, needsResolving: true };
+        if (!isEmpty(conflictingFiles) || !isEmpty(unstagedFiles))
+          return { conflictingFiles, unstagedFiles, needsResolving: true };
+      }
     }
 
     // re-throw error if it didn't match the handled cases above
@@ -380,28 +386,34 @@ export async function commitChanges(
       cwd
     );
   } catch (e) {
-    if (e.stdout?.includes('nothing to commit')) {
-      logger.info(
-        `Could not run "git commit". Probably because the changes were manually committed`,
-        e
-      );
-      return;
-    }
+    const isSpawnError = e instanceof SpawnError;
 
-    // manually set the commit message if the inferred commit message is empty
-    // this can happen if the user runs `git reset HEAD` and thereby aborts the cherrypick process
-    if (e.stderr?.includes('Aborting commit due to empty commit message')) {
-      await spawn(
-        'git',
-        [
-          'commit',
-          `--message=${commit.sourceCommit.message}`,
-          ...noVerifyFlag, // bypass pre-commit and commit-msg hooks
-        ],
-        cwd
-      );
+    if (isSpawnError) {
+      if (e.context.stdout.includes('nothing to commit')) {
+        logger.info(
+          `Could not run "git commit". Probably because the changes were manually committed`,
+          e
+        );
+        return;
+      }
 
-      return;
+      // manually set the commit message if the inferred commit message is empty
+      // this can happen if the user runs `git reset HEAD` and thereby aborts the cherrypick process
+      if (
+        e.context.stderr.includes('Aborting commit due to empty commit message')
+      ) {
+        await spawn(
+          'git',
+          [
+            'commit',
+            `--message=${commit.sourceCommit.message}`,
+            ...noVerifyFlag, // bypass pre-commit and commit-msg hooks
+          ],
+          cwd
+        );
+
+        return;
+      }
     }
 
     // rethrow error if it can't be handled
@@ -413,13 +425,15 @@ export type ConflictingFiles = Awaited<ReturnType<typeof getConflictingFiles>>;
 export async function getConflictingFiles(options: ValidConfigOptions) {
   const repoPath = getRepoPath(options);
   try {
-    await exec(`git --no-pager diff --check`, { cwd: repoPath });
+    const cwd = repoPath;
+    await spawn('git', ['--no-pager', 'diff', '--check'], cwd);
 
     return [];
   } catch (e) {
-    const isConflictError = e.cmd && e.code === 2;
+    const isSpawnError = e instanceof SpawnError;
+    const isConflictError = isSpawnError && e.context.code === 2;
     if (isConflictError) {
-      const files = (e.stdout as string)
+      const files = (e.context.stdout as string)
         .split('\n')
         .filter(
           (line: string) =>
@@ -432,6 +446,7 @@ export async function getConflictingFiles(options: ValidConfigOptions) {
         });
 
       const uniqueFiles = uniq(files);
+
       return uniqueFiles.map((file) => {
         return {
           absolute: pathResolve(repoPath, file),
@@ -448,9 +463,8 @@ export async function getConflictingFiles(options: ValidConfigOptions) {
 // retrieve the list of files that could not be cleanly merged
 export async function getUnstagedFiles(options: ValidConfigOptions) {
   const repoPath = getRepoPath(options);
-  const res = await exec(`git --no-pager diff --name-only`, {
-    cwd: repoPath,
-  });
+  const cwd = repoPath;
+  const res = await spawn('git', ['--no-pager', 'diff', '--name-only'], cwd);
   const files = res.stdout
     .split('\n')
     .filter((file) => !!file)
@@ -511,19 +525,21 @@ export async function createBackportBranch({
   } catch (e) {
     spinner.fail();
 
-    const isBranchInvalid =
-      e.stderr?.toLowerCase().includes(`couldn't find remote ref`) ||
-      e.stderr?.toLowerCase().includes(`invalid refspec`) ||
-      e.stderr
-        ?.toLowerCase()
-        .includes(
-          `is not a commit and a branch '${backportBranch}' cannot be created from it`
-        );
+    if (e instanceof SpawnError) {
+      const isBranchInvalid =
+        e.context.stderr.toLowerCase().includes(`couldn't find remote ref`) ||
+        e.context.stderr.toLowerCase().includes(`invalid refspec`) ||
+        e.context.stderr
+          .toLowerCase()
+          .includes(
+            `is not a commit and a branch '${backportBranch}' cannot be created from it`
+          );
 
-    if (isBranchInvalid) {
-      throw new HandledError(
-        `The branch "${targetBranch}" is invalid or doesn't exist`
-      );
+      if (isBranchInvalid) {
+        throw new HandledError(
+          `The branch "${targetBranch}" is invalid or doesn't exist`
+        );
+      }
     }
 
     throw e;
@@ -580,7 +596,10 @@ export async function pushBackportBranch({
   } catch (e) {
     spinner.fail();
 
-    if (e.stderr?.toLowerCase().includes(`repository not found`)) {
+    if (
+      e instanceof SpawnError &&
+      e.context.stderr.toLowerCase().includes(`repository not found`)
+    ) {
       throw new HandledError(
         `Error pushing to https://github.com/${repoForkOwner}/${options.repoName}. Repository does not exist. Either fork the source repository (https://github.com/${options.repoOwner}/${options.repoName}) or disable fork mode "--no-fork".  Read more about "fork mode" in the docs: https://github.com/sqren/backport/blob/3a182b17e0e7237c12915895aea9d71f49eb2886/docs/configuration.md#fork`
       );

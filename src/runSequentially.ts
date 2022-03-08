@@ -60,20 +60,27 @@ export async function runSequentially({
       });
     } catch (e) {
       const isHandledError = e instanceof HandledError;
+      if (isHandledError) {
+        results.push({
+          targetBranch,
+          status: 'handled-error',
+          error: e,
+        });
+      } else if (e instanceof Error) {
+        results.push({
+          targetBranch,
+          status: 'unhandled-error',
+          error: e,
+        });
+      } else {
+        throw e;
+      }
 
-      results.push({
-        targetBranch,
-        status: isHandledError ? 'handled-error' : 'unhandled-error',
-        error: e,
-      });
-
-      // consoleLog(
-      //   isHandledError
-      //     ? e.message
-      //     : 'An error occurred while backporting commit. Please see the logs for details'
-      // );
-
-      consoleLog(e.message);
+      consoleLog(
+        isHandledError
+          ? e.message
+          : 'An error occurred while backporting commit. Please see the logs for details'
+      );
 
       logger.error('runSequentially failed', e);
     }

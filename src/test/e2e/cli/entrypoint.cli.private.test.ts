@@ -194,6 +194,7 @@ describe('entrypoint cli', () => {
       }
     );
     const backportDir = getBackportDirPath();
+
     expect(res.replaceAll(backportDir, '<HOMEDIR>')).toMatchInlineSnapshot(`
       "
       Backporting to 7.x:

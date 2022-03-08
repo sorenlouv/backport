@@ -35,6 +35,6 @@ export async function addLabelsToPullRequest(
     spinner.succeed();
   } catch (e) {
     spinner.fail();
-    logger.info(`Could not add labels to PR ${pullNumber}`, e.stack);
+    logger.info(`Could not add labels to PR ${pullNumber}`, e);
   }
 }

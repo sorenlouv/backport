@@ -76,6 +76,7 @@ export async function createPullRequest({
 
     spinner.fail();
     throw new HandledError(
+      //@ts-expect-error
       `Could not create pull request: ${getGithubV3ErrorMessage(e)}`
     );
   }

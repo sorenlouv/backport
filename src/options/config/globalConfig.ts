@@ -2,6 +2,7 @@ import { chmod, writeFile } from 'fs/promises';
 import makeDir from 'make-dir';
 import { HandledError } from '../../services/HandledError';
 import { getBackportDirPath, getGlobalConfigPath } from '../../services/env';
+import { isErrnoError } from '../../utils/isErrnoError';
 import { ConfigFileOptions } from '../ConfigOptions';
 import { readConfigFile } from './readConfigFile';
 
@@ -41,21 +42,23 @@ export async function createGlobalConfigIfNotExist(
     });
     return true;
   } catch (e) {
-    // ignore error if file already exists
-    const FILE_ALREADY_EXISTS = 'EEXIST';
-    if (e.code === FILE_ALREADY_EXISTS) {
-      return false;
-    }
+    if (isErrnoError(e)) {
+      // ignore error if file already exists
+      const FILE_ALREADY_EXISTS = 'EEXIST';
+      if (e.code === FILE_ALREADY_EXISTS) {
+        return false;
+      }
 
-    // handle error if folder does not exist
-    const FOLDER_NOT_EXISTS = 'ENOENT';
-    if (e.code === FOLDER_NOT_EXISTS) {
-      throw new HandledError(
-        `The .backport folder (${globalConfigPath}) does not exist. `
-      );
-    }
+      // handle error if folder does not exist
+      const FOLDER_NOT_EXISTS = 'ENOENT';
+      if (e.code === FOLDER_NOT_EXISTS) {
+        throw new HandledError(
+          `The .backport folder (${globalConfigPath}) does not exist. `
+        );
+      }
 
-    throw e;
+      throw e;
+    }
   }
 }
 

@@ -69,6 +69,7 @@ export async function fetchPullRequestsBySearchQuery(options: {
       variables,
     });
   } catch (e) {
+    //@ts-expect-error
     res = swallowMissingConfigFileException<ResponseData>(e);
   }
 
