@@ -50,7 +50,7 @@ describe('git.integration', () => {
       });
 
       // create 7.x branch (but stay on `main` branch)
-      await childProcess.spawn('git', ['branch', '7.x'], cwd);
+      await childProcess.spawnPromise('git', ['branch', '7.x'], cwd);
 
       // create and commit second file
       secondSha = await createAndCommitFile({
@@ -60,7 +60,7 @@ describe('git.integration', () => {
       });
 
       // checkout 7.x
-      await childProcess.spawn('git', ['checkout', '7.x'], cwd);
+      await childProcess.spawnPromise('git', ['checkout', '7.x'], cwd);
     });
 
     it('should contain the first commit', async () => {
@@ -229,7 +229,7 @@ describe('git.integration', () => {
       });
 
       // create 7.x branch (but stay on `main` branch)
-      await childProcess.spawn('git', ['branch', '7.x'], cwd);
+      await childProcess.spawnPromise('git', ['branch', '7.x'], cwd);
 
       // create and commit second file
       secondSha = await createAndCommitFile({
@@ -253,7 +253,7 @@ describe('git.integration', () => {
       });
 
       // checkout 7.x
-      await childProcess.spawn('git', ['checkout', '7.x'], cwd);
+      await childProcess.spawnPromise('git', ['checkout', '7.x'], cwd);
     });
 
     it('should not cherrypick commit that already exists', async () => {
@@ -389,7 +389,7 @@ describe('git.integration', () => {
 
       // cherry-pick file
       try {
-        await childProcess.spawn(
+        await childProcess.spawnPromise(
           'git',
           ['cherry-pick', '3a0934d1f646e4a50571cb4b137ad2b08d2e7b18'],
           cwd
@@ -427,7 +427,7 @@ describe('git.integration', () => {
 
       const cwd = sourceRepo;
       await gitInit(cwd);
-      await childProcess.spawn(
+      await childProcess.spawnPromise(
         'git',
         ['remote', 'add', 'origin', 'git@github.com:elastic/kibana.git'],
         cwd
@@ -534,12 +534,12 @@ describe('git.integration', () => {
       });
       await resetSandbox(cwd);
       await gitInit(cwd);
-      await childProcess.spawn(
+      await childProcess.spawnPromise(
         'git',
         ['remote', 'add', 'sqren', 'git@github.com:sqren/kibana.git'],
         cwd
       );
-      await childProcess.spawn(
+      await childProcess.spawnPromise(
         'git',
         ['remote', 'add', 'elastic', 'git@github.com:elastic/kibana.git'],
         cwd
@@ -719,7 +719,7 @@ async function createAndCommitFile({
   cwd: string;
 }) {
   await createAndStageFile({ filename, content, cwd });
-  await childProcess.spawn(
+  await childProcess.spawnPromise(
     'git',
     ['commit', `--message=Update ${filename}`],
     cwd
@@ -739,7 +739,7 @@ async function createAndStageFile({
 }) {
   try {
     await fs.writeFile(path.join(cwd, filename), content);
-    await childProcess.spawn('git', ['add', `${filename}`], cwd);
+    await childProcess.spawnPromise('git', ['add', `${filename}`], cwd);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log('"createAndStageFile" threw an error', {
@@ -752,7 +752,7 @@ async function createAndStageFile({
 }
 
 async function getCurrentSha(cwd: string) {
-  const { stdout } = await childProcess.spawn(
+  const { stdout } = await childProcess.spawnPromise(
     'git',
     ['rev-parse', 'HEAD'],
     cwd
@@ -770,7 +770,7 @@ async function getCurrentBranchName(cwd: string) {
 
 async function getMostRecentCommitMessage(cwd: string) {
   try {
-    const { stdout } = await childProcess.spawn(
+    const { stdout } = await childProcess.spawnPromise(
       'git',
       ['--no-pager', 'log', '-1', '--pretty=%B'],
       cwd
@@ -785,7 +785,11 @@ async function getMostRecentCommitMessage(cwd: string) {
 
 async function gitClone(repoUrl: string, cwd: string) {
   try {
-    return await childProcess.spawn('git', ['clone', repoUrl, './'], cwd);
+    return await childProcess.spawnPromise(
+      'git',
+      ['clone', repoUrl, './'],
+      cwd
+    );
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log('Git clone failed');
@@ -795,7 +799,7 @@ async function gitClone(repoUrl: string, cwd: string) {
 
 async function gitInit(cwd: string) {
   try {
-    await childProcess.spawn('git', ['init'], cwd);
+    await childProcess.spawnPromise('git', ['init'], cwd);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log('Git init failed');

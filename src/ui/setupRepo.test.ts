@@ -8,13 +8,13 @@ import { SpyHelper } from '../types/SpyHelper';
 import { setupRepo } from './setupRepo';
 
 describe('setupRepo', () => {
-  let spawnSpy: SpyHelper<typeof childProcess.spawn>;
+  let spawnSpy: SpyHelper<typeof childProcess.spawnPromise>;
 
   beforeEach(() => {
     jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
 
     spawnSpy = jest
-      .spyOn(childProcess, 'spawn')
+      .spyOn(childProcess, 'spawnPromise')
       .mockResolvedValue({ stderr: '', stdout: '', code: 0, cmdArgs: [] });
   });
 
@@ -26,13 +26,15 @@ describe('setupRepo', () => {
     it('should delete repo', async () => {
       expect.assertions(2);
 
-      jest.spyOn(childProcess, 'execAsCallback').mockImplementation((cmd) => {
-        if (cmd.startsWith('git clone')) {
-          throw new Error('Simulated git clone failure');
-        }
+      jest
+        .spyOn(childProcess, 'spawnOriginal')
+        .mockImplementation((cmd, cmdArgs) => {
+          if (cmdArgs.includes('clone')) {
+            throw new Error('Simulated git clone failure');
+          }
 
-        throw new Error('unknown error');
-      });
+          throw new Error('unknown error');
+        });
 
       await expect(
         setupRepo({
@@ -51,8 +53,8 @@ describe('setupRepo', () => {
 
   describe('while cloning the repo', () => {
     it('updates the progress', async () => {
-      let onCloneComplete: () => void;
-      let dataHandler: (chunk: any) => void;
+      let onClose: (code: any, signals?: any) => void;
+      let onData: (chunk: any) => void;
 
       const oraMock = getOraMock();
       const spinnerTextSpy = jest.spyOn(oraMock, 'text', 'set');
@@ -63,34 +65,35 @@ describe('setupRepo', () => {
         .mockResolvedValue(undefined);
 
       jest
-        .spyOn(childProcess, 'execAsCallback')
+        .spyOn(childProcess, 'spawnOriginal')
         //@ts-expect-error
-        .mockImplementation((cmdString, cmdOptions, onComplete) => {
-          // callback should be called to finalize the operation
-          if (onComplete) {
-            //@ts-expect-error
-            onCloneComplete = onComplete;
-          }
-
+        .mockImplementation(() => {
           return {
+            on: (name, cb) => {
+              if (name === 'close') {
+                onClose = cb;
+              }
+            },
             stderr: {
               on: (name, handler) => {
-                dataHandler = handler;
+                if (name === 'data') {
+                  onData = handler;
+                }
               },
             },
           };
         });
 
       setTimeout(() => {
-        dataHandler('Receiving objects:   1%');
-        dataHandler('Receiving objects:   10%');
-        dataHandler('Receiving objects:   20%');
-        dataHandler('Receiving objects:   100%');
-        dataHandler('Updating files:   1%');
-        dataHandler('Updating files:   10%');
-        dataHandler('Updating files:   20%');
-        dataHandler('Updating files:   100%');
-        onCloneComplete();
+        onData('Receiving objects:   1%');
+        onData('Receiving objects:   10%');
+        onData('Receiving objects:   20%');
+        onData('Receiving objects:   100%');
+        onData('Updating files:   1%');
+        onData('Updating files:   10%');
+        onData('Updating files:   20%');
+        onData('Updating files:   100%');
+        onClose(0);
       }, 50);
 
       await setupRepo({
@@ -121,20 +124,30 @@ describe('setupRepo', () => {
     });
   });
 
-  describe('if repo already exists', () => {
-    beforeEach(() => {
-      jest
-        .spyOn(childProcess, 'execAsCallback')
-        //@ts-expect-error
-        .mockImplementation((cmdString, cmdOptions, callback) => {
+  describe('if repo is already cloned', () => {
+    function mockGitProjectRootPath(value: string) {
+      return (
+        jest
+          .spyOn(childProcess, 'spawnPromise')
           //@ts-expect-error
-          callback();
+          .mockImplementationOnce(async (cmd, cmdArgs) => {
+            if (cmdArgs.includes('rev-parse')) {
+              return {
+                stdout: value,
+              };
+            }
+          })
+      );
+    }
 
-          return { stderr: { on: () => null } };
-        });
-    });
+    beforeEach(async () => {
+      jest.clearAllMocks();
+      mockGitProjectRootPath(
+        '/myHomeDir/.backport/repositories/elastic/kibana'
+      );
 
-    it('should re-create remotes for both source repo and fork', async () => {
+      jest.spyOn(gitModule, 'cloneRepo');
+
       await setupRepo({
         accessToken: 'myAccessToken',
         authenticatedUsername: 'sqren_authenticated',
@@ -144,7 +157,17 @@ describe('setupRepo', () => {
         repoName: 'kibana',
         repoOwner: 'elastic',
       } as ValidConfigOptions);
+    });
 
+    it('should not delete the existing repo', () => {
+      expect(del).not.toHaveBeenCalled();
+    });
+
+    it('should not clone repo', () => {
+      expect(gitModule.cloneRepo).not.toHaveBeenCalled();
+    });
+
+    it('should re-create remotes for both source repo and fork', () => {
       expect(
         spawnSpy.mock.calls.map(([cmd, cmdArgs, cwd]) => ({
           cmd: `${cmd} ${cmdArgs.join(' ')}`,
@@ -155,7 +178,6 @@ describe('setupRepo', () => {
           cmd: 'git rev-parse --show-toplevel',
           cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
         },
-        { cmd: 'git remote --verbose', cwd: '/path/to/source/repo' },
         {
           cmd: 'git remote rm origin',
           cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
@@ -180,21 +202,32 @@ describe('setupRepo', () => {
     });
   });
 
+  function mockGitClone() {
+    jest
+      .spyOn(childProcess, 'spawnOriginal')
+      //@ts-expect-error
+      .mockImplementation((cmd, cmdArgs) => {
+        if (cmdArgs.includes('clone')) {
+          return {
+            on: (name, cb) => {
+              if (name === 'close') {
+                //@ts-expect-error
+                cb(0);
+              }
+            },
+            stderr: { on: () => null },
+          };
+        }
+      });
+  }
+
   describe('if repo does not exists locally', () => {
     let spinnerSuccessSpy: jest.SpyInstance;
     beforeEach(async () => {
       const oraMock = getOraMock();
       spinnerSuccessSpy = jest.spyOn(oraMock, 'succeed');
 
-      jest
-        .spyOn(childProcess, 'execAsCallback')
-        //@ts-expect-error
-        .mockImplementation((cmdString, cmdOptions, callback) => {
-          //@ts-expect-error
-          callback();
-
-          return { stderr: { on: () => null } };
-        });
+      mockGitClone();
 
       await setupRepo({
         accessToken: 'myAccessToken',
@@ -210,11 +243,12 @@ describe('setupRepo', () => {
         '100% Cloning repository from github.com (one-time operation)'
       );
 
-      expect(childProcess.execAsCallback).toHaveBeenCalledWith(
-        'git clone https://x-access-token:myAccessToken@github.com/elastic/kibana.git /myHomeDir/.backport/repositories/elastic/kibana --progress',
-        expect.any(Object),
-        expect.any(Function)
-      );
+      expect(childProcess.spawnOriginal).toHaveBeenCalledWith('git', [
+        'clone',
+        'https://x-access-token:myAccessToken@github.com/elastic/kibana.git',
+        '/myHomeDir/.backport/repositories/elastic/kibana',
+        '--progress',
+      ]);
     });
   });
 
@@ -232,15 +266,7 @@ describe('setupRepo', () => {
         .spyOn(gitModule, 'getGitConfig')
         .mockResolvedValue('email-or-username');
 
-      jest
-        .spyOn(childProcess, 'execAsCallback')
-        //@ts-expect-error
-        .mockImplementation((cmdString, cmdOptions, callback) => {
-          //@ts-expect-error
-          callback();
-
-          return { stderr: { on: () => null } };
-        });
+      mockGitClone();
 
       await setupRepo({
         repoName: 'kibana',
@@ -254,11 +280,12 @@ describe('setupRepo', () => {
         '100% Cloning repository from /path/to/source/repo (one-time operation)'
       );
 
-      expect(childProcess.execAsCallback).toHaveBeenCalledWith(
-        'git clone /path/to/source/repo /myHomeDir/.backport/repositories/elastic/kibana --progress',
-        expect.any(Object),
-        expect.any(Function)
-      );
+      expect(childProcess.spawnOriginal).toHaveBeenCalledWith('git', [
+        'clone',
+        '/path/to/source/repo',
+        '/myHomeDir/.backport/repositories/elastic/kibana',
+        '--progress',
+      ]);
     });
   });
 

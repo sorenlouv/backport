@@ -15,7 +15,7 @@ export async function exec(
   return res;
 }
 
-export async function spawn(
+export async function spawnPromise(
   cmd: string,
   cmdArgs: string[],
   cwd: string
@@ -55,11 +55,7 @@ export async function spawn(
   });
 }
 
-export const execAsCallback = (
-  ...args: Parameters<typeof childProcess.exec>
-) => {
-  return childProcess.exec(...args);
-};
+export const spawnOriginal = childProcess.spawn;
 
 export type SpawnErrorContext = {
   cmdArgs: string[];

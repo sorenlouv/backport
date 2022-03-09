@@ -4,7 +4,11 @@ import { ValidConfigOptions } from '../options/options';
 import { ora } from '../ui/ora';
 import { filterNil } from '../utils/filterEmpty';
 import { HandledError } from './HandledError';
-import { execAsCallback, spawn, SpawnError } from './child-process-promisified';
+import {
+  spawnPromise,
+  SpawnError,
+  spawnOriginal,
+} from './child-process-promisified';
 import { getRepoPath } from './env';
 import { getShortSha } from './github/commitFormatters';
 import { logger } from './logger';
@@ -23,52 +27,59 @@ export async function cloneRepo(
   onProgress: (progress: number) => void
 ) {
   return new Promise<void>((resolve, reject) => {
-    const execProcess = execAsCallback(
-      `git clone ${sourcePath} ${targetPath} --progress`,
-      { maxBuffer: 100 * 1024 * 1024 },
-      (error) => {
-        return error ? reject(error) : resolve();
-      }
-    );
+    const subprocess = spawnOriginal('git', [
+      'clone',
+      sourcePath,
+      targetPath,
+      '--progress',
+    ]);
 
     const progress = {
       fileUpdate: 0,
       objectReceive: 0,
     };
 
-    if (execProcess.stderr) {
-      execProcess.stderr.on('data', (data) => {
-        logger.verbose(data);
-        const [, objectReceiveProgress]: RegExpMatchArray =
-          data.toString().match(/^Receiving objects:\s+(\d+)%/) || [];
+    subprocess.on('error', (err) => reject(err));
 
-        if (objectReceiveProgress) {
-          progress.objectReceive = parseInt(objectReceiveProgress, 10);
-        }
+    subprocess.stderr.on('data', (data: string) => {
+      logger.verbose(data);
+      const [, objectReceiveProgress]: RegExpMatchArray =
+        data.toString().match(/^Receiving objects:\s+(\d+)%/) || [];
 
-        const [, fileUpdateProgress]: RegExpMatchArray =
-          data.toString().match(/^Updating files:\s+(\d+)%/) || [];
+      if (objectReceiveProgress) {
+        progress.objectReceive = parseInt(objectReceiveProgress, 10);
+      }
 
-        if (fileUpdateProgress) {
-          progress.objectReceive = 100;
-          progress.fileUpdate = parseInt(fileUpdateProgress, 10);
-        }
+      const [, fileUpdateProgress]: RegExpMatchArray =
+        data.toString().match(/^Updating files:\s+(\d+)%/) || [];
 
-        const progressSum = Math.round(
-          progress.fileUpdate * 0.1 + progress.objectReceive * 0.9
-        );
+      if (fileUpdateProgress) {
+        progress.objectReceive = 100;
+        progress.fileUpdate = parseInt(fileUpdateProgress, 10);
+      }
 
-        if (progressSum > 0) {
-          onProgress(progressSum);
-        }
-      });
-    }
+      const progressSum = Math.round(
+        progress.fileUpdate * 0.1 + progress.objectReceive * 0.9
+      );
+
+      if (progressSum > 0) {
+        onProgress(progressSum);
+      }
+    });
+
+    subprocess.on('close', (code) => {
+      if (code === 0 || code === null) {
+        resolve();
+      } else {
+        reject(new Error(`Git clone failed with exit code: ${code}`));
+      }
+    });
   });
 }
 
 export async function getLocalConfigFileCommitDate({ cwd }: { cwd: string }) {
   try {
-    const { stdout } = await spawn(
+    const { stdout } = await spawnPromise(
       'git',
       ['--no-pager', 'log', '-1', '--format=%cd', '.backportrc.json'],
       cwd
@@ -86,7 +97,7 @@ export async function getLocalConfigFileCommitDate({ cwd }: { cwd: string }) {
 export async function isLocalConfigFileUntracked({ cwd }: { cwd: string }) {
   try {
     // list untracked files
-    const { stdout } = await spawn(
+    const { stdout } = await spawnPromise(
       'git',
       ['ls-files', '.backportrc.json', '--exclude-standard', '--others'],
       cwd
@@ -100,7 +111,7 @@ export async function isLocalConfigFileUntracked({ cwd }: { cwd: string }) {
 
 export async function isLocalConfigFileModified({ cwd }: { cwd: string }) {
   try {
-    const { stdout } = await spawn(
+    const { stdout } = await spawnPromise(
       'git',
       ['--no-pager', 'diff', 'HEAD', '--name-only', '.backportrc.json'],
       cwd
@@ -114,7 +125,7 @@ export async function isLocalConfigFileModified({ cwd }: { cwd: string }) {
 
 export async function getRepoInfoFromGitRemotes({ cwd }: { cwd: string }) {
   try {
-    const { stdout } = await spawn('git', ['remote', '--verbose'], cwd);
+    const { stdout } = await spawnPromise('git', ['remote', '--verbose'], cwd);
     const remotes = stdout
       .split('\n')
       .map((line) => {
@@ -137,7 +148,7 @@ export async function getRepoInfoFromGitRemotes({ cwd }: { cwd: string }) {
 export async function getGitProjectRootPath(dir: string) {
   try {
     const cwd = dir;
-    const { stdout } = await spawn(
+    const { stdout } = await spawnPromise(
       'git',
       ['rev-parse', '--show-toplevel'],
       cwd
@@ -155,7 +166,11 @@ export async function getIsCommitInBranch(
 ) {
   try {
     const cwd = getRepoPath(options);
-    await spawn('git', ['merge-base', '--is-ancestor', commitSha, 'HEAD'], cwd);
+    await spawnPromise(
+      'git',
+      ['merge-base', '--is-ancestor', commitSha, 'HEAD'],
+      cwd
+    );
     return true;
   } catch (e) {
     const isSpawnError = e instanceof SpawnError;
@@ -180,7 +195,7 @@ export async function deleteRemote(
 ) {
   try {
     const cwd = getRepoPath(options);
-    await spawn('git', ['remote', 'rm', remoteName], cwd);
+    await spawnPromise('git', ['remote', 'rm', remoteName], cwd);
   } catch (e) {
     const isSpawnError = e instanceof SpawnError;
 
@@ -203,7 +218,7 @@ export async function addRemote(
 ) {
   try {
     const cwd = getRepoPath(options);
-    await spawn(
+    await spawnPromise(
       'git',
       ['remote', 'add', remoteName, getRemoteUrl(options, remoteName)],
       cwd
@@ -216,7 +231,7 @@ export async function addRemote(
 
 export async function fetchBranch(options: ValidConfigOptions, branch: string) {
   const cwd = getRepoPath(options);
-  await spawn(
+  await spawnPromise(
     'git',
     ['fetch', options.repoOwner, `${branch}:${branch}`, '--force'],
     cwd
@@ -228,7 +243,7 @@ export async function getIsMergeCommit(
   sha: string
 ) {
   const cwd = getRepoPath(options);
-  const res = await spawn(
+  const res = await spawnPromise(
     'git',
     ['rev-list', '-1', '--merges', `${sha}~1..${sha}`],
     cwd
@@ -243,7 +258,7 @@ export async function getCommitsInMergeCommit(
 ) {
   try {
     const cwd = getRepoPath(options);
-    const res = await spawn(
+    const res = await spawnPromise(
       'git',
       ['--no-pager', 'log', `${sha}^1..${sha}^2`, '--pretty=format:%H'],
       cwd
@@ -319,7 +334,7 @@ export async function cherrypick({
 
   try {
     const cwd = getRepoPath(options);
-    await spawn('git', cmdArgs, cwd);
+    await spawnPromise('git', cmdArgs, cwd);
     return { conflictingFiles: [], unstagedFiles: [], needsResolving: false };
   } catch (e) {
     const isSpawnError = e instanceof SpawnError;
@@ -376,7 +391,7 @@ export async function commitChanges(
   const cwd = getRepoPath(options);
 
   try {
-    await spawn(
+    await spawnPromise(
       'git',
       [
         'commit',
@@ -402,7 +417,7 @@ export async function commitChanges(
       if (
         e.context.stderr.includes('Aborting commit due to empty commit message')
       ) {
-        await spawn(
+        await spawnPromise(
           'git',
           [
             'commit',
@@ -426,7 +441,7 @@ export async function getConflictingFiles(options: ValidConfigOptions) {
   const repoPath = getRepoPath(options);
   try {
     const cwd = repoPath;
-    await spawn('git', ['--no-pager', 'diff', '--check'], cwd);
+    await spawnPromise('git', ['--no-pager', 'diff', '--check'], cwd);
 
     return [];
   } catch (e) {
@@ -464,7 +479,11 @@ export async function getConflictingFiles(options: ValidConfigOptions) {
 export async function getUnstagedFiles(options: ValidConfigOptions) {
   const repoPath = getRepoPath(options);
   const cwd = repoPath;
-  const res = await spawn('git', ['--no-pager', 'diff', '--name-only'], cwd);
+  const res = await spawnPromise(
+    'git',
+    ['--no-pager', 'diff', '--name-only'],
+    cwd
+  );
   const files = res.stdout
     .split('\n')
     .filter((file) => !!file)
@@ -482,7 +501,7 @@ export async function getGitConfig({
 }) {
   try {
     const cwd = dir;
-    const res = await spawn('git', ['config', key], cwd);
+    const res = await spawnPromise('git', ['config', key], cwd);
     return res.stdout.trim();
   } catch (e) {
     return;
@@ -506,10 +525,10 @@ export async function createBackportBranch({
   try {
     const cwd = getRepoPath(options);
 
-    await spawn('git', ['reset', '--hard'], cwd);
-    await spawn('git', ['clean', '-d', '--force'], cwd);
-    await spawn('git', ['fetch', options.repoOwner, targetBranch], cwd);
-    await spawn(
+    await spawnPromise('git', ['reset', '--hard'], cwd);
+    await spawnPromise('git', ['clean', '-d', '--force'], cwd);
+    await spawnPromise('git', ['fetch', options.repoOwner, targetBranch], cwd);
+    await spawnPromise(
       'git',
       [
         'checkout',
@@ -556,9 +575,13 @@ export async function deleteBackportBranch({
   const spinner = ora(options.ci).start();
   const cwd = getRepoPath(options);
 
-  await spawn('git', ['reset', '--hard'], cwd);
-  await spawn('git', ['checkout', options.sourceBranch], cwd);
-  await spawn('git', ['branch', '--delete', '--force', backportBranch], cwd);
+  await spawnPromise('git', ['reset', '--hard'], cwd);
+  await spawnPromise('git', ['checkout', options.sourceBranch], cwd);
+  await spawnPromise(
+    'git',
+    ['branch', '--delete', '--force', backportBranch],
+    cwd
+  );
 
   spinner.stop();
 }
@@ -585,7 +608,7 @@ export async function pushBackportBranch({
 
   try {
     const cwd = getRepoPath(options);
-    const res = await spawn(
+    const res = await spawnPromise(
       'git',
       ['push', repoForkOwner, `${backportBranch}:${backportBranch}`, '--force'],
       cwd

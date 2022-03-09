@@ -246,7 +246,7 @@ describe('entrypoint.module', () => {
       expect(commits).toEqual(expectedCommits);
     });
 
-    it('prFilter', async () => {
+    it.only('prFilter', async () => {
       const commits = await getCommits({
         accessToken: accessToken,
         repoName: 'kibana',
@@ -257,6 +257,234 @@ describe('entrypoint.module', () => {
 
       expect(commits).toMatchInlineSnapshot(`
         Array [
+          Object {
+            "author": Object {
+              "email": "thompson.glowe@gmail.com",
+              "name": "Greg Thompson",
+            },
+            "expectedTargetPullRequests": Array [
+              Object {
+                "branch": "7.x",
+                "mergeCommit": Object {
+                  "message": "Upgrade EUI to v33.0.0 (#99382) (#101067)
+
+        * eui to 33.0.0
+
+        * resize observer type inclusion - revisit
+
+        * src snapshot updates
+
+        * x-pack snapshot updates
+
+        * table sort test updates
+
+        * code block language sh -> bash
+
+        * datagrid datetime sort inversion
+
+        * types
+
+        * kbn-crypto
+
+        * refractor yarn resolution
+
+        * refractor yarn resolution
+
+        * update cypress tests
+
+        * url state test
+
+        * trial
+
+        * Revert \\"trial\\"
+
+        This reverts commit adc3538145d613279445f0c93308ed712adb7611.
+
+        * trial anomaly timeout
+
+        * Revert \\"trial anomaly timeout\\"
+
+        This reverts commit 9a11711ba898b51d9f2979fa64f8907759b33fe4.
+
+        * kbn-telemetry-tools
+
+        * Change a useMemo to useCallback so the code executes when intended
+
+        * Removed no-longer-used import
+
+        * exitOrFail already retries for longer than tryForTime
+
+        * Wait for loading indicator to disappear
+
+        * Intentionally adding \`.only\`
+
+        * Revert .only
+
+        * Increase wait time for the ML chart to load
+
+        * Remove unused var
+
+        * overflow
+
+        * chartWidth
+
+        Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>
+        Co-authored-by: Alejandro Fernández Haro <alejandro.haro@elastic.co>
+        Co-authored-by: Chandler Prall <chandler.prall@gmail.com>
+
+        Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>
+        Co-authored-by: Alejandro Fernández Haro <alejandro.haro@elastic.co>
+        Co-authored-by: Chandler Prall <chandler.prall@gmail.com>",
+                  "sha": "0480fbc94574427c9b2b82d77fdbb6c2862c793a",
+                },
+                "number": 101067,
+                "state": "MERGED",
+                "url": "https://github.com/elastic/kibana/pull/101067",
+              },
+            ],
+            "sourceBranch": "master",
+            "sourceCommit": Object {
+              "committedDate": "2021-06-01T15:53:07Z",
+              "message": "Upgrade EUI to v33.0.0 (#99382)
+
+        * eui to 33.0.0
+
+        * resize observer type inclusion - revisit
+
+        * src snapshot updates
+
+        * x-pack snapshot updates
+
+        * table sort test updates
+
+        * code block language sh -> bash
+
+        * datagrid datetime sort inversion
+
+        * types
+
+        * kbn-crypto
+
+        * refractor yarn resolution
+
+        * refractor yarn resolution
+
+        * update cypress tests
+
+        * url state test
+
+        * trial
+
+        * Revert \\"trial\\"
+
+        This reverts commit adc3538145d613279445f0c93308ed712adb7611.
+
+        * trial anomaly timeout
+
+        * Revert \\"trial anomaly timeout\\"
+
+        This reverts commit 9a11711ba898b51d9f2979fa64f8907759b33fe4.
+
+        * kbn-telemetry-tools
+
+        * Change a useMemo to useCallback so the code executes when intended
+
+        * Removed no-longer-used import
+
+        * exitOrFail already retries for longer than tryForTime
+
+        * Wait for loading indicator to disappear
+
+        * Intentionally adding \`.only\`
+
+        * Revert .only
+
+        * Increase wait time for the ML chart to load
+
+        * Remove unused var
+
+        * overflow
+
+        * chartWidth
+
+        Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>
+        Co-authored-by: Alejandro Fernández Haro <alejandro.haro@elastic.co>
+        Co-authored-by: Chandler Prall <chandler.prall@gmail.com>",
+              "sha": "38fd8a268ad7661d92f0d84c52d6f0a3d84c9801",
+            },
+            "sourcePullRequest": Object {
+              "mergeCommit": Object {
+                "message": "Upgrade EUI to v33.0.0 (#99382)
+
+        * eui to 33.0.0
+
+        * resize observer type inclusion - revisit
+
+        * src snapshot updates
+
+        * x-pack snapshot updates
+
+        * table sort test updates
+
+        * code block language sh -> bash
+
+        * datagrid datetime sort inversion
+
+        * types
+
+        * kbn-crypto
+
+        * refractor yarn resolution
+
+        * refractor yarn resolution
+
+        * update cypress tests
+
+        * url state test
+
+        * trial
+
+        * Revert \\"trial\\"
+
+        This reverts commit adc3538145d613279445f0c93308ed712adb7611.
+
+        * trial anomaly timeout
+
+        * Revert \\"trial anomaly timeout\\"
+
+        This reverts commit 9a11711ba898b51d9f2979fa64f8907759b33fe4.
+
+        * kbn-telemetry-tools
+
+        * Change a useMemo to useCallback so the code executes when intended
+
+        * Removed no-longer-used import
+
+        * exitOrFail already retries for longer than tryForTime
+
+        * Wait for loading indicator to disappear
+
+        * Intentionally adding \`.only\`
+
+        * Revert .only
+
+        * Increase wait time for the ML chart to load
+
+        * Remove unused var
+
+        * overflow
+
+        * chartWidth
+
+        Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>
+        Co-authored-by: Alejandro Fernández Haro <alejandro.haro@elastic.co>
+        Co-authored-by: Chandler Prall <chandler.prall@gmail.com>",
+                "sha": "38fd8a268ad7661d92f0d84c52d6f0a3d84c9801",
+              },
+              "number": 99382,
+              "url": "https://github.com/elastic/kibana/pull/99382",
+            },
+          },
           Object {
             "author": Object {
               "email": "pierre.gayvallet@elastic.co",
@@ -507,84 +735,180 @@ describe('entrypoint.module', () => {
           },
           Object {
             "author": Object {
-              "email": "w@tson.dk",
-              "name": "Thomas Watson",
+              "email": "restrry@gmail.com",
+              "name": "Mikhail Shustov",
             },
             "expectedTargetPullRequests": Array [
               Object {
                 "branch": "7.x",
                 "mergeCommit": Object {
-                  "message": "Upgrade to hapi version 20 (#85406) (#86592)",
-                  "sha": "777c80d8a0f72be16091510d0cb5d09693ba6bb4",
+                  "message": "[7.x] TS Incremental build exclude test files (#95610) (#96041)
+
+        * TS Incremental build exclude test files (#95610)
+
+        * add base config for all the TS projects
+
+        * all the project use new tsconfig.project.json
+
+        * compile test files in the high-level tsconfig.json
+
+        * fix TS error in maps plugin
+
+        * fix TS error in infra plugin
+
+        * exclude mote test and test until folders
+
+        * uptime. do not import test code within prod code
+
+        * expressions. do not import test code within prod code
+
+        * data: export mocks from high level folder
+
+        * task_manager: comply with es client typings
+
+        * infra: remove unused enzyme_helpers
+
+        * check_ts_project requires \\"include\\" key
+
+        * ts_check should handle parent configs
+
+        * all ts configs should extend base one
+
+        * exclude test folders from plugins
+
+        * update patterns to fix ts_check errors
+
+        * Apply suggestions from code review
+
+        Co-authored-by: Constance <constancecchen@users.noreply.github.com>
+
+        * uptime: MountWithReduxProvider to test helpers
+
+        Co-authored-by: Constance <constancecchen@users.noreply.github.com>
+        Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>
+
+        * fix code plugin tsconfig
+
+        Co-authored-by: Constance <constancecchen@users.noreply.github.com>
+        Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>",
+                  "sha": "ebdcd92b05efa955b3a2d30a113f34d0d6893788",
                 },
-                "number": 86592,
+                "number": 96041,
                 "state": "MERGED",
-                "url": "https://github.com/elastic/kibana/pull/86592",
+                "url": "https://github.com/elastic/kibana/pull/96041",
               },
-            ],
-            "sourceBranch": "master",
-            "sourceCommit": Object {
-              "committedDate": "2020-12-19T12:10:11Z",
-              "message": "Upgrade to hapi version 20 (#85406)",
-              "sha": "e8b21bc6c12cfd793c46e1d86577d5e5ec8a71f8",
-            },
-            "sourcePullRequest": Object {
-              "mergeCommit": Object {
-                "message": "Upgrade to hapi version 20 (#85406)",
-                "sha": "e8b21bc6c12cfd793c46e1d86577d5e5ec8a71f8",
-              },
-              "number": 85406,
-              "url": "https://github.com/elastic/kibana/pull/85406",
-            },
-          },
-          Object {
-            "author": Object {
-              "email": "nathan.smith@elastic.co",
-              "name": "Nathan L Smith",
-            },
-            "expectedTargetPullRequests": Array [
               Object {
                 "branch": "7.x",
                 "mergeCommit": Object {
-                  "message": "Move EUI styled components integration to kibana_react (#86065) (#89217)
+                  "message": "[7.x] Revert \\"TS Incremental build exclude test files (#95610)\\" (#96223) (#96281)
 
-        ...from xpack_legacy.
+        * Revert \\"TS Incremental build exclude test files (#95610)\\" (#96223)
 
-        Remove the duplicated typings from the observability plugin and only use the ones from kibana_react.
+        This reverts commit b6e582c53ebb9c496c232408066b128d2ca2f92c.
 
-        Fixes #78248.",
-                  "sha": "57b798474ae5ec2892a06ffa5706c5dd405db137",
+        * code: use base tsconfig",
+                  "sha": "ad7866592e24130a40cea34bb25159e4708f9d3a",
                 },
-                "number": 89217,
+                "number": 96281,
                 "state": "MERGED",
-                "url": "https://github.com/elastic/kibana/pull/89217",
+                "url": "https://github.com/elastic/kibana/pull/96281",
               },
             ],
             "sourceBranch": "master",
             "sourceCommit": Object {
-              "committedDate": "2021-01-25T19:48:35Z",
-              "message": "Move EUI styled components integration to kibana_react (#86065)
+              "committedDate": "2021-04-01T12:40:47Z",
+              "message": "TS Incremental build exclude test files (#95610)
 
-        ...from xpack_legacy.
+        * add base config for all the TS projects
 
-        Remove the duplicated typings from the observability plugin and only use the ones from kibana_react.
+        * all the project use new tsconfig.project.json
 
-        Fixes #78248.",
-              "sha": "e5588a129b1a0b2796822d4773176cc712dd5318",
+        * compile test files in the high-level tsconfig.json
+
+        * fix TS error in maps plugin
+
+        * fix TS error in infra plugin
+
+        * exclude mote test and test until folders
+
+        * uptime. do not import test code within prod code
+
+        * expressions. do not import test code within prod code
+
+        * data: export mocks from high level folder
+
+        * task_manager: comply with es client typings
+
+        * infra: remove unused enzyme_helpers
+
+        * check_ts_project requires \\"include\\" key
+
+        * ts_check should handle parent configs
+
+        * all ts configs should extend base one
+
+        * exclude test folders from plugins
+
+        * update patterns to fix ts_check errors
+
+        * Apply suggestions from code review
+
+        Co-authored-by: Constance <constancecchen@users.noreply.github.com>
+
+        * uptime: MountWithReduxProvider to test helpers
+
+        Co-authored-by: Constance <constancecchen@users.noreply.github.com>
+        Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>",
+              "sha": "b6e582c53ebb9c496c232408066b128d2ca2f92c",
             },
             "sourcePullRequest": Object {
               "mergeCommit": Object {
-                "message": "Move EUI styled components integration to kibana_react (#86065)
+                "message": "TS Incremental build exclude test files (#95610)
 
-        ...from xpack_legacy.
+        * add base config for all the TS projects
 
-        Remove the duplicated typings from the observability plugin and only use the ones from kibana_react.
+        * all the project use new tsconfig.project.json
 
-        Fixes #78248.",
-                "sha": "e5588a129b1a0b2796822d4773176cc712dd5318",
+        * compile test files in the high-level tsconfig.json
+
+        * fix TS error in maps plugin
+
+        * fix TS error in infra plugin
+
+        * exclude mote test and test until folders
+
+        * uptime. do not import test code within prod code
+
+        * expressions. do not import test code within prod code
+
+        * data: export mocks from high level folder
+
+        * task_manager: comply with es client typings
+
+        * infra: remove unused enzyme_helpers
+
+        * check_ts_project requires \\"include\\" key
+
+        * ts_check should handle parent configs
+
+        * all ts configs should extend base one
+
+        * exclude test folders from plugins
+
+        * update patterns to fix ts_check errors
+
+        * Apply suggestions from code review
+
+        Co-authored-by: Constance <constancecchen@users.noreply.github.com>
+
+        * uptime: MountWithReduxProvider to test helpers
+
+        Co-authored-by: Constance <constancecchen@users.noreply.github.com>
+        Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>",
+                "sha": "b6e582c53ebb9c496c232408066b128d2ca2f92c",
               },
-              "number": 86065,
-              "url": "https://github.com/elastic/kibana/pull/86065",
+              "number": 95610,
+              "url": "https://github.com/elastic/kibana/pull/95610",
             },
           },
         ]

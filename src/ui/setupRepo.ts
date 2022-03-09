@@ -7,7 +7,7 @@ import {
   cloneRepo,
   deleteRemote,
   getGitProjectRootPath,
-  getLocalSourceRepoPath as getLocalSourceRepoPath,
+  getLocalSourceRepoPath,
   getRemoteUrl,
 } from '../services/git';
 import { ora } from './ora';

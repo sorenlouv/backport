@@ -10,7 +10,7 @@ import { SpyHelper } from '../types/SpyHelper';
 import { cherrypickAndCreateTargetPullRequest } from './cherrypickAndCreateTargetPullRequest';
 
 describe('cherrypickAndCreateTargetPullRequest', () => {
-  let execSpy: SpyHelper<typeof childProcess.spawn>;
+  let execSpy: SpyHelper<typeof childProcess.spawnPromise>;
   let addLabelsScope: ReturnType<typeof nock>;
   let consoleLogSpy: SpyHelper<typeof logger['consoleLog']>;
 
@@ -18,7 +18,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
     jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
 
     execSpy = jest
-      .spyOn(childProcess, 'spawn')
+      .spyOn(childProcess, 'spawnPromise')
 
       // mock all exec commands to respond without errors
       .mockResolvedValue({ stdout: '', stderr: '', code: 0, cmdArgs: [] });
