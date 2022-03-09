@@ -728,10 +728,10 @@ describe('pushBackportBranch', () => {
       })
     );
 
-    await expect(
-      pushBackportBranch({ options, backportBranch })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Error pushing to https://github.com/the_fork_owner/kibana. Repository does not exist. Either fork the source repository (https://github.com/elastic/kibana) or disable fork mode \\"--no-fork\\".  Read more about \\"fork mode\\" in the docs: https://github.com/sqren/backport/blob/3a182b17e0e7237c12915895aea9d71f49eb2886/docs/configuration.md#fork"`
-    );
+    await expect(pushBackportBranch({ options, backportBranch })).rejects
+      .toThrowErrorMatchingInlineSnapshot(`
+            "Error pushing to https://github.com/the_fork_owner/kibana. Repository does not exist. Either fork the repository (https://github.com/elastic/kibana) or disable fork mode via \\"--no-fork\\".
+            Read more about fork mode in the docs: https://github.com/sqren/backport/blob/main/docs/configuration.md#fork"
+          `);
   });
 });
