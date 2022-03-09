@@ -418,29 +418,29 @@ describe('git.integration', () => {
       filename: __filename,
       specname: 'cloneRepo',
     });
+
     const sourceRepo = `${sandboxPath}/source-repo`;
     const backportRepo = `${sandboxPath}/backport-repo`;
 
     beforeEach(async () => {
       await resetSandbox(sandboxPath);
-      await makeDir(sourceRepo);
+    });
 
-      const cwd = sourceRepo;
-      await gitInit(cwd);
+    it('clones the repo', async () => {
+      await makeDir(sourceRepo);
+      await gitInit(sourceRepo);
       await childProcess.spawnPromise(
         'git',
         ['remote', 'add', 'origin', 'git@github.com:elastic/kibana.git'],
-        cwd
+        sourceRepo
       );
 
       await createAndCommitFile({
         filename: 'my-file.txt',
         content: 'Hello!',
-        cwd,
+        cwd: sourceRepo,
       });
-    });
 
-    it('clones the repo', async () => {
       // file should not exist before clone
       await expect(() =>
         access(`${backportRepo}/my-file.txt`)
@@ -455,6 +455,31 @@ describe('git.integration', () => {
       await expect(() =>
         access(`${backportRepo}/my-file.txt`)
       ).not.toThrowError();
+    });
+
+    it('clones a remote repo and continously updates the progress', async () => {
+      const onProgressSpy = jest.fn();
+      await cloneRepo(
+        {
+          sourcePath: 'https://github.com/backport-org/backport-e2e.git',
+          targetPath: backportRepo,
+        },
+        onProgressSpy
+      );
+
+      expect(onProgressSpy).toHaveBeenCalledWith(expect.any(Number));
+    });
+
+    it('fails to clone repo because sourcePath is incorrect', async () => {
+      await expect(() =>
+        cloneRepo(
+          {
+            sourcePath: `${sandboxPath}/source-repo-incorrect`,
+            targetPath: backportRepo,
+          },
+          () => null
+        )
+      ).rejects.toThrowError('Git clone failed with exit code: 128');
     });
   });
 
