@@ -162,14 +162,13 @@ Enabling this will disable the interactive prompts
 import { backportRun } from 'backport';
 
 const result = await backportRun({
-  accessToken: 'abc',
-  repoName: 'kibana',
-  repoOwner: 'elastic',
-  pullNumber: 121633,
-  ci: true,
-  targetPRLabels: ['backport'],
-  autoMerge: true,
-  autoMergeMethod: 'squash',
+  options: {
+    accessToken: 'very secret',
+    repoName: 'kibana',
+    repoOwner: 'elastic',
+    pullNumber: 121633,
+    ci: true,
+  },
 });
 
 console.log(result);

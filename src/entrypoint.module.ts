@@ -1,4 +1,5 @@
 import { backportRun as run } from './backportRun';
+import { BackportResponse } from './backportRun';
 import { ConfigFileOptions } from './options/ConfigOptions';
 import { ValidConfigOptions } from './options/options';
 import { fetchCommitByPullNumber } from './services/github/v4/fetchCommits/fetchCommitByPullNumber';
@@ -11,28 +12,31 @@ import { Commit } from './services/sourceCommit/parseSourceCommit';
 import { excludeUndefined } from './utils/excludeUndefined';
 
 // public API
-export { BackportResponse } from './backportRun';
-export { ConfigFileOptions } from './options/ConfigOptions';
+export { BackportResponse };
 export { Commit };
+export { ConfigFileOptions } from './options/ConfigOptions';
 export { fetchRemoteProjectConfig as getRemoteProjectConfig } from './services/github/v4/fetchRemoteProjectConfig';
 export { getGlobalConfig as getLocalGlobalConfig } from './options/config/globalConfig';
 
-export function backportRun(
-  options: ConfigFileOptions,
+export function backportRun({
+  options,
+  processArgs = [],
+  exitCodeOnFailure = true,
+}: {
+  options: ConfigFileOptions;
 
   // cli args will not automatically be forwarded when backport is consumed as a module
   // It is simple to forward args manually via `process.argv`:
   //
   // import { backportRun } from 'backport'
-  // const args = process.argv.slice(2);
-  // backportRun(options, args)
+  // backportRun({ options, processArgs: process.argv.slice(2) })
   //
-  processArgs: string[] = [],
-  exitCodeOnFailure = true
-) {
+  processArgs?: string[];
+  exitCodeOnFailure?: boolean;
+}): Promise<BackportResponse> {
   return run({
-    processArgs,
     optionsFromModule: excludeUndefined(options),
+    processArgs,
     exitCodeOnFailure,
   });
 }

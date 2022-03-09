@@ -18,12 +18,14 @@ describe('entrypoint.module', () => {
       let response: BackportSuccessResponse;
       beforeAll(async () => {
         response = (await backportRun({
-          repoOwner: 'backport-org',
-          repoName: 'repo-with-conflicts',
-          ci: true,
-          accessToken,
-          pullNumber: 12,
-          targetBranches: ['7.x'],
+          options: {
+            repoOwner: 'backport-org',
+            repoName: 'repo-with-conflicts',
+            ci: true,
+            accessToken,
+            pullNumber: 12,
+            targetBranches: ['7.x'],
+          },
         })) as BackportSuccessResponse;
       });
 
@@ -59,11 +61,13 @@ describe('entrypoint.module', () => {
       let response: BackportFailureResponse;
       beforeAll(async () => {
         response = (await backportRun({
-          repoOwner: 'backport-org',
-          repoName: 'repo-with-conflicts',
-          ci: true,
-          accessToken,
-          pullNumber: 12,
+          options: {
+            repoOwner: 'backport-org',
+            repoName: 'repo-with-conflicts',
+            ci: true,
+            accessToken,
+            pullNumber: 12,
+          },
         })) as BackportFailureResponse;
       });
 
@@ -81,12 +85,14 @@ describe('entrypoint.module', () => {
       let response: BackportSuccessResponse;
       beforeAll(async () => {
         response = (await backportRun({
-          repoOwner: 'backport-org',
-          repoName: 'repo-with-conflicts',
-          ci: true,
-          accessToken,
-          pullNumber: 8,
-          dryRun: true,
+          options: {
+            repoOwner: 'backport-org',
+            repoName: 'repo-with-conflicts',
+            ci: true,
+            accessToken,
+            pullNumber: 8,
+            dryRun: true,
+          },
         })) as BackportSuccessResponse;
       });
 
