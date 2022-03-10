@@ -434,7 +434,7 @@ describe('git.integration', () => {
       await gitInit(sourceRepo);
       await childProcess.spawnPromise(
         'git',
-        ['remote', 'add', 'origin', 'https://github.com/elastic/kibana.git'],
+        ['remote', 'add', 'origin', 'git@github.com:elastic/kibana.git'],
         sourceRepo
       );
 
@@ -564,12 +564,12 @@ describe('git.integration', () => {
       await gitInit(cwd);
       await childProcess.spawnPromise(
         'git',
-        ['remote', 'add', 'sqren', 'https://github.com/sqren/kibana.git'],
+        ['remote', 'add', 'sqren', 'git@github.com:sqren/kibana.git'],
         cwd
       );
       await childProcess.spawnPromise(
         'git',
-        ['remote', 'add', 'elastic', 'https://github.com/elastic/kibana.git'],
+        ['remote', 'add', 'elastic', 'git@github.com:elastic/kibana.git'],
         cwd
       );
     });
