@@ -4,6 +4,7 @@ import path from 'path';
 import makeDir from 'make-dir';
 import { Commit } from '../entrypoint.module';
 import { ValidConfigOptions } from '../options/options';
+import { getDevAccessToken } from '../test/private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from '../test/sandbox';
 import * as childProcess from './child-process-promisified';
 import {
@@ -28,6 +29,7 @@ jest.unmock('del');
 jest.unmock('make-dir');
 
 const commitAuthor = { name: 'Soren L', email: 'soren@mail.dk' };
+const accessToken = getDevAccessToken();
 
 describe('git.integration', () => {
   describe('getIsCommitInBranch', () => {
@@ -185,7 +187,7 @@ describe('git.integration', () => {
         backportBranch: 'my-backport-branch',
       });
       await childProcess.exec(
-        'git remote add sqren https://github.com/sqren/repo-with-conflicts.git',
+        `git remote add sqren https://x-access-token:${accessToken}@github.com/sqren/repo-with-conflicts.git`,
         { cwd }
       );
     });
