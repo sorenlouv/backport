@@ -115,6 +115,8 @@ export async function backportRun({
         commits,
         error: e,
       };
+
+      // this will catch both HandledError and Error
     } else if (e instanceof Error) {
       backportResponse = {
         status: 'failure',
