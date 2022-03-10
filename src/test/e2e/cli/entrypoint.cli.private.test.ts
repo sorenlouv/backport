@@ -284,7 +284,7 @@ describe('entrypoint cli', () => {
     `);
   });
 
-  describe('failure cases', () => {
+  describe('ci failure cases', () => {
     it(`when access token is missing`, async () => {
       const output = await runBackportViaCli(['--ci']);
 
@@ -293,6 +293,14 @@ describe('entrypoint cli', () => {
       expect(backportResult.errorMessage).toEqual(
         'Access token missing. It must be explicitly supplied when using "--ci" option. Example: --access-token very-secret'
       );
+    });
+
+    it(`when argument is invalid`, async () => {
+      const output = await runBackportViaCli(['--ci', '--foo']);
+
+      const backportResult = JSON.parse(output) as BackportFailureResponse;
+      expect(backportResult.status).toBe('failure');
+      expect(backportResult.errorMessage).toEqual('Unknown argument: foo');
     });
 
     it('when `--repo` is invalid', async () => {

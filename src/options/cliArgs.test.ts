@@ -106,7 +106,7 @@ describe('getOptionsFromCliArgs', () => {
     it('should conflict when using both', () => {
       const argv = ['--multiple', '--multiple-branches', 'false'];
 
-      expect(() => getOptionsFromCliArgs(argv, { exitOnError: false })).toThrow(
+      expect(() => getOptionsFromCliArgs(argv)).toThrow(
         'Arguments multiple and multipleBranches are mutually exclusive'
       );
     });
@@ -153,9 +153,9 @@ describe('getOptionsFromCliArgs', () => {
 
     it('should throw on invalid values', () => {
       const argv = ['--mainline', 'foo'];
-      expect(() =>
-        getOptionsFromCliArgs(argv, { exitOnError: false })
-      ).toThrowError('--mainline must be an integer. Received: NaN');
+      expect(() => getOptionsFromCliArgs(argv)).toThrowError(
+        '--mainline must be an integer. Received: NaN'
+      );
     });
   });
 
@@ -177,9 +177,9 @@ describe('getOptionsFromCliArgs', () => {
 
     it('throw if both --repo and --repo-name is given', () => {
       const argv = ['--repo', 'elastic/kibana', '--repo-name', 'foo'];
-      expect(() =>
-        getOptionsFromCliArgs(argv, { exitOnError: false })
-      ).toThrowError('Arguments repo and repoName are mutually exclusive');
+      expect(() => getOptionsFromCliArgs(argv)).toThrowError(
+        'Arguments repo and repoName are mutually exclusive'
+      );
     });
   });
 

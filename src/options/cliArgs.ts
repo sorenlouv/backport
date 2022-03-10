@@ -2,10 +2,7 @@ import yargs from 'yargs';
 import { excludeUndefined } from '../utils/excludeUndefined';
 
 export type OptionsFromCliArgs = ReturnType<typeof getOptionsFromCliArgs>;
-export function getOptionsFromCliArgs(
-  processArgs: readonly string[],
-  { exitOnError = true }: { exitOnError?: boolean } = {}
-) {
+export function getOptionsFromCliArgs(processArgs: readonly string[]) {
   const yargsInstance = yargs(processArgs)
     .strict()
     .parserConfiguration({
@@ -365,20 +362,17 @@ export function getOptionsFromCliArgs(
 
     .epilogue(
       'For bugs, feature requests or questions: https://github.com/sqren/backport/issues\nOr contact me directly: https://twitter.com/sorenlouv'
-    );
-
-  // don't kill process upon error
-  // and don't log error to console
-  if (!exitOnError) {
-    yargsInstance.fail((msg, err) => {
+    )
+    // don't kill process upon error
+    // and don't log error to console
+    .fail((msg, err, yargs) => {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (err) {
         throw err;
       }
 
-      throw new Error(msg);
+      throw new CliError(msg, yargs);
     });
-  }
 
   const {
     /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -453,4 +447,12 @@ export function getOptionsFromCliArgs(
     noVerify: verify ?? noVerify,
     publishStatusComment: noStatusComment === true ? false : undefined,
   });
+}
+
+export class CliError extends Error {
+  constructor(public message: string, public yargs: yargs.Argv) {
+    super(message);
+    Error.captureStackTrace(this, CliError);
+    this.name = 'CliError';
+  }
 }

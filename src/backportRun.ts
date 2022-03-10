@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import yargsParser from 'yargs-parser';
 import { ConfigFileOptions } from './options/ConfigOptions';
+import { CliError } from './options/cliArgs';
 import { getOptions, ValidConfigOptions } from './options/options';
 import { runSequentially, Result } from './runSequentially';
 import { HandledError } from './services/HandledError';
@@ -50,7 +51,6 @@ export async function backportRun({
 }): Promise<BackportResponse> {
   const argv = yargsParser(processArgs) as ConfigFileOptions;
   const ci = argv.ci ?? optionsFromModule.ci;
-  const ls = argv.ls ?? optionsFromModule.ls;
   const logFilePath = argv.logFilePath ?? optionsFromModule.logFilePath;
   const logger = initLogger({ ci, logFilePath });
 
@@ -70,6 +70,16 @@ export async function backportRun({
       spinner.stop();
     } catch (e) {
       spinner.stop();
+      if (e instanceof CliError) {
+        consoleLog(e.message);
+        consoleLog(`Run "backport --help" to see all options`);
+        return {
+          status: 'failure',
+          error: e,
+          errorMessage: e.message,
+          commits: [],
+        } as BackportResponse;
+      }
       throw e;
     }
 
@@ -132,9 +142,7 @@ export async function backportRun({
       await createStatusComment({ options, backportResponse });
     }
 
-    if (!ls) {
-      outputError({ e, logFilePath });
-    }
+    outputError({ e, logFilePath });
 
     // only change exit code for failures while in cli mode
     if (exitCodeOnFailure && backportResponse.status === 'failure') {
