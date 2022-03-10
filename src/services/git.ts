@@ -628,6 +628,13 @@ export async function pushBackportBranch({
       );
     }
 
+    if (
+      e instanceof SpawnError &&
+      e.context.stderr.includes(`could not read Username for`)
+    ) {
+      throw new HandledError(`Invalid credentials: ${e.message}`);
+    }
+
     throw e;
   }
 }
