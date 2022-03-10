@@ -4,11 +4,13 @@ import { ConfigFileOptions } from './entrypoint.module';
 const processArgs = process.argv.slice(2);
 
 // this is the entrypoint when running from command line
-backportRun({ processArgs, isCliMode: true }).then((backportResponse) => {
-  const argv = yargsParser(processArgs) as ConfigFileOptions;
-  const { ci, ls } = argv;
-  if (ci || ls) {
-    // eslint-disable-next-line no-console
-    console.log(JSON.stringify(backportResponse));
+backportRun({ processArgs, exitCodeOnFailure: true }).then(
+  (backportResponse) => {
+    const argv = yargsParser(processArgs) as ConfigFileOptions;
+    const { ci, ls } = argv;
+    if (ci || ls) {
+      // eslint-disable-next-line no-console
+      console.log(JSON.stringify(backportResponse));
+    }
   }
-});
+);

@@ -9,8 +9,11 @@ const oraMock = {
   fail: () => {},
   stopAndPersist: () => {},
   set text(value: string) {},
-};
+} as oraOriginal.Ora;
 
-export function ora(ci: boolean | undefined, text?: string | undefined) {
+export function ora(
+  ci: boolean | undefined,
+  text?: string | undefined
+): oraOriginal.Ora {
   return ci ? oraMock : oraOriginal({ text });
 }

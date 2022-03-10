@@ -51,7 +51,7 @@ export async function createStatusComment({
         }
 
         return octokit.issues.createComment({
-          baseUrl: options.githubApiBaseUrlV3,
+          baseUrl: githubApiBaseUrlV3,
           owner: repoOwner,
           repo: repoName,
           issue_number: commit.sourcePullRequest.number,
@@ -60,7 +60,7 @@ export async function createStatusComment({
       })
     );
   } catch (e) {
-    logger.info(`Could not create status comment `, e.stack);
+    logger.info(`Could not create status comment `, e);
   }
 }
 
@@ -77,8 +77,8 @@ export function getCommentBody({
 
   // custom handling when running backport locally (as opposed to on CI)
   if (!options.ci) {
-    // don't post comment when the overall process failed
-    if (backportResponse.status === 'failure') {
+    // only post successful backports when not running in CI
+    if (backportResponse.status !== 'success') {
       return;
     }
 
@@ -93,20 +93,20 @@ export function getCommentBody({
   }
 
   const packageVersionSection = `\n<!--- Backport version: ${PACKAGE_VERSION} -->`;
-  const manualBackportCommand = `\n### Manual backport\nTo create the backport manually run:\n\`\`\`\n${options.backportBinary} --pr ${pullNumber}\n\`\`\``;
+  const manualBackportCommand = `\n### Manual backport\nTo create the backport manually run:\n\`\`\`\n${options.backportBinary} --pr ${pullNumber}\n\`\`\`\n`;
   const questionsAndLinkToBackport =
-    '\n\n### Questions ?\nPlease refer to the [Backport tool documentation](https://github.com/sqren/backport)';
+    '\n### Questions ?\nPlease refer to the [Backport tool documentation](https://github.com/sqren/backport)\n';
 
-  if (backportResponse.status === 'failure') {
-    if (
-      backportResponse.error instanceof HandledError &&
-      backportResponse.error.errorContext.code === 'no-branches-exception'
-    ) {
-      return `## ⚪ Backport skipped
+  if (
+    backportResponse.status === 'aborted' &&
+    backportResponse.error.errorContext.code === 'no-branches-exception'
+  ) {
+    return `## ⚪ Backport skipped
 The pull request was not backported as there were no branches to backport to. If this is a mistake, please apply the desired version labels or run the backport tool manually.
 ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
-    }
+  }
 
+  if (backportResponse.status !== 'success') {
     return `## 💔 Backport failed
 The pull request could not be backported due to the following error:
 \`${backportResponse.error.message}\`
@@ -158,7 +158,7 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
     .join('|\n|');
 
   const table = backportResponse.results.length
-    ? `| Status | Branch | Result |\n|:------:|:------:|:------|\n|${tableBody}|`
+    ? `\n\n| Status | Branch | Result |\n|:------:|:------:|:------|\n|${tableBody}|\n`
     : '';
 
   const didAllBackportsSucceed = backportResponse.results.every(
@@ -180,13 +180,12 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
 
   const autoMergeMessage =
     autoMerge && didAnyBackportsSucceed
-      ? '\nNote: Successful backport PRs will be merged automatically after passing CI.'
+      ? '\nNote: Successful backport PRs will be merged automatically after passing CI.\n'
       : '';
 
   const backportPRCommandMessage = !didAllBackportsSucceed
     ? `${manualBackportCommand}`
     : '';
 
-  return `${header}\n\n${table}
-${backportPRCommandMessage}${autoMergeMessage}${questionsAndLinkToBackport}${packageVersionSection}`;
+  return `${header}${table}${autoMergeMessage}${backportPRCommandMessage}${questionsAndLinkToBackport}${packageVersionSection}`;
 }

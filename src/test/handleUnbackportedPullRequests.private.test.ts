@@ -42,14 +42,16 @@ describe('Handle unbackported pull requests', () => {
     await resetSandbox(sandboxPath);
 
     const result = await backportRun({
-      accessToken: accessToken,
-      repoOwner: 'backport-org',
-      repoName: 'repo-with-conflicts',
-      pullNumber: 12,
-      targetBranches: ['7.x'],
-      dir: sandboxPath,
-      ci: true,
-      publishStatusComment: false,
+      options: {
+        accessToken: accessToken,
+        repoOwner: 'backport-org',
+        repoName: 'repo-with-conflicts',
+        pullNumber: 12,
+        targetBranches: ['7.x'],
+        dir: sandboxPath,
+        ci: true,
+        publishStatusComment: false,
+      },
     });
 
     const commit: Commit =

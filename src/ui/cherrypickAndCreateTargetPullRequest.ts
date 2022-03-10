@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import { isEmpty, difference } from 'lodash';
 import { ValidConfigOptions } from '../options/options';
 import { HandledError } from '../services/HandledError';
-import { exec } from '../services/child-process-promisified';
+import { spawnPromise } from '../services/child-process-promisified';
 import { getRepoPath } from '../services/env';
 import {
   cherrypick,
@@ -264,7 +264,7 @@ async function waitForCherrypick(
    */
 
   if (options.editor) {
-    await exec(`${options.editor} ${repoPath}`, { cwd: options.cwd });
+    await spawnPromise(options.editor, [repoPath], options.cwd);
   }
 
   // list files with conflict markers + unstaged files and require user to resolve them

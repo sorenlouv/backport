@@ -33,7 +33,7 @@ The remaining documentation focuses on the Backport CLI tool (not the Github Act
 npm install -g backport
 ```
 
-After installation you should add an access token to the [global config](https://github.com/sqren/backport/blob/master/docs/configuration.md#global-config-backportconfigjson) in `~/.backport/config.json`. See the [documentation](https://github.com/sqren/backport/blob/master/docs/configuration.md#accesstoken-required) for how the access token is generated.
+After installation you should add an access token to the [global config](https://github.com/sqren/backport/blob/main/docs/configuration.md#global-config-backportconfigjson) in `~/.backport/config.json`. See the [documentation](https://github.com/sqren/backport/blob/main/docs/configuration.md#accesstoken-required) for how the access token is generated.
 
 ## Quick start
 
@@ -41,7 +41,7 @@ After installation you should add an access token to the [global config](https:/
 npm install backport
 ```
 
-Add a [project config](https://github.com/sqren/backport/blob/master/docs/configuration.md#project-config-backportrcjson) to the root of your repository:
+Add a [project config](https://github.com/sqren/backport/blob/main/docs/configuration.md#project-config-backportrcjson) to the root of your repository:
 
 ```js
 // .backportrc.json
@@ -60,7 +60,7 @@ Add a [project config](https://github.com/sqren/backport/blob/master/docs/config
 }
 ```
 
-Add personal access token to [global config](https://github.com/sqren/backport/blob/master/docs/configuration.md#global-config-backportconfigjson):
+Add personal access token to [global config](https://github.com/sqren/backport/blob/main/docs/configuration.md#global-config-backportconfigjson):
 
 ```js
 // ~/.backport/config.json
@@ -79,7 +79,7 @@ _This will start an interactive prompt. You can use your keyboards arrow keys to
 
 ### Config options
 
-See [configuration.md](https://github.com/sqren/backport/blob/master/docs/configuration.md)
+See [configuration.md](https://github.com/sqren/backport/blob/main/docs/configuration.md)
 
 ### CLI options
 
@@ -124,7 +124,7 @@ See [configuration.md](https://github.com/sqren/backport/blob/master/docs/config
 | --help              |                    | Show help                                                                  |                           |
 | -v, --version       |                    | Show version number                                                        |                           |
 
-The CLI options will override the [configuration options](https://github.com/sqren/backport/blob/master/docs/configuration.md).
+The CLI options will override the [configuration options](https://github.com/sqren/backport/blob/main/docs/configuration.md).
 
 ## Backport Module API
 
@@ -162,14 +162,13 @@ Enabling this will disable the interactive prompts
 import { backportRun } from 'backport';
 
 const result = await backportRun({
-  accessToken: 'abc',
-  repoName: 'kibana',
-  repoOwner: 'elastic',
-  pullNumber: 121633,
-  ci: true,
-  targetPRLabels: ['backport'],
-  autoMerge: true,
-  autoMergeMethod: 'squash',
+  options: {
+    accessToken: 'very secret',
+    repoName: 'kibana',
+    repoOwner: 'elastic',
+    pullNumber: 121633,
+    ci: true,
+  },
 });
 
 console.log(result);

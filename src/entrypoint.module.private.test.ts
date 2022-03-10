@@ -3,6 +3,7 @@ import {
   BackportSuccessResponse,
 } from './backportRun';
 import { backportRun, Commit, getCommits } from './entrypoint.module';
+import { getFirstLine } from './services/github/commitFormatters';
 import { getDevAccessToken } from './test/private/getDevAccessToken';
 
 const accessToken = getDevAccessToken();
@@ -17,12 +18,14 @@ describe('entrypoint.module', () => {
       let response: BackportSuccessResponse;
       beforeAll(async () => {
         response = (await backportRun({
-          repoOwner: 'backport-org',
-          repoName: 'repo-with-conflicts',
-          ci: true,
-          accessToken,
-          pullNumber: 12,
-          targetBranches: ['7.x'],
+          options: {
+            repoOwner: 'backport-org',
+            repoName: 'repo-with-conflicts',
+            ci: true,
+            accessToken,
+            pullNumber: 12,
+            targetBranches: ['7.x'],
+          },
         })) as BackportSuccessResponse;
       });
 
@@ -30,14 +33,19 @@ describe('entrypoint.module', () => {
         expect(response.status).toBe('success');
       });
 
-      it('should have a failed result', () => {
-        expect(response.results[0].status).toBe('failure');
+      it('should fail with "handled-error"', () => {
+        expect(response.results[0].status).toBe('handled-error');
       });
 
       it('should have correct error code', () => {
         //@ts-expect-error
         expect(response.results[0].error.errorContext.code).toBe(
           'merge-conflict-exception'
+        );
+
+        //@ts-expect-error
+        expect(response.results[0].error.message).toBe(
+          'Commit could not be cherrypicked due to conflicts in: la-liga.md'
         );
       });
 
@@ -53,18 +61,23 @@ describe('entrypoint.module', () => {
       let response: BackportFailureResponse;
       beforeAll(async () => {
         response = (await backportRun({
-          repoOwner: 'backport-org',
-          repoName: 'repo-with-conflicts',
-          ci: true,
-          accessToken,
-          pullNumber: 12,
+          options: {
+            repoOwner: 'backport-org',
+            repoName: 'repo-with-conflicts',
+            ci: true,
+            accessToken,
+            pullNumber: 12,
+          },
         })) as BackportFailureResponse;
       });
 
-      it('should return conflict in response', async () => {
-        expect(response.status).toBe('failure');
+      it('should correct error code', async () => {
+        expect(response.status).toBe('aborted');
         //@ts-expect-error
         expect(response.error.errorContext.code).toBe('no-branches-exception');
+        expect(response.error.message).toBe(
+          'There are no branches to backport to. Aborting.'
+        );
       });
     });
 
@@ -72,12 +85,14 @@ describe('entrypoint.module', () => {
       let response: BackportSuccessResponse;
       beforeAll(async () => {
         response = (await backportRun({
-          repoOwner: 'backport-org',
-          repoName: 'repo-with-conflicts',
-          ci: true,
-          accessToken,
-          pullNumber: 8,
-          dryRun: true,
+          options: {
+            repoOwner: 'backport-org',
+            repoName: 'repo-with-conflicts',
+            ci: true,
+            accessToken,
+            pullNumber: 8,
+            dryRun: true,
+          },
         })) as BackportSuccessResponse;
       });
 
@@ -247,337 +262,29 @@ describe('entrypoint.module', () => {
         maxNumber: 3,
       });
 
-      expect(commits).toMatchInlineSnapshot(`
+      const commitMessage = commits.map((commit) => {
+        return {
+          ...commit.sourceCommit,
+          message: getFirstLine(commit.sourceCommit.message),
+        };
+      });
+
+      expect(commitMessage).toMatchInlineSnapshot(`
         Array [
           Object {
-            "author": Object {
-              "email": "pierre.gayvallet@elastic.co",
-              "name": "Pierre Gayvallet",
-            },
-            "expectedTargetPullRequests": Array [
-              Object {
-                "branch": "7.x",
-                "mergeCommit": Object {
-                  "message": "[7.x] Migrate most plugins to synchronous lifecycle (#89562) (#90579)
-
-        * Migrate most plugins to synchronous lifecycle (#89562)
-
-        * first pass
-
-        * migrate more plugins
-
-        * migrate yet more plugins
-
-        * more oss plugins
-
-        * fix test file
-
-        * change Plugin signature on the client-side too
-
-        * fix test types
-
-        * migrate OSS client-side plugins
-
-        * migrate OSS client-side test plugins
-
-        * migrate xpack client-side plugins
-
-        * revert fix attempt on fleet plugin
-
-        * fix presentation start signature
-
-        * fix yet another signature
-
-        * add warnings for server-side async plugins in dev mode
-
-        * remove unused import
-
-        * fix isPromise
-
-        * Add client-side deprecations
-
-        * update migration examples
-
-        * update generated doc
-
-        * fix xpack unit tests
-
-        * nit
-
-        * (will be reverted) explicitly await for license to be ready in the auth hook
-
-        * Revert \\"(will be reverted) explicitly await for license to be ready in the auth hook\\"
-
-        This reverts commit fdf73feb
-
-        * restore await on on promise contracts
-
-        * Revert \\"(will be reverted) explicitly await for license to be ready in the auth hook\\"
-
-        This reverts commit fdf73feb
-
-        * Revert \\"restore await on on promise contracts\\"
-
-        This reverts commit c5f2fe51
-
-        * add delay before starting tests in FTR
-
-        * update deprecation ts doc
-
-        * add explicit contract for monitoring setup
-
-        * migrate monitoring plugin to sync
-
-        * change plugin timeout to 10sec
-
-        * use delay instead of silence
-        # Conflicts:
-        #	x-pack/plugins/xpack_legacy/server/plugin.ts
-
-        * fix mock",
-                  "sha": "97f89e256b14dd01a4f20355dd04e8e27241c90a",
-                },
-                "number": 90579,
-                "state": "MERGED",
-                "url": "https://github.com/elastic/kibana/pull/90579",
-              },
-            ],
-            "sourceBranch": "master",
-            "sourceCommit": Object {
-              "committedDate": "2021-02-08T09:19:54Z",
-              "message": "Migrate most plugins to synchronous lifecycle (#89562)
-
-        * first pass
-
-        * migrate more plugins
-
-        * migrate yet more plugins
-
-        * more oss plugins
-
-        * fix test file
-
-        * change Plugin signature on the client-side too
-
-        * fix test types
-
-        * migrate OSS client-side plugins
-
-        * migrate OSS client-side test plugins
-
-        * migrate xpack client-side plugins
-
-        * revert fix attempt on fleet plugin
-
-        * fix presentation start signature
-
-        * fix yet another signature
-
-        * add warnings for server-side async plugins in dev mode
-
-        * remove unused import
-
-        * fix isPromise
-
-        * Add client-side deprecations
-
-        * update migration examples
-
-        * update generated doc
-
-        * fix xpack unit tests
-
-        * nit
-
-        * (will be reverted) explicitly await for license to be ready in the auth hook
-
-        * Revert \\"(will be reverted) explicitly await for license to be ready in the auth hook\\"
-
-        This reverts commit fdf73feb
-
-        * restore await on on promise contracts
-
-        * Revert \\"(will be reverted) explicitly await for license to be ready in the auth hook\\"
-
-        This reverts commit fdf73feb
-
-        * Revert \\"restore await on on promise contracts\\"
-
-        This reverts commit c5f2fe51
-
-        * add delay before starting tests in FTR
-
-        * update deprecation ts doc
-
-        * add explicit contract for monitoring setup
-
-        * migrate monitoring plugin to sync
-
-        * change plugin timeout to 10sec
-
-        * use delay instead of silence",
-              "sha": "3b3327dbc3c3041c9681e0cd86bd31cf411dc460",
-            },
-            "sourcePullRequest": Object {
-              "mergeCommit": Object {
-                "message": "Migrate most plugins to synchronous lifecycle (#89562)
-
-        * first pass
-
-        * migrate more plugins
-
-        * migrate yet more plugins
-
-        * more oss plugins
-
-        * fix test file
-
-        * change Plugin signature on the client-side too
-
-        * fix test types
-
-        * migrate OSS client-side plugins
-
-        * migrate OSS client-side test plugins
-
-        * migrate xpack client-side plugins
-
-        * revert fix attempt on fleet plugin
-
-        * fix presentation start signature
-
-        * fix yet another signature
-
-        * add warnings for server-side async plugins in dev mode
-
-        * remove unused import
-
-        * fix isPromise
-
-        * Add client-side deprecations
-
-        * update migration examples
-
-        * update generated doc
-
-        * fix xpack unit tests
-
-        * nit
-
-        * (will be reverted) explicitly await for license to be ready in the auth hook
-
-        * Revert \\"(will be reverted) explicitly await for license to be ready in the auth hook\\"
-
-        This reverts commit fdf73feb
-
-        * restore await on on promise contracts
-
-        * Revert \\"(will be reverted) explicitly await for license to be ready in the auth hook\\"
-
-        This reverts commit fdf73feb
-
-        * Revert \\"restore await on on promise contracts\\"
-
-        This reverts commit c5f2fe51
-
-        * add delay before starting tests in FTR
-
-        * update deprecation ts doc
-
-        * add explicit contract for monitoring setup
-
-        * migrate monitoring plugin to sync
-
-        * change plugin timeout to 10sec
-
-        * use delay instead of silence",
-                "sha": "3b3327dbc3c3041c9681e0cd86bd31cf411dc460",
-              },
-              "number": 89562,
-              "url": "https://github.com/elastic/kibana/pull/89562",
-            },
+            "committedDate": "2021-06-01T15:53:07Z",
+            "message": "Upgrade EUI to v33.0.0 (#99382)",
+            "sha": "38fd8a268ad7661d92f0d84c52d6f0a3d84c9801",
           },
           Object {
-            "author": Object {
-              "email": "w@tson.dk",
-              "name": "Thomas Watson",
-            },
-            "expectedTargetPullRequests": Array [
-              Object {
-                "branch": "7.x",
-                "mergeCommit": Object {
-                  "message": "Upgrade to hapi version 20 (#85406) (#86592)",
-                  "sha": "777c80d8a0f72be16091510d0cb5d09693ba6bb4",
-                },
-                "number": 86592,
-                "state": "MERGED",
-                "url": "https://github.com/elastic/kibana/pull/86592",
-              },
-            ],
-            "sourceBranch": "master",
-            "sourceCommit": Object {
-              "committedDate": "2020-12-19T12:10:11Z",
-              "message": "Upgrade to hapi version 20 (#85406)",
-              "sha": "e8b21bc6c12cfd793c46e1d86577d5e5ec8a71f8",
-            },
-            "sourcePullRequest": Object {
-              "mergeCommit": Object {
-                "message": "Upgrade to hapi version 20 (#85406)",
-                "sha": "e8b21bc6c12cfd793c46e1d86577d5e5ec8a71f8",
-              },
-              "number": 85406,
-              "url": "https://github.com/elastic/kibana/pull/85406",
-            },
+            "committedDate": "2021-02-08T09:19:54Z",
+            "message": "Migrate most plugins to synchronous lifecycle (#89562)",
+            "sha": "3b3327dbc3c3041c9681e0cd86bd31cf411dc460",
           },
           Object {
-            "author": Object {
-              "email": "nathan.smith@elastic.co",
-              "name": "Nathan L Smith",
-            },
-            "expectedTargetPullRequests": Array [
-              Object {
-                "branch": "7.x",
-                "mergeCommit": Object {
-                  "message": "Move EUI styled components integration to kibana_react (#86065) (#89217)
-
-        ...from xpack_legacy.
-
-        Remove the duplicated typings from the observability plugin and only use the ones from kibana_react.
-
-        Fixes #78248.",
-                  "sha": "57b798474ae5ec2892a06ffa5706c5dd405db137",
-                },
-                "number": 89217,
-                "state": "MERGED",
-                "url": "https://github.com/elastic/kibana/pull/89217",
-              },
-            ],
-            "sourceBranch": "master",
-            "sourceCommit": Object {
-              "committedDate": "2021-01-25T19:48:35Z",
-              "message": "Move EUI styled components integration to kibana_react (#86065)
-
-        ...from xpack_legacy.
-
-        Remove the duplicated typings from the observability plugin and only use the ones from kibana_react.
-
-        Fixes #78248.",
-              "sha": "e5588a129b1a0b2796822d4773176cc712dd5318",
-            },
-            "sourcePullRequest": Object {
-              "mergeCommit": Object {
-                "message": "Move EUI styled components integration to kibana_react (#86065)
-
-        ...from xpack_legacy.
-
-        Remove the duplicated typings from the observability plugin and only use the ones from kibana_react.
-
-        Fixes #78248.",
-                "sha": "e5588a129b1a0b2796822d4773176cc712dd5318",
-              },
-              "number": 86065,
-              "url": "https://github.com/elastic/kibana/pull/86065",
-            },
+            "committedDate": "2021-04-01T12:40:47Z",
+            "message": "TS Incremental build exclude test files (#95610)",
+            "sha": "b6e582c53ebb9c496c232408066b128d2ca2f92c",
           },
         ]
       `);

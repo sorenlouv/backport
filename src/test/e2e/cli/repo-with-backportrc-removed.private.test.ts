@@ -3,7 +3,7 @@ import { runBackportViaCli } from './runBackportViaCli';
 const accessToken = getDevAccessToken();
 
 describe('repo-with-backportrc-removed (missing .backportrc.json config file)', () => {
-  it('should list commits', async () => {
+  it('lists commits', async () => {
     const output = await runBackportViaCli(
       [
         '--branch=foo',
@@ -25,38 +25,41 @@ describe('repo-with-backportrc-removed (missing .backportrc.json config file)', 
       `);
   });
 
-  it('should attempt to backport by PR', async () => {
+  it('backports via pr', async () => {
     const output = await runBackportViaCli(
       [
-        '--branch=foo',
+        '--branch=production',
         '--repo=backport-org/repo-with-backportrc-removed',
         '--pr=1',
         `--accessToken=${accessToken}`,
+        '--dry-run',
       ],
-      { waitForString: "is invalid or doesn't exist" }
+      {
+        waitForString: `Dry run complete`,
+        showOra: true,
+      }
     );
 
-    expect(output).toMatchInlineSnapshot(`
-        "
-        Backporting to foo:
-        The branch \\"foo\\" is invalid or doesn't exist"
-      `);
+    expect(output).toContain(
+      'Cherry-picking: Merge pull request #1 from backport-org/add-readme'
+    );
   });
 
-  it('should attempt to backport by commit sha', async () => {
+  it('backport by commit sha', async () => {
     const output = await runBackportViaCli(
       [
-        '--branch=foo',
+        '--branch=production',
         '--repo=backport-org/repo-with-backportrc-removed',
         '--sha=be59df6912a550c8cb49ba3e18be3e512f3d608c',
         `--accessToken=${accessToken}`,
+        '--dry-run',
       ],
-      { waitForString: `Backporting to foo:` }
+      {
+        waitForString: `Dry run complete`,
+        showOra: true,
+      }
     );
 
-    expect(output).toMatchInlineSnapshot(`
-        "
-        Backporting to foo:"
-      `);
+    expect(output).toContain('Cherry-picking: Create README.me');
   });
 });

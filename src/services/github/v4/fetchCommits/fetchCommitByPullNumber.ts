@@ -58,6 +58,7 @@ export async function fetchCommitByPullNumber(options: {
       },
     });
   } catch (e) {
+    //@ts-expect-error
     res = swallowMissingConfigFileException<CommitByPullNumberResponse>(e);
   }
 

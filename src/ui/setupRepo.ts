@@ -7,7 +7,7 @@ import {
   cloneRepo,
   deleteRemote,
   getGitProjectRootPath,
-  getLocalRepoPath,
+  getLocalSourceRepoPath,
   getRemoteUrl,
 } from '../services/git';
 import { ora } from './ora';
@@ -26,7 +26,7 @@ export async function setupRepo(options: ValidConfigOptions) {
   if (!isAlreadyCloned) {
     const spinner = ora(options.ci).start();
     try {
-      const localRepoPath = await getLocalRepoPath(options);
+      const localRepoPath = await getLocalSourceRepoPath(options);
       const remoteRepoPath = getRemoteUrl(options, options.repoOwner);
       const sourcePath = localRepoPath ? localRepoPath : remoteRepoPath;
 

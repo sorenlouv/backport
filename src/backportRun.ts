@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import yargsParser from 'yargs-parser';
 import { ConfigFileOptions } from './options/ConfigOptions';
+import { CliError } from './options/cliArgs';
 import { getOptions, ValidConfigOptions } from './options/options';
 import { runSequentially, Result } from './runSequentially';
 import { HandledError } from './services/HandledError';
@@ -14,6 +15,12 @@ import { getGitConfigAuthor } from './ui/getGitConfigAuthor';
 import { getTargetBranches } from './ui/getTargetBranches';
 import { ora } from './ui/ora';
 import { setupRepo } from './ui/setupRepo';
+
+export type BackportAbortResponse = {
+  status: 'aborted';
+  commits: Commit[];
+  error: HandledError;
+};
 
 export type BackportSuccessResponse = {
   status: 'success';
@@ -30,48 +37,57 @@ export type BackportFailureResponse = {
 
 export type BackportResponse =
   | BackportSuccessResponse
-  | BackportFailureResponse;
+  | BackportFailureResponse
+  | BackportAbortResponse;
 
 export async function backportRun({
   processArgs,
   optionsFromModule = {},
-  isCliMode,
+  exitCodeOnFailure,
 }: {
   processArgs: string[];
   optionsFromModule?: ConfigFileOptions;
-  isCliMode: boolean;
+  exitCodeOnFailure: boolean;
 }): Promise<BackportResponse> {
   const argv = yargsParser(processArgs) as ConfigFileOptions;
   const ci = argv.ci ?? optionsFromModule.ci;
-  const ls = argv.ls ?? optionsFromModule.ls;
   const logFilePath = argv.logFilePath ?? optionsFromModule.logFilePath;
   const logger = initLogger({ ci, logFilePath });
-
-  const spinner = ora(ci);
-
-  // don't show spinner for yargs commands that exit the process without stopping the spinner first
-  if (!argv.help && !argv.version && !argv.v) {
-    spinner.start('Initializing...');
-  }
 
   let options: ValidConfigOptions | null = null;
   let commits: Commit[] = [];
 
   try {
-    options = await getOptions(processArgs, optionsFromModule);
-    logger.info('Backporting options', options);
+    const spinner = ora(ci);
+    try {
+      // don't show spinner for yargs commands that exit the process without stopping the spinner first
+      if (!argv.help && !argv.version && !argv.v) {
+        spinner.start('Initializing...');
+      }
 
-    spinner.stop();
+      options = await getOptions(processArgs, optionsFromModule);
+      logger.info('Backporting options', options);
+      spinner.stop();
+    } catch (e) {
+      spinner.stop();
+      if (e instanceof CliError) {
+        consoleLog(e.message);
+        consoleLog(`Run "backport --help" to see all options`);
+        return {
+          status: 'failure',
+          error: e,
+          errorMessage: e.message,
+          commits: [],
+        } as BackportResponse;
+      }
+      throw e;
+    }
 
     commits = await getCommits(options);
     logger.info('Commits', commits);
 
     if (options.ls) {
-      return {
-        status: 'success',
-        commits,
-        results: [],
-      };
+      return { status: 'success', commits, results: [] } as BackportResponse;
     }
 
     const targetBranches = await getTargetBranches(options, commits);
@@ -95,37 +111,45 @@ export async function backportRun({
       commits,
       results,
     };
-
-    await createStatusComment({
-      options,
-      backportResponse,
-    });
-
+    await createStatusComment({ options, backportResponse });
     return backportResponse;
   } catch (e) {
-    spinner.stop();
-    const backportResponse: BackportResponse = {
-      status: 'failure',
-      commits,
-      error: e,
-      errorMessage: e.message,
-    };
+    let backportResponse: BackportResponse;
 
-    if (options) {
-      await createStatusComment({
-        options,
-        backportResponse,
-      });
+    if (
+      e instanceof HandledError &&
+      e.errorContext.code === 'no-branches-exception'
+    ) {
+      backportResponse = {
+        status: 'aborted',
+        commits,
+        error: e,
+      };
+
+      // this will catch both HandledError and Error
+    } else if (e instanceof Error) {
+      backportResponse = {
+        status: 'failure',
+        commits,
+        error: e,
+        errorMessage: e.message,
+      };
+    } else {
+      throw e;
     }
 
-    if (!ls) {
-      outputError({ e, logFilePath });
+    if (options) {
+      await createStatusComment({ options, backportResponse });
+    }
+
+    outputError({ e, logFilePath });
+
+    // only change exit code for failures while in cli mode
+    if (exitCodeOnFailure && backportResponse.status === 'failure') {
+      process.exitCode = 1;
     }
 
     logger.error('Unhandled exception', e);
-    if (isCliMode && isCriticalError(e)) {
-      process.exitCode = 1;
-    }
 
     return backportResponse;
   }
@@ -160,15 +184,4 @@ function outputError({
       )
     );
   }
-}
-
-function isCriticalError(e: Error | HandledError) {
-  if (
-    e instanceof HandledError &&
-    e.errorContext.code === 'no-branches-exception'
-  ) {
-    return false;
-  }
-
-  return true;
 }

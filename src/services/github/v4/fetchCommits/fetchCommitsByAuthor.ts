@@ -99,6 +99,7 @@ async function fetchByCommitPath({
       variables,
     });
   } catch (e) {
+    //@ts-expect-error
     return swallowMissingConfigFileException<CommitByAuthorResponse>(e);
   }
 }

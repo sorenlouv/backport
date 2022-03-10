@@ -39,12 +39,14 @@ describe('entrypoint.module', () => {
     beforeAll(async () => {
       await resetState(accessToken);
       res = await backportRun({
-        dir: sandboxPath,
-        accessToken,
-        repoOwner: 'backport-org',
-        repoName: 'integration-test',
-        sha: COMMIT_SHA_1,
-        targetBranches: ['7.x'],
+        options: {
+          dir: sandboxPath,
+          accessToken,
+          repoOwner: 'backport-org',
+          repoName: 'integration-test',
+          sha: COMMIT_SHA_1,
+          targetBranches: ['7.x'],
+        },
       });
 
       // @ts-expect-error
@@ -150,12 +152,14 @@ describe('entrypoint.module', () => {
     beforeAll(async () => {
       await resetState(accessToken);
       res = await backportRun({
-        dir: sandboxPath,
-        accessToken,
-        repoOwner: 'backport-org',
-        repoName: 'integration-test',
-        sha: [COMMIT_SHA_1, COMMIT_SHA_2],
-        targetBranches: ['7.x'],
+        options: {
+          dir: sandboxPath,
+          accessToken,
+          repoOwner: 'backport-org',
+          repoName: 'integration-test',
+          sha: [COMMIT_SHA_1, COMMIT_SHA_2],
+          targetBranches: ['7.x'],
+        },
       });
 
       // @ts-expect-error
@@ -252,13 +256,15 @@ describe('entrypoint.module', () => {
     beforeAll(async () => {
       await resetState(accessToken);
       res = await backportRun({
-        fork: false,
-        dir: sandboxPath,
-        accessToken,
-        repoOwner: 'backport-org',
-        repoName: 'integration-test',
-        sha: COMMIT_SHA_1,
-        targetBranches: ['7.x'],
+        options: {
+          fork: false,
+          dir: sandboxPath,
+          accessToken,
+          repoOwner: 'backport-org',
+          repoName: 'integration-test',
+          sha: COMMIT_SHA_1,
+          targetBranches: ['7.x'],
+        },
       });
 
       // @ts-expect-error
@@ -407,6 +413,8 @@ async function deleteBranchOnGithub({
     // console.log(
     //   `Could not delete ${repoOwner}:heads/${branchName} (${e.message})`
     // );
+
+    //@ts-expect-error
     if (e.message === 'Reference does not exist') {
       return;
     }

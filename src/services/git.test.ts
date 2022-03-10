@@ -1,7 +1,6 @@
 import os from 'os';
 import { ValidConfigOptions } from '../options/options';
 import * as childProcess from '../services/child-process-promisified';
-import { ExecError } from '../test/ExecError';
 import { SpyHelper } from '../types/SpyHelper';
 import {
   addRemote,
@@ -31,9 +30,11 @@ const commitAuthor = { name: 'Soren L', email: 'soren@mail.dk' };
 
 describe('getUnstagedFiles', () => {
   it('should split lines and remove empty', async () => {
-    jest.spyOn(childProcess, 'exec').mockResolvedValueOnce({
+    jest.spyOn(childProcess, 'spawnPromise').mockResolvedValueOnce({
       stdout: 'conflicting-file.txt\nconflicting-file2.txt\n',
       stderr: '',
+      code: 0,
+      cmdArgs: [],
     });
 
     const options = {
@@ -48,9 +49,11 @@ describe('getUnstagedFiles', () => {
   });
 
   it('should not error on empty', async () => {
-    jest.spyOn(childProcess, 'exec').mockResolvedValueOnce({
+    jest.spyOn(childProcess, 'spawnPromise').mockResolvedValueOnce({
       stdout: '',
       stderr: '',
+      code: 0,
+      cmdArgs: [],
     });
 
     const options = {
@@ -67,16 +70,18 @@ describe('getLocalConfigFileCommitDate', () => {
     const res = {
       stdout: 'Wed Dec 16 10:10:39 2020 -0800\n',
       stderr: '',
+      code: 0,
+      cmdArgs: [],
     };
-    jest.spyOn(childProcess, 'exec').mockResolvedValue(res);
+    jest.spyOn(childProcess, 'spawnPromise').mockResolvedValue(res);
     expect(await getLocalConfigFileCommitDate({ cwd: 'foo/bar' })).toEqual(
       1608142239000
     );
   });
 
   it('returns empty when file does not exists', async () => {
-    const res = { stdout: '', stderr: '' };
-    jest.spyOn(childProcess, 'exec').mockResolvedValue(res);
+    const res = { stdout: '', stderr: '', code: 0, cmdArgs: [] };
+    jest.spyOn(childProcess, 'spawnPromise').mockResolvedValue(res);
     expect(await getLocalConfigFileCommitDate({ cwd: 'foo/bar' })).toEqual(
       undefined
     );
@@ -91,7 +96,7 @@ describe('getLocalConfigFileCommitDate', () => {
       stdout: '',
       stderr: 'any error',
     };
-    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce(err);
+    jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
     expect(await getLocalConfigFileCommitDate({ cwd: 'foo/bar' })).toEqual(
       undefined
     );
@@ -100,14 +105,19 @@ describe('getLocalConfigFileCommitDate', () => {
 
 describe('isLocalConfigFileUntracked', () => {
   it('returns "false" if file does not exist', async () => {
-    const res = { stdout: '', stderr: '' };
-    jest.spyOn(childProcess, 'exec').mockResolvedValue(res);
+    const res = { stdout: '', stderr: '', code: 0, cmdArgs: [] };
+    jest.spyOn(childProcess, 'spawnPromise').mockResolvedValue(res);
     expect(await isLocalConfigFileUntracked({ cwd: 'foo/bar' })).toEqual(false);
   });
 
   it('returns "true" if file is untracked', async () => {
-    const res = { stdout: '.backportrc.json\n', stderr: '' };
-    jest.spyOn(childProcess, 'exec').mockResolvedValue(res);
+    const res = {
+      stdout: '.backportrc.json\n',
+      stderr: '',
+      code: 0,
+      cmdArgs: [],
+    };
+    jest.spyOn(childProcess, 'spawnPromise').mockResolvedValue(res);
     expect(await isLocalConfigFileUntracked({ cwd: 'foo/bar' })).toEqual(true);
   });
 
@@ -120,7 +130,7 @@ describe('isLocalConfigFileUntracked', () => {
       stdout: '',
       stderr: 'any error',
     };
-    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce(err);
+    jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
     expect(await isLocalConfigFileUntracked({ cwd: 'foo/bar' })).toEqual(
       undefined
     );
@@ -129,20 +139,25 @@ describe('isLocalConfigFileUntracked', () => {
 
 describe('isLocalConfigFileModified', () => {
   it('returns "false" if file does not exist', async () => {
-    const res = { stdout: '', stderr: '' };
-    jest.spyOn(childProcess, 'exec').mockResolvedValue(res);
+    const res = { stdout: '', stderr: '', code: 0, cmdArgs: [] };
+    jest.spyOn(childProcess, 'spawnPromise').mockResolvedValue(res);
     expect(await isLocalConfigFileModified({ cwd: 'foo/bar' })).toEqual(false);
   });
 
   it('returns "false" if file is untracked', async () => {
-    const res = { stdout: '', stderr: '' };
-    jest.spyOn(childProcess, 'exec').mockResolvedValue(res);
+    const res = { stdout: '', stderr: '', code: 0, cmdArgs: [] };
+    jest.spyOn(childProcess, 'spawnPromise').mockResolvedValue(res);
     expect(await isLocalConfigFileModified({ cwd: 'foo/bar' })).toEqual(false);
   });
 
   it('returns "true" if file is staged', async () => {
-    const res = { stdout: '.backportrc.json\n', stderr: '' };
-    jest.spyOn(childProcess, 'exec').mockResolvedValue(res);
+    const res = {
+      stdout: '.backportrc.json\n',
+      stderr: '',
+      code: 0,
+      cmdArgs: [],
+    };
+    jest.spyOn(childProcess, 'spawnPromise').mockResolvedValue(res);
     expect(await isLocalConfigFileModified({ cwd: 'foo/bar' })).toEqual(true);
   });
 
@@ -155,10 +170,8 @@ describe('isLocalConfigFileModified', () => {
       stdout: '',
       stderr: 'any error',
     };
-    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce(err);
-    expect(await isLocalConfigFileModified({ cwd: 'foo/bar' })).toEqual(
-      undefined
-    );
+    jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
+    expect(await isLocalConfigFileModified({ cwd: 'foo/bar' })).toBe(false);
   });
 });
 
@@ -175,8 +188,10 @@ describe('getRepoInfoFromGitRemotes', () => {
         'sqren\tgit@github.com:sqren/kibana.git (fetch)\n' +
         'sqren\tgit@github.com:sqren/kibana.git (push)\n',
       stderr: '',
+      code: 0,
+      cmdArgs: [],
     };
-    jest.spyOn(childProcess, 'exec').mockResolvedValue(res);
+    jest.spyOn(childProcess, 'spawnPromise').mockResolvedValue(res);
     expect(await getRepoInfoFromGitRemotes({ cwd: 'foo/bar' })).toEqual([
       { repoName: 'kibana', repoOwner: 'john.doe' },
       { repoName: 'kibana', repoOwner: 'elastic' },
@@ -186,11 +201,13 @@ describe('getRepoInfoFromGitRemotes', () => {
   });
 
   it('returns repoName and repoOwner https remotes', async () => {
-    jest.spyOn(childProcess, 'exec').mockResolvedValue({
+    jest.spyOn(childProcess, 'spawnPromise').mockResolvedValue({
       stdout:
         'origin\thttps://github.com/shay/elasticsearch.git (fetch)\n' +
         'origin\thttps://github.com/shay/elasticsearch.git (push)\n',
       stderr: '',
+      code: 0,
+      cmdArgs: [],
     });
     expect(await getRepoInfoFromGitRemotes({ cwd: 'foo/bar' })).toEqual([
       { repoName: 'elasticsearch', repoOwner: 'shay' },
@@ -198,8 +215,8 @@ describe('getRepoInfoFromGitRemotes', () => {
   });
 
   it('returns undefined when no remotes exist', async () => {
-    const res = { stdout: '', stderr: '' };
-    jest.spyOn(childProcess, 'exec').mockResolvedValue(res);
+    const res = { stdout: '', stderr: '', code: 0, cmdArgs: [] };
+    jest.spyOn(childProcess, 'spawnPromise').mockResolvedValue(res);
     expect(await getRepoInfoFromGitRemotes({ cwd: 'foo/bar' })).toEqual([]);
   });
 
@@ -213,23 +230,21 @@ describe('getRepoInfoFromGitRemotes', () => {
       stderr:
         'fatal: not a git repository (or any of the parent directories): .git\n',
     };
-    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce(err);
+    jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
     expect(await getRepoInfoFromGitRemotes({ cwd: 'foo/bar' })).toEqual([]);
   });
 });
 
 describe('getConflictingFiles', () => {
   it('should split by linebreak and remove empty and duplicate items', async () => {
-    const err = {
-      killed: false,
+    const err = new childProcess.SpawnError({
       code: 2,
-      signal: null,
-      cmd: 'git --no-pager diff --check',
+      cmdArgs: ['--no-pager', 'diff', '--check'],
       stdout:
         'conflicting-file.txt:1: leftover conflict marker\nconflicting-file.txt:3: leftover conflict marker\nconflicting-file.txt:5: leftover conflict marker\n',
       stderr: '',
-    };
-    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce(err);
+    });
+    jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
 
     const options = {
       repoOwner: 'elastic',
@@ -246,7 +261,7 @@ describe('getConflictingFiles', () => {
   });
 });
 
-describe('createFeatureBranch', () => {
+describe('createBackportBranch', () => {
   const options = {
     repoOwner: 'elastic',
     repoName: 'kibana',
@@ -257,17 +272,15 @@ describe('createFeatureBranch', () => {
 
   it(`should handle "couldn't find remote ref" error`, async () => {
     expect.assertions(1);
-    const err = {
-      killed: false,
+    const err = new childProcess.SpawnError({
       code: 128,
-      signal: null,
-      cmd: '',
+      cmdArgs: [],
       stdout:
         'HEAD is now at 72f94e7 Create "conflicting-file.txt" in master\n',
       stderr: "fatal: couldn't find remote ref 4.x\n",
-    };
+    });
 
-    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce(err);
+    jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
     await expect(
       createBackportBranch({ options, targetBranch, backportBranch })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -277,17 +290,15 @@ describe('createFeatureBranch', () => {
 
   it('should throw "Invalid refspec" error', async () => {
     expect.assertions(1);
-    const err = {
-      killed: false,
+    const err = new childProcess.SpawnError({
       code: 128,
-      signal: null,
-      cmd: '',
+      cmdArgs: [],
       stdout: '',
       stderr:
         "fatal: Invalid refspec 'https://github.com/elastic/kibana.git'\n",
-    };
+    });
 
-    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce(err);
+    jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
     await expect(
       createBackportBranch({ options, targetBranch, backportBranch })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -298,7 +309,7 @@ describe('createFeatureBranch', () => {
   it('should rethrow normal error', async () => {
     expect.assertions(1);
     const err = new Error('just a normal error');
-    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce(err);
+    jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
     expect.assertions(1);
 
     await expect(
@@ -314,23 +325,21 @@ describe('deleteRemote', () => {
     repoName: 'kibana',
   } as ValidConfigOptions;
 
-  it('should swallow exec error', async () => {
-    const err = {
-      killed: false,
+  it('should swallow SpawnError error', async () => {
+    const err = new childProcess.SpawnError({
       code: 128,
-      signal: null,
-      cmd: 'git remote rm origin',
+      cmdArgs: [],
       stdout: '',
       stderr: "fatal: No such remote: 'origin'\n",
-    };
+    });
 
-    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce(err);
+    jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
     await expect(await deleteRemote(options, remoteName)).toBe(undefined);
   });
 
   it('should rethrow normal error', async () => {
     const err = new Error('just a normal error');
-    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce(err);
+    jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
     expect.assertions(1);
 
     await expect(
@@ -347,12 +356,9 @@ describe('cherrypick', () => {
 
   it('should return `needsResolving: false` when no errors are encountered', async () => {
     jest
-      .spyOn(childProcess, 'exec')
-
-      // mock getIsMergeCommit(...)
-      .mockResolvedValueOnce({ stderr: '', stdout: '' })
-      // mock cherrypick(...)
-      .mockResolvedValueOnce({ stderr: '', stdout: '' });
+      .spyOn(childProcess, 'spawnPromise')
+      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] }) // mock getIsMergeCommit(...)
+      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] }); // mock cherrypick(...)
 
     expect(
       await cherrypick({
@@ -368,14 +374,10 @@ describe('cherrypick', () => {
   });
 
   it('should use mainline option when specified', async () => {
-    const execSpy = jest
-      .spyOn(childProcess, 'exec')
-
-      // mock getIsMergeCommit(...)
-      .mockResolvedValueOnce({ stderr: '', stdout: '' })
-
-      // mock cherry pick command
-      .mockResolvedValueOnce({ stderr: '', stdout: '' });
+    const spawnSpy = jest
+      .spyOn(childProcess, 'spawnPromise')
+      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] }) // mock getIsMergeCommit(...)
+      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] }); // mock cherrypick(...)
 
     await cherrypick({
       options: { ...options, mainline: 1 },
@@ -383,24 +385,33 @@ describe('cherrypick', () => {
       commitAuthor,
     });
 
-    expect(execSpy.mock.calls[0][0]).toBe(
-      'git -c user.name="Soren L" -c user.email="soren@mail.dk" cherry-pick -x --mainline 1 abcd'
-    );
+    const args = spawnSpy.mock.calls[0];
+    expect(args).toEqual([
+      'git',
+      [
+        '-c',
+        'user.name="Soren L"',
+        '-c',
+        'user.email="soren@mail.dk"',
+        'cherry-pick',
+        '--mainline',
+        '1',
+        '-x',
+        'abcd',
+      ],
+      '/myHomeDir/.backport/repositories/elastic/kibana',
+    ]);
   });
 
   it('should return `needsResolving: true` upon cherrypick error', async () => {
     jest
-      .spyOn(childProcess, 'exec')
-
-      // mock getIsMergeCommit(...)
-      .mockResolvedValueOnce({ stderr: '', stdout: '' })
-
+      .spyOn(childProcess, 'spawnPromise')
+      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] }) // mock getIsMergeCommit(...)
       // mock `git cherrypick`
       .mockRejectedValueOnce(
-        new ExecError({
-          killed: false,
+        new childProcess.SpawnError({
           code: 128,
-          cmd: 'git cherry-pick -x abcd',
+          cmdArgs: ['cherry-pick', '-x', 'abcd'],
           stdout: '',
           stderr: '',
         })
@@ -408,9 +419,9 @@ describe('cherrypick', () => {
 
       // mock getConflictingFiles
       .mockRejectedValueOnce(
-        new ExecError({
+        new childProcess.SpawnError({
           code: 2,
-          cmd: 'git --no-pager diff --check',
+          cmdArgs: ['--no-pager', 'diff', '--check'],
           stdout:
             'conflicting-file.txt:1: leftover conflict marker\nconflicting-file.txt:3: leftover conflict marker\nconflicting-file.txt:5: leftover conflict marker\n',
           stderr: '',
@@ -418,7 +429,7 @@ describe('cherrypick', () => {
       )
 
       // mock getUnstagedFiles
-      .mockResolvedValueOnce({ stdout: '', stderr: '' });
+      .mockResolvedValueOnce({ stdout: '', stderr: '', code: 0, cmdArgs: [] });
 
     expect(
       await cherrypick({
@@ -441,18 +452,16 @@ describe('cherrypick', () => {
 
   it('should let the user know about the "--mainline" argument when cherry-picking a merge commit without specifying it', async () => {
     jest
-      .spyOn(childProcess, 'exec')
+      .spyOn(childProcess, 'spawnPromise')
 
       // mock getIsMergeCommit(...)
-      .mockResolvedValueOnce({ stderr: '', stdout: '' })
+      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] })
 
       // mock cherry pick command
       .mockRejectedValueOnce(
-        new ExecError({
-          killed: false,
+        new childProcess.SpawnError({
           code: 128,
-          signal: null,
-          cmd: 'git cherry-pick 381c7b604110257437a289b1f1742685eb8d79c5',
+          cmdArgs: ['cherry-pick', '381c7b604110257437a289b1f1742685eb8d79c5'],
           stdout: '',
           stderr:
             'error: commit 381c7b604110257437a289b1f1742685eb8d79c5 is a merge but no -m option was given.\nfatal: cherry-pick failed\n',
@@ -479,18 +488,16 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
 
   it('should gracefully handle empty commits', async () => {
     jest
-      .spyOn(childProcess, 'exec')
+      .spyOn(childProcess, 'spawnPromise')
 
       // mock getIsMergeCommit(...)
-      .mockResolvedValueOnce({ stderr: '', stdout: '' })
+      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] })
 
       // mock cherry pick command
       .mockRejectedValueOnce(
-        new ExecError({
-          killed: false,
+        new childProcess.SpawnError({
           code: 1,
-          signal: null,
-          cmd: 'git cherry-pick fe6b13b83cc010f722548cd5a0a8c2d5341a20dd',
+          cmdArgs: ['cherry-pick', 'fe6b13b83cc010f722548cd5a0a8c2d5341a20dd'],
           stdout:
             'On branch backport/7.x/pr-58692\nYou are currently cherry-picking commit fe6b13b83cc.\n\nnothing to commit, working tree clean\n',
           stderr:
@@ -511,19 +518,19 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
 
   it('should re-throw non-cherrypick errors', async () => {
     jest
-      .spyOn(childProcess, 'exec')
+      .spyOn(childProcess, 'spawnPromise')
 
       // mock getIsMergeCommit(...)
-      .mockResolvedValueOnce({ stderr: '', stdout: '' })
+      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] })
 
       // mock cherry pick command
       .mockRejectedValueOnce(new Error('non-cherrypick error'))
 
       // getConflictingFiles
-      .mockResolvedValueOnce({ stdout: '', stderr: '' })
+      .mockResolvedValueOnce({ stdout: '', stderr: '', code: 0, cmdArgs: [] })
 
       // getUnstagedFiles
-      .mockResolvedValueOnce({ stdout: '', stderr: '' });
+      .mockResolvedValueOnce({ stdout: '', stderr: '', code: 0, cmdArgs: [] });
 
     await expect(
       cherrypick({
@@ -554,44 +561,45 @@ describe('commitChanges', () => {
 
   it('should return when changes committed successfully', async () => {
     jest
-      .spyOn(childProcess, 'exec')
-      .mockResolvedValueOnce({ stderr: '', stdout: '' });
+      .spyOn(childProcess, 'spawnPromise')
+      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] });
 
     await expect(await commitChanges(commit, options)).toBe(undefined);
   });
 
   it('should swallow error if changes have already been committed manaully', async () => {
-    const err = {
-      killed: false,
+    const err = new childProcess.SpawnError({
       code: 1,
-      signal: null,
-      cmd: 'git commit --no-edit',
+      cmdArgs: ['commit', '--no-edit'],
       stdout:
         'On branch backport/7.x/commit-913afb3b\nnothing to commit, working tree clean\n',
       stderr: '',
-    };
+    });
 
-    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce(err);
+    jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
     await expect(await commitChanges(commit, options)).toBe(undefined);
   });
 
   describe('when commit fails due to empty message', () => {
-    let spy: SpyHelper<typeof childProcess.exec>;
+    let spy: SpyHelper<typeof childProcess.spawnPromise>;
     let res: void;
     beforeEach(async () => {
-      const err = {
-        killed: false,
+      const err = new childProcess.SpawnError({
         code: 1,
-        signal: null,
-        cmd: 'git commit --no-edit --no-verify',
+        cmdArgs: ['commit', '--no-edit', '--no-verify'],
         stdout: '',
         stderr: 'Aborting commit due to empty commit message.\n',
-      };
+      });
 
       spy = jest
-        .spyOn(childProcess, 'exec')
+        .spyOn(childProcess, 'spawnPromise')
         .mockRejectedValueOnce(err)
-        .mockResolvedValueOnce({ stderr: '', stdout: '' });
+        .mockResolvedValueOnce({
+          stderr: '',
+          stdout: '',
+          code: 0,
+          cmdArgs: [],
+        });
 
       res = await commitChanges(commit, options);
     });
@@ -599,12 +607,14 @@ describe('commitChanges', () => {
     it('should manually set the commit message', () => {
       expect(spy).toHaveBeenCalledTimes(2);
       expect(spy).toHaveBeenCalledWith(
-        'git commit --no-edit',
-        expect.any(Object)
+        'git',
+        ['commit', '--no-edit'],
+        expect.any(String)
       );
       expect(spy).toHaveBeenCalledWith(
-        'git commit -m "The original commit message" ',
-        expect.any(Object)
+        'git',
+        ['commit', '--message=The original commit message'],
+        expect.any(String)
       );
     });
 
@@ -615,7 +625,7 @@ describe('commitChanges', () => {
 
   it('should re-throw other errors', async () => {
     const err = new Error('another error');
-    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce(err);
+    jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
     expect.assertions(1);
 
     await expect(
@@ -634,41 +644,59 @@ describe('addRemote', () => {
 
   it('add correct origin remote', async () => {
     const spy = jest
-      .spyOn(childProcess, 'exec')
-      .mockResolvedValueOnce({ stderr: '', stdout: '' });
+      .spyOn(childProcess, 'spawnPromise')
+      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] });
 
     await addRemote(options, 'elastic');
 
     return expect(spy).toHaveBeenCalledWith(
-      'git remote add elastic https://x-access-token:myAccessToken@github.com/elastic/kibana.git',
-      { cwd: '/myHomeDir/.backport/repositories/elastic/kibana' }
+      'git',
+      [
+        'remote',
+        'add',
+        'elastic',
+        'https://x-access-token:myAccessToken@github.com/elastic/kibana.git',
+      ],
+      '/myHomeDir/.backport/repositories/elastic/kibana'
     );
   });
 
   it('add correct user remote', async () => {
     const spy = jest
-      .spyOn(childProcess, 'exec')
-      .mockResolvedValueOnce({ stderr: '', stdout: '' });
+      .spyOn(childProcess, 'spawnPromise')
+      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] });
     await addRemote(options, 'sqren');
 
     return expect(spy).toHaveBeenCalledWith(
-      'git remote add sqren https://x-access-token:myAccessToken@github.com/sqren/kibana.git',
-      { cwd: '/myHomeDir/.backport/repositories/elastic/kibana' }
+      'git',
+      [
+        'remote',
+        'add',
+        'sqren',
+        'https://x-access-token:myAccessToken@github.com/sqren/kibana.git',
+      ],
+      '/myHomeDir/.backport/repositories/elastic/kibana'
     );
   });
 
   it('allows custom github url', async () => {
     const spy = jest
-      .spyOn(childProcess, 'exec')
-      .mockResolvedValueOnce({ stderr: '', stdout: '' });
+      .spyOn(childProcess, 'spawnPromise')
+      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] });
     await addRemote(
       { ...options, gitHostname: 'github.my-company.com' },
       'sqren'
     );
 
     return expect(spy).toHaveBeenCalledWith(
-      'git remote add sqren https://x-access-token:myAccessToken@github.my-company.com/sqren/kibana.git',
-      { cwd: '/myHomeDir/.backport/repositories/elastic/kibana' }
+      'git',
+      [
+        'remote',
+        'add',
+        'sqren',
+        'https://x-access-token:myAccessToken@github.my-company.com/sqren/kibana.git',
+      ],
+      '/myHomeDir/.backport/repositories/elastic/kibana'
     );
   });
 });
@@ -685,20 +713,25 @@ describe('pushBackportBranch', () => {
   const backportBranch = 'backport/7.x/pr-2';
 
   it('should handle missing fork error', async () => {
-    jest.spyOn(childProcess, 'exec').mockRejectedValueOnce({
-      killed: false,
-      code: 128,
-      signal: null,
-      cmd: 'git push sqren backport/7.x/pr-2:backport/7.x/pr-2 --force',
-      stdout: '',
-      stderr:
-        "remote: Repository not found.\nfatal: repository 'https://github.com/sqren/kibana.git/' not found\n",
-    });
-
-    await expect(
-      pushBackportBranch({ options, backportBranch })
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Error pushing to https://github.com/the_fork_owner/kibana. Repository does not exist. Either fork the source repository (https://github.com/elastic/kibana) or disable fork mode \\"--no-fork\\".  Read more about \\"fork mode\\" in the docs: https://github.com/sqren/backport/blob/3a182b17e0e7237c12915895aea9d71f49eb2886/docs/configuration.md#fork"`
+    jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(
+      new childProcess.SpawnError({
+        code: 128,
+        cmdArgs: [
+          'push',
+          'sqren',
+          'backport/7.x/pr-2:backport/7.x/pr-2',
+          '--force',
+        ],
+        stdout: '',
+        stderr:
+          "remote: Repository not found.\nfatal: repository 'https://github.com/sqren/kibana.git/' not found\n",
+      })
     );
+
+    await expect(pushBackportBranch({ options, backportBranch })).rejects
+      .toThrowErrorMatchingInlineSnapshot(`
+            "Error pushing to https://github.com/the_fork_owner/kibana. Repository does not exist. Either fork the repository (https://github.com/elastic/kibana) or disable fork mode via \\"--no-fork\\".
+            Read more about fork mode in the docs: https://github.com/sqren/backport/blob/main/docs/configuration.md#fork"
+          `);
   });
 });

@@ -12,6 +12,7 @@ export async function postinstall() {
       consoleLog(`Global config successfully created in ${globalConfigPath}`);
     }
   } catch (e) {
+    // @ts-expect-error
     consoleLog(`Global config could not be created:\n${e.stack}`);
   }
 }

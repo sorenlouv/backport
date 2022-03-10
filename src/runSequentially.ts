@@ -8,7 +8,6 @@ import { GitConfigAuthor } from './ui/getGitConfigAuthor';
 
 export type Result =
   | {
-      // only set for success
       status: 'success';
       didUpdate: boolean;
       targetBranch: string;
@@ -16,10 +15,14 @@ export type Result =
       pullRequestNumber: number;
     }
   | {
-      // only set for failure
-      status: 'failure';
+      status: 'handled-error';
       targetBranch: string;
-      error: HandledError | Error;
+      error: HandledError;
+    }
+  | {
+      status: 'unhandled-error';
+      targetBranch: string;
+      error: Error;
     };
 
 export async function runSequentially({
@@ -56,13 +59,30 @@ export async function runSequentially({
         pullRequestNumber: number,
       });
     } catch (e) {
-      results.push({
-        targetBranch,
-        status: 'failure',
-        error: e,
-      });
-      consoleLog(e.message);
-      logger.error('Could not backport commit', e);
+      const isHandledError = e instanceof HandledError;
+      if (isHandledError) {
+        results.push({
+          targetBranch,
+          status: 'handled-error',
+          error: e,
+        });
+      } else if (e instanceof Error) {
+        results.push({
+          targetBranch,
+          status: 'unhandled-error',
+          error: e,
+        });
+      } else {
+        throw e;
+      }
+
+      consoleLog(
+        isHandledError
+          ? e.message
+          : 'An error occurred while backporting commit. Please see the logs for details'
+      );
+
+      logger.error('runSequentially failed', e);
     }
   });
 

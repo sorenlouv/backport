@@ -9,10 +9,12 @@ jest.setTimeout(TIMEOUT_IN_SECONDS * 1000);
 export function runBackportViaCli(
   cliArgs: string[],
   {
+    timeoutSeconds = 2,
     showOra,
     waitForString,
     cwd,
   }: {
+    timeoutSeconds?: number;
     showOra?: boolean;
     waitForString?: string;
     cwd?: string;
@@ -36,7 +38,6 @@ export function runBackportViaCli(
   return new Promise<string>((resolve, reject) => {
     let data = '';
 
-    const timeoutSeconds = 2;
     const rejectOnTimeout = debounce(
       () => {
         reject(
@@ -62,6 +63,15 @@ export function runBackportViaCli(
         resolve(output);
       }
     };
+
+    proc.on('exit', (code) => {
+      rejectOnTimeout.cancel();
+      if (code !== null && code === 0) {
+        resolve(data.toString());
+      } else {
+        reject(code);
+      }
+    });
 
     proc.stdout.on('data', onChunk);
 

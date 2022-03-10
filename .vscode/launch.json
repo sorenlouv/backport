@@ -7,13 +7,22 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "TS-node",
+      "program": "${workspaceRoot}/node_modules/.bin/ts-node",
+      "args": ["--transpile-only", "${file}"],
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Run backport (ts-node)",
       "program": "${workspaceRoot}/src/entrypoint.cli.ts",
       "runtimeArgs": ["-r", "ts-node/register/transpile-only"],
       "args": [
-        "--branch=6.3",
-        "--repo-owner=backport-org",
-        "--repo-name=backport-demo"
+        "--dry-run",
+        "--pr=12",
+        "--branch=7.x",
+        "--repo=backport-org/repo-with-conflicts"
       ],
       "console": "integratedTerminal"
     },
