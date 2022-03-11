@@ -1,0 +1,74 @@
+import gql from 'graphql-tag';
+import { BackportError } from '../../../../errors/BackportError';
+import { ValidConfigOptions } from '../../../../options/options';
+import { swallowMissingConfigFileException } from '../../../remoteConfig';
+import {
+  Commit,
+  SourceCommitWithTargetPullRequest,
+  SourceCommitWithTargetPullRequestFragment,
+  parseSourceCommit,
+} from '../../../sourceCommit/parseSourceCommit';
+import { apiRequestV4 } from '../apiRequestV4';
+
+export async function fetchCommitBySha(options: {
+  accessToken: string;
+  branchLabelMapping?: ValidConfigOptions['branchLabelMapping'];
+  githubApiBaseUrlV4?: string;
+  repoName: string;
+  repoOwner: string;
+  sha: string;
+  sourceBranch: string;
+}): Promise<Commit> {
+  const {
+    accessToken,
+    githubApiBaseUrlV4 = 'https://api.github.com/graphql',
+    repoName,
+    repoOwner,
+    sha,
+    sourceBranch,
+  } = options;
+
+  const query = gql`
+    query CommitsBySha($repoOwner: String!, $repoName: String!, $sha: String!) {
+      repository(owner: $repoOwner, name: $repoName) {
+        object(expression: $sha) {
+          ...SourceCommitWithTargetPullRequestFragment
+        }
+      }
+    }
+
+    ${SourceCommitWithTargetPullRequestFragment}
+  `;
+
+  let res: CommitsByShaResponse;
+  try {
+    res = await apiRequestV4<CommitsByShaResponse>({
+      githubApiBaseUrlV4,
+      accessToken,
+      query,
+      variables: {
+        repoOwner,
+        repoName,
+        sha,
+      },
+    });
+  } catch (e) {
+    //@ts-expect-error
+    res = swallowMissingConfigFileException<CommitsByShaResponse>(e);
+  }
+
+  const sourceCommit = res.repository.object;
+  if (!sourceCommit) {
+    throw new BackportError(
+      `No commit found on branch "${sourceBranch}" with sha "${sha}"`
+    );
+  }
+
+  return parseSourceCommit({ options, sourceCommit });
+}
+
+interface CommitsByShaResponse {
+  repository: {
+    object: SourceCommitWithTargetPullRequest | null;
+  };
+}

@@ -1,10 +1,10 @@
 import fs from 'fs/promises';
 import os from 'os';
 import nock from 'nock';
-import * as git from '../services/git';
-import { GithubConfigOptionsResponse } from '../services/github/v4/getOptionsFromGithub/query';
-import { RepoOwnerAndNameResponse } from '../services/github/v4/getRepoOwnerAndNameFromGitRemotes';
-import * as logger from '../services/logger';
+import * as git from '../lib/git';
+import { GithubConfigOptionsResponse } from '../lib/github/v4/getOptionsFromGithub/query';
+import { RepoOwnerAndNameResponse } from '../lib/github/v4/getRepoOwnerAndNameFromGitRemotes';
+import * as logger from '../lib/logger';
 import { mockConfigFiles } from '../test/mockConfigFiles';
 import { mockGqlRequest } from '../test/nockHelpers';
 import { ConfigFileOptions } from './ConfigOptions';

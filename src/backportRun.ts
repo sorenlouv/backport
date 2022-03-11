@@ -1,25 +1,26 @@
 import chalk from 'chalk';
 import yargsParser from 'yargs-parser';
+import { BackportError } from './errors/BackportError';
+import { getLogfilePath } from './lib/env';
+import { getCommits } from './lib/getCommits';
+import { getGitConfigAuthor } from './lib/getGitConfigAuthor';
+import { getTargetBranches } from './lib/getTargetBranches';
+import { createStatusComment } from './lib/github/v3/createStatusComment';
+import { GithubV4Exception } from './lib/github/v4/apiRequestV4';
+import { consoleLog, initLogger } from './lib/logger';
+import { ora } from './lib/ora';
+import { setupRepo } from './lib/setupRepo';
+import { Commit } from './lib/sourceCommit/parseSourceCommit';
 import { ConfigFileOptions } from './options/ConfigOptions';
 import { CliError } from './options/cliArgs';
 import { getOptions, ValidConfigOptions } from './options/options';
 import { runSequentially, Result } from './runSequentially';
-import { HandledError } from './services/HandledError';
-import { getLogfilePath } from './services/env';
-import { createStatusComment } from './services/github/v3/createStatusComment';
-import { GithubV4Exception } from './services/github/v4/apiRequestV4';
-import { consoleLog, initLogger } from './services/logger';
-import { Commit } from './services/sourceCommit/parseSourceCommit';
-import { getCommits } from './ui/getCommits';
-import { getGitConfigAuthor } from './ui/getGitConfigAuthor';
-import { getTargetBranches } from './ui/getTargetBranches';
-import { ora } from './ui/ora';
-import { setupRepo } from './ui/setupRepo';
 
 export type BackportAbortResponse = {
   status: 'aborted';
   commits: Commit[];
-  error: HandledError;
+  error: BackportError;
+  errorMessage: string;
 };
 
 export type BackportSuccessResponse = {
@@ -31,7 +32,7 @@ export type BackportSuccessResponse = {
 export type BackportFailureResponse = {
   status: 'failure';
   commits: Commit[];
-  error: Error | HandledError;
+  error: Error | BackportError;
   errorMessage: string;
 };
 
@@ -117,16 +118,17 @@ export async function backportRun({
     let backportResponse: BackportResponse;
 
     if (
-      e instanceof HandledError &&
+      e instanceof BackportError &&
       e.errorContext.code === 'no-branches-exception'
     ) {
       backportResponse = {
         status: 'aborted',
         commits,
         error: e,
+        errorMessage: e.message,
       };
 
-      // this will catch both HandledError and Error
+      // this will catch both BackportError and Error
     } else if (e instanceof Error) {
       backportResponse = {
         status: 'failure',
@@ -159,10 +161,10 @@ function outputError({
   e,
   logFilePath,
 }: {
-  e: HandledError | GithubV4Exception<any> | Error;
+  e: BackportError | GithubV4Exception<any> | Error;
   logFilePath?: string;
 }) {
-  if (e instanceof HandledError || e instanceof GithubV4Exception) {
+  if (e instanceof BackportError || e instanceof GithubV4Exception) {
     consoleLog(e.message);
     return;
   }

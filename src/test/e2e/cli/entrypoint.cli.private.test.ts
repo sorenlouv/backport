@@ -3,8 +3,8 @@ import {
   BackportFailureResponse,
   BackportSuccessResponse,
 } from '../../../backportRun';
-import { exec } from '../../../services/child-process-promisified';
-import { getBackportDirPath } from '../../../services/env';
+import { exec } from '../../../lib/child-process-promisified';
+import { getBackportDirPath } from '../../../lib/env';
 import * as packageVersion from '../../../utils/packageVersion';
 import { getDevAccessToken } from '../../private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
@@ -349,7 +349,7 @@ describe('entrypoint cli', () => {
             code: 'message-only-exception',
             message: 'The branch "foobar" is invalid or doesn\'t exist',
           },
-          name: 'HandledError',
+          name: 'BackportError',
         },
         status: 'handled-error',
         targetBranch: 'foobar',
@@ -432,7 +432,7 @@ describe('entrypoint cli', () => {
           code: 'message-only-exception',
           message: 'The PR #12 is not merged',
         },
-        name: 'HandledError',
+        name: 'BackportError',
       });
     });
 
@@ -448,7 +448,7 @@ describe('entrypoint cli', () => {
       expect(backportResult.status).toBe('aborted');
       expect(backportResult.error).toEqual({
         errorContext: { code: 'no-branches-exception' },
-        name: 'HandledError',
+        name: 'BackportError',
       });
     });
   });

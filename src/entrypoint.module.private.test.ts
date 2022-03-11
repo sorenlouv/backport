@@ -3,7 +3,7 @@ import {
   BackportSuccessResponse,
 } from './backportRun';
 import { backportRun, Commit, getCommits } from './entrypoint.module';
-import { getFirstLine } from './services/github/commitFormatters';
+import { getFirstLine } from './lib/github/commitFormatters';
 import { getDevAccessToken } from './test/private/getDevAccessToken';
 
 const accessToken = getDevAccessToken();

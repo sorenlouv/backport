@@ -1,7 +1,7 @@
 import { chmod, writeFile } from 'fs/promises';
 import makeDir from 'make-dir';
-import { HandledError } from '../../services/HandledError';
-import { getBackportDirPath, getGlobalConfigPath } from '../../services/env';
+import { BackportError } from '../../errors/BackportError';
+import { getBackportDirPath, getGlobalConfigPath } from '../../lib/env';
 import { isErrnoError } from '../../utils/isErrnoError';
 import { ConfigFileOptions } from '../ConfigOptions';
 import { readConfigFile } from './readConfigFile';
@@ -52,7 +52,7 @@ export async function createGlobalConfigIfNotExist(
       // handle error if folder does not exist
       const FOLDER_NOT_EXISTS = 'ENOENT';
       if (e.code === FOLDER_NOT_EXISTS) {
-        throw new HandledError(
+        throw new BackportError(
           `The .backport folder (${globalConfigPath}) does not exist. `
         );
       }

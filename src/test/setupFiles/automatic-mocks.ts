@@ -30,7 +30,7 @@ jest.mock('del', () => {
 
 mockOra();
 
-jest.mock('../../services/logger', () => {
+jest.mock('../../lib/logger', () => {
   const spy = jest.fn();
   const logger = {
     spy: spy,

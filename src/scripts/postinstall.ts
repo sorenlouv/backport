@@ -1,6 +1,6 @@
+import { getGlobalConfigPath } from '../lib/env';
+import { consoleLog } from '../lib/logger';
 import { createGlobalConfigAndFolderIfNotExist } from '../options/config/globalConfig';
-import { getGlobalConfigPath } from '../services/env';
-import { consoleLog } from '../services/logger';
 
 export async function postinstall() {
   try {

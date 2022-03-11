@@ -1,0 +1,22 @@
+import os from 'os';
+import { ValidConfigOptions } from '../options/options';
+import { getGlobalConfigPath, getRepoPath } from './env';
+
+describe('env', () => {
+  beforeEach(() => {
+    jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
+  });
+
+  it('getGlobalConfigPath', () => {
+    expect(getGlobalConfigPath()).toBe('/myHomeDir/.backport/config.json');
+  });
+
+  it('getRepoPath', () => {
+    expect(
+      getRepoPath({
+        repoOwner: 'elastic',
+        repoName: 'kibana',
+      } as ValidConfigOptions)
+    ).toBe('/myHomeDir/.backport/repositories/elastic/kibana');
+  });
+});

@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import { ConfigFileOptions } from '../../../entrypoint.module';
-import { exec } from '../../../services/child-process-promisified';
+import { exec } from '../../../lib/child-process-promisified';
 import { getDevAccessToken } from '../../private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
 import { runBackportViaCli } from './runBackportViaCli';
