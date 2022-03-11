@@ -51,6 +51,32 @@ describe('getOptionsFromCliArgs', () => {
     });
   });
 
+  describe('reviewers', () => {
+    it('should handle all variations', () => {
+      const argv = ['--reviewer=peter'];
+
+      const res = getOptionsFromCliArgs(argv);
+      expect(res.reviewers).toEqual(['peter']);
+    });
+  });
+
+  describe('author', () => {
+    it('has a default author', () => {
+      const res = getOptionsFromCliArgs([]);
+      expect(res.author).toEqual(undefined);
+    });
+
+    it('sets the author', () => {
+      const res = getOptionsFromCliArgs(['--author=sqren']);
+      expect(res.author).toEqual('sqren');
+    });
+
+    it('sets the author to null', () => {
+      const res = getOptionsFromCliArgs(['--all']);
+      expect(res.author).toEqual(null);
+    });
+  });
+
   describe('pullNumber', () => {
     it('should accept `--pr` alias but only return the full representation (`pullNumber`)', () => {
       const argv = ['--pr', '1337'];
@@ -112,6 +138,50 @@ describe('getOptionsFromCliArgs', () => {
     });
   });
 
+  describe('fork', () => {
+    it('--fork', () => {
+      const argv = ['--fork'];
+      const res = getOptionsFromCliArgs(argv);
+      expect(res.fork).toEqual(true);
+    });
+
+    it('--no-fork', () => {
+      const argv = ['--no-fork'];
+      const res = getOptionsFromCliArgs(argv);
+      expect(res.fork).toEqual(false);
+    });
+
+    it('defaults to undefined', () => {
+      const argv = [] as const;
+      const res = getOptionsFromCliArgs(argv);
+      expect(res.fork).toEqual(undefined);
+    });
+  });
+
+  describe('interactive', () => {
+    it('defaults to undefined', () => {
+      const res = getOptionsFromCliArgs([]);
+      expect(res.interactive).toEqual(undefined);
+    });
+
+    it('noStatusComment', () => {
+      const res = getOptionsFromCliArgs(['--non-interactive']);
+      expect(res.interactive).toEqual(false);
+    });
+  });
+
+  describe('publishStatusComment', () => {
+    it('defaults to undefined', () => {
+      const res = getOptionsFromCliArgs([]);
+      expect(res.publishStatusComment).toEqual(undefined);
+    });
+
+    it('noStatusComment', () => {
+      const res = getOptionsFromCliArgs(['--noStatusComment']);
+      expect(res.publishStatusComment).toEqual(false);
+    });
+  });
+
   describe('noVerify', () => {
     it('should be undefined by default', () => {
       const argv = [] as const;
@@ -135,6 +205,18 @@ describe('getOptionsFromCliArgs', () => {
       const argv = ['--verify'];
       const res = getOptionsFromCliArgs(argv);
       expect(res.noVerify).toBe(true);
+    });
+  });
+
+  describe('cherrypickRef', () => {
+    it('should be undefined by default', () => {
+      const res = getOptionsFromCliArgs([]);
+      expect(res.cherrypickRef).toBe(undefined);
+    });
+
+    it('can be disabled', () => {
+      const res = getOptionsFromCliArgs(['--no-cherrypick-ref']);
+      expect(res.cherrypickRef).toBe(false);
     });
   });
 
@@ -175,6 +257,13 @@ describe('getOptionsFromCliArgs', () => {
       expect(res.repoName).toEqual('kibana');
     });
 
+    it('accepts --repo-name and --repo-owner', () => {
+      const argv = ['--repo-owner=elastic', '--repo-name=kibana'];
+      const res = getOptionsFromCliArgs(argv);
+      expect(res.repoOwner).toEqual('elastic');
+      expect(res.repoName).toEqual('kibana');
+    });
+
     it('throw if both --repo and --repo-name is given', () => {
       const argv = ['--repo', 'elastic/kibana', '--repo-name', 'foo'];
       expect(() => getOptionsFromCliArgs(argv)).toThrowError(
@@ -183,7 +272,7 @@ describe('getOptionsFromCliArgs', () => {
     });
   });
 
-  describe('since/until', () => {
+  describe('dateSince and dateUntil', () => {
     it('should always be UTC time (configured globally in jest.config.js)', () => {
       expect(new Date().getTimezoneOffset()).toBe(0);
     });

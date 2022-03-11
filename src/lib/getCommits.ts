@@ -17,7 +17,7 @@ function getOraPersistsOption(question: string, answer: string) {
 }
 
 export async function getCommits(options: ValidConfigOptions) {
-  const spinner = ora(options.ci).start();
+  const spinner = ora(options.interactive).start();
 
   try {
     if (options.sha) {
@@ -58,9 +58,9 @@ export async function getCommits(options: ValidConfigOptions) {
       return [commit];
     }
 
-    if (options.ci && !options.ls) {
+    if (!options.interactive && !options.ls) {
       throw new BackportError(
-        'When "--ci" flag is enabled either `--sha` or `--pr` must be specified'
+        'When "--interactive" is disabled either `--sha` or `--pr` must be specified'
       );
     }
 

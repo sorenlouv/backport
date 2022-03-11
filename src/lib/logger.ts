@@ -4,19 +4,19 @@ import { getLogfilePath } from './env';
 
 export let logger: winston.Logger;
 let _accessToken: string | undefined;
-let _ci: boolean | undefined;
+let _interactive: boolean;
 
 export function initLogger({
-  ci,
+  interactive,
   accessToken,
   logFilePath,
 }: {
-  ci: boolean | undefined;
+  interactive: boolean;
   accessToken?: string;
   logFilePath?: string;
 }) {
   _accessToken = accessToken;
-  _ci = ci;
+  _interactive = interactive;
 
   logger = winston.createLogger({
     format: format.combine(
@@ -38,7 +38,7 @@ export function initLogger({
 
 // wrapper around console.log
 export function consoleLog(message: string) {
-  if (!_ci) {
+  if (_interactive) {
     // eslint-disable-next-line no-console
     console.log(redactAccessToken(message));
   }

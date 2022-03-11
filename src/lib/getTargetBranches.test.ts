@@ -21,10 +21,11 @@ describe('getTargetBranches', () => {
 
     beforeEach(async () => {
       const options = {
-        targetBranches: [],
+        targetBranches: [] as string[],
         targetBranchChoices: [{ name: 'branchA' }, { name: 'branchB' }],
         multipleBranches: false,
-      } as unknown as ValidConfigOptions;
+        interactive: true,
+      } as ValidConfigOptions;
 
       const commits: Commit[] = [
         {
@@ -85,7 +86,7 @@ describe('getTargetBranches', () => {
     });
   });
 
-  describe('when ci=true', () => {
+  describe('when interactive=false', () => {
     it('should throw when there are no missing backports', () => {
       const commits: Commit[] = [];
 
@@ -93,7 +94,7 @@ describe('getTargetBranches', () => {
         return getTargetBranches(
           {
             expectedTargetPullRequests: [],
-            ci: true,
+            interactive: false,
           } as unknown as ValidConfigOptions,
           commits
         );
@@ -112,7 +113,7 @@ describe('getTargetBranches', () => {
       ] as Commit[];
 
       const targetBranches = getTargetBranches(
-        { ci: true } as unknown as ValidConfigOptions,
+        { interactive: false } as unknown as ValidConfigOptions,
         commits
       );
       expect(targetBranches).toEqual(['7.x']);
@@ -123,7 +124,8 @@ describe('getTargetBranches', () => {
     let targetBranchChoices: TargetBranchChoice[];
     beforeEach(async () => {
       const options = {
-        targetBranches: [],
+        interactive: true,
+        targetBranches: [] as string[],
         multipleBranches: true,
         targetBranchChoices: [
           { name: 'master' },
@@ -134,7 +136,7 @@ describe('getTargetBranches', () => {
         ] as TargetBranchChoice[],
         branchLabelMapping: {},
         sourceBranch: 'master',
-      } as unknown as ValidConfigOptions;
+      } as ValidConfigOptions;
 
       const commits: Commit[] = [
         {
@@ -187,7 +189,7 @@ describe('getTargetBranches', () => {
 
 describe('getTargetBranchChoices', () => {
   const options = {
-    ci: false,
+    interactive: true,
     targetBranchChoices: [
       { name: 'master', checked: true },
       { name: '7.x', checked: true },

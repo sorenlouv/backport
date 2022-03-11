@@ -20,7 +20,7 @@ export async function enablePullRequestAutoMerge(
   } = options;
   const text = `Enabling auto merging via ${options.autoMergeMethod}`;
   logger.info(text);
-  const spinner = ora(options.ci, text).start();
+  const spinner = ora(options.interactive, text).start();
 
   const pullRequestId = await fetchPullRequestId(
     options,

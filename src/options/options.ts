@@ -8,7 +8,7 @@ import {
 import { getRepoOwnerAndNameFromGitRemotes } from '../lib/github/v4/getRepoOwnerAndNameFromGitRemotes';
 import { setAccessToken } from '../lib/logger';
 import { ConfigFileOptions, TargetBranchChoiceOrString } from './ConfigOptions';
-import { getOptionsFromCliArgs, OptionsFromCliArgs } from './cliArgs';
+import { OptionsFromCliArgs } from './cliArgs';
 import {
   getOptionsFromConfigFiles,
   OptionsFromConfigFiles,
@@ -24,14 +24,13 @@ export type ValidConfigOptions = Readonly<
   Awaited<ReturnType<typeof getOptions>>
 >;
 
-const defaultConfigOptions = {
+export const defaultConfigOptions = {
   assignees: [] as Array<string>,
   autoAssign: false,
   autoMerge: false,
   autoMergeMethod: 'merge',
   backportBinary: 'backport',
   cherrypickRef: true,
-  ci: false,
   commitPaths: [] as Array<string>,
   cwd: process.cwd(),
   dateSince: null,
@@ -39,6 +38,7 @@ const defaultConfigOptions = {
   details: false,
   fork: true,
   gitHostname: 'github.com',
+  interactive: true,
   maxNumber: 10,
   multipleBranches: true,
   multipleCommits: false,
@@ -52,15 +52,16 @@ const defaultConfigOptions = {
   targetPRLabels: [] as string[],
 };
 
-export async function getOptions(
-  processArgs: string[],
-  optionsFromModule: ConfigFileOptions
-) {
-  const optionsFromCliArgs = getOptionsFromCliArgs(processArgs);
+export async function getOptions({
+  optionsFromCliArgs,
+  optionsFromModule,
+}: {
+  optionsFromCliArgs: OptionsFromCliArgs;
+  optionsFromModule: ConfigFileOptions;
+}) {
   const optionsFromConfigFiles = await getOptionsFromConfigFiles({
     optionsFromCliArgs,
     optionsFromModule,
-    defaultConfigOptions,
   });
 
   // combined options from cli and config files
@@ -124,12 +125,6 @@ async function getRequiredOptions(combined: OptionsFromConfigAndCli) {
 
   // require access token
   if (!accessToken) {
-    if (combined.ci) {
-      throw new BackportError(
-        `Access token missing. It must be explicitly supplied when using "--ci" option. Example: --access-token very-secret`
-      );
-    }
-
     const globalConfigPath = getGlobalConfigPath();
     throw new BackportError(
       `Please update your config file: "${globalConfigPath}".\nIt must contain a valid "accessToken".\n\nRead more: ${GLOBAL_CONFIG_DOCS_LINK}`

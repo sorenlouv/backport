@@ -57,7 +57,7 @@ export async function cherrypickAndCreateTargetPullRequest({
   );
 
   if (options.dryRun) {
-    ora(options.ci).succeed('Dry run complete');
+    ora(options.interactive).succeed('Dry run complete');
     return { url: 'https://localhost/dry-run', didUpdate: false, number: 1337 };
   }
 
@@ -165,7 +165,7 @@ async function waitForCherrypick(
     (pr) => pr.state === 'MERGED' && pr.branch === targetBranch
   );
 
-  const cherrypickSpinner = ora(options.ci, spinnerText).start();
+  const cherrypickSpinner = ora(options.interactive, spinnerText).start();
 
   let conflictingFiles: ConflictingFiles;
   let unstagedFiles: string[];
@@ -204,7 +204,7 @@ async function waitForCherrypick(
   // resolve conflicts automatically
   if (options.autoFixConflicts) {
     const autoResolveSpinner = ora(
-      options.ci,
+      options.interactive,
       'Attempting to resolve conflicts automatically'
     ).start();
 
@@ -234,7 +234,7 @@ async function waitForCherrypick(
     conflictingFiles: conflictingFilesRelative,
   });
 
-  if (options.ci) {
+  if (!options.interactive) {
     throw new BackportError({
       code: 'merge-conflict-exception',
       commitsWithoutBackports,
@@ -276,7 +276,10 @@ async function waitForCherrypick(
   });
 
   // Conflicts should be resolved and files staged at this point
-  const stagingSpinner = ora(options.ci, `Finalizing cherrypick`).start();
+  const stagingSpinner = ora(
+    options.interactive,
+    `Finalizing cherrypick`
+  ).start();
   try {
     // Run `git commit`
     await commitChanges(commit, options);

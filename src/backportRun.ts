@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import yargsParser from 'yargs-parser';
 import { BackportError } from './errors/BackportError';
 import { getLogfilePath } from './lib/env';
 import { getCommits } from './lib/getCommits';
@@ -12,8 +11,12 @@ import { ora } from './lib/ora';
 import { setupRepo } from './lib/setupRepo';
 import { Commit } from './lib/sourceCommit/parseSourceCommit';
 import { ConfigFileOptions } from './options/ConfigOptions';
-import { CliError } from './options/cliArgs';
-import { getOptions, ValidConfigOptions } from './options/options';
+import { getOptionsFromCliArgs, OptionsFromCliArgs } from './options/cliArgs';
+import {
+  defaultConfigOptions,
+  getOptions,
+  ValidConfigOptions,
+} from './options/options';
 import { runSequentially, Result } from './runSequentially';
 
 export type BackportAbortResponse = {
@@ -50,39 +53,47 @@ export async function backportRun({
   optionsFromModule?: ConfigFileOptions;
   exitCodeOnFailure: boolean;
 }): Promise<BackportResponse> {
-  const argv = yargsParser(processArgs) as ConfigFileOptions;
-  const ci = argv.ci ?? optionsFromModule.ci;
-  const logFilePath = argv.logFilePath ?? optionsFromModule.logFilePath;
-  const logger = initLogger({ ci, logFilePath });
+  let optionsFromCliArgs: OptionsFromCliArgs;
+  try {
+    optionsFromCliArgs = getOptionsFromCliArgs(processArgs);
+  } catch (e) {
+    if (e instanceof Error) {
+      consoleLog(e.message);
+      consoleLog(`Run "backport --help" to see all options`);
+      return {
+        status: 'failure',
+        error: e,
+        errorMessage: e.message,
+        commits: [],
+      } as BackportResponse;
+    }
+
+    throw e;
+  }
+
+  const { interactive, logFilePath } = {
+    ...defaultConfigOptions,
+    ...optionsFromModule,
+    ...optionsFromCliArgs,
+  };
+
+  const logger = initLogger({ interactive, logFilePath });
 
   let options: ValidConfigOptions | null = null;
   let commits: Commit[] = [];
 
   try {
-    const spinner = ora(ci);
-    try {
-      // don't show spinner for yargs commands that exit the process without stopping the spinner first
-      if (!argv.help && !argv.version && !argv.v) {
-        spinner.start('Initializing...');
-      }
+    const spinner = ora(interactive);
 
-      options = await getOptions(processArgs, optionsFromModule);
-      logger.info('Backporting options', options);
-      spinner.stop();
-    } catch (e) {
-      spinner.stop();
-      if (e instanceof CliError) {
-        consoleLog(e.message);
-        consoleLog(`Run "backport --help" to see all options`);
-        return {
-          status: 'failure',
-          error: e,
-          errorMessage: e.message,
-          commits: [],
-        } as BackportResponse;
-      }
-      throw e;
-    }
+    // don't show spinner for yargs commands that exit the process without stopping the spinner first
+    spinner.start('Initializing...');
+
+    options = await getOptions({
+      optionsFromCliArgs,
+      optionsFromModule,
+    });
+    logger.info('Backporting options', options);
+    spinner.stop();
 
     commits = await getCommits(options);
     logger.info('Commits', commits);

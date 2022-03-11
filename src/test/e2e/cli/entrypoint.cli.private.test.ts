@@ -1,8 +1,11 @@
+import fs from 'fs/promises';
+import path from 'path';
 import {
   BackportAbortResponse,
   BackportFailureResponse,
   BackportSuccessResponse,
 } from '../../../backportRun';
+import { ConfigFileOptions } from '../../../entrypoint.module';
 import { exec } from '../../../lib/child-process-promisified';
 import { getBackportDirPath } from '../../../lib/env';
 import * as packageVersion from '../../../utils/packageVersion';
@@ -10,8 +13,7 @@ import { getDevAccessToken } from '../../private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
 import { runBackportViaCli } from './runBackportViaCli';
 
-const TIMEOUT_IN_SECONDS = 15;
-jest.setTimeout(TIMEOUT_IN_SECONDS * 1000);
+// jest.setTimeout(15_000);
 const accessToken = getDevAccessToken();
 
 describe('entrypoint cli', () => {
@@ -49,10 +51,10 @@ describe('entrypoint cli', () => {
             --autoMerge                       Enable auto-merge for created pull requests        [boolean]
             --autoMergeMethod                 Sets auto-merge method when using --auto-merge. Default:
                                               merge        [string] [choices: \\"merge\\", \\"rebase\\", \\"squash\\"]
-            --ci                              Disable interactive prompts                        [boolean]
             --cherrypickRef                   Append commit message with \\"(cherry picked from commit...)
                                                                                                  [boolean]
             --projectConfigFile, --config     Path to project config                              [string]
+            --globalConfigFile                Path to global config                               [string]
             --since                           ISO-8601 date for filtering commits                 [string]
             --until                           ISO-8601 date for filtering commits                 [string]
             --dir                             Path to temporary backport repo                     [string]
@@ -65,6 +67,8 @@ describe('entrypoint cli', () => {
                                                                                                  [boolean]
             --gitAuthorName                   Set commit author name                              [string]
             --gitAuthorEmail                  Set commit author email                             [string]
+            --nonInteractive, --json          Disable interactive prompts and return response as JSON
+                                                                                                 [boolean]
             --ls                              List commits instead of backporting them           [boolean]
             --mainline                        Parent id of merge commit. Defaults to 1 when supplied
                                               without arguments                                   [number]
@@ -196,6 +200,7 @@ describe('entrypoint cli', () => {
       ],
       {
         waitForString: 'Press ENTER when the conflicts',
+        timeoutSeconds: 5,
       }
     );
     const backportDir = getBackportDirPath();
@@ -284,19 +289,33 @@ describe('entrypoint cli', () => {
     `);
   });
 
-  describe('ci failure cases', () => {
+  async function createConfigFile(options: ConfigFileOptions) {
+    const sandboxPath = getSandboxPath({ filename: __filename });
+    const configPath = path.join(sandboxPath, 'config.json');
+    await fs.writeFile(configPath, JSON.stringify(options));
+    return configPath;
+  }
+
+  describe('failure cases in json mode (and non-interactive)', () => {
     it(`when access token is missing`, async () => {
-      const output = await runBackportViaCli(['--ci']);
+      const configFilePath = await createConfigFile({});
+      const output = await runBackportViaCli([
+        '--json',
+        `--globalConfigFile=${configFilePath}`,
+      ]);
 
       const backportResult = JSON.parse(output) as BackportFailureResponse;
       expect(backportResult.status).toBe('failure');
-      expect(backportResult.errorMessage).toEqual(
-        'Access token missing. It must be explicitly supplied when using "--ci" option. Example: --access-token very-secret'
-      );
+      expect(backportResult.errorMessage).toMatchInlineSnapshot(`
+        "Please update your config file: \\"/Users/sqren/.backport/config.json\\".
+        It must contain a valid \\"accessToken\\".
+
+        Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#global-config-backportconfigjson"
+      `);
     });
 
     it(`when argument is invalid`, async () => {
-      const output = await runBackportViaCli(['--ci', '--foo']);
+      const output = await runBackportViaCli(['--json', '--foo']);
 
       const backportResult = JSON.parse(output) as BackportFailureResponse;
       expect(backportResult.status).toBe('failure');
@@ -305,8 +324,8 @@ describe('entrypoint cli', () => {
 
     it('when `--repo` is invalid', async () => {
       const output = await runBackportViaCli([
+        '--json',
         '--repo=backport-org/backport-e2e-foo',
-        '--ci',
         `--accessToken=${accessToken}`,
       ]);
 
@@ -319,9 +338,9 @@ describe('entrypoint cli', () => {
 
     it('when `--sha` is invalid', async () => {
       const output = await runBackportViaCli([
+        '--json',
         '--repo=backport-org/backport-e2e',
         '--sha=abcdefg',
-        '--ci',
         `--accessToken=${accessToken}`,
       ]);
 
@@ -334,10 +353,10 @@ describe('entrypoint cli', () => {
 
     it('when `--branch` is invalid', async () => {
       const output = await runBackportViaCli([
+        '--json',
         '--repo=backport-org/backport-e2e',
         '--pr=9',
         '--branch=foobar',
-        '--ci',
         `--accessToken=${accessToken}`,
       ]);
 
@@ -358,10 +377,10 @@ describe('entrypoint cli', () => {
 
     it('when `--pr` is invalid', async () => {
       const output = await runBackportViaCli([
+        '--json',
         '--repo=backport-org/backport-e2e',
         '--pr=900',
         '--branch=foobar',
-        '--ci',
         `--accessToken=${accessToken}`,
       ]);
 
@@ -372,12 +391,12 @@ describe('entrypoint cli', () => {
       );
     });
 
-    it('when having conflicts', async () => {
+    it('when having conflicts in non-interactive mode', async () => {
       const output = await runBackportViaCli([
+        '--json',
         '--repo=backport-org/repo-with-conflicts',
         '--pr=12',
         '--branch=7.x',
-        '--ci',
         `--accessToken=${accessToken}`,
       ]);
 
@@ -391,11 +410,11 @@ describe('entrypoint cli', () => {
 
     it('when `--source-branch` is invalid', async () => {
       const output = await runBackportViaCli([
+        '--json',
         '--repo=backport-org/backport-e2e',
         '--pr=9',
         '--branch=7.x',
         '--source-branch=foo',
-        '--ci',
         `--accessToken=${accessToken}`,
       ]);
 
@@ -419,9 +438,9 @@ describe('entrypoint cli', () => {
 
     it('when PR is not merged', async () => {
       const output = await runBackportViaCli([
+        '--json',
         '--repo=backport-org/backport-e2e',
         '--pr=12',
-        '--ci',
         `--accessToken=${accessToken}`,
       ]);
 
@@ -438,9 +457,9 @@ describe('entrypoint cli', () => {
 
     it('when target branch is missing', async () => {
       const output = await runBackportViaCli([
+        '--json',
         '--repo=backport-org/backport-e2e',
         '--pr=9',
-        '--ci',
         `--accessToken=${accessToken}`,
       ]);
 

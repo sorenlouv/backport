@@ -520,7 +520,7 @@ export async function createBackportBranch({
   targetBranch: string;
   backportBranch: string;
 }) {
-  const spinner = ora(options.ci, 'Pulling latest changes').start();
+  const spinner = ora(options.interactive, 'Pulling latest changes').start();
 
   try {
     const cwd = getRepoPath(options);
@@ -572,7 +572,7 @@ export async function deleteBackportBranch({
   options: ValidConfigOptions;
   backportBranch: string;
 }) {
-  const spinner = ora(options.ci).start();
+  const spinner = ora(options.interactive).start();
   const cwd = getRepoPath(options);
 
   await spawnPromise('git', ['reset', '--hard'], cwd);
@@ -602,7 +602,7 @@ export async function pushBackportBranch({
 }) {
   const repoForkOwner = getRepoForkOwner(options);
   const spinner = ora(
-    options.ci,
+    options.interactive,
     `Pushing branch "${repoForkOwner}:${backportBranch}"`
   ).start();
 

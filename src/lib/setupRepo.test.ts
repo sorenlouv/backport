@@ -41,6 +41,7 @@ describe('setupRepo', () => {
           repoName: 'kibana',
           repoOwner: 'elastic',
           cwd: '/path/to/source/repo',
+          interactive: true,
         } as ValidConfigOptions)
       ).rejects.toThrowError('Simulated git clone failure');
 
@@ -101,6 +102,7 @@ describe('setupRepo', () => {
         repoOwner: 'elastic',
         gitHostname: 'github.com',
         cwd: '/path/to/source/repo',
+        interactive: true,
       } as ValidConfigOptions);
 
       expect(spinnerTextSpy.mock.calls.map((call) => call[0]))
@@ -235,6 +237,7 @@ describe('setupRepo', () => {
         repoName: 'kibana',
         repoOwner: 'elastic',
         cwd: '/path/to/source/repo',
+        interactive: true,
       } as ValidConfigOptions);
     });
 
@@ -272,6 +275,7 @@ describe('setupRepo', () => {
         repoName: 'kibana',
         repoOwner: 'elastic',
         cwd: '/path/to/source/repo',
+        interactive: true,
       } as ValidConfigOptions);
     });
 
@@ -297,6 +301,7 @@ describe('setupRepo', () => {
           repoOwner: 'elastic',
           cwd: '/myHomeDir/.backport/repositories/owner/repo/foo',
           dir: '/myHomeDir/.backport/repositories/owner/repo',
+          interactive: true,
         } as ValidConfigOptions)
       ).rejects.toThrowError(
         'Refusing to clone repo into "/myHomeDir/.backport/repositories/owner/repo" when current working directory is "/myHomeDir/.backport/repositories/owner/repo/foo". Please change backport directory via `--dir` option or run backport from another location'

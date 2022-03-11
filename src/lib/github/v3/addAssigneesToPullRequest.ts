@@ -10,7 +10,7 @@ export async function addAssigneesToPullRequest(
     repoOwner,
     accessToken,
     autoAssign,
-    ci,
+    interactive,
   }: ValidConfigOptions,
   pullNumber: number,
   assignees: string[]
@@ -19,7 +19,7 @@ export async function addAssigneesToPullRequest(
     ? `Self-assigning to #${pullNumber}`
     : `Adding assignees to #${pullNumber}: ${assignees.join(', ')}`;
   logger.info(text);
-  const spinner = ora(ci, text).start();
+  const spinner = ora(interactive, text).start();
 
   try {
     const octokit = new Octokit({

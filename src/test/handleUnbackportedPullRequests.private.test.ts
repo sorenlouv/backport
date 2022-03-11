@@ -49,7 +49,7 @@ describe('Handle unbackported pull requests', () => {
         pullNumber: 12,
         targetBranches: ['7.x'],
         dir: sandboxPath,
-        ci: true,
+        interactive: false,
         publishStatusComment: false,
       },
     });

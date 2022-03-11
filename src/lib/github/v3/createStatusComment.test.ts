@@ -28,7 +28,7 @@ describe('createStatusComment', () => {
         backportBinary: 'node scripts/backport',
         publishStatusComment: true,
         githubApiBaseUrlV3: 'https://api.github.com',
-        ci: true,
+        interactive: false,
       } as ValidConfigOptions,
       backportResponse: {
         commits: [{ sourcePullRequest: { number: 100 } }],
@@ -62,8 +62,8 @@ describe('getCommentBody', () => {
       } as BackportResponse,
     });
 
-    it('posts a comment when running on ci', () => {
-      const params = getParams({ ci: true });
+    it('posts a comment when running in non-interactive mode', () => {
+      const params = getParams({ interactive: false });
       expect(getCommentBody(params)).toMatchInlineSnapshot(`
         "## 💔 Backport failed
         The pull request could not be backported due to the following error:
@@ -83,7 +83,7 @@ describe('getCommentBody', () => {
     });
 
     it('does not post a comment when running manually', () => {
-      const params = getParams({ ci: false });
+      const params = getParams({ interactive: true });
       expect(getCommentBody(params)).toBe(undefined);
     });
   });
@@ -117,8 +117,8 @@ describe('getCommentBody', () => {
       } as BackportResponse,
     });
 
-    it('posts a comment on ci', () => {
-      const params = getParams({ ci: true });
+    it('posts a comment when in non-interactive mode', () => {
+      const params = getParams({ interactive: false });
       expect(getCommentBody(params)).toMatchInlineSnapshot(`
         "## 💚 All backports created successfully
 
@@ -137,7 +137,7 @@ describe('getCommentBody', () => {
     });
 
     it('posts a comment when running locally', () => {
-      const params = getParams({ ci: false });
+      const params = getParams({ interactive: true });
       expect(getCommentBody(params)).toMatchInlineSnapshot(`
         "## 💚 All backports created successfully
 
@@ -184,7 +184,7 @@ describe('getCommentBody', () => {
     });
 
     it('posts a comment on CI', () => {
-      const params = getParams({ ci: true });
+      const params = getParams({ interactive: false });
       expect(getCommentBody(params)).toMatchInlineSnapshot(`
         "## 💔 All backports failed
 
@@ -207,7 +207,7 @@ describe('getCommentBody', () => {
     });
 
     it('does not post a comment when running manaully', () => {
-      const params = getParams({ ci: false });
+      const params = getParams({ interactive: true });
       expect(getCommentBody(params)).toBe(undefined);
     });
   });
@@ -242,7 +242,7 @@ describe('getCommentBody', () => {
     });
 
     it('post a comment when running on CI', () => {
-      const params = getParams({ ci: true });
+      const params = getParams({ interactive: false });
       expect(getCommentBody(params)).toMatchInlineSnapshot(`
         "## 💔 Some backports could not be created
 
@@ -267,7 +267,7 @@ describe('getCommentBody', () => {
     });
 
     it('does not post a comment when running manually because some backports failed', () => {
-      const params = getParams({ ci: false });
+      const params = getParams({ interactive: true });
       expect(getCommentBody(params)).toMatchInlineSnapshot(`undefined`);
     });
   });
@@ -365,7 +365,7 @@ describe('getCommentBody', () => {
     });
 
     it('posts a comment when running on CI', () => {
-      const params = getParams({ ci: true });
+      const params = getParams({ interactive: false });
       expect(getCommentBody(params)).toMatchInlineSnapshot(`
         "## 💔 Some backports could not be created
 
@@ -391,7 +391,7 @@ describe('getCommentBody', () => {
     });
 
     it('does not post a comment when running manually because some backports failed', () => {
-      const params = getParams({ ci: false });
+      const params = getParams({ interactive: true });
       expect(getCommentBody(params)).toBe(undefined);
     });
   });
@@ -415,7 +415,7 @@ describe('getCommentBody', () => {
     });
 
     it('posts a comment when running on CI', () => {
-      const params = getParams({ ci: true });
+      const params = getParams({ interactive: false });
       expect(getCommentBody(params)).toMatchInlineSnapshot(`
         "## ⚪ Backport skipped
         The pull request was not backported as there were no branches to backport to. If this is a mistake, please apply the desired version labels or run the backport tool manually.
@@ -434,7 +434,7 @@ describe('getCommentBody', () => {
     });
 
     it('does not post a comment when running manually', () => {
-      const params = getParams({ ci: false });
+      const params = getParams({ interactive: true });
       expect(getCommentBody(params)).toBe(undefined);
     });
   });

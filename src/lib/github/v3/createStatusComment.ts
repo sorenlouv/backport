@@ -75,9 +75,9 @@ export function getCommentBody({
 }): string | undefined {
   const { repoName, repoOwner, autoMerge } = options;
 
-  // custom handling when running backport locally (as opposed to on CI)
-  if (!options.ci) {
-    // only post successful backports when not running in CI
+  // TODO; make setting to specify whether to post comments for successful and failures
+  if (options.interactive) {
+    // only post successful backports when running interactively (as opposed to programatically as on ci)
     if (backportResponse.status !== 'success') {
       return;
     }
@@ -115,8 +115,9 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
 
   const tableBody = backportResponse.results
     .filter((result) => {
-      // only post status updates for successful backports when running manually (non-ci)
-      return options.ci || result.status === 'success';
+      // only post status updates for successful backports when running in --interactive mode
+      // TODO: this seems duplicated from above
+      return !options.interactive || result.status === 'success';
     })
     .map((result) => {
       if (result.status === 'success') {

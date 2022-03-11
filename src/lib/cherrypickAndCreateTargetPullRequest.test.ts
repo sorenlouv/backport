@@ -49,6 +49,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         authenticatedUsername: 'sqren_authenticated',
         author: 'sqren',
         fork: true,
+        interactive: true,
         prTitle: '[{targetBranch}] {commitMessages}',
         repoForkOwner: 'sqren',
         repoName: 'kibana',

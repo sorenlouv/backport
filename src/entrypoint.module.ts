@@ -72,7 +72,7 @@ export async function getCommits(options: {
   dateUntil?: string;
   dateSince?: string;
 }): Promise<Commit[]> {
-  initLogger({ ci: true, accessToken: options.accessToken });
+  initLogger({ interactive: false, accessToken: options.accessToken });
 
   const optionsFromGithub = await getOptionsFromGithub(options);
 

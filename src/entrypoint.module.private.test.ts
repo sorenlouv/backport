@@ -21,7 +21,7 @@ describe('entrypoint.module', () => {
           options: {
             repoOwner: 'backport-org',
             repoName: 'repo-with-conflicts',
-            ci: true,
+            interactive: false,
             accessToken,
             pullNumber: 12,
             targetBranches: ['7.x'],
@@ -64,7 +64,7 @@ describe('entrypoint.module', () => {
           options: {
             repoOwner: 'backport-org',
             repoName: 'repo-with-conflicts',
-            ci: true,
+            interactive: false,
             accessToken,
             pullNumber: 12,
           },
@@ -88,7 +88,7 @@ describe('entrypoint.module', () => {
           options: {
             repoOwner: 'backport-org',
             repoName: 'repo-with-conflicts',
-            ci: true,
+            interactive: false,
             accessToken,
             pullNumber: 8,
             dryRun: true,

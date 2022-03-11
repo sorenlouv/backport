@@ -24,7 +24,7 @@ export async function setupRepo(options: ValidConfigOptions) {
 
   // clone repo if folder does not already exists
   if (!isAlreadyCloned) {
-    const spinner = ora(options.ci).start();
+    const spinner = ora(options.interactive).start();
     try {
       const localRepoPath = await getLocalSourceRepoPath(options);
       const remoteRepoPath = getRemoteUrl(options, options.repoOwner);

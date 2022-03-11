@@ -9,14 +9,14 @@ export async function addLabelsToPullRequest(
     repoName,
     repoOwner,
     accessToken,
-    ci,
+    interactive,
   }: ValidConfigOptions,
   pullNumber: number,
   labels: string[]
 ): Promise<void> {
   const text = `Adding labels: ${labels.join(', ')}`;
   logger.info(text);
-  const spinner = ora(ci, text).start();
+  const spinner = ora(interactive, text).start();
 
   try {
     const octokit = new Octokit({

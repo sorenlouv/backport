@@ -12,8 +12,8 @@ const oraMock = {
 } as oraOriginal.Ora;
 
 export function ora(
-  ci: boolean | undefined,
+  interactive: boolean | undefined,
   text?: string | undefined
 ): oraOriginal.Ora {
-  return ci ? oraMock : oraOriginal({ text });
+  return interactive ? oraOriginal({ text }) : oraMock;
 }

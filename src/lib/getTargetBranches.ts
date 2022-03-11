@@ -25,8 +25,8 @@ export function getTargetBranches(
           .map((pr) => pr.branch)
       : [];
 
-  // automatically backport to specified target branches
-  if (options.ci) {
+  // require target branches to be specified when when in non-interactive mode
+  if (!options.interactive) {
     if (isEmpty(missingTargetBranches)) {
       throw new BackportError({ code: 'no-branches-exception' });
     }
@@ -44,7 +44,7 @@ export function getTargetBranches(
     sourceBranch
   );
 
-  // render interactive list of branches
+  // render prmompt for selecting target branches
   return promptForTargetBranches({
     targetBranchChoices,
     isMultipleChoice: options.multipleBranches,

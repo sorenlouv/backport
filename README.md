@@ -91,13 +91,13 @@ See [configuration.md](https://github.com/sqren/backport/blob/main/docs/configur
 | --author            |                    | Filter commits by Github username. Opposite of `--all`                     | _Current user_            |
 | --auto-assign       |                    | Assign current user to the target PR                                       | false                     |
 | --branch            | -b                 | Target branch to backport to                                               |                           |
-| --ci                |                    | Disable interactive prompts                                                | false                     |
 | --config-file       |                    | Custom path to project config file (.backportrc.json)                      |                           |
 | --dir               |                    | Clone repository into custom directory                                     | ~/.backport/repositories/ |
 | --dry-run           |                    | Perform backport without pushing to Github                                 | false                     |
 | --editor            |                    | Editor (eg. `code`) to open and resolve conflicts                          | nano                      |
 | --fork              |                    | Create backports in fork repo                                              | true                      |
 | --git-hostname      |                    | Hostname for Git                                                           | github.com                |
+| --interactive       |                    | Enable interactive prompts                                                 | true                      |
 | --mainline          |                    | Parent id of merge commit                                                  | 1                         |
 | --max-number        | --number, -n       | Number of commits to choose from                                           | 10                        |
 | --multiple          |                    | Multi-select for commits and branches                                      | false                     |
@@ -153,8 +153,8 @@ Filter commits by pull request number
 `sha` _string_<br/>
 Filter commits by commit sha
 
-`ci` _boolean_<br/>
-Enabling this will disable the interactive prompts
+`interactive` _boolean_<br/>
+Enable interactive prompts
 
 #### Example
 
@@ -167,7 +167,7 @@ const result = await backportRun({
     repoName: 'kibana',
     repoOwner: 'elastic',
     pullNumber: 121633,
-    ci: true,
+    interactive: false,
   },
 });
 
