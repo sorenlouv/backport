@@ -1,5 +1,8 @@
 import yargs from 'yargs';
+import yargsParser from 'yargs-parser';
 import { excludeUndefined } from '../utils/excludeUndefined';
+import { ConfigFileOptions } from './ConfigOptions';
+import { defaultConfigOptions } from './options';
 
 export type OptionsFromCliArgs = ReturnType<typeof getOptionsFromCliArgs>;
 export function getOptionsFromCliArgs(processArgs: readonly string[]) {
@@ -456,4 +459,21 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
     publishStatusComment: noStatusComment === true ? false : undefined,
     interactive: nonInteractive === true ? false : undefined,
   });
+}
+
+export function getEarlyArguments(
+  processArgs: string[],
+  optionsFromModule?: ConfigFileOptions
+) {
+  const { nonInteractive, json, logFilePath, ls } = yargsParser(processArgs);
+  const base = { ...defaultConfigOptions, ...optionsFromModule };
+
+  return {
+    interactive:
+      nonInteractive === undefined && json === undefined
+        ? base.interactive
+        : !(nonInteractive === true || json === true),
+    logFilePath,
+    ls,
+  };
 }

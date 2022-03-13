@@ -21,6 +21,7 @@ describe('entrypoint cli', () => {
     const res = await runBackportViaCli([`--version`], {
       showOra: true,
     });
+
     expect(res).toEqual(process.env.npm_package_version);
   });
 
@@ -42,6 +43,7 @@ describe('entrypoint cli', () => {
     const res = await runBackportViaCli([`--help`]);
     expect(res).toMatchInlineSnapshot(`
       "entrypoint.cli.ts [args]
+
       Options:
         -v, --version                         Show version number                                [boolean]
             --accessToken, --accesstoken      Github access token                                 [string]
@@ -103,32 +105,10 @@ describe('entrypoint cli', () => {
         -l, --targetPRLabel, --label          Add labels to the target (backport) PR               [array]
             --verify                          Opposite of no-verify                              [boolean]
             --help                            Show help                                          [boolean]
+
       For bugs, feature requests or questions: https://github.com/sqren/backport/issues
       Or contact me directly: https://twitter.com/sorenlouv"
     `);
-  });
-
-  it('should output error when branch is missing', async () => {
-    const res = await runBackportViaCli([
-      '--skip-remote-config',
-      '--repo=backport-org/backport-e2e',
-      `--accessToken=${accessToken}`,
-    ]);
-    expect(res).toMatchInlineSnapshot(`
-      "Please specify a target branch: \\"--branch 6.1\\".
-      Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#project-config-backportrcjson"
-    `);
-  });
-
-  it('should output error when access token is invalid', async () => {
-    const res = await runBackportViaCli([
-      '--branch=foo',
-      '--repo=foo/bar',
-      '--accessToken=some-token',
-    ]);
-    expect(res).toContain(
-      'Please check your access token and make sure it is valid'
-    );
   });
 
   it('should list commits based on .git/config when `repoOwner`/`repoName` is missing', async () => {
@@ -147,77 +127,16 @@ describe('entrypoint cli', () => {
 
     expect(res).toMatchInlineSnapshot(`
       "? Select commit (Use arrow keys)
-      ❯ 1. Add sheep emoji (#9) 7.8
-        2. Change Ulysses to Gretha (conflict) (#8) 7.x
-        3. Add 🍏 emoji (#5) 7.x, 7.8
-        4. Add family emoji (#2) 7.x
-        5. Add \`backport\` dep
-        6. Merge pull request #1 from backport-org/add-heart-emoji
-        7. Add ❤️ emoji
-        8. Update .backportrc.json
-        9. Bump to 8.0.0
+      ❯ 1. Add sheep emoji (#9) 7.8 
+        2. Change Ulysses to Gretha (conflict) (#8) 7.x 
+        3. Add 🍏 emoji (#5) 7.x, 7.8 
+        4. Add family emoji (#2) 7.x 
+        5. Add \`backport\` dep  
+        6. Merge pull request #1 from backport-org/add-heart-emoji  
+        7. Add ❤️ emoji  
+        8. Update .backportrc.json  
+        9. Bump to 8.0.0  
         10.Add package.json"
-    `);
-  });
-
-  it(`should output error when repo doesn't exist`, async () => {
-    const res = await runBackportViaCli([
-      '--branch=foo',
-      '--repo=foo/bar',
-      '--author=sqren',
-      `--accessToken=${accessToken}`,
-    ]);
-    expect(res).toMatchInlineSnapshot(
-      `"The repository \\"foo/bar\\" doesn't exist"`
-    );
-  });
-
-  it(`should output error when given branch is invalid`, async () => {
-    const res = await runBackportViaCli(
-      [
-        '--branch=foo',
-        '--repo=backport-org/backport-e2e',
-        '--pr=9',
-        `--accessToken=${accessToken}`,
-      ],
-      { waitForString: "is invalid or doesn't exist" }
-    );
-    expect(res).toMatchInlineSnapshot(`
-      "
-      Backporting to foo:
-      The branch \\"foo\\" is invalid or doesn't exist"
-    `);
-  });
-
-  it(`should output merge conflict`, async () => {
-    const res = await runBackportViaCli(
-      [
-        '--repo=backport-org/repo-with-conflicts',
-        '--pr=12',
-        '--branch=7.x',
-        `--accessToken=${accessToken}`,
-        '--dry-run',
-      ],
-      {
-        waitForString: 'Press ENTER when the conflicts',
-        timeoutSeconds: 5,
-      }
-    );
-    const backportDir = getBackportDirPath();
-
-    expect(res.replaceAll(backportDir, '<HOMEDIR>')).toMatchInlineSnapshot(`
-      "
-      Backporting to 7.x:
-      The commit could not be backported due to conflicts
-      Please fix the conflicts in <HOMEDIR>/repositories/backport-org/repo-with-conflicts
-      Hint: Before fixing the conflicts manually you should consider backporting the following pull requests to \\"7.x\\":
-       - Change Barca to Braithwaite (#8) (backport missing)
-         https://github.com/backport-org/repo-with-conflicts/pull/8
-      ? Fix the following conflicts manually:
-      Conflicting files:
-       - <HOMEDIR>/repositories/backport-org/repo-with-conflicts/la-liga.
-      md
-      Press ENTER when the conflicts are resolved and files are staged (Y/n)"
     `);
   });
 
@@ -235,11 +154,11 @@ describe('entrypoint cli', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "? Select commit (Use arrow keys)
-      ❯ 1. Add sheep emoji (#9) 7.8
-        2. Change Ulysses to Gretha (conflict) (#8) 7.x
-        3. Add 🍏 emoji (#5) 7.x, 7.8
-        4. Add family emoji (#2) 7.x
-        5. Add \`backport\` dep
+      ❯ 1. Add sheep emoji (#9) 7.8 
+        2. Change Ulysses to Gretha (conflict) (#8) 7.x 
+        3. Add 🍏 emoji (#5) 7.x, 7.8 
+        4. Add family emoji (#2) 7.x 
+        5. Add \`backport\` dep  
         6. Merge pull request #1 from backport-org/add-heart-emoji"
     `);
   });
@@ -258,9 +177,9 @@ describe('entrypoint cli', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "? Select commit (Use arrow keys)
-      ❯ 1. Bump to 8.0.0
-        2. Add package.json
-        3. Update .backportrc.json
+      ❯ 1. Bump to 8.0.0  
+        2. Add package.json  
+        3. Update .backportrc.json  
         4. Create .backportrc.json"
     `);
   });
@@ -280,11 +199,11 @@ describe('entrypoint cli', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "? Select commit (Use arrow keys)
-      ❯ 1. Add 🍏 emoji (#5) (#6)
-        2. Change Ulysses to Carol
-        3. Add family emoji (#2) (#4)
-        4. Update .backportrc.json
-        5. Branch off: 7.9.0 (7.x)
+      ❯ 1. Add 🍏 emoji (#5) (#6)  
+        2. Change Ulysses to Carol  
+        3. Add family emoji (#2) (#4)  
+        4. Update .backportrc.json  
+        5. Branch off: 7.9.0 (7.x)  
         6. Bump to 8.0.0"
     `);
   });
@@ -295,6 +214,103 @@ describe('entrypoint cli', () => {
     await fs.writeFile(configPath, JSON.stringify(options));
     return configPath;
   }
+
+  describe('errors in interactive mode (non-json)', () => {
+    it('when branch is missing', async () => {
+      const res = await runBackportViaCli([
+        '--skip-remote-config',
+        '--repo=backport-org/backport-e2e',
+        `--accessToken=${accessToken}`,
+      ]);
+      expect(res).toMatchInlineSnapshot(`
+        "Please specify a target branch: \\"--branch 6.1\\".
+
+        Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#project-config-backportrcjson"
+      `);
+    });
+
+    it('when supplying invalid argument', async () => {
+      const res = await runBackportViaCli([`--foo`]);
+      expect(res).toMatchInlineSnapshot(`
+        "Unknown argument: foo
+        Run \\"backport --help\\" to see all options"
+      `);
+    });
+
+    it('when access token is invalid', async () => {
+      const res = await runBackportViaCli([
+        '--branch=foo',
+        '--repo=foo/bar',
+        '--accessToken=some-token',
+      ]);
+      expect(res).toContain(
+        'Please check your access token and make sure it is valid'
+      );
+    });
+
+    it(`should output error when repo doesn't exist`, async () => {
+      const res = await runBackportViaCli([
+        '--branch=foo',
+        '--repo=foo/bar',
+        '--author=sqren',
+        `--accessToken=${accessToken}`,
+      ]);
+      expect(res).toMatchInlineSnapshot(
+        `"The repository \\"foo/bar\\" doesn't exist"`
+      );
+    });
+
+    it(`should output error when given branch is invalid`, async () => {
+      const res = await runBackportViaCli([
+        '--branch=foo',
+        '--repo=backport-org/backport-e2e',
+        '--pr=9',
+        `--accessToken=${accessToken}`,
+      ]);
+      expect(res).toMatchInlineSnapshot(`
+        "Backporting to foo:
+        The branch \\"foo\\" is invalid or doesn't exist"
+      `);
+    });
+
+    it(`should output merge conflict`, async () => {
+      const res = await runBackportViaCli(
+        [
+          '--repo=backport-org/repo-with-conflicts',
+          '--pr=12',
+          '--branch=7.x',
+          `--accessToken=${accessToken}`,
+          '--dry-run',
+        ],
+        {
+          waitForString: 'Press ENTER when the conflicts',
+          timeoutSeconds: 5,
+        }
+      );
+      const backportDir = getBackportDirPath();
+
+      expect(res.replaceAll(backportDir, '<HOMEDIR>')).toMatchInlineSnapshot(`
+        "Backporting to 7.x:
+
+        The commit could not be backported due to conflicts
+
+        Please fix the conflicts in <HOMEDIR>/repositories/backport-org/repo-with-conflicts
+        Hint: Before fixing the conflicts manually you should consider backporting the following pull requests to \\"7.x\\":
+         - Change Barca to Braithwaite (#8) (backport missing)
+           https://github.com/backport-org/repo-with-conflicts/pull/8
+
+
+        ? Fix the following conflicts manually:
+
+        Conflicting files:
+         - <HOMEDIR>/repositories/backport-org/repo-with-conflicts/la-liga.
+        md
+
+
+        Press ENTER when the conflicts are resolved and files are staged (Y/n)"
+      `);
+    });
+  });
 
   describe('failure cases in json mode (and non-interactive)', () => {
     it(`when access token is missing`, async () => {
@@ -314,8 +330,42 @@ describe('entrypoint cli', () => {
       `);
     });
 
+    it('when target branches cannot be inferred from pull request', async () => {
+      const output = await runBackportViaCli([
+        '--json',
+        '--repo=backport-org/backport-e2e',
+        '--pr=9',
+        `--accessToken=${accessToken}`,
+      ]);
+
+      const backportResult = JSON.parse(output) as BackportAbortResponse;
+      expect(backportResult.status).toBe('aborted');
+      expect(backportResult.error).toEqual({
+        errorContext: { code: 'no-branches-exception' },
+        name: 'BackportError',
+      });
+      expect(backportResult.errorMessage).toBe(
+        'There are no branches to backport to. Aborting.'
+      );
+    });
+
+    it(`when target branch and branch label mapping are missing`, async () => {
+      const output = await runBackportViaCli([
+        '--json',
+        `--access-token=${accessToken}`,
+      ]);
+
+      const backportResult = JSON.parse(output) as BackportFailureResponse;
+      expect(backportResult.status).toBe('failure');
+      expect(backportResult.errorMessage).toMatchInlineSnapshot(`
+        "Please specify a target branch: \\"--branch 6.1\\".
+
+        Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#project-config-backportrcjson"
+      `);
+    });
+
     it(`when argument is invalid`, async () => {
-      const output = await runBackportViaCli(['--json', '--foo']);
+      const output = await runBackportViaCli(['--json', '--foo'], {});
 
       const backportResult = JSON.parse(output) as BackportFailureResponse;
       expect(backportResult.status).toBe('failure');
@@ -451,22 +501,6 @@ describe('entrypoint cli', () => {
           code: 'message-only-exception',
           message: 'The PR #12 is not merged',
         },
-        name: 'BackportError',
-      });
-    });
-
-    it('when target branch is missing', async () => {
-      const output = await runBackportViaCli([
-        '--json',
-        '--repo=backport-org/backport-e2e',
-        '--pr=9',
-        `--accessToken=${accessToken}`,
-      ]);
-
-      const backportResult = JSON.parse(output) as BackportAbortResponse;
-      expect(backportResult.status).toBe('aborted');
-      expect(backportResult.error).toEqual({
-        errorContext: { code: 'no-branches-exception' },
         name: 'BackportError',
       });
     });

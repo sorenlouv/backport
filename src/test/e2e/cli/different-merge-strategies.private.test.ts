@@ -17,24 +17,24 @@ describe('different-merge-strategies', () => {
     );
 
     expect(output).toMatchInlineSnapshot(`
-        "? Select commit (Use arrow keys)
-        ❯ 1. Merge pull request #9 from backport-org/many-merge-commits
-          2. Merge strategy: Eighth of many merges
-          3. Merge strategy: Seventh of many merges
-          4. Merge strategy: Sixth of many merges
-          5. Merge strategy: Fifth of many merges
-          6. Merge strategy: Fourth of many merges
-          7. Merge strategy: Third of many merges
-          8. Merge strategy: Second of many merges
-          9. Merge strategy: First of many merges
-          10.Using squash to merge commits (#3) 7.x
-          11.Rebase strategy: Second commit 7.x
-          12.Rebase strategy: First commit
-          13.Merge pull request #1 from backport-org/merge-strategy
-          14.Merge strategy: Second commit
-          15.Merge strategy: First commit
-          16.Initial commit"
-      `);
+      "? Select commit (Use arrow keys)
+      ❯ 1. Merge pull request #9 from backport-org/many-merge-commits  
+        2. Merge strategy: Eighth of many merges  
+        3. Merge strategy: Seventh of many merges  
+        4. Merge strategy: Sixth of many merges  
+        5. Merge strategy: Fifth of many merges  
+        6. Merge strategy: Fourth of many merges  
+        7. Merge strategy: Third of many merges  
+        8. Merge strategy: Second of many merges  
+        9. Merge strategy: First of many merges  
+        10.Using squash to merge commits (#3) 7.x 
+        11.Rebase strategy: Second commit 7.x 
+        12.Rebase strategy: First commit  
+        13.Merge pull request #1 from backport-org/merge-strategy  
+        14.Merge strategy: Second commit  
+        15.Merge strategy: First commit  
+        16.Initial commit"
+    `);
   });
 
   describe('when selecting a merge commit', () => {
@@ -53,7 +53,7 @@ describe('different-merge-strategies', () => {
           '--pr=9',
           '--dry-run',
         ],
-        { waitForString: 'Dry run complete', showOra: true }
+        { showOra: true }
       );
     });
 
@@ -62,6 +62,7 @@ describe('different-merge-strategies', () => {
         "- Initializing...
         ? Select pull request Merge pull request #9 from backport-org/many-merge-commits
         ✔ 100% Cloning repository from github.com (one-time operation)
+
         Backporting to 7.x:
         - Pulling latest changes
         ✔ Pulling latest changes
@@ -101,7 +102,7 @@ describe('different-merge-strategies', () => {
           '--pr=1',
           '--dry-run',
         ],
-        { waitForString: 'Dry run complete', showOra: true }
+        { showOra: true }
       );
     });
 

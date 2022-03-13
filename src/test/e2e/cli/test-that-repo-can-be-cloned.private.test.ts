@@ -34,6 +34,7 @@ describe('test-that-repo-can-be-cloned', () => {
         "- Initializing...
         ? Select pull request Beginning of a beautiful repo (#1)
         ✔ 100% Cloning repository from github.com (one-time operation)
+
         Backporting to foo:"
       `);
     });
@@ -45,6 +46,7 @@ describe('test-that-repo-can-be-cloned', () => {
       expect(output).toMatchInlineSnapshot(`
         "- Initializing...
         ? Select pull request Beginning of a beautiful repo (#1)
+
         Backporting to foo:"
       `);
     });

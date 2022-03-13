@@ -11,12 +11,12 @@ import { ora } from './lib/ora';
 import { setupRepo } from './lib/setupRepo';
 import { Commit } from './lib/sourceCommit/parseSourceCommit';
 import { ConfigFileOptions } from './options/ConfigOptions';
-import { getOptionsFromCliArgs, OptionsFromCliArgs } from './options/cliArgs';
 import {
-  defaultConfigOptions,
-  getOptions,
-  ValidConfigOptions,
-} from './options/options';
+  getEarlyArguments,
+  getOptionsFromCliArgs,
+  OptionsFromCliArgs,
+} from './options/cliArgs';
+import { getOptions, ValidConfigOptions } from './options/options';
 import { runSequentially, Result } from './runSequentially';
 
 export type BackportAbortResponse = {
@@ -53,6 +53,12 @@ export async function backportRun({
   optionsFromModule?: ConfigFileOptions;
   exitCodeOnFailure: boolean;
 }): Promise<BackportResponse> {
+  const { interactive, logFilePath } = getEarlyArguments(
+    processArgs,
+    optionsFromModule
+  );
+  const logger = initLogger({ interactive, logFilePath });
+
   let optionsFromCliArgs: OptionsFromCliArgs;
   try {
     optionsFromCliArgs = getOptionsFromCliArgs(processArgs);
@@ -71,23 +77,11 @@ export async function backportRun({
     throw e;
   }
 
-  const { interactive, logFilePath } = {
-    ...defaultConfigOptions,
-    ...optionsFromModule,
-    ...optionsFromCliArgs,
-  };
-
-  const logger = initLogger({ interactive, logFilePath });
-
   let options: ValidConfigOptions | null = null;
   let commits: Commit[] = [];
+  const spinner = ora(interactive).start('Initializing...');
 
   try {
-    const spinner = ora(interactive);
-
-    // don't show spinner for yargs commands that exit the process without stopping the spinner first
-    spinner.start('Initializing...');
-
     options = await getOptions({
       optionsFromCliArgs,
       optionsFromModule,
@@ -126,6 +120,7 @@ export async function backportRun({
     await createStatusComment({ options, backportResponse });
     return backportResponse;
   } catch (e) {
+    spinner.stop();
     let backportResponse: BackportResponse;
 
     if (

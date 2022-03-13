@@ -7,7 +7,7 @@ const TIMEOUT_IN_SECONDS = 15;
 jest.setTimeout(TIMEOUT_IN_SECONDS * 1000);
 
 export function runBackportViaCli(
-  cliArgs: string[],
+  backportArgs: string[],
   {
     timeoutSeconds = 2,
     showOra,
@@ -22,63 +22,68 @@ export function runBackportViaCli(
 ) {
   const tsNodeBinary = path.resolve('./node_modules/.bin/ts-node');
   const entrypointFile = path.resolve('./src/entrypoint.cli.ts');
+  const cmdArgs = [
+    '--transpile-only',
+    entrypointFile,
+    '--log-file-path=/dev/null',
+    ...backportArgs,
+  ];
 
-  const proc = spawn(
-    tsNodeBinary,
-    [
-      '--transpile-only',
-      entrypointFile,
-      '--log-file-path',
-      '/dev/null',
-      ...cliArgs,
-    ],
-    { cwd }
-  );
+  const proc = spawn(tsNodeBinary, cmdArgs, { cwd });
 
   return new Promise<string>((resolve, reject) => {
     let data = '';
 
-    const rejectOnTimeout = debounce(
+    const postponeTimeout = debounce(
       () => {
+        const formattedData = formatData(data);
+        const cmd = [tsNodeBinary, ...cmdArgs].join(' ');
         reject(
-          `Expectation '${waitForString}' not found within ${timeoutSeconds} second in:\n\n${data.toString()}`
+          waitForString
+            ? `Expectation '${waitForString}' not found within ${timeoutSeconds} second in:\n\n${formattedData}\n\nCommand: ${cmd}`
+            : `Timeout. Received:\n${formattedData}\n\nCommand: ${cmd}`
         );
       },
       timeoutSeconds * 1000,
       { maxWait: 15000 }
     );
 
-    // fail if expectations hasn't been found within 10 seconds
+    function formatData(data: string) {
+      return stripAnsi(data.toString()).trim();
+    }
 
     const onChunk = (chunk: any) => {
       data += chunk;
-      const stringfiedData = data.toString();
-      rejectOnTimeout();
+      const output = formatData(data);
 
-      // remove ansi codes and whitespace
-      const output = stripAnsi(stringfiedData).replace(/\s+$/gm, '');
-
-      if (!waitForString || output.includes(waitForString)) {
-        rejectOnTimeout.cancel();
+      if (waitForString && output.includes(waitForString)) {
+        postponeTimeout.cancel();
         resolve(output);
       }
     };
 
     proc.on('exit', (code) => {
-      rejectOnTimeout.cancel();
+      const output = formatData(data);
+      postponeTimeout.cancel();
       if (code !== null && code === 0) {
-        resolve(data.toString());
+        resolve(output);
       } else {
-        reject(code);
+        resolve(output);
       }
     });
 
-    proc.stdout.on('data', onChunk);
+    proc.stdout.on('data', (chunk: any) => {
+      postponeTimeout();
+      onChunk(chunk);
+    });
 
     // ora (loading spinner) is redirected to stderr
-    if (showOra) {
-      proc.stderr.on('data', onChunk);
-    }
+    proc.stderr.on('data', (chunk: any) => {
+      postponeTimeout();
+      if (showOra) {
+        onChunk(chunk);
+      }
+    });
 
     proc.on('error', (err) => {
       reject(`runBackportViaCli failed with: ${err}`);

@@ -1,4 +1,4 @@
-import { getOptionsFromCliArgs } from './cliArgs';
+import { getEarlyArguments, getOptionsFromCliArgs } from './cliArgs';
 
 describe('getOptionsFromCliArgs', () => {
   describe('yargs settings', () => {
@@ -301,6 +301,54 @@ describe('getOptionsFromCliArgs', () => {
       const res = getOptionsFromCliArgs(argv);
       expect(res.dateSince).toEqual('2020-01-01T00:00:00.000Z');
       expect(res.dateUntil).toEqual('2021-01-01T00:00:00.000Z');
+    });
+  });
+});
+
+describe('getEarlyArguments', () => {
+  describe('interactive', () => {
+    it('--non-interactive flag', () => {
+      const { interactive } = getEarlyArguments(['--non-interactive']);
+      expect(interactive).toEqual(false);
+    });
+
+    it('--json flag', () => {
+      const { interactive } = getEarlyArguments(['--json']);
+      expect(interactive).toEqual(false);
+    });
+
+    it('default', () => {
+      const { interactive } = getEarlyArguments([]);
+      expect(interactive).toEqual(true);
+    });
+
+    it('setting via module options', () => {
+      const { interactive } = getEarlyArguments([], { interactive: false });
+      expect(interactive).toEqual(false);
+    });
+  });
+
+  describe('ls', () => {
+    it('by default', () => {
+      const { ls } = getEarlyArguments([]);
+      expect(ls).toEqual(undefined);
+    });
+
+    it('--ls flag', () => {
+      const { ls } = getEarlyArguments(['--ls']);
+      expect(ls).toEqual(true);
+    });
+  });
+
+  describe('logFilePath', () => {
+    it('by default', () => {
+      const { logFilePath } = getEarlyArguments([]);
+      expect(logFilePath).toEqual(undefined);
+    });
+
+    it('--log-file-path flag', () => {
+      const { logFilePath } = getEarlyArguments(['--log-file-path']);
+      expect(logFilePath).toEqual(true);
     });
   });
 });

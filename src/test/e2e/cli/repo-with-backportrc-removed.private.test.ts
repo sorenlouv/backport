@@ -14,15 +14,15 @@ describe('repo-with-backportrc-removed (missing .backportrc.json config file)', 
     );
 
     expect(output).toMatchInlineSnapshot(`
-        "? Select commit (Use arrow keys)
-        ❯ 1. Rename README.me to README.md
-          2. Merge pull request #1 from backport-org/add-readme
-          3. Create README.me
-          4. Delete .backportrc.json
-          5. Create .backportrc.json
-          6. Delete .backportrc.json
-          7. Create .backportrc.json"
-      `);
+      "? Select commit (Use arrow keys)
+      ❯ 1. Rename README.me to README.md  
+        2. Merge pull request #1 from backport-org/add-readme  
+        3. Create README.me  
+        4. Delete .backportrc.json  
+        5. Create .backportrc.json  
+        6. Delete .backportrc.json  
+        7. Create .backportrc.json"
+    `);
   });
 
   it('backports via pr', async () => {
