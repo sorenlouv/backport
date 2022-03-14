@@ -7,8 +7,18 @@ describe('env', () => {
     jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
   });
 
-  it('getGlobalConfigPath', () => {
-    expect(getGlobalConfigPath()).toBe('/myHomeDir/.backport/config.json');
+  describe('getGlobalConfigPath', () => {
+    it('uses homedir when no argument is given', () => {
+      expect(getGlobalConfigPath(undefined)).toBe(
+        '/myHomeDir/.backport/config.json'
+      );
+    });
+
+    it('uses custom config when given', () => {
+      expect(getGlobalConfigPath('/my/path/to/global/config.json')).toBe(
+        '/my/path/to/global/config.json'
+      );
+    });
   });
 
   it('getRepoPath', () => {
