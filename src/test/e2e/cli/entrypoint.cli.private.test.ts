@@ -298,17 +298,17 @@ describe('entrypoint cli', () => {
         /Conflicting files:[\s]+- (.*[\s].*)la-liga.md/
       )[1];
 
-      const lineWithoutBreaks = lineToReplace
-        .replace(/\s/g, '')
-        .replace(backportDir, '<BACKPORT_DIR>');
+      const lineWithoutBreaks = lineToReplace.replace(/\s/g, '');
+      const outputReplaced = output
+        .replace(lineToReplace, lineWithoutBreaks)
+        .replaceAll(backportDir, '<BACKPORT_DIR>');
 
-      expect(output.replace(lineToReplace, lineWithoutBreaks))
-        .toMatchInlineSnapshot(`
+      expect(outputReplaced).toMatchInlineSnapshot(`
         "Backporting to 7.x:
 
         The commit could not be backported due to conflicts
 
-        Please fix the conflicts in /Users/sqren/dev/backport/src/test/_tmp_sandbox_/entrypoint.cli.private.test
+        Please fix the conflicts in <BACKPORT_DIR>
         Hint: Before fixing the conflicts manually you should consider backporting the following pull requests to \\"7.x\\":
          - Change Barca to Braithwaite (#8) (backport missing)
            https://github.com/backport-org/repo-with-conflicts/pull/8
