@@ -13,7 +13,10 @@ export function getLogfilePath({ logFilePath }: { logFilePath?: string }) {
   return path.join(homedir(), '.backport', 'backport.log');
 }
 
-export function getGlobalConfigPath() {
+export function getGlobalConfigPath(globalConfigFile: string | undefined) {
+  if (globalConfigFile) {
+    return path.resolve(globalConfigFile);
+  }
   return path.join(homedir(), '.backport', 'config.json');
 }
 

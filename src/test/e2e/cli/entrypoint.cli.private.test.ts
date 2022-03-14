@@ -336,8 +336,13 @@ describe('entrypoint cli', () => {
       const backportResult = JSON.parse(output) as BackportFailureResponse;
       expect(code).toBe(1);
       expect(backportResult.status).toBe('failure');
-      expect(backportResult.errorMessage).toMatchInlineSnapshot(`
-        "Please update your config file: \\"/Users/sqren/.backport/config.json\\".
+      expect(
+        backportResult.errorMessage.replace(
+          configFilePath,
+          '<GLOBAL_CONFIG_FILE>'
+        )
+      ).toMatchInlineSnapshot(`
+        "Please update your config file: \\"<GLOBAL_CONFIG_FILE>\\".
         It must contain a valid \\"accessToken\\".
 
         Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#global-config-backportconfigjson"

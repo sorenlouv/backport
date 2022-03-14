@@ -1,5 +1,4 @@
 import { chmod, writeFile } from 'fs/promises';
-import path from 'path';
 import makeDir from 'make-dir';
 import { BackportError } from '../../lib/BackportError';
 import { getBackportDirPath, getGlobalConfigPath } from '../../lib/env';
@@ -12,10 +11,7 @@ export async function getGlobalConfig({
 }: {
   globalConfigFile?: string;
 } = {}): Promise<ConfigFileOptions> {
-  const globalConfigPath = globalConfigFile
-    ? path.resolve(globalConfigFile)
-    : getGlobalConfigPath();
-
+  const globalConfigPath = getGlobalConfigPath(globalConfigFile);
   await createGlobalConfigAndFolderIfNotExist(globalConfigPath);
   return readConfigFile(globalConfigPath);
 }

@@ -118,7 +118,7 @@ export async function getOptions({
 }
 
 async function getRequiredOptions(combined: OptionsFromConfigAndCli) {
-  const { accessToken, repoName, repoOwner } = combined;
+  const { accessToken, repoName, repoOwner, globalConfigFile } = combined;
 
   if (accessToken && repoName && repoOwner) {
     return { accessToken, repoName, repoOwner };
@@ -126,7 +126,7 @@ async function getRequiredOptions(combined: OptionsFromConfigAndCli) {
 
   // require access token
   if (!accessToken) {
-    const globalConfigPath = getGlobalConfigPath();
+    const globalConfigPath = getGlobalConfigPath(globalConfigFile);
     throw new BackportError(
       `Please update your config file: "${globalConfigPath}".\nIt must contain a valid "accessToken".\n\nRead more: ${GLOBAL_CONFIG_DOCS_LINK}`
     );

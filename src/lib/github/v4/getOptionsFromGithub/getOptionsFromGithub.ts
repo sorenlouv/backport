@@ -29,8 +29,15 @@ export async function getOptionsFromGithub(options: {
   repoName: string;
   repoOwner: string;
   skipRemoteConfig?: boolean;
+  globalConfigFile?: string;
 }) {
-  const { accessToken, githubApiBaseUrlV4, repoName, repoOwner } = options;
+  const {
+    accessToken,
+    githubApiBaseUrlV4,
+    repoName,
+    repoOwner,
+    globalConfigFile,
+  } = options;
 
   let res: GithubConfigOptionsResponse;
 
@@ -46,7 +53,12 @@ export async function getOptionsFromGithub(options: {
       throw e;
     }
 
-    throwOnInvalidAccessToken({ error: e, repoName, repoOwner });
+    throwOnInvalidAccessToken({
+      error: e,
+      repoName,
+      repoOwner,
+      globalConfigFile,
+    });
     res = swallowMissingConfigFileException<GithubConfigOptionsResponse>(e);
   }
 

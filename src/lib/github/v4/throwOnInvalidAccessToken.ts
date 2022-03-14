@@ -8,10 +8,12 @@ export function throwOnInvalidAccessToken({
   error,
   repoOwner,
   repoName,
+  globalConfigFile,
 }: {
   error: GithubV4Exception<unknown>;
   repoOwner: string;
   repoName: string;
+  globalConfigFile?: string;
 }) {
   function getSSOAuthUrl(ssoHeader?: string) {
     const matches = ssoHeader?.match(/url=(.*)/);
@@ -70,7 +72,9 @@ export function throwOnInvalidAccessToken({
 
     case 401:
       throw new BackportError(
-        `Please check your access token and make sure it is valid.\nConfig: ${getGlobalConfigPath()}`
+        `Please check your access token and make sure it is valid.\nConfig: ${getGlobalConfigPath(
+          globalConfigFile
+        )}`
       );
 
     default:
