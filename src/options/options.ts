@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import { BackportError } from '../errors/BackportError';
+import { BackportError } from '../lib/BackportError';
 import { getGlobalConfigPath } from '../lib/env';
 import {
   getOptionsFromGithub,

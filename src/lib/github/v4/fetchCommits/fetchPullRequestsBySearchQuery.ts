@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 import { isEmpty } from 'lodash';
-import { BackportError } from '../../../../errors/BackportError';
 import { filterUnmergedCommits } from '../../../../utils/filterUnmergedCommits';
+import { BackportError } from '../../../BackportError';
 import { swallowMissingConfigFileException } from '../../../remoteConfig';
 import {
   Commit,

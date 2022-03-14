@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { BackportError } from './errors/BackportError';
+import { BackportError } from './lib/BackportError';
 import { getLogfilePath } from './lib/env';
 import { getCommits } from './lib/getCommits';
 import { getGitConfigAuthor } from './lib/getGitConfigAuthor';

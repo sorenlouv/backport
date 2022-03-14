@@ -1,6 +1,6 @@
 import del = require('del');
-import { BackportError } from '../errors/BackportError';
 import { ValidConfigOptions } from '../options/options';
+import { BackportError } from './BackportError';
 import { getRepoPath } from './env';
 import {
   addRemote,

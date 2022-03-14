@@ -1,9 +1,9 @@
 import { resolve as pathResolve } from 'path';
 import { uniq, isEmpty, first, last } from 'lodash';
-import { BackportError } from '../errors/BackportError';
 import { ora } from '../lib/ora';
 import { ValidConfigOptions } from '../options/options';
 import { filterNil } from '../utils/filterEmpty';
+import { BackportError } from './BackportError';
 import {
   spawnPromise,
   SpawnError,

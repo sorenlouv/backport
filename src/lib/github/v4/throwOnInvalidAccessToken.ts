@@ -1,6 +1,6 @@
 import { isEmpty, difference } from 'lodash';
-import { BackportError } from '../../../errors/BackportError';
 import { maybe } from '../../../utils/maybe';
+import { BackportError } from '../../BackportError';
 import { getGlobalConfigPath } from '../../env';
 import { GithubV4Exception } from './apiRequestV4';
 

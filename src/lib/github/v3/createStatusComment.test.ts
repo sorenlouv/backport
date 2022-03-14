@@ -3,8 +3,8 @@ import {
   BackportResponse,
   BackportSuccessResponse,
 } from '../../../backportRun';
-import { BackportError } from '../../../errors/BackportError';
 import { ValidConfigOptions } from '../../../options/options';
+import { BackportError } from '../../BackportError';
 import { createStatusComment, getCommentBody } from './createStatusComment';
 
 describe('createStatusComment', () => {

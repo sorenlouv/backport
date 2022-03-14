@@ -1,6 +1,6 @@
 import { readFile } from 'fs/promises';
 import stripJsonComments from 'strip-json-comments';
-import { BackportError } from '../../errors/BackportError';
+import { BackportError } from '../../lib/BackportError';
 import { excludeUndefined } from '../../utils/excludeUndefined';
 import { ConfigFileOptions } from '../ConfigOptions';
 

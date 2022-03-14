@@ -1,5 +1,5 @@
-import { BackportError } from '../../../../errors/BackportError';
 import { ConfigFileOptions } from '../../../../options/ConfigOptions';
+import { BackportError } from '../../../BackportError';
 import {
   getLocalConfigFileCommitDate,
   isLocalConfigFileUntracked,

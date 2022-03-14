@@ -1,6 +1,6 @@
 import chalk from 'chalk';
-import { BackportError } from '../errors/BackportError';
 import { ValidConfigOptions } from '../options/options';
+import { BackportError } from './BackportError';
 import { getFirstLine, getShortSha } from './github/commitFormatters';
 import { fetchCommitByPullNumber } from './github/v4/fetchCommits/fetchCommitByPullNumber';
 import { fetchCommitBySha } from './github/v4/fetchCommits/fetchCommitBySha';

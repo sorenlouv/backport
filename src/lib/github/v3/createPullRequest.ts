@@ -1,8 +1,8 @@
 import { Octokit } from '@octokit/rest';
-import { BackportError } from '../../../errors/BackportError';
 import { ora } from '../../../lib/ora';
 import { ValidConfigOptions } from '../../../options/options';
 import { PACKAGE_VERSION } from '../../../utils/packageVersion';
+import { BackportError } from '../../BackportError';
 import { logger } from '../../logger';
 import { Commit } from '../../sourceCommit/parseSourceCommit';
 import { getFirstLine, getShortSha } from '../commitFormatters';

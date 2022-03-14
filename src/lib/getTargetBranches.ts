@@ -1,10 +1,10 @@
 import { isEmpty, isString } from 'lodash';
-import { BackportError } from '../errors/BackportError';
 import {
   TargetBranchChoice,
   TargetBranchChoiceOrString,
 } from '../options/ConfigOptions';
 import { ValidConfigOptions } from '../options/options';
+import { BackportError } from './BackportError';
 import { promptForTargetBranches } from './prompts';
 import { Commit } from './sourceCommit/parseSourceCommit';
 

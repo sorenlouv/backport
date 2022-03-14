@@ -23,7 +23,7 @@ export type {
   BackportResponse,
   BackportSuccessResponse,
 } from './backportRun';
-export { BackportError } from './errors/BackportError';
+export { BackportError } from './lib/BackportError';
 export type { Commit } from './lib/sourceCommit/parseSourceCommit';
 export type { ConfigFileOptions } from './options/ConfigOptions';
 export { fetchRemoteProjectConfig as getRemoteProjectConfig } from './lib/github/v4/fetchRemoteProjectConfig';

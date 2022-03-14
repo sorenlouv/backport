@@ -1,7 +1,7 @@
 import { chmod, writeFile } from 'fs/promises';
 import path from 'path';
 import makeDir from 'make-dir';
-import { BackportError } from '../../errors/BackportError';
+import { BackportError } from '../../lib/BackportError';
 import { getBackportDirPath, getGlobalConfigPath } from '../../lib/env';
 import { isErrnoError } from '../../utils/isErrnoError';
 import { ConfigFileOptions } from '../ConfigOptions';

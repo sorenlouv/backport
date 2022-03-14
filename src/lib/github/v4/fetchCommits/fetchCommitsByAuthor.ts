@@ -1,9 +1,9 @@
 import gql from 'graphql-tag';
 import { isEmpty, uniqBy, orderBy } from 'lodash';
-import { BackportError } from '../../../../errors/BackportError';
 import { ValidConfigOptions } from '../../../../options/options';
 import { filterNil } from '../../../../utils/filterEmpty';
 import { filterUnmergedCommits } from '../../../../utils/filterUnmergedCommits';
+import { BackportError } from '../../../BackportError';
 import { swallowMissingConfigFileException } from '../../../remoteConfig';
 import {
   Commit,

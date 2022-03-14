@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 import nock from 'nock';
-import { BackportError } from '../../../errors/BackportError';
 import { mockGqlRequest } from '../../../test/nockHelpers';
+import { BackportError } from '../../BackportError';
 import { apiRequestV4 } from './apiRequestV4';
 
 describe('apiRequestV4', () => {

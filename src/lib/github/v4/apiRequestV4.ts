@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { DocumentNode } from 'graphql';
 import { print } from 'graphql/language/printer';
-import { BackportError } from '../../../errors/BackportError';
+import { BackportError } from '../../BackportError';
 import { logger } from '../../logger';
 
 interface GithubError {

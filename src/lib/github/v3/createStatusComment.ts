@@ -1,9 +1,9 @@
 import { Octokit } from '@octokit/rest';
 import { BackportResponse } from '../../../backportRun';
-import { BackportError } from '../../../errors/BackportError';
 import { ValidConfigOptions } from '../../../options/options';
 import { PACKAGE_VERSION } from '../../../utils/packageVersion';
 import { redact } from '../../../utils/redact';
+import { BackportError } from '../../BackportError';
 import { logger } from '../../logger';
 import { getFirstLine } from '../commitFormatters';
 

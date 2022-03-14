@@ -1,4 +1,4 @@
-import { Commit } from '../lib/sourceCommit/parseSourceCommit';
+import { Commit } from './sourceCommit/parseSourceCommit';
 
 type ErrorContext =
   | {

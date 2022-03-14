@@ -1,4 +1,4 @@
-import { BackportError } from './errors/BackportError';
+import { BackportError } from './lib/BackportError';
 import { cherrypickAndCreateTargetPullRequest } from './lib/cherrypickAndCreateTargetPullRequest';
 import { GitConfigAuthor } from './lib/getGitConfigAuthor';
 import { logger, consoleLog } from './lib/logger';
