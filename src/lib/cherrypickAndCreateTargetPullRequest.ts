@@ -330,12 +330,9 @@ async function listConflictingAndUnstagedFiles({
       )}`
     : '';
 
-  const didConfirm = await confirmPrompt(`${header}
-
-${conflictSection}
-${unstagedSection}
-
-Press ENTER when the conflicts are resolved and files are staged`);
+  const didConfirm = await confirmPrompt(
+    `${header}\n\n${conflictSection}\n${unstagedSection}\n\nPress ENTER when the conflicts are resolved and files are staged`
+  );
 
   if (!didConfirm) {
     throw new BackportError({ code: 'abort-exception' });
