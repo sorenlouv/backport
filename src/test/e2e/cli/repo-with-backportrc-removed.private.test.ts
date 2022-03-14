@@ -4,7 +4,7 @@ const accessToken = getDevAccessToken();
 
 describe('repo-with-backportrc-removed (missing .backportrc.json config file)', () => {
   it('lists commits', async () => {
-    const output = await runBackportViaCli(
+    const { output } = await runBackportViaCli(
       [
         '--branch=foo',
         '--repo=backport-org/repo-with-backportrc-removed',
@@ -26,7 +26,7 @@ describe('repo-with-backportrc-removed (missing .backportrc.json config file)', 
   });
 
   it('backports via pr', async () => {
-    const output = await runBackportViaCli(
+    const { output } = await runBackportViaCli(
       [
         '--branch=production',
         '--repo=backport-org/repo-with-backportrc-removed',
@@ -35,7 +35,6 @@ describe('repo-with-backportrc-removed (missing .backportrc.json config file)', 
         '--dry-run',
       ],
       {
-        waitForString: `Dry run complete`,
         showOra: true,
       }
     );
@@ -46,7 +45,7 @@ describe('repo-with-backportrc-removed (missing .backportrc.json config file)', 
   });
 
   it('backport by commit sha', async () => {
-    const output = await runBackportViaCli(
+    const { output } = await runBackportViaCli(
       [
         '--branch=production',
         '--repo=backport-org/repo-with-backportrc-removed',
@@ -55,7 +54,6 @@ describe('repo-with-backportrc-removed (missing .backportrc.json config file)', 
         '--dry-run',
       ],
       {
-        waitForString: `Dry run complete`,
         showOra: true,
       }
     );

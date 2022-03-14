@@ -6,14 +6,14 @@ const accessToken = getDevAccessToken();
 
 describe('different-merge-strategies', () => {
   it('list all commits regardless how they were merged', async () => {
-    const output = await runBackportViaCli(
+    const { output } = await runBackportViaCli(
       [
         '--branch=foo',
         '--repo=backport-org/different-merge-strategies',
         `--accessToken=${accessToken}`,
         '-n=20',
       ],
-      { waitForString: 'Select commit' }
+      { waitForString: 'Select commit', timeoutSeconds: 4 }
     );
 
     expect(output).toMatchInlineSnapshot(`
@@ -44,7 +44,7 @@ describe('different-merge-strategies', () => {
       sandboxPath = getSandboxPath({ filename: __filename });
       await resetSandbox(sandboxPath);
 
-      output = await runBackportViaCli(
+      const res = await runBackportViaCli(
         [
           '--branch=7.x',
           '--repo=backport-org/different-merge-strategies',
@@ -55,6 +55,7 @@ describe('different-merge-strategies', () => {
         ],
         { showOra: true }
       );
+      output = res.output;
     });
 
     it('runs to completion without errors', () => {

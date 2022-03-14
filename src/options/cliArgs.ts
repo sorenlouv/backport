@@ -231,6 +231,8 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       conflicts: ['cherrypickRef'],
     })
 
+    // cli-only
+    // negation of `publishStatusCommentOnSuccess` and `publishStatusCommentOnFailure`
     .option('noStatusComment', {
       description: "Don't publish status comment to Github",
       type: 'boolean',
@@ -456,7 +458,8 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
     cherrypickRef: noCherrypickRef === true ? false : restOptions.cherrypickRef,
     fork: noFork === true ? false : restOptions.fork,
     noVerify: verify ?? noVerify,
-    publishStatusComment: noStatusComment === true ? false : undefined,
+    publishStatusCommentOnSuccess: noStatusComment === true ? false : undefined,
+    publishStatusCommentOnFailure: noStatusComment === true ? false : undefined,
     interactive: nonInteractive === true ? false : undefined,
   });
 }

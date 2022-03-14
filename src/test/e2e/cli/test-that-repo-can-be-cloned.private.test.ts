@@ -16,18 +16,18 @@ describe('test-that-repo-can-be-cloned', () => {
       return runBackportViaCli(
         [
           '--repo=backport-org/test-that-repo-can-be-cloned',
-          '--branch=foo',
+          '--branch=production',
           '--pr=1',
           `--dir=${sandboxPath}`,
           '--dry-run',
           `--accessToken=${accessToken}`,
         ],
-        { showOra: true, waitForString: 'Backporting to foo:' }
+        { showOra: true }
       );
     }
 
     it('clones the repo remote repo', async () => {
-      const output = await run();
+      const { output } = await run();
 
       expect(output).toContain('Cloning repository from github.com');
       expect(output).toMatchInlineSnapshot(`
@@ -35,19 +35,29 @@ describe('test-that-repo-can-be-cloned', () => {
         ? Select pull request Beginning of a beautiful repo (#1)
         ✔ 100% Cloning repository from github.com (one-time operation)
 
-        Backporting to foo:"
+        Backporting to production:
+        - Pulling latest changes
+        ✔ Pulling latest changes
+        - Cherry-picking: Beginning of a beautiful repo (#1)
+        ✔ Cherry-picking: Beginning of a beautiful repo (#1)
+        ✔ Dry run complete"
       `);
     });
 
     it('does not clone again on subsequent runs', async () => {
-      const output = await run();
+      const { output } = await run();
 
       expect(output).not.toContain('Cloning repository from github.com');
       expect(output).toMatchInlineSnapshot(`
         "- Initializing...
         ? Select pull request Beginning of a beautiful repo (#1)
 
-        Backporting to foo:"
+        Backporting to production:
+        - Pulling latest changes
+        ✔ Pulling latest changes
+        - Cherry-picking: Beginning of a beautiful repo (#1)
+        ✔ Cherry-picking: Beginning of a beautiful repo (#1)
+        ✔ Dry run complete"
       `);
     });
   });
@@ -70,22 +80,18 @@ describe('test-that-repo-can-be-cloned', () => {
     function run() {
       return runBackportViaCli(
         [
-          '--branch=foo',
+          '--branch=production',
           '--pr=1',
           `--dir=${backportRepo}`,
           '--dry-run',
           `--accessToken=${accessToken}`,
         ],
-        {
-          cwd: sourceRepo,
-          showOra: true,
-          waitForString: 'Backporting to foo:',
-        }
+        { cwd: sourceRepo, showOra: true }
       );
     }
 
     it('clones using the local repo', async () => {
-      const output = await run();
+      const { output } = await run();
 
       expect(output).toEqual(
         expect.stringMatching(

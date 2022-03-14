@@ -19,10 +19,14 @@ export async function createStatusComment({
     repoName,
     repoOwner,
     accessToken,
-    publishStatusComment,
+    publishStatusCommentOnFailure,
+    publishStatusCommentOnSuccess,
   } = options;
 
-  if (!publishStatusComment || options.dryRun) {
+  if (
+    (!publishStatusCommentOnFailure && !publishStatusCommentOnSuccess) ||
+    options.dryRun
+  ) {
     return;
   }
 
@@ -73,23 +77,28 @@ export function getCommentBody({
   pullNumber: number;
   backportResponse: BackportResponse;
 }): string | undefined {
-  const { repoName, repoOwner, autoMerge } = options;
+  const {
+    repoName,
+    repoOwner,
+    autoMerge,
+    publishStatusCommentOnSuccess,
+    publishStatusCommentOnFailure,
+  } = options;
 
-  // TODO; make setting to specify whether to post comments for successful and failures
-  if (options.interactive) {
-    // only post successful backports when running interactively (as opposed to programatically as on ci)
-    if (backportResponse.status !== 'success') {
-      return;
-    }
+  // TODO; add new cli args to specify whether to post comments for successful and failures
+  // eg. in addition to `--noStatusComment` add `--noFailureStatusComment` and `--noSuccessStatusComment` where the former will overwrite the two latter
 
-    // only post a comment if all backports succeeded
-    const didAllBackportsSucceed = backportResponse.results.every(
-      (r) => r.status === 'success'
-    );
+  const didAllBackportsSucceed =
+    backportResponse.status === 'success' &&
+    backportResponse.results.every((r) => r.status === 'success');
 
-    if (!didAllBackportsSucceed) {
-      return;
-    }
+  if (
+    // dont publish comment if all backports suceeded
+    (didAllBackportsSucceed && !publishStatusCommentOnSuccess) ||
+    // dont publish comment if some failed
+    (!didAllBackportsSucceed && !publishStatusCommentOnFailure)
+  ) {
+    return;
   }
 
   const packageVersionSection = `\n<!--- Backport version: ${PACKAGE_VERSION} -->`;
@@ -161,10 +170,6 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
   const table = backportResponse.results.length
     ? `\n\n| Status | Branch | Result |\n|:------:|:------:|:------|\n|${tableBody}|\n`
     : '';
-
-  const didAllBackportsSucceed = backportResponse.results.every(
-    (r) => r.status === 'success'
-  );
 
   const didAnyBackportsSucceed = backportResponse.results.some(
     (r) => r.status === 'success'

@@ -170,15 +170,27 @@ describe('getOptionsFromCliArgs', () => {
     });
   });
 
-  describe('publishStatusComment', () => {
+  describe('publishStatusCommentOnFailure', () => {
     it('defaults to undefined', () => {
       const res = getOptionsFromCliArgs([]);
-      expect(res.publishStatusComment).toEqual(undefined);
+      expect(res.publishStatusCommentOnFailure).toEqual(undefined);
     });
 
     it('noStatusComment', () => {
       const res = getOptionsFromCliArgs(['--noStatusComment']);
-      expect(res.publishStatusComment).toEqual(false);
+      expect(res.publishStatusCommentOnFailure).toEqual(false);
+    });
+  });
+
+  describe('publishStatusCommentOnSuccess', () => {
+    it('defaults to undefined', () => {
+      const res = getOptionsFromCliArgs([]);
+      expect(res.publishStatusCommentOnSuccess).toEqual(undefined);
+    });
+
+    it('noStatusComment', () => {
+      const res = getOptionsFromCliArgs(['--noStatusComment']);
+      expect(res.publishStatusCommentOnSuccess).toEqual(false);
     });
   });
 

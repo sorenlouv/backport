@@ -30,7 +30,7 @@
     "lint-and-test": "yarn tsc && yarn lint && yarn test-all",
     "lint": "echo \"Running lint\" && eslint './**/*.{ts,js}'",
     "start": "ts-node --transpile-only ./src/entrypoint.cli.ts",
-    "test-all": "jest --config ./jest.config.all.js",
+    "test-all": "rm -rf src/test/_tmp_sandbox_ && jest --config ./jest.config.all.js",
     "test-mutation": "jest --config ./jest.config.mutation.js",
     "test-private": "jest --config ./jest.config.private.js",
     "test": "jest",
