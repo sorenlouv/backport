@@ -293,35 +293,23 @@ describe('entrypoint cli', () => {
         }
       );
 
-      //@ts-expect-error
-      const lineToReplace = output.match(
-        /Conflicting files:[\s]+- (.*[\s].*)la-liga.md/
-      )[1];
+      // //@ts-expect-error
+      // const lineToReplace = output.match(
+      //   /Conflicting files:[\s]+- (.*[\s].*)la-liga.md/
+      // )[1];
 
-      const lineWithoutBreaks = lineToReplace.replace(/\s/g, '');
+      // const lineWithoutBreaks = lineToReplace.replace(/\s/g, '');
+      // const outputReplaced = output
+      //   .replace(lineToReplace, lineWithoutBreaks)
+      //   .replaceAll(backportDir, '<BACKPORT_DIR>');
+
       const outputReplaced = output
-        .replace(lineToReplace, lineWithoutBreaks)
+        .replaceAll('\n', '')
         .replaceAll(backportDir, '<BACKPORT_DIR>');
 
-      expect(outputReplaced).toMatchInlineSnapshot(`
-        "Backporting to 7.x:
-
-        The commit could not be backported due to conflicts
-
-        Please fix the conflicts in <BACKPORT_DIR>
-        Hint: Before fixing the conflicts manually you should consider backporting the following pull requests to \\"7.x\\":
-         - Change Barca to Braithwaite (#8) (backport missing)
-           https://github.com/backport-org/repo-with-conflicts/pull/8
-
-
-        ? Fix the following conflicts manually:
-
-        Conflicting files:
-         - <BACKPORT_DIR>/la-liga.md
-
-
-        Press ENTER when the conflicts are resolved and files are staged (Y/n)"
-      `);
+      expect(outputReplaced).toMatchInlineSnapshot(
+        `"Backporting to 7.x:The commit could not be backported due to conflictsPlease fix the conflicts in <BACKPORT_DIR>Hint: Before fixing the conflicts manually you should consider backporting the following pull requests to \\"7.x\\": - Change Barca to Braithwaite (#8) (backport missing)   https://github.com/backport-org/repo-with-conflicts/pull/8? Fix the following conflicts manually:Conflicting files: - <BACKPORT_DIR>/la-liga.mdPress ENTER when the conflicts are resolved and files are staged (Y/n)"`
+      );
     });
   });
 
