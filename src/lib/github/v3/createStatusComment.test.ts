@@ -404,7 +404,6 @@ describe('getCommentBody', () => {
     it('posts a comment when `publishStatusCommentOnAbort = true`', () => {
       const params = getParams({
         publishStatusCommentOnAbort: true,
-        publishStatusCommentOnFailure: true,
       });
       expect(getCommentBody(params)).toMatchInlineSnapshot(`
         "## ⚪ Backport skipped

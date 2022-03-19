@@ -78,15 +78,27 @@ export function getCommentBody({
     backportResponse.status === 'success' &&
     backportResponse.results.every((r) => r.status === 'success');
 
+  const didBackportFail =
+    backportResponse.status === 'failure' ||
+    (backportResponse.status === 'success' &&
+      backportResponse.results.some((r) => r.status !== 'success'));
+
   if (
     // don't publish on dry-run
     options.dryRun ||
-    // don't publish comment regardless if it succeeded or failed
-    (!publishStatusCommentOnFailure && !publishStatusCommentOnSuccess) ||
+    //
+    // don't publish comment under any circumstances
+    (!publishStatusCommentOnFailure &&
+      !publishStatusCommentOnSuccess &&
+      !publishStatusCommentOnAbort) ||
+    //
     // dont publish comment if all backports suceeded
     (didAllBackportsSucceed && !publishStatusCommentOnSuccess) ||
-    // dont publish comment if some failed
-    (!didAllBackportsSucceed && !publishStatusCommentOnFailure) ||
+    //
+    // dont publish comment if operation failed or all backports failed
+    (didBackportFail && !publishStatusCommentOnFailure) ||
+    //
+    // dont publish comment if backport was aborted
     (backportResponse.status === 'aborted' && !publishStatusCommentOnAbort)
   ) {
     return;
