@@ -1,6 +1,6 @@
 import { readFile } from 'fs/promises';
 import stripJsonComments from 'strip-json-comments';
-import { HandledError } from '../../services/HandledError';
+import { BackportError } from '../../lib/BackportError';
 import { excludeUndefined } from '../../utils/excludeUndefined';
 import { ConfigFileOptions } from '../ConfigOptions';
 
@@ -13,7 +13,7 @@ export async function readConfigFile(
   try {
     return withConfigMigrations(JSON.parse(configWithoutComments));
   } catch (e) {
-    throw new HandledError(
+    throw new BackportError(
       `"${filepath}" contains invalid JSON:\n\n${fileContents}`
     );
   }

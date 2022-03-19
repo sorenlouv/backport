@@ -418,9 +418,9 @@ Config:
 }
 ```
 
-#### `publishStatusComment`
+#### `publishStatusCommentOnSuccess`
 
-Whether to publish a status comment to Github with the results of the backport or not
+Publish a status comment to the source pull request if all backports succeeded
 
 Default: `true`
 
@@ -428,7 +428,21 @@ Config:
 
 ```json
 {
-  "publishStatusComment": false
+  "publishStatusCommentOnSuccess": false
+}
+```
+
+#### `publishStatusCommentOnFailure`
+
+Publish a status comment to the source pull request if some backports failed
+
+Default: `true`
+
+Config:
+
+```json
+{
+  "publishStatusCommentOnFailure": false
 }
 ```
 

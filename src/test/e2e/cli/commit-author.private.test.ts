@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import { ConfigFileOptions } from '../../../entrypoint.module';
-import { exec } from '../../../services/child-process-promisified';
+import { exec } from '../../../lib/child-process-promisified';
 import { getDevAccessToken } from '../../private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
 import { runBackportViaCli } from './runBackportViaCli';
@@ -63,7 +63,7 @@ describe('commit author', () => {
         '--pr=2',
         '--dry-run',
       ],
-      { waitForString: 'Dry run complete', cwd: sourceRepo, showOra: true }
+      { cwd: sourceRepo, showOra: true }
     );
 
     const { authorEmail, authorName } = await getCommitAuthor({
@@ -85,7 +85,7 @@ describe('commit author', () => {
         '--gitAuthorName="Donald Duck"',
         '--gitAuthorEmail=duck@disney.com',
       ],
-      { waitForString: 'Dry run complete', cwd: sourceRepo, showOra: true }
+      { cwd: sourceRepo, showOra: true }
     );
 
     const { authorEmail, authorName } = await getCommitAuthor({
@@ -106,7 +106,7 @@ describe('commit author', () => {
         '--dry-run',
         '--reset-author',
       ],
-      { waitForString: 'Dry run complete', cwd: sourceRepo, showOra: true }
+      { cwd: sourceRepo, showOra: true }
     );
 
     const { authorEmail, authorName } = await getCommitAuthor({

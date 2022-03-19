@@ -1,5 +1,8 @@
 import yargs from 'yargs';
+import yargsParser from 'yargs-parser';
 import { excludeUndefined } from '../utils/excludeUndefined';
+import { ConfigFileOptions } from './ConfigOptions';
+import { defaultConfigOptions } from './options';
 
 export type OptionsFromCliArgs = ReturnType<typeof getOptionsFromCliArgs>;
 export function getOptionsFromCliArgs(processArgs: readonly string[]) {
@@ -60,11 +63,6 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       conflicts: 'all',
     })
 
-    .option('ci', {
-      description: 'Disable interactive prompts',
-      type: 'boolean',
-    })
-
     .option('cherrypickRef', {
       description: 'Append commit message with "(cherry picked from commit...)',
       type: 'boolean',
@@ -80,6 +78,11 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
     .option('projectConfigFile', {
       alias: 'config',
       description: 'Path to project config',
+      type: 'string',
+    })
+
+    .option('globalConfigFile', {
+      description: 'Path to global config',
       type: 'string',
     })
 
@@ -154,6 +157,13 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       type: 'string',
     })
 
+    .option('nonInteractive', {
+      alias: ['json'],
+      description: 'Disable interactive prompts and return response as JSON',
+      type: 'boolean',
+      conflicts: 'interactive',
+    })
+
     .option('logFilePath', {
       hidden: true,
       description: `Path to log file`,
@@ -221,6 +231,8 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       conflicts: ['cherrypickRef'],
     })
 
+    // cli-only
+    // negation of `publishStatusCommentOnSuccess` and `publishStatusCommentOnFailure`
     .option('noStatusComment', {
       description: "Don't publish status comment to Github",
       type: 'boolean',
@@ -365,13 +377,13 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
     )
     // don't kill process upon error
     // and don't log error to console
-    .fail((msg, err, yargs) => {
+    .fail((msg, err) => {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (err) {
         throw err;
       }
 
-      throw new CliError(msg, yargs);
+      throw new Error(msg);
     });
 
   const {
@@ -384,7 +396,7 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
     multipleCommits,
     all,
 
-    // repoName and repoOwner
+    // shorthands
     repo,
 
     // filters
@@ -398,6 +410,7 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
     noStatusComment,
     noVerify,
     verify,
+    nonInteractive,
 
     // array types (should be renamed to plural form)
     assignee,
@@ -445,14 +458,26 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
     cherrypickRef: noCherrypickRef === true ? false : restOptions.cherrypickRef,
     fork: noFork === true ? false : restOptions.fork,
     noVerify: verify ?? noVerify,
-    publishStatusComment: noStatusComment === true ? false : undefined,
+    publishStatusCommentOnSuccess: noStatusComment === true ? false : undefined,
+    publishStatusCommentOnFailure: noStatusComment === true ? false : undefined,
+    publishStatusCommentOnAbort: noStatusComment === true ? false : undefined,
+    interactive: nonInteractive === true ? false : undefined,
   });
 }
 
-export class CliError extends Error {
-  constructor(public message: string, public yargs: yargs.Argv) {
-    super(message);
-    Error.captureStackTrace(this, CliError);
-    this.name = 'CliError';
-  }
+export function getEarlyArguments(
+  processArgs: string[],
+  optionsFromModule?: ConfigFileOptions
+) {
+  const { nonInteractive, json, logFilePath, ls } = yargsParser(processArgs);
+  const base = { ...defaultConfigOptions, ...optionsFromModule };
+
+  return {
+    interactive:
+      nonInteractive === undefined && json === undefined
+        ? base.interactive
+        : !(nonInteractive === true || json === true),
+    logFilePath,
+    ls,
+  };
 }

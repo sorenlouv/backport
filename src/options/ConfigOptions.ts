@@ -28,7 +28,6 @@ type Options = Partial<{
   autoMergeMethod: string;
   backportBinary: string;
   cherrypickRef: boolean;
-  ci: boolean; // only available via cli and module options (not project or global config)
   commitPaths: string[];
   details: boolean;
   dir: string;
@@ -40,6 +39,7 @@ type Options = Partial<{
   gitHostname: string;
   githubApiBaseUrlV3: string;
   githubApiBaseUrlV4: string;
+  interactive: boolean; // only available via cli and module options (not project or global config)
   logFilePath: string;
   ls: boolean; // only available via cli
   maxNumber: number;
@@ -51,7 +51,9 @@ type Options = Partial<{
   prFilter: string;
   projectConfigFile: string; // only available via cli and module options (not project or global config)
   prTitle: string;
-  publishStatusComment: boolean;
+  publishStatusCommentOnAbort: boolean;
+  publishStatusCommentOnFailure: boolean;
+  publishStatusCommentOnSuccess: boolean;
   pullNumber: number;
   repoForkOwner: string;
   repoName: string;

@@ -1,4 +1,4 @@
-import { getOptionsFromCliArgs } from './cliArgs';
+import { getEarlyArguments, getOptionsFromCliArgs } from './cliArgs';
 
 describe('getOptionsFromCliArgs', () => {
   describe('yargs settings', () => {
@@ -48,6 +48,32 @@ describe('getOptionsFromCliArgs', () => {
 
       const res = getOptionsFromCliArgs(argv);
       expect(res.sourcePRLabels).toEqual(['label a', 'label b', 'label c']);
+    });
+  });
+
+  describe('reviewers', () => {
+    it('should handle all variations', () => {
+      const argv = ['--reviewer=peter'];
+
+      const res = getOptionsFromCliArgs(argv);
+      expect(res.reviewers).toEqual(['peter']);
+    });
+  });
+
+  describe('author', () => {
+    it('has a default author', () => {
+      const res = getOptionsFromCliArgs([]);
+      expect(res.author).toEqual(undefined);
+    });
+
+    it('sets the author', () => {
+      const res = getOptionsFromCliArgs(['--author=sqren']);
+      expect(res.author).toEqual('sqren');
+    });
+
+    it('sets the author to null', () => {
+      const res = getOptionsFromCliArgs(['--all']);
+      expect(res.author).toEqual(null);
     });
   });
 
@@ -112,6 +138,62 @@ describe('getOptionsFromCliArgs', () => {
     });
   });
 
+  describe('fork', () => {
+    it('--fork', () => {
+      const argv = ['--fork'];
+      const res = getOptionsFromCliArgs(argv);
+      expect(res.fork).toEqual(true);
+    });
+
+    it('--no-fork', () => {
+      const argv = ['--no-fork'];
+      const res = getOptionsFromCliArgs(argv);
+      expect(res.fork).toEqual(false);
+    });
+
+    it('defaults to undefined', () => {
+      const argv = [] as const;
+      const res = getOptionsFromCliArgs(argv);
+      expect(res.fork).toEqual(undefined);
+    });
+  });
+
+  describe('interactive', () => {
+    it('defaults to undefined', () => {
+      const res = getOptionsFromCliArgs([]);
+      expect(res.interactive).toEqual(undefined);
+    });
+
+    it('noStatusComment', () => {
+      const res = getOptionsFromCliArgs(['--non-interactive']);
+      expect(res.interactive).toEqual(false);
+    });
+  });
+
+  describe('publishStatusCommentOnFailure', () => {
+    it('defaults to undefined', () => {
+      const res = getOptionsFromCliArgs([]);
+      expect(res.publishStatusCommentOnFailure).toEqual(undefined);
+    });
+
+    it('noStatusComment', () => {
+      const res = getOptionsFromCliArgs(['--noStatusComment']);
+      expect(res.publishStatusCommentOnFailure).toEqual(false);
+    });
+  });
+
+  describe('publishStatusCommentOnSuccess', () => {
+    it('defaults to undefined', () => {
+      const res = getOptionsFromCliArgs([]);
+      expect(res.publishStatusCommentOnSuccess).toEqual(undefined);
+    });
+
+    it('noStatusComment', () => {
+      const res = getOptionsFromCliArgs(['--noStatusComment']);
+      expect(res.publishStatusCommentOnSuccess).toEqual(false);
+    });
+  });
+
   describe('noVerify', () => {
     it('should be undefined by default', () => {
       const argv = [] as const;
@@ -135,6 +217,18 @@ describe('getOptionsFromCliArgs', () => {
       const argv = ['--verify'];
       const res = getOptionsFromCliArgs(argv);
       expect(res.noVerify).toBe(true);
+    });
+  });
+
+  describe('cherrypickRef', () => {
+    it('should be undefined by default', () => {
+      const res = getOptionsFromCliArgs([]);
+      expect(res.cherrypickRef).toBe(undefined);
+    });
+
+    it('can be disabled', () => {
+      const res = getOptionsFromCliArgs(['--no-cherrypick-ref']);
+      expect(res.cherrypickRef).toBe(false);
     });
   });
 
@@ -175,6 +269,13 @@ describe('getOptionsFromCliArgs', () => {
       expect(res.repoName).toEqual('kibana');
     });
 
+    it('accepts --repo-name and --repo-owner', () => {
+      const argv = ['--repo-owner=elastic', '--repo-name=kibana'];
+      const res = getOptionsFromCliArgs(argv);
+      expect(res.repoOwner).toEqual('elastic');
+      expect(res.repoName).toEqual('kibana');
+    });
+
     it('throw if both --repo and --repo-name is given', () => {
       const argv = ['--repo', 'elastic/kibana', '--repo-name', 'foo'];
       expect(() => getOptionsFromCliArgs(argv)).toThrowError(
@@ -183,7 +284,7 @@ describe('getOptionsFromCliArgs', () => {
     });
   });
 
-  describe('since/until', () => {
+  describe('dateSince and dateUntil', () => {
     it('should always be UTC time (configured globally in jest.config.js)', () => {
       expect(new Date().getTimezoneOffset()).toBe(0);
     });
@@ -212,6 +313,54 @@ describe('getOptionsFromCliArgs', () => {
       const res = getOptionsFromCliArgs(argv);
       expect(res.dateSince).toEqual('2020-01-01T00:00:00.000Z');
       expect(res.dateUntil).toEqual('2021-01-01T00:00:00.000Z');
+    });
+  });
+});
+
+describe('getEarlyArguments', () => {
+  describe('interactive', () => {
+    it('--non-interactive flag', () => {
+      const { interactive } = getEarlyArguments(['--non-interactive']);
+      expect(interactive).toEqual(false);
+    });
+
+    it('--json flag', () => {
+      const { interactive } = getEarlyArguments(['--json']);
+      expect(interactive).toEqual(false);
+    });
+
+    it('default', () => {
+      const { interactive } = getEarlyArguments([]);
+      expect(interactive).toEqual(true);
+    });
+
+    it('setting via module options', () => {
+      const { interactive } = getEarlyArguments([], { interactive: false });
+      expect(interactive).toEqual(false);
+    });
+  });
+
+  describe('ls', () => {
+    it('by default', () => {
+      const { ls } = getEarlyArguments([]);
+      expect(ls).toEqual(undefined);
+    });
+
+    it('--ls flag', () => {
+      const { ls } = getEarlyArguments(['--ls']);
+      expect(ls).toEqual(true);
+    });
+  });
+
+  describe('logFilePath', () => {
+    it('by default', () => {
+      const { logFilePath } = getEarlyArguments([]);
+      expect(logFilePath).toEqual(undefined);
+    });
+
+    it('--log-file-path flag', () => {
+      const { logFilePath } = getEarlyArguments(['--log-file-path']);
+      expect(logFilePath).toEqual(true);
     });
   });
 });

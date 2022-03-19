@@ -1,25 +1,29 @@
 import chalk from 'chalk';
-import yargsParser from 'yargs-parser';
+import { BackportError } from './lib/BackportError';
+import { getLogfilePath } from './lib/env';
+import { getCommits } from './lib/getCommits';
+import { getGitConfigAuthor } from './lib/getGitConfigAuthor';
+import { getTargetBranches } from './lib/getTargetBranches';
+import { createStatusComment } from './lib/github/v3/createStatusComment';
+import { GithubV4Exception } from './lib/github/v4/apiRequestV4';
+import { consoleLog, initLogger } from './lib/logger';
+import { ora } from './lib/ora';
+import { setupRepo } from './lib/setupRepo';
+import { Commit } from './lib/sourceCommit/parseSourceCommit';
 import { ConfigFileOptions } from './options/ConfigOptions';
-import { CliError } from './options/cliArgs';
+import {
+  getEarlyArguments,
+  getOptionsFromCliArgs,
+  OptionsFromCliArgs,
+} from './options/cliArgs';
 import { getOptions, ValidConfigOptions } from './options/options';
 import { runSequentially, Result } from './runSequentially';
-import { HandledError } from './services/HandledError';
-import { getLogfilePath } from './services/env';
-import { createStatusComment } from './services/github/v3/createStatusComment';
-import { GithubV4Exception } from './services/github/v4/apiRequestV4';
-import { consoleLog, initLogger } from './services/logger';
-import { Commit } from './services/sourceCommit/parseSourceCommit';
-import { getCommits } from './ui/getCommits';
-import { getGitConfigAuthor } from './ui/getGitConfigAuthor';
-import { getTargetBranches } from './ui/getTargetBranches';
-import { ora } from './ui/ora';
-import { setupRepo } from './ui/setupRepo';
 
 export type BackportAbortResponse = {
   status: 'aborted';
   commits: Commit[];
-  error: HandledError;
+  error: BackportError;
+  errorMessage: string;
 };
 
 export type BackportSuccessResponse = {
@@ -31,7 +35,7 @@ export type BackportSuccessResponse = {
 export type BackportFailureResponse = {
   status: 'failure';
   commits: Commit[];
-  error: Error | HandledError;
+  error: Error | BackportError;
   errorMessage: string;
 };
 
@@ -49,39 +53,41 @@ export async function backportRun({
   optionsFromModule?: ConfigFileOptions;
   exitCodeOnFailure: boolean;
 }): Promise<BackportResponse> {
-  const argv = yargsParser(processArgs) as ConfigFileOptions;
-  const ci = argv.ci ?? optionsFromModule.ci;
-  const logFilePath = argv.logFilePath ?? optionsFromModule.logFilePath;
-  const logger = initLogger({ ci, logFilePath });
+  const { interactive, logFilePath } = getEarlyArguments(
+    processArgs,
+    optionsFromModule
+  );
+  const logger = initLogger({ interactive, logFilePath });
+
+  let optionsFromCliArgs: OptionsFromCliArgs;
+  try {
+    optionsFromCliArgs = getOptionsFromCliArgs(processArgs);
+  } catch (e) {
+    if (e instanceof Error) {
+      consoleLog(e.message);
+      consoleLog(`Run "backport --help" to see all options`);
+      return {
+        status: 'failure',
+        error: e,
+        errorMessage: e.message,
+        commits: [],
+      } as BackportResponse;
+    }
+
+    throw e;
+  }
 
   let options: ValidConfigOptions | null = null;
   let commits: Commit[] = [];
+  const spinner = ora(interactive).start('Initializing...');
 
   try {
-    const spinner = ora(ci);
-    try {
-      // don't show spinner for yargs commands that exit the process without stopping the spinner first
-      if (!argv.help && !argv.version && !argv.v) {
-        spinner.start('Initializing...');
-      }
-
-      options = await getOptions(processArgs, optionsFromModule);
-      logger.info('Backporting options', options);
-      spinner.stop();
-    } catch (e) {
-      spinner.stop();
-      if (e instanceof CliError) {
-        consoleLog(e.message);
-        consoleLog(`Run "backport --help" to see all options`);
-        return {
-          status: 'failure',
-          error: e,
-          errorMessage: e.message,
-          commits: [],
-        } as BackportResponse;
-      }
-      throw e;
-    }
+    options = await getOptions({
+      optionsFromCliArgs,
+      optionsFromModule,
+    });
+    logger.info('Backporting options', options);
+    spinner.stop();
 
     commits = await getCommits(options);
     logger.info('Commits', commits);
@@ -114,19 +120,21 @@ export async function backportRun({
     await createStatusComment({ options, backportResponse });
     return backportResponse;
   } catch (e) {
+    spinner.stop();
     let backportResponse: BackportResponse;
 
     if (
-      e instanceof HandledError &&
+      e instanceof BackportError &&
       e.errorContext.code === 'no-branches-exception'
     ) {
       backportResponse = {
         status: 'aborted',
         commits,
         error: e,
+        errorMessage: e.message,
       };
 
-      // this will catch both HandledError and Error
+      // this will catch both BackportError and Error
     } else if (e instanceof Error) {
       backportResponse = {
         status: 'failure',
@@ -159,10 +167,10 @@ function outputError({
   e,
   logFilePath,
 }: {
-  e: HandledError | GithubV4Exception<any> | Error;
+  e: BackportError | GithubV4Exception<any> | Error;
   logFilePath?: string;
 }) {
-  if (e instanceof HandledError || e instanceof GithubV4Exception) {
+  if (e instanceof BackportError || e instanceof GithubV4Exception) {
     consoleLog(e.message);
     return;
   }

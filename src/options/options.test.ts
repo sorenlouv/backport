@@ -1,10 +1,10 @@
 import fs from 'fs/promises';
 import os from 'os';
 import nock from 'nock';
-import * as git from '../services/git';
-import { GithubConfigOptionsResponse } from '../services/github/v4/getOptionsFromGithub/query';
-import { RepoOwnerAndNameResponse } from '../services/github/v4/getRepoOwnerAndNameFromGitRemotes';
-import * as logger from '../services/logger';
+import * as git from '../lib/git';
+import { GithubConfigOptionsResponse } from '../lib/github/v4/getOptionsFromGithub/query';
+import { RepoOwnerAndNameResponse } from '../lib/github/v4/getRepoOwnerAndNameFromGitRemotes';
+import * as logger from '../lib/logger';
 import { mockConfigFiles } from '../test/mockConfigFiles';
 import { mockGqlRequest } from '../test/nockHelpers';
 import { ConfigFileOptions } from './ConfigOptions';
@@ -45,26 +45,17 @@ describe('getOptions', () => {
         globalConfig: { accessToken: undefined },
       });
 
-      await expect(() => getOptions([], {})).rejects
-        .toThrowErrorMatchingInlineSnapshot(`
+      await expect(() =>
+        getOptions({
+          optionsFromCliArgs: {},
+          optionsFromModule: {},
+        })
+      ).rejects.toThrowErrorMatchingInlineSnapshot(`
                     "Please update your config file: \\"/myHomeDir/.backport/config.json\\".
                     It must contain a valid \\"accessToken\\".
 
                     Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#global-config-backportconfigjson"
                   `);
-    });
-
-    it('when accessToken is missing with --ci', async () => {
-      mockConfigFiles({
-        projectConfig: defaultConfigs.projectConfig,
-        globalConfig: { accessToken: undefined },
-      });
-
-      await expect(() =>
-        getOptions([], { ci: true })
-      ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"Access token missing. It must be explicitly supplied when using \\"--ci\\" option. Example: --access-token very-secret"`
-      );
     });
 
     it('when `targetBranches`, `targetBranchChoices` and `branchLabelMapping` are all empty', async () => {
@@ -74,8 +65,9 @@ describe('getOptions', () => {
         branchLabelMapping: undefined,
       });
 
-      await expect(() => getOptions([], {})).rejects
-        .toThrowErrorMatchingInlineSnapshot(`
+      await expect(() =>
+        getOptions({ optionsFromCliArgs: {}, optionsFromModule: {} })
+      ).rejects.toThrowErrorMatchingInlineSnapshot(`
               "Please specify a target branch: \\"--branch 6.1\\".
 
               Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#project-config-backportrcjson"
@@ -85,7 +77,10 @@ describe('getOptions', () => {
     describe('whe option is an empty string', () => {
       it('throws for "username"', async () => {
         await expect(() =>
-          getOptions([], { repoForkOwner: '', author: 'sqren' })
+          getOptions({
+            optionsFromCliArgs: {},
+            optionsFromModule: { repoForkOwner: '', author: 'sqren' },
+          })
         ).rejects.toThrowErrorMatchingInlineSnapshot(
           `"\\"repoForkOwner\\" cannot be empty!"`
         );
@@ -93,15 +88,22 @@ describe('getOptions', () => {
 
       it('throws for "author"', async () => {
         await expect(() =>
-          getOptions([], { author: '' })
+          getOptions({
+            optionsFromCliArgs: {},
+            optionsFromModule: { author: '' },
+          })
         ).rejects.toThrowErrorMatchingInlineSnapshot(
           `"\\"author\\" cannot be empty!"`
         );
       });
 
       it('throws for "accessToken"', async () => {
-        await expect(() => getOptions([], { accessToken: '' })).rejects
-          .toThrowErrorMatchingInlineSnapshot(`
+        await expect(() =>
+          getOptions({
+            optionsFromCliArgs: {},
+            optionsFromModule: { accessToken: '' },
+          })
+        ).rejects.toThrowErrorMatchingInlineSnapshot(`
                 "Please update your config file: \\"/myHomeDir/.backport/config.json\\".
                 It must contain a valid \\"accessToken\\".
 
@@ -118,8 +120,9 @@ describe('getOptions', () => {
       it('should throw if there are no remotes', async () => {
         jest.spyOn(git, 'getRepoInfoFromGitRemotes').mockResolvedValue([]);
 
-        await expect(() => getOptions([], {})).rejects
-          .toThrowErrorMatchingInlineSnapshot(`
+        await expect(() =>
+          getOptions({ optionsFromCliArgs: {}, optionsFromModule: {} })
+        ).rejects.toThrowErrorMatchingInlineSnapshot(`
                               "Please specify a repository: \\"--repo elastic/kibana\\".
 
                               Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#project-config-backportrcjson"
@@ -137,7 +140,10 @@ describe('getOptions', () => {
           .spyOn(git, 'getRepoInfoFromGitRemotes')
           .mockResolvedValue([{ repoName: 'kibana', repoOwner: 'sqren' }]);
 
-        const options = await getOptions([], {});
+        const options = await getOptions({
+          optionsFromCliArgs: {},
+          optionsFromModule: {},
+        });
 
         expect(options.repoName).toBe('kibana');
         expect(options.repoOwner).toBe('elastic');
@@ -147,7 +153,10 @@ describe('getOptions', () => {
 
   it('reads options from remote config', async () => {
     mockGithubConfigOptions({ hasRemoteConfig: true });
-    const options = await getOptions([], {});
+    const options = await getOptions({
+      optionsFromCliArgs: {},
+      optionsFromModule: {},
+    });
     expect(options.branchLabelMapping).toEqual({
       '^v8.2.0$': 'option-from-remote',
     });
@@ -157,7 +166,9 @@ describe('getOptions', () => {
 
   it('should ensure that "backport" branch does not exist', async () => {
     mockGithubConfigOptions({ hasBackportBranch: true });
-    await expect(getOptions([], {})).rejects.toThrowError(
+    await expect(
+      getOptions({ optionsFromCliArgs: {}, optionsFromModule: {} })
+    ).rejects.toThrowError(
       'You must delete the branch "backport" to continue. See https://github.com/sqren/backport/issues/155 for details'
     );
   });
@@ -166,13 +177,16 @@ describe('getOptions', () => {
     mockGithubConfigOptions({});
     const myFn = async () => true;
 
-    const options = await getOptions([], { autoFixConflicts: myFn });
+    const options = await getOptions({
+      optionsFromCliArgs: {},
+      optionsFromModule: { autoFixConflicts: myFn },
+    });
     expect(options.autoFixConflicts).toBe(myFn);
   });
 
   it('should call setAccessToken', async () => {
     mockGithubConfigOptions({});
-    await getOptions([], {});
+    await getOptions({ optionsFromCliArgs: {}, optionsFromModule: {} });
 
     expect(logger.setAccessToken).toHaveBeenCalledTimes(1);
   });
@@ -182,7 +196,10 @@ describe('getOptions', () => {
       viewerLogin: 'john.diller',
       defaultBranchRef: 'default-branch-from-github',
     });
-    const options = await getOptions([], {});
+    const options = await getOptions({
+      optionsFromCliArgs: {},
+      optionsFromModule: {},
+    });
 
     expect(options).toEqual({
       accessToken: 'abc',
@@ -194,7 +211,6 @@ describe('getOptions', () => {
       autoMergeMethod: 'merge',
       backportBinary: 'backport',
       cherrypickRef: true,
-      ci: false,
       commitPaths: [],
       cwd: expect.any(String),
       dateSince: null,
@@ -204,11 +220,14 @@ describe('getOptions', () => {
       fork: true,
       gitHostname: 'github.com',
       githubApiBaseUrlV4: 'http://localhost/graphql',
+      interactive: true,
       maxNumber: 10,
       multipleBranches: true,
       multipleCommits: false,
       noVerify: true,
-      publishStatusComment: true,
+      publishStatusCommentOnAbort: false,
+      publishStatusCommentOnSuccess: true,
+      publishStatusCommentOnFailure: false,
       repoForkOwner: 'john.diller',
       repoName: 'kibana',
       repoOwner: 'elastic',
@@ -228,15 +247,18 @@ describe('getOptions', () => {
     });
 
     it('uses the `defaultBranchRef` as default', async () => {
-      const options = await getOptions([], {});
+      const options = await getOptions({
+        optionsFromCliArgs: {},
+        optionsFromModule: {},
+      });
       expect(options.sourceBranch).toBe('some-default-branch');
     });
 
     it('uses the sourceBranch given via cli instead of `defaultBranchRef`', async () => {
-      const options = await getOptions(
-        ['--source-branch', 'cli-source-branch'],
-        {}
-      );
+      const options = await getOptions({
+        optionsFromCliArgs: { sourceBranch: 'cli-source-branch' },
+        optionsFromModule: {},
+      });
       expect(options.sourceBranch).toBe('cli-source-branch');
     });
   });
@@ -247,18 +269,27 @@ describe('getOptions', () => {
     });
 
     it('is enabled by default', async () => {
-      const { fork } = await getOptions([], {});
+      const { fork } = await getOptions({
+        optionsFromCliArgs: {},
+        optionsFromModule: {},
+      });
       expect(fork).toBe(true);
     });
 
-    it('can be disabled via `--no-fork` flag', async () => {
-      const { fork } = await getOptions(['--no-fork'], {});
+    it('can be disabled via cli', async () => {
+      const { fork } = await getOptions({
+        optionsFromCliArgs: { fork: false },
+        optionsFromModule: {},
+      });
       expect(fork).toBe(false);
     });
 
     it('can be disabled via config file', async () => {
       mockProjectConfig({ fork: false });
-      const { fork } = await getOptions([], {});
+      const { fork } = await getOptions({
+        optionsFromCliArgs: {},
+        optionsFromModule: {},
+      });
       expect(fork).toBe(false);
     });
   });
@@ -268,14 +299,20 @@ describe('getOptions', () => {
       mockGithubConfigOptions({});
     });
 
-    it('can be set via `--reviewer` flag', async () => {
-      const { reviewers } = await getOptions(['--reviewer', 'peter'], {});
+    it('can be set via cli', async () => {
+      const { reviewers } = await getOptions({
+        optionsFromCliArgs: { reviewers: ['peter'] },
+        optionsFromModule: {},
+      });
       expect(reviewers).toEqual(['peter']);
     });
 
     it('can be set via config file', async () => {
       mockProjectConfig({ reviewers: ['john'] });
-      const { reviewers } = await getOptions([], {});
+      const { reviewers } = await getOptions({
+        optionsFromCliArgs: {},
+        optionsFromModule: {},
+      });
       expect(reviewers).toEqual(['john']);
     });
   });
@@ -286,17 +323,26 @@ describe('getOptions', () => {
     });
 
     it('is not enabled by default', async () => {
-      const { mainline } = await getOptions([], {});
+      const { mainline } = await getOptions({
+        optionsFromCliArgs: {},
+        optionsFromModule: {},
+      });
       expect(mainline).toBe(undefined);
     });
 
     it('can be set via `--mainline` flag', async () => {
-      const { mainline } = await getOptions(['--mainline'], {});
+      const { mainline } = await getOptions({
+        optionsFromCliArgs: { mainline: 1 },
+        optionsFromModule: {},
+      });
       expect(mainline).toBe(1);
     });
 
     it('accepts numeric values', async () => {
-      const { mainline } = await getOptions(['--mainline', '2'], {});
+      const { mainline } = await getOptions({
+        optionsFromCliArgs: { mainline: 2 },
+        optionsFromModule: {},
+      });
       expect(mainline).toBe(2);
     });
   });
@@ -307,29 +353,36 @@ describe('getOptions', () => {
     });
 
     it('defaults to authenticated user', async () => {
-      const { author } = await getOptions([], {});
+      const { author } = await getOptions({
+        optionsFromCliArgs: {},
+        optionsFromModule: {},
+      });
       expect(author).toBe('billy.bob');
     });
 
     it('can be overridden via `--author` flag', async () => {
-      const { author } = await getOptions(['--author', 'john.doe'], {});
+      const { author } = await getOptions({
+        optionsFromCliArgs: { author: 'john.doe' },
+        optionsFromModule: {},
+      });
       expect(author).toBe('john.doe');
-    });
-
-    it('can be reset via `--all` flag', async () => {
-      const { author } = await getOptions(['--all'], {});
-      expect(author).toBe(null);
     });
 
     it('can be reset via config file (similar to `--all` flag)', async () => {
       mockProjectConfig({ author: null });
-      const { author } = await getOptions([], {});
+      const { author } = await getOptions({
+        optionsFromCliArgs: {},
+        optionsFromModule: {},
+      });
       expect(author).toBe(null);
     });
 
     it('can be overridden via config file', async () => {
       mockProjectConfig({ author: 'jane.doe' });
-      const { author } = await getOptions([], {});
+      const { author } = await getOptions({
+        optionsFromCliArgs: {},
+        optionsFromModule: {},
+      });
       expect(author).toBe('jane.doe');
     });
   });
@@ -340,24 +393,28 @@ describe('getOptions', () => {
     });
 
     it('should default to true', async () => {
-      const { cherrypickRef } = await getOptions([], {});
+      const { cherrypickRef } = await getOptions({
+        optionsFromCliArgs: {},
+        optionsFromModule: {},
+      });
       expect(cherrypickRef).toBe(true);
-    });
-
-    it('should negate with `noCherrypickRef` cli arg', async () => {
-      const { cherrypickRef } = await getOptions(['--no-cherrypick-ref'], {});
-      expect(cherrypickRef).toBe(false);
     });
 
     it('should be settable via config file', async () => {
       mockProjectConfig({ cherrypickRef: false });
-      const { cherrypickRef } = await getOptions([], {});
+      const { cherrypickRef } = await getOptions({
+        optionsFromCliArgs: {},
+        optionsFromModule: {},
+      });
       expect(cherrypickRef).toBe(false);
     });
 
     it('cli args overwrites config', async () => {
       mockProjectConfig({ cherrypickRef: false });
-      const { cherrypickRef } = await getOptions(['--cherrypick-ref'], {});
+      const { cherrypickRef } = await getOptions({
+        optionsFromCliArgs: { cherrypickRef: true },
+        optionsFromModule: {},
+      });
       expect(cherrypickRef).toBe(true);
     });
   });

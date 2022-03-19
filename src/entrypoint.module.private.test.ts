@@ -3,7 +3,7 @@ import {
   BackportSuccessResponse,
 } from './backportRun';
 import { backportRun, Commit, getCommits } from './entrypoint.module';
-import { getFirstLine } from './services/github/commitFormatters';
+import { getFirstLine } from './lib/github/commitFormatters';
 import { getDevAccessToken } from './test/private/getDevAccessToken';
 
 const accessToken = getDevAccessToken();
@@ -21,7 +21,7 @@ describe('entrypoint.module', () => {
           options: {
             repoOwner: 'backport-org',
             repoName: 'repo-with-conflicts',
-            ci: true,
+            interactive: false,
             accessToken,
             pullNumber: 12,
             targetBranches: ['7.x'],
@@ -64,7 +64,7 @@ describe('entrypoint.module', () => {
           options: {
             repoOwner: 'backport-org',
             repoName: 'repo-with-conflicts',
-            ci: true,
+            interactive: false,
             accessToken,
             pullNumber: 12,
           },
@@ -88,7 +88,7 @@ describe('entrypoint.module', () => {
           options: {
             repoOwner: 'backport-org',
             repoName: 'repo-with-conflicts',
-            ci: true,
+            interactive: false,
             accessToken,
             pullNumber: 8,
             dryRun: true,

@@ -16,7 +16,6 @@ describe('getOptionsFromConfigFiles', () => {
     res = await getOptionsFromConfigFiles({
       optionsFromCliArgs: {},
       optionsFromModule: {},
-      defaultConfigOptions: { ci: false },
     });
   });
 

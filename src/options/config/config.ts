@@ -9,23 +9,18 @@ export type OptionsFromConfigFiles = Awaited<
 export async function getOptionsFromConfigFiles({
   optionsFromCliArgs,
   optionsFromModule,
-  defaultConfigOptions,
 }: {
   optionsFromCliArgs: OptionsFromCliArgs;
   optionsFromModule: ConfigFileOptions;
-  defaultConfigOptions: ConfigFileOptions;
 }) {
-  // ci: cli and module only flag
-  const ci =
-    optionsFromCliArgs.ci ?? optionsFromModule.ci ?? defaultConfigOptions.ci;
-
-  // ci: cli and module only flag
   const projectConfigFile =
     optionsFromCliArgs.projectConfigFile ?? optionsFromModule.projectConfigFile;
 
+  const globalConfigFile = optionsFromCliArgs.globalConfigFile;
+
   const [projectConfig, globalConfig] = await Promise.all([
     getProjectConfig({ projectConfigFile }),
-    ci ? undefined : getGlobalConfig(),
+    getGlobalConfig({ globalConfigFile }),
   ]);
 
   return {

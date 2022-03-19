@@ -1,14 +1,14 @@
 import { isEmpty } from 'lodash';
-import { HandledError } from '../services/HandledError';
-import { getGlobalConfigPath } from '../services/env';
+import { BackportError } from '../lib/BackportError';
+import { getGlobalConfigPath } from '../lib/env';
 import {
   getOptionsFromGithub,
   OptionsFromGithub,
-} from '../services/github/v4/getOptionsFromGithub/getOptionsFromGithub';
-import { getRepoOwnerAndNameFromGitRemotes } from '../services/github/v4/getRepoOwnerAndNameFromGitRemotes';
-import { setAccessToken } from './../services/logger';
+} from '../lib/github/v4/getOptionsFromGithub/getOptionsFromGithub';
+import { getRepoOwnerAndNameFromGitRemotes } from '../lib/github/v4/getRepoOwnerAndNameFromGitRemotes';
+import { setAccessToken } from '../lib/logger';
 import { ConfigFileOptions, TargetBranchChoiceOrString } from './ConfigOptions';
-import { getOptionsFromCliArgs, OptionsFromCliArgs } from './cliArgs';
+import { OptionsFromCliArgs } from './cliArgs';
 import {
   getOptionsFromConfigFiles,
   OptionsFromConfigFiles,
@@ -24,14 +24,13 @@ export type ValidConfigOptions = Readonly<
   Awaited<ReturnType<typeof getOptions>>
 >;
 
-const defaultConfigOptions = {
+export const defaultConfigOptions = {
   assignees: [] as Array<string>,
   autoAssign: false,
   autoMerge: false,
   autoMergeMethod: 'merge',
   backportBinary: 'backport',
   cherrypickRef: true,
-  ci: false,
   commitPaths: [] as Array<string>,
   cwd: process.cwd(),
   dateSince: null,
@@ -39,11 +38,14 @@ const defaultConfigOptions = {
   details: false,
   fork: true,
   gitHostname: 'github.com',
+  interactive: true,
   maxNumber: 10,
   multipleBranches: true,
   multipleCommits: false,
   noVerify: true,
-  publishStatusComment: true,
+  publishStatusCommentOnAbort: false,
+  publishStatusCommentOnSuccess: true,
+  publishStatusCommentOnFailure: false,
   resetAuthor: false,
   reviewers: [] as Array<string>,
   sourcePRLabels: [] as string[],
@@ -52,15 +54,16 @@ const defaultConfigOptions = {
   targetPRLabels: [] as string[],
 };
 
-export async function getOptions(
-  processArgs: string[],
-  optionsFromModule: ConfigFileOptions
-) {
-  const optionsFromCliArgs = getOptionsFromCliArgs(processArgs);
+export async function getOptions({
+  optionsFromCliArgs,
+  optionsFromModule,
+}: {
+  optionsFromCliArgs: OptionsFromCliArgs;
+  optionsFromModule: ConfigFileOptions;
+}) {
   const optionsFromConfigFiles = await getOptionsFromConfigFiles({
     optionsFromCliArgs,
     optionsFromModule,
-    defaultConfigOptions,
   });
 
   // combined options from cli and config files
@@ -116,7 +119,7 @@ export async function getOptions(
 }
 
 async function getRequiredOptions(combined: OptionsFromConfigAndCli) {
-  const { accessToken, repoName, repoOwner } = combined;
+  const { accessToken, repoName, repoOwner, globalConfigFile } = combined;
 
   if (accessToken && repoName && repoOwner) {
     return { accessToken, repoName, repoOwner };
@@ -124,14 +127,8 @@ async function getRequiredOptions(combined: OptionsFromConfigAndCli) {
 
   // require access token
   if (!accessToken) {
-    if (combined.ci) {
-      throw new HandledError(
-        `Access token missing. It must be explicitly supplied when using "--ci" option. Example: --access-token very-secret`
-      );
-    }
-
-    const globalConfigPath = getGlobalConfigPath();
-    throw new HandledError(
+    const globalConfigPath = getGlobalConfigPath(globalConfigFile);
+    throw new BackportError(
       `Please update your config file: "${globalConfigPath}".\nIt must contain a valid "accessToken".\n\nRead more: ${GLOBAL_CONFIG_DOCS_LINK}`
     );
   }
@@ -144,7 +141,7 @@ async function getRequiredOptions(combined: OptionsFromConfigAndCli) {
   });
 
   if (!gitRemote.repoName || !gitRemote.repoOwner) {
-    throw new HandledError(
+    throw new BackportError(
       `Please specify a repository: "--repo elastic/kibana".\n\nRead more: ${PROJECT_CONFIG_DOCS_LINK}`
     );
   }
@@ -166,7 +163,7 @@ function throwForRequiredOptions(
     // this is primarily necessary on CI where `targetBranches` and `targetBranchChoices` and not given
     isEmpty(options.branchLabelMapping)
   ) {
-    throw new HandledError(
+    throw new BackportError(
       `Please specify a target branch: "--branch 6.1".\n\nRead more: ${PROJECT_CONFIG_DOCS_LINK}`
     );
   }
@@ -199,7 +196,7 @@ function throwForRequiredOptions(
   optionKeys.forEach((optionName) => {
     const option = options[optionName] as string;
     if (option === '') {
-      throw new HandledError(`"${optionName}" cannot be empty!`);
+      throw new BackportError(`"${optionName}" cannot be empty!`);
     }
   });
 }

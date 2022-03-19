@@ -1,29 +1,32 @@
+import { BackportError } from './lib/BackportError';
+import { cherrypickAndCreateTargetPullRequest } from './lib/cherrypickAndCreateTargetPullRequest';
+import { GitConfigAuthor } from './lib/getGitConfigAuthor';
+import { logger, consoleLog } from './lib/logger';
+import { sequentially } from './lib/sequentially';
+import { Commit } from './lib/sourceCommit/parseSourceCommit';
 import { ValidConfigOptions } from './options/options';
-import { HandledError } from './services/HandledError';
-import { logger, consoleLog } from './services/logger';
-import { sequentially } from './services/sequentially';
-import { Commit } from './services/sourceCommit/parseSourceCommit';
-import { cherrypickAndCreateTargetPullRequest } from './ui/cherrypickAndCreateTargetPullRequest';
-import { GitConfigAuthor } from './ui/getGitConfigAuthor';
 
-export type Result =
-  | {
-      status: 'success';
-      didUpdate: boolean;
-      targetBranch: string;
-      pullRequestUrl: string;
-      pullRequestNumber: number;
-    }
-  | {
-      status: 'handled-error';
-      targetBranch: string;
-      error: HandledError;
-    }
-  | {
-      status: 'unhandled-error';
-      targetBranch: string;
-      error: Error;
-    };
+export type SuccessResult = {
+  status: 'success';
+  didUpdate: boolean;
+  targetBranch: string;
+  pullRequestUrl: string;
+  pullRequestNumber: number;
+};
+
+export type HandledErrorResult = {
+  status: 'handled-error';
+  targetBranch: string;
+  error: BackportError;
+};
+
+export type UnhandledErrorResult = {
+  status: 'unhandled-error';
+  targetBranch: string;
+  error: Error;
+};
+
+export type Result = SuccessResult | HandledErrorResult | UnhandledErrorResult;
 
 export async function runSequentially({
   options,
@@ -59,7 +62,7 @@ export async function runSequentially({
         pullRequestNumber: number,
       });
     } catch (e) {
-      const isHandledError = e instanceof HandledError;
+      const isHandledError = e instanceof BackportError;
       if (isHandledError) {
         results.push({
           targetBranch,

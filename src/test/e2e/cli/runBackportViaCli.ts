@@ -2,12 +2,12 @@ import { spawn } from 'child_process';
 import path from 'path';
 import { debounce } from 'lodash';
 import stripAnsi from 'strip-ansi';
+import { getSandboxPath, resetSandbox } from '../../sandbox';
 
-const TIMEOUT_IN_SECONDS = 15;
-jest.setTimeout(TIMEOUT_IN_SECONDS * 1000);
+jest.setTimeout(15_000);
 
 export function runBackportViaCli(
-  cliArgs: string[],
+  backportArgs: string[],
   {
     timeoutSeconds = 2,
     showOra,
@@ -22,68 +22,80 @@ export function runBackportViaCli(
 ) {
   const tsNodeBinary = path.resolve('./node_modules/.bin/ts-node');
   const entrypointFile = path.resolve('./src/entrypoint.cli.ts');
+  const randomString = Math.random().toString(36).slice(2);
+  const sandboxPath = getSandboxPath({
+    filename: __filename,
+    specname: randomString,
+  });
+  resetSandbox(sandboxPath);
 
-  const proc = spawn(
-    tsNodeBinary,
-    [
-      '--transpile-only',
-      entrypointFile,
-      '--log-file-path',
-      '/dev/null',
-      ...cliArgs,
-    ],
-    { cwd }
-  );
+  const cmdArgs = [
+    '--transpile-only',
+    entrypointFile,
+    '--log-file-path=/dev/null',
+    ...(backportArgs.some((arg) => arg.includes('--dir'))
+      ? []
+      : [`--dir=${sandboxPath}`]),
+    ...backportArgs,
+  ];
 
-  return new Promise<string>((resolve, reject) => {
-    let data = '';
+  const proc = spawn(tsNodeBinary, cmdArgs, { cwd });
 
-    const rejectOnTimeout = debounce(
-      () => {
-        reject(
-          `Expectation '${waitForString}' not found within ${timeoutSeconds} second in:\n\n${data.toString()}`
-        );
-      },
-      timeoutSeconds * 1000,
-      { maxWait: 15000 }
-    );
+  return new Promise<{ output: string; code: number | null }>(
+    (resolve, reject) => {
+      let data = '';
 
-    // fail if expectations hasn't been found within 10 seconds
+      const postponeTimeout = debounce(
+        () => {
+          const formattedData = formatData(data);
+          const cmd = [tsNodeBinary, ...cmdArgs].join(' ');
+          reject(
+            waitForString
+              ? `Expectation '${waitForString}' not found within ${timeoutSeconds} second in:\n\n${formattedData}\n\nCommand: ${cmd}`
+              : `Timeout. Received:\n${formattedData}\n\nCommand: ${cmd}`
+          );
+        },
+        timeoutSeconds * 1000,
+        { maxWait: 15000 }
+      );
 
-    const onChunk = (chunk: any) => {
-      data += chunk;
-      const stringfiedData = data.toString();
-      rejectOnTimeout();
-
-      // remove ansi codes and whitespace
-      const output = stripAnsi(stringfiedData).replace(/\s+$/gm, '');
-
-      if (!waitForString || output.includes(waitForString)) {
-        rejectOnTimeout.cancel();
-        resolve(output);
+      function formatData(data: string) {
+        return stripAnsi(data.toString()).trim();
       }
-    };
 
-    proc.on('exit', (code) => {
-      rejectOnTimeout.cancel();
-      if (code !== null && code === 0) {
-        resolve(data.toString());
-      } else {
-        reject(code);
-      }
-    });
+      const onChunk = (chunk: any) => {
+        data += chunk;
+        const output = formatData(data);
 
-    proc.stdout.on('data', onChunk);
+        if (waitForString && output.includes(waitForString)) {
+          postponeTimeout.cancel();
+          resolve({ output, code: null });
+        }
+      };
 
-    // ora (loading spinner) is redirected to stderr
-    if (showOra) {
-      proc.stderr.on('data', onChunk);
+      proc.on('exit', (code) => {
+        postponeTimeout.cancel();
+        resolve({ output: formatData(data), code });
+      });
+
+      proc.stdout.on('data', (chunk: any) => {
+        postponeTimeout();
+        onChunk(chunk);
+      });
+
+      // ora (loading spinner) is redirected to stderr
+      proc.stderr.on('data', (chunk: any) => {
+        postponeTimeout();
+        if (showOra) {
+          onChunk(chunk);
+        }
+      });
+
+      proc.on('error', (err) => {
+        reject(`runBackportViaCli failed with: ${err}`);
+      });
     }
-
-    proc.on('error', (err) => {
-      reject(`runBackportViaCli failed with: ${err}`);
-    });
-  }).finally(() => {
+  ).finally(() => {
     proc.kill();
   });
 }

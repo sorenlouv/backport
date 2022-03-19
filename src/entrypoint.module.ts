@@ -1,21 +1,32 @@
 import { backportRun as run } from './backportRun';
 import { BackportResponse } from './backportRun';
+import { fetchCommitByPullNumber } from './lib/github/v4/fetchCommits/fetchCommitByPullNumber';
+import { fetchCommitBySha } from './lib/github/v4/fetchCommits/fetchCommitBySha';
+import { fetchCommitsByAuthor } from './lib/github/v4/fetchCommits/fetchCommitsByAuthor';
+import { fetchPullRequestsBySearchQuery } from './lib/github/v4/fetchCommits/fetchPullRequestsBySearchQuery';
+import { getOptionsFromGithub } from './lib/github/v4/getOptionsFromGithub/getOptionsFromGithub';
+import { initLogger } from './lib/logger';
+import type { Commit } from './lib/sourceCommit/parseSourceCommit';
 import { ConfigFileOptions } from './options/ConfigOptions';
 import { ValidConfigOptions } from './options/options';
-import { fetchCommitByPullNumber } from './services/github/v4/fetchCommits/fetchCommitByPullNumber';
-import { fetchCommitBySha } from './services/github/v4/fetchCommits/fetchCommitBySha';
-import { fetchCommitsByAuthor } from './services/github/v4/fetchCommits/fetchCommitsByAuthor';
-import { fetchPullRequestsBySearchQuery } from './services/github/v4/fetchCommits/fetchPullRequestsBySearchQuery';
-import { getOptionsFromGithub } from './services/github/v4/getOptionsFromGithub/getOptionsFromGithub';
-import { initLogger } from './services/logger';
-import { Commit } from './services/sourceCommit/parseSourceCommit';
 import { excludeUndefined } from './utils/excludeUndefined';
 
 // public API
-export { BackportResponse };
-export { Commit };
-export { ConfigFileOptions } from './options/ConfigOptions';
-export { fetchRemoteProjectConfig as getRemoteProjectConfig } from './services/github/v4/fetchRemoteProjectConfig';
+export type {
+  HandledErrorResult,
+  SuccessResult,
+  UnhandledErrorResult,
+} from './runSequentially';
+export type {
+  BackportAbortResponse,
+  BackportFailureResponse,
+  BackportResponse,
+  BackportSuccessResponse,
+} from './backportRun';
+export { BackportError } from './lib/BackportError';
+export type { Commit } from './lib/sourceCommit/parseSourceCommit';
+export type { ConfigFileOptions } from './options/ConfigOptions';
+export { fetchRemoteProjectConfig as getRemoteProjectConfig } from './lib/github/v4/fetchRemoteProjectConfig';
 export { getGlobalConfig as getLocalGlobalConfig } from './options/config/globalConfig';
 
 export function backportRun({
@@ -61,7 +72,7 @@ export async function getCommits(options: {
   dateUntil?: string;
   dateSince?: string;
 }): Promise<Commit[]> {
-  initLogger({ ci: true, accessToken: options.accessToken });
+  initLogger({ interactive: false, accessToken: options.accessToken });
 
   const optionsFromGithub = await getOptionsFromGithub(options);
 

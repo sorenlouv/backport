@@ -1,6 +1,6 @@
 import { Octokit } from '@octokit/rest';
 import { BackportResponse, backportRun } from '../../../entrypoint.module';
-import { getShortSha } from '../../../services/github/commitFormatters';
+import { getShortSha } from '../../../lib/github/commitFormatters';
 import { getDevAccessToken } from '../../private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
 
@@ -8,7 +8,7 @@ jest.unmock('find-up');
 jest.unmock('del');
 jest.unmock('make-dir');
 
-jest.setTimeout(15000);
+jest.setTimeout(10_000);
 
 const accessToken = getDevAccessToken();
 const octokit = new Octokit({ auth: accessToken });
