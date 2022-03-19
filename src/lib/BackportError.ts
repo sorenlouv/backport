@@ -14,7 +14,7 @@ type ErrorContext =
       message: string;
     }
   | {
-      code: 'no-branches-exception' | 'abort-exception';
+      code: 'no-branches-exception' | 'abort-conflict-resolution-exception';
     };
 
 function getMessage(errorContext: ErrorContext): string {
@@ -25,8 +25,8 @@ function getMessage(errorContext: ErrorContext): string {
       )}`;
     case 'no-branches-exception':
       return 'There are no branches to backport to. Aborting.';
-    case 'abort-exception':
-      return 'Aborted';
+    case 'abort-conflict-resolution-exception':
+      return 'Conflict resolution was aborted by the user';
     case 'message-only-exception':
       return errorContext.message;
   }

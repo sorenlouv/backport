@@ -335,7 +335,7 @@ async function listConflictingAndUnstagedFiles({
   );
 
   if (!didConfirm) {
-    throw new BackportError({ code: 'abort-exception' });
+    throw new BackportError({ code: 'abort-conflict-resolution-exception' });
   }
 
   const MAX_RETRIES = 100;

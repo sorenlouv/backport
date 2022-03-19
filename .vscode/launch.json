@@ -7,7 +7,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "TS-node",
+      "name": "Run file",
       "program": "${workspaceRoot}/node_modules/.bin/ts-node",
       "args": ["--transpile-only", "${file}"],
       "console": "integratedTerminal"
@@ -15,15 +15,10 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Run backport (ts-node)",
+      "name": "Run entrypoint.cli.ts",
       "program": "${workspaceRoot}/src/entrypoint.cli.ts",
       "runtimeArgs": ["-r", "ts-node/register/transpile-only"],
-      "args": [
-        "--dry-run",
-        "--pr=12",
-        "--branch=7.x",
-        "--repo=backport-org/repo-with-conflicts"
-      ],
+      "args": ["--no-fork", "--pr=96", "--repo=backport-org/backport-demo"],
       "console": "integratedTerminal"
     },
     {

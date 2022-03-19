@@ -383,7 +383,7 @@ describe('getCommentBody', () => {
     });
   });
 
-  describe('when all backports fail due to missing branches', () => {
+  describe('when backport was aborted due to missing branches', () => {
     const getParams = (opts: Partial<ValidConfigOptions>) => ({
       options: {
         repoName: 'kibana',
@@ -424,6 +424,74 @@ describe('getCommentBody', () => {
 
     it('does not post a comment when `publishStatusCommentOnAbort = false`', () => {
       const params = getParams({ publishStatusCommentOnAbort: false });
+      expect(getCommentBody(params)).toBe(undefined);
+    });
+  });
+
+  describe('when backport was aborted during conflict resolution', () => {
+    const getParams = (opts: Partial<ValidConfigOptions>) => ({
+      options: {
+        interactive: true,
+        repoName: 'kibana',
+        repoOwner: 'elastic',
+        autoMerge: true,
+        backportBinary: 'node scripts/backport',
+        ...opts,
+      } as ValidConfigOptions,
+      pullNumber: 55,
+      backportResponse: {
+        status: 'success',
+        commits: [],
+        results: [
+          {
+            targetBranch: 'staging',
+            status: 'handled-error',
+            error: new BackportError({
+              code: 'abort-conflict-resolution-exception',
+            }),
+          },
+        ],
+      } as BackportResponse,
+    });
+
+    it('posts a comment when `publishStatusCommentOnAbort = true`', () => {
+      const params = getParams({
+        publishStatusCommentOnAbort: true,
+      });
+      expect(getCommentBody(params)).toMatchInlineSnapshot(`undefined`);
+    });
+
+    it('does not post a comment when `publishStatusCommentOnAbort = false`', () => {
+      const params = getParams({ publishStatusCommentOnAbort: false });
+      expect(getCommentBody(params)).toBe(undefined);
+    });
+
+    it('posts a comment when `publishStatusCommentOnFailure = true`', () => {
+      const params = getParams({
+        publishStatusCommentOnFailure: true,
+      });
+      expect(getCommentBody(params)).toMatchInlineSnapshot(`
+        "## 💔 All backports failed
+
+        | Status | Branch | Result |
+        |:------:|:------:|:------|
+        |❌|staging|Conflict resolution was aborted by the user|
+
+        ### Manual backport
+        To create the backport manually run:
+        \`\`\`
+        node scripts/backport --pr 55
+        \`\`\`
+
+        ### Questions ?
+        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
+
+        <!--- Backport version: 1.2.3-mocked -->"
+      `);
+    });
+
+    it('does not post a comment when `publishStatusCommentOnFailure = false`', () => {
+      const params = getParams({ publishStatusCommentOnFailure: false });
       expect(getCommentBody(params)).toBe(undefined);
     });
   });

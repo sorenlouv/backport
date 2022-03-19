@@ -78,10 +78,10 @@ export function getCommentBody({
     backportResponse.status === 'success' &&
     backportResponse.results.every((r) => r.status === 'success');
 
-  const didBackportFail =
+  const didAllBackportsFail =
     backportResponse.status === 'failure' ||
     (backportResponse.status === 'success' &&
-      backportResponse.results.some((r) => r.status !== 'success'));
+      backportResponse.results.every((r) => r.status !== 'success'));
 
   if (
     // don't publish on dry-run
@@ -96,7 +96,7 @@ export function getCommentBody({
     (didAllBackportsSucceed && !publishStatusCommentOnSuccess) ||
     //
     // dont publish comment if operation failed or all backports failed
-    (didBackportFail && !publishStatusCommentOnFailure) ||
+    (didAllBackportsFail && !publishStatusCommentOnFailure) ||
     //
     // dont publish comment if backport was aborted
     (backportResponse.status === 'aborted' && !publishStatusCommentOnAbort)
@@ -126,11 +126,6 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
   }
 
   const tableBody = backportResponse.results
-    .filter((result) => {
-      // only post status updates for successful backports when running in --interactive mode
-      // TODO: this seems duplicated from above
-      return !options.interactive || result.status === 'success';
-    })
     .map((result) => {
       if (result.status === 'success') {
         return [
