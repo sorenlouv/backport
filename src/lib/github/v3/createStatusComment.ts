@@ -14,21 +14,7 @@ export async function createStatusComment({
   options: ValidConfigOptions;
   backportResponse: BackportResponse;
 }): Promise<void> {
-  const {
-    githubApiBaseUrlV3,
-    repoName,
-    repoOwner,
-    accessToken,
-    publishStatusCommentOnFailure,
-    publishStatusCommentOnSuccess,
-  } = options;
-
-  if (
-    (!publishStatusCommentOnFailure && !publishStatusCommentOnSuccess) ||
-    options.dryRun
-  ) {
-    return;
-  }
+  const { githubApiBaseUrlV3, repoName, repoOwner, accessToken } = options;
 
   try {
     const octokit = new Octokit({
@@ -81,11 +67,11 @@ export function getCommentBody({
     repoName,
     repoOwner,
     autoMerge,
-    publishStatusCommentOnSuccess,
+    publishStatusCommentOnAbort,
     publishStatusCommentOnFailure,
+    publishStatusCommentOnSuccess,
   } = options;
 
-  // TODO; add new cli args to specify whether to post comments for successful and failures
   // eg. in addition to `--noStatusComment` add `--noFailureStatusComment` and `--noSuccessStatusComment` where the former will overwrite the two latter
 
   const didAllBackportsSucceed =
@@ -93,10 +79,15 @@ export function getCommentBody({
     backportResponse.results.every((r) => r.status === 'success');
 
   if (
+    // don't publish on dry-run
+    options.dryRun ||
+    // don't publish comment regardless if it succeeded or failed
+    (!publishStatusCommentOnFailure && !publishStatusCommentOnSuccess) ||
     // dont publish comment if all backports suceeded
     (didAllBackportsSucceed && !publishStatusCommentOnSuccess) ||
     // dont publish comment if some failed
-    (!didAllBackportsSucceed && !publishStatusCommentOnFailure)
+    (!didAllBackportsSucceed && !publishStatusCommentOnFailure) ||
+    (backportResponse.status === 'aborted' && !publishStatusCommentOnAbort)
   ) {
     return;
   }

@@ -401,8 +401,11 @@ describe('getCommentBody', () => {
       } as BackportResponse,
     });
 
-    it('posts a comment when `publishStatusCommentOnFailure = true`', () => {
-      const params = getParams({ publishStatusCommentOnFailure: true });
+    it('posts a comment when `publishStatusCommentOnAbort = true`', () => {
+      const params = getParams({
+        publishStatusCommentOnAbort: true,
+        publishStatusCommentOnFailure: true,
+      });
       expect(getCommentBody(params)).toMatchInlineSnapshot(`
         "## ⚪ Backport skipped
         The pull request was not backported as there were no branches to backport to. If this is a mistake, please apply the desired version labels or run the backport tool manually.
@@ -420,8 +423,8 @@ describe('getCommentBody', () => {
       `);
     });
 
-    it('does not post a comment when `publishStatusCommentOnFailure = false`', () => {
-      const params = getParams({ publishStatusCommentOnFailure: false });
+    it('does not post a comment when `publishStatusCommentOnAbort = false`', () => {
+      const params = getParams({ publishStatusCommentOnAbort: false });
       expect(getCommentBody(params)).toBe(undefined);
     });
   });

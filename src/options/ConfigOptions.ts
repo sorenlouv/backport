@@ -51,8 +51,9 @@ type Options = Partial<{
   prFilter: string;
   projectConfigFile: string; // only available via cli and module options (not project or global config)
   prTitle: string;
-  publishStatusCommentOnSuccess: boolean;
+  publishStatusCommentOnAbort: boolean;
   publishStatusCommentOnFailure: boolean;
+  publishStatusCommentOnSuccess: boolean;
   pullNumber: number;
   repoForkOwner: string;
   repoName: string;

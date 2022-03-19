@@ -460,6 +460,7 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
     noVerify: verify ?? noVerify,
     publishStatusCommentOnSuccess: noStatusComment === true ? false : undefined,
     publishStatusCommentOnFailure: noStatusComment === true ? false : undefined,
+    publishStatusCommentOnAbort: noStatusComment === true ? false : undefined,
     interactive: nonInteractive === true ? false : undefined,
   });
 }
