@@ -418,6 +418,20 @@ Config:
 }
 ```
 
+#### `publishStatusCommentOnAbort`
+
+Publish a status comment to the source pull request if the backport was aborted
+
+Default: `False`
+
+Config:
+
+```json
+{
+  "publishStatusCommentOnSuccess": false
+}
+```
+
 #### `publishStatusCommentOnSuccess`
 
 Publish a status comment to the source pull request if all backports succeeded
@@ -436,7 +450,7 @@ Config:
 
 Publish a status comment to the source pull request if some backports failed
 
-Default: `true`
+Default: `false`
 
 Config:
 
