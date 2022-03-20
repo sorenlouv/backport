@@ -495,4 +495,60 @@ describe('getCommentBody', () => {
       expect(getCommentBody(params)).toBe(undefined);
     });
   });
+
+  describe("when target branch doesn't exist", () => {
+    const getParams = (opts: Partial<ValidConfigOptions>) => ({
+      options: {
+        interactive: true,
+        repoName: 'kibana',
+        repoOwner: 'elastic',
+        autoMerge: true,
+        backportBinary: 'node scripts/backport',
+        ...opts,
+      } as ValidConfigOptions,
+      pullNumber: 55,
+      backportResponse: {
+        status: 'success',
+        commits: [],
+        results: [
+          {
+            targetBranch: 'main',
+            status: 'handled-error',
+            error: new BackportError(
+              'The branch "main" is invalid or doesn\'t exist'
+            ),
+          },
+        ],
+      } as BackportResponse,
+    });
+
+    it('posts a comment when `publishStatusCommentOnFailure = true`', () => {
+      const params = getParams({
+        publishStatusCommentOnFailure: true,
+      });
+      expect(getCommentBody(params)).toMatchInlineSnapshot(`
+        "## 💔 All backports failed
+
+        | Status | Branch | Result |
+        |:------:|:------:|:------|
+        |❌|main|The branch \\"main\\" is invalid or doesn't exist|
+
+        ### Manual backport
+        To create the backport manually run:
+        \`\`\`
+        node scripts/backport --pr 55
+        \`\`\`
+
+        ### Questions ?
+        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
+
+        <!--- Backport version: 1.2.3-mocked -->"
+      `);
+    });
+
+    it('does not post a comment when `publishStatusCommentOnFailure = false`', () => {
+      const params = getParams({ publishStatusCommentOnFailure: false });
+      expect(getCommentBody(params)).toBe(undefined);
+    });
+  });
 });
