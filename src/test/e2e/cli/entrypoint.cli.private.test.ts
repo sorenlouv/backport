@@ -322,14 +322,16 @@ describe('entrypoint cli', () => {
       ]);
 
       const backportResult = JSON.parse(output) as BackportFailureResponse;
+
+      // remove absolute path to avoid issues on ci
+      const errorMessage = backportResult.errorMessage.replace(
+        configFilePath,
+        '<GLOBAL_CONFIG_FILE>'
+      );
+
       expect(code).toBe(1);
       expect(backportResult.status).toBe('failure');
-      expect(
-        backportResult.errorMessage.replace(
-          configFilePath,
-          '<GLOBAL_CONFIG_FILE>'
-        )
-      ).toMatchInlineSnapshot(`
+      expect(errorMessage).toMatchInlineSnapshot(`
         "Please update your config file: \\"<GLOBAL_CONFIG_FILE>\\".
         It must contain a valid \\"accessToken\\".
 

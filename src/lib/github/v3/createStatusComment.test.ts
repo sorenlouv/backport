@@ -5,11 +5,15 @@ import {
 } from '../../../backportRun';
 import { ValidConfigOptions } from '../../../options/options';
 import { BackportError } from '../../BackportError';
+import { setAccessToken } from '../../logger';
 import { createStatusComment, getCommentBody } from './createStatusComment';
+
+jest.unmock('../../logger');
 
 describe('createStatusComment', () => {
   it('redacts accessToken if it is included in the error message', async () => {
     const accessToken = 'ghp_abcdefg';
+    setAccessToken(accessToken);
 
     const scope = nock('https://api.github.com')
       .post('/repos/elastic/kibana/issues/100/comments')

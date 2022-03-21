@@ -82,10 +82,7 @@ export async function backportRun({
   const spinner = ora(interactive).start('Initializing...');
 
   try {
-    options = await getOptions({
-      optionsFromCliArgs,
-      optionsFromModule,
-    });
+    options = await getOptions({ optionsFromCliArgs, optionsFromModule });
     logger.info('Backporting options', options);
     spinner.stop();
 

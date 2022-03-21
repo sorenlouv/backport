@@ -1,5 +1,4 @@
 import winston, { format } from 'winston';
-import { redact } from '../utils/redact';
 import { getLogfilePath } from './env';
 
 export let logger: winston.Logger;
@@ -29,7 +28,11 @@ export function initLogger({
     transports: new winston.transports.File({
       filename: getLogfilePath({ logFilePath }),
       level: 'debug',
-      format: format.combine(format.json()),
+      format: format.json({
+        replacer: (key, value) => {
+          return typeof value === 'string' ? redactAccessToken(value) : value;
+        },
+      }),
     }),
   });
 
@@ -48,10 +51,10 @@ export function setAccessToken(accessToken: string) {
   _accessToken = accessToken;
 }
 
-function redactAccessToken(str: string) {
+export function redactAccessToken(str: string) {
   // `redactAccessToken` might be called before access token is set
   if (_accessToken) {
-    return redact(_accessToken, str);
+    return str.replaceAll(_accessToken, '<REDACTED>');
   }
 
   return str;

@@ -39,12 +39,14 @@ export async function spawnPromise(
     });
 
     subprocess.on('close', (code) => {
+      const fullCmd = `${cmd} ${cmdArgs.join(' ')}`;
+
       if (code === 0 || code === null) {
-        logger.verbose(`spawn success "${cmdArgs}"`);
+        logger.verbose(`spawn success: "${fullCmd}"`);
         resolve({ cmdArgs, code, stderr, stdout });
       } else {
         const err = new SpawnError({ cmdArgs, code, stderr, stdout });
-        logger.info('spawn error', err);
+        logger.info(`spawn error: "${fullCmd}"`, err);
         reject(err);
       }
     });
