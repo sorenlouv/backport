@@ -70,7 +70,7 @@ export async function createPullRequest({
         };
       }
     } catch (e) {
-      logger.info('Could not retrieve existing pull request', e);
+      logger.error('Could not retrieve existing pull request', e);
       // swallow error
     }
 

@@ -37,6 +37,6 @@ export async function addReviewersToPullRequest(
     //@ts-expect-error
     const message = e.response?.data?.message;
     spinner.fail(`Adding reviewers. ${message ? message : ''}`);
-    logger.info(`Could not add reviewers to PR ${pullNumber}`, e);
+    logger.error(`Could not add reviewers to PR ${pullNumber}`, e);
   }
 }

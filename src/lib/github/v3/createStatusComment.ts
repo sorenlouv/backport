@@ -49,7 +49,7 @@ export async function createStatusComment({
       })
     );
   } catch (e) {
-    logger.info(`Could not create status comment `, e);
+    logger.error(`Could not create status comment `, e);
   }
 }
 
