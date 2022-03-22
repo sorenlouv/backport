@@ -1,5 +1,4 @@
 import winston, { format } from 'winston';
-import { redact } from '../utils/redact';
 import { getLogfilePath } from './env';
 
 export let logger: winston.Logger;
@@ -26,14 +25,33 @@ export function initLogger({
         fillExcept: ['message', 'level', 'timestamp', 'label'],
       })
     ),
-    transports: new winston.transports.File({
-      filename: getLogfilePath({ logFilePath }),
-      level: 'debug',
-      format: format.combine(format.json()),
-    }),
+    transports: logFilePath
+      ? [fileTransport({ logLevel: 'debug', logFilePath })]
+      : [
+          fileTransport({ logLevel: 'info' }),
+          fileTransport({ logLevel: 'debug' }),
+        ],
   });
 
   return logger;
+}
+
+function fileTransport({
+  logFilePath,
+  logLevel,
+}: {
+  logFilePath?: string;
+  logLevel: LogLevel;
+}) {
+  return new winston.transports.File({
+    filename: getLogfilePath({ logFilePath, logLevel }),
+    level: logLevel,
+    format: format.json({
+      replacer: (key, value) => {
+        return typeof value === 'string' ? redactAccessToken(value) : value;
+      },
+    }),
+  });
 }
 
 // wrapper around console.log
@@ -48,18 +66,13 @@ export function setAccessToken(accessToken: string) {
   _accessToken = accessToken;
 }
 
-function redactAccessToken(str: string) {
+export function redactAccessToken(str: string) {
   // `redactAccessToken` might be called before access token is set
   if (_accessToken) {
-    return redact(_accessToken, str);
+    return str.replaceAll(_accessToken, '<REDACTED>');
   }
 
   return str;
 }
 
-// log levels:
-// - error
-// - warn
-// - info
-// - verbose
-// - debug
+export type LogLevel = 'error' | 'warn' | 'info' | 'verbose' | 'debug';

@@ -1,16 +1,23 @@
 import { homedir } from 'os';
 import path from 'path';
 import { ValidConfigOptions } from '../options/options';
+import { LogLevel } from './logger';
 
 export function getBackportDirPath() {
   return path.join(homedir(), '.backport');
 }
 
-export function getLogfilePath({ logFilePath }: { logFilePath?: string }) {
+export function getLogfilePath({
+  logFilePath,
+  logLevel,
+}: {
+  logFilePath?: string;
+  logLevel: LogLevel;
+}) {
   if (logFilePath) {
     return path.resolve(logFilePath);
   }
-  return path.join(homedir(), '.backport', 'backport.log');
+  return path.join(homedir(), '.backport', `backport.${logLevel}.log`);
 }
 
 export function getGlobalConfigPath(globalConfigFile: string | undefined) {

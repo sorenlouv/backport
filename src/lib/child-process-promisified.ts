@@ -39,12 +39,14 @@ export async function spawnPromise(
     });
 
     subprocess.on('close', (code) => {
+      const fullCmd = `${cmd} ${cmdArgs.join(' ')}`;
+      logger.info(`Running command: "${fullCmd}"`);
+
       if (code === 0 || code === null) {
-        logger.verbose(`spawn success "${cmdArgs}"`);
         resolve({ cmdArgs, code, stderr, stdout });
       } else {
         const err = new SpawnError({ cmdArgs, code, stderr, stdout });
-        logger.info('spawn error', err);
+        logger.verbose(`Error when running command: "${fullCmd}"`, err);
         reject(err);
       }
     });
@@ -67,9 +69,10 @@ export type SpawnErrorContext = {
 export class SpawnError extends Error {
   context: SpawnErrorContext;
   constructor(context: SpawnErrorContext) {
-    const message = `Code: ${context.code}; Args: ${JSON.stringify(
-      context.cmdArgs
-    )}; ${context.stderr.trim()}`;
+    const cmdArgs = context.cmdArgs.join(' ');
+    const message = `Code: ${
+      context.code
+    }, Args: "${cmdArgs}", Message: ${context.stderr.trim()}`;
 
     super(message);
     Error.captureStackTrace(this, SpawnError);

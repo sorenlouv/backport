@@ -9,7 +9,7 @@ jest.setTimeout(15_000);
 export function runBackportViaCli(
   backportArgs: string[],
   {
-    timeoutSeconds = 2,
+    timeoutSeconds = 3,
     showOra,
     waitForString,
     cwd,

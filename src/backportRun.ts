@@ -12,7 +12,7 @@ import { setupRepo } from './lib/setupRepo';
 import { Commit } from './lib/sourceCommit/parseSourceCommit';
 import { ConfigFileOptions } from './options/ConfigOptions';
 import {
-  getEarlyArguments,
+  getRuntimeArguments,
   getOptionsFromCliArgs,
   OptionsFromCliArgs,
 } from './options/cliArgs';
@@ -53,7 +53,7 @@ export async function backportRun({
   optionsFromModule?: ConfigFileOptions;
   exitCodeOnFailure: boolean;
 }): Promise<BackportResponse> {
-  const { interactive, logFilePath } = getEarlyArguments(
+  const { interactive, logFilePath } = getRuntimeArguments(
     processArgs,
     optionsFromModule
   );
@@ -82,10 +82,7 @@ export async function backportRun({
   const spinner = ora(interactive).start('Initializing...');
 
   try {
-    options = await getOptions({
-      optionsFromCliArgs,
-      optionsFromModule,
-    });
+    options = await getOptions({ optionsFromCliArgs, optionsFromModule });
     logger.info('Backporting options', options);
     spinner.stop();
 
@@ -184,12 +181,9 @@ function outputError({
       'Please open an issue in https://github.com/sqren/backport/issues or contact me directly on https://twitter.com/sorenlouv'
     );
 
+    const infoLogPath = getLogfilePath({ logFilePath, logLevel: 'info' });
     consoleLog(
-      chalk.italic(
-        `For additional details see the logs: ${getLogfilePath({
-          logFilePath,
-        })}`
-      )
+      chalk.italic(`For additional details see the logs: ${infoLogPath}`)
     );
   }
 }

@@ -63,6 +63,7 @@ export async function apiRequestV4<DataResponse>({
         query,
         variables,
         githubResponse: e.response,
+        didThrow: true,
       });
       throw new GithubV4Exception(e.response, e.message);
     }
@@ -76,22 +77,25 @@ function addDebugLogs({
   query,
   variables,
   githubResponse,
+  didThrow = false,
 }: {
   githubApiBaseUrlV4: string;
   query: DocumentNode;
   variables?: Variables;
   githubResponse: AxiosResponse;
+  didThrow?: boolean;
 }) {
   const gqlQueryName = getQueryName(query);
   logger.info(
-    `POST ${githubApiBaseUrlV4} (name:${gqlQueryName}, status: ${githubResponse.status})`
+    `POST ${githubApiBaseUrlV4} (name:${gqlQueryName}, status: ${
+      githubResponse.status
+    }${didThrow ? ', EXCEPTION THROWN' : ''})`
   );
 
-  logger.info(`Query name ${gqlQueryName}`);
-  logger.info(`Query: ${query}`);
-  logger.info('Variables:', variables);
-  logger.info('Response headers:', githubResponse.headers);
-  logger.info('Response data:', githubResponse.data);
+  logger.verbose(`Query: ${query}`);
+  logger.verbose('Variables:', variables);
+  logger.verbose('Response headers:', githubResponse.headers);
+  logger.verbose('Response data:', githubResponse.data);
 }
 
 type AxiosGithubResponse<DataResponse> = AxiosResponse<

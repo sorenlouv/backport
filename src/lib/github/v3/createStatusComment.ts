@@ -2,9 +2,8 @@ import { Octokit } from '@octokit/rest';
 import { BackportResponse } from '../../../backportRun';
 import { ValidConfigOptions } from '../../../options/options';
 import { PACKAGE_VERSION } from '../../../utils/packageVersion';
-import { redact } from '../../../utils/redact';
 import { BackportError } from '../../BackportError';
-import { logger } from '../../logger';
+import { logger, redactAccessToken } from '../../logger';
 import { getFirstLine } from '../commitFormatters';
 
 export async function createStatusComment({
@@ -45,12 +44,12 @@ export async function createStatusComment({
           owner: repoOwner,
           repo: repoName,
           issue_number: commit.sourcePullRequest.number,
-          body: redact(options.accessToken, body),
+          body: redactAccessToken(body),
         });
       })
     );
   } catch (e) {
-    logger.info(`Could not create status comment `, e);
+    logger.error(`Could not create status comment `, e);
   }
 }
 

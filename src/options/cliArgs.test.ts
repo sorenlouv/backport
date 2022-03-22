@@ -1,4 +1,4 @@
-import { getEarlyArguments, getOptionsFromCliArgs } from './cliArgs';
+import { getRuntimeArguments, getOptionsFromCliArgs } from './cliArgs';
 
 describe('getOptionsFromCliArgs', () => {
   describe('yargs settings', () => {
@@ -317,49 +317,49 @@ describe('getOptionsFromCliArgs', () => {
   });
 });
 
-describe('getEarlyArguments', () => {
+describe('getRuntimeArguments', () => {
   describe('interactive', () => {
     it('--non-interactive flag', () => {
-      const { interactive } = getEarlyArguments(['--non-interactive']);
+      const { interactive } = getRuntimeArguments(['--non-interactive']);
       expect(interactive).toEqual(false);
     });
 
     it('--json flag', () => {
-      const { interactive } = getEarlyArguments(['--json']);
+      const { interactive } = getRuntimeArguments(['--json']);
       expect(interactive).toEqual(false);
     });
 
     it('default', () => {
-      const { interactive } = getEarlyArguments([]);
+      const { interactive } = getRuntimeArguments([]);
       expect(interactive).toEqual(true);
     });
 
     it('setting via module options', () => {
-      const { interactive } = getEarlyArguments([], { interactive: false });
+      const { interactive } = getRuntimeArguments([], { interactive: false });
       expect(interactive).toEqual(false);
     });
   });
 
   describe('ls', () => {
     it('by default', () => {
-      const { ls } = getEarlyArguments([]);
+      const { ls } = getRuntimeArguments([]);
       expect(ls).toEqual(undefined);
     });
 
     it('--ls flag', () => {
-      const { ls } = getEarlyArguments(['--ls']);
+      const { ls } = getRuntimeArguments(['--ls']);
       expect(ls).toEqual(true);
     });
   });
 
   describe('logFilePath', () => {
     it('by default', () => {
-      const { logFilePath } = getEarlyArguments([]);
+      const { logFilePath } = getRuntimeArguments([]);
       expect(logFilePath).toEqual(undefined);
     });
 
     it('--log-file-path flag', () => {
-      const { logFilePath } = getEarlyArguments(['--log-file-path']);
+      const { logFilePath } = getRuntimeArguments(['--log-file-path']);
       expect(logFilePath).toEqual(true);
     });
   });

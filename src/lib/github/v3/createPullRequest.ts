@@ -70,7 +70,7 @@ export async function createPullRequest({
         };
       }
     } catch (e) {
-      logger.info('Could not retrieve existing pull request', e);
+      logger.error('Could not retrieve existing pull request', e);
       // swallow error
     }
 
@@ -116,9 +116,9 @@ ${commitMessages}
 Please refer to the [Backport tool documentation](https://github.com/sqren/backport)`;
 
   return (options.prDescription ?? defaultPrDescription)
-    .replace('{targetBranch}', targetBranch)
-    .replace('{commitMessages}', commitMessages)
-    .replace('{defaultPrDescription}', defaultPrDescription);
+    .replaceAll('{targetBranch}', targetBranch)
+    .replaceAll('{commitMessages}', commitMessages)
+    .replaceAll('{defaultPrDescription}', defaultPrDescription);
 }
 
 export function getTitle({
@@ -137,7 +137,7 @@ export function getTitle({
   const defaultPrTitle = '[{targetBranch}] {commitMessages}';
 
   return (options.prTitle ?? defaultPrTitle)
-    .replace('{targetBranch}', targetBranch)
-    .replace('{commitMessages}', commitMessages)
+    .replaceAll('{targetBranch}', targetBranch)
+    .replaceAll('{commitMessages}', commitMessages)
     .slice(0, 240);
 }
