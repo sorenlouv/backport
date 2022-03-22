@@ -465,7 +465,7 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
   });
 }
 
-export function getEarlyArguments(
+export function getRuntimeArguments(
   processArgs: string[],
   optionsFromModule?: ConfigFileOptions
 ) {
