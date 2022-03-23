@@ -132,7 +132,7 @@ describe('getOptionsFromCliArgs', () => {
     it('should conflict when using both', () => {
       const argv = ['--multiple', '--multiple-branches', 'false'];
 
-      expect(() => getOptionsFromCliArgs(argv)).toThrow(
+      expect(() => getOptionsFromCliArgs(argv)).toThrowError(
         'Arguments multiple and multipleBranches are mutually exclusive'
       );
     });

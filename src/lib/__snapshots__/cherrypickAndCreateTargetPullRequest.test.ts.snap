@@ -5,6 +5,14 @@ Array [
   Array [
     "git",
     Array [
+      "remote",
+      "--verbose",
+    ],
+    undefined,
+  ],
+  Array [
+    "git",
+    Array [
       "reset",
       "--hard",
     ],

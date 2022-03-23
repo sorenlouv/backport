@@ -5,7 +5,7 @@ import { BackportError } from './BackportError';
 import { spawnPromise } from './child-process-promisified';
 import { getRepoPath } from './env';
 import { getCommitsWithoutBackports } from './getCommitsWithoutBackports';
-import { GitConfigAuthor } from './getGitConfigAuthor';
+import { getGitConfigAuthor, GitConfigAuthor } from './getGitConfigAuthor';
 import {
   cherrypick,
   createBackportBranch,
@@ -39,18 +39,19 @@ export async function cherrypickAndCreateTargetPullRequest({
   options,
   commits,
   targetBranch,
-  gitConfigAuthor,
 }: {
   options: ValidConfigOptions;
   commits: Commit[];
   targetBranch: string;
-  gitConfigAuthor?: GitConfigAuthor;
 }): Promise<{ url: string; number: number; didUpdate: boolean }> {
   const backportBranch = getBackportBranchName(targetBranch, commits);
   const repoForkOwner = getRepoForkOwner(options);
   consoleLog(`\n${chalk.bold(`Backporting to ${targetBranch}:`)}`);
 
-  await createBackportBranch({ options, targetBranch, backportBranch });
+  const [gitConfigAuthor] = await Promise.all([
+    getGitConfigAuthor(options),
+    createBackportBranch({ options, targetBranch, backportBranch }),
+  ]);
 
   await sequentially(commits, (commit) =>
     waitForCherrypick(options, commit, targetBranch, gitConfigAuthor)

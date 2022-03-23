@@ -6,7 +6,7 @@ describe('repo-with-backportrc-removed (missing .backportrc.json config file)', 
   it('lists commits', async () => {
     const { output } = await runBackportViaCli(
       [
-        '--branch=foo',
+        '--branch=production',
         '--repo=backport-org/repo-with-backportrc-removed',
         `--accessToken=${accessToken}`,
       ],
