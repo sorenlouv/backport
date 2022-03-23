@@ -2,7 +2,6 @@ import chalk from 'chalk';
 import { BackportError } from './lib/BackportError';
 import { getLogfilePath } from './lib/env';
 import { getCommits } from './lib/getCommits';
-import { getGitConfigAuthor } from './lib/getGitConfigAuthor';
 import { getTargetBranches } from './lib/getTargetBranches';
 import { createStatusComment } from './lib/github/v3/createStatusComment';
 import { GithubV4Exception } from './lib/github/v4/apiRequestV4';
@@ -96,16 +95,12 @@ export async function backportRun({
     const targetBranches = await getTargetBranches(options, commits);
     logger.info('Target branches', targetBranches);
 
-    const [gitConfigAuthor] = await Promise.all([
-      getGitConfigAuthor(options),
-      setupRepo(options),
-    ]);
+    await setupRepo(options);
 
     const results = await runSequentially({
       options,
       commits,
       targetBranches,
-      gitConfigAuthor,
     });
     logger.info('Results', results);
 

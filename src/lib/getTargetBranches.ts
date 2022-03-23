@@ -8,7 +8,7 @@ import { BackportError } from './BackportError';
 import { promptForTargetBranches } from './prompts';
 import { Commit } from './sourceCommit/parseSourceCommit';
 
-export function getTargetBranches(
+export async function getTargetBranches(
   options: ValidConfigOptions,
   commits: Commit[]
 ) {

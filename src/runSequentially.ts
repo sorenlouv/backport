@@ -1,6 +1,5 @@
 import { BackportError } from './lib/BackportError';
 import { cherrypickAndCreateTargetPullRequest } from './lib/cherrypickAndCreateTargetPullRequest';
-import { GitConfigAuthor } from './lib/getGitConfigAuthor';
 import { logger, consoleLog } from './lib/logger';
 import { sequentially } from './lib/sequentially';
 import { Commit } from './lib/sourceCommit/parseSourceCommit';
@@ -32,12 +31,10 @@ export async function runSequentially({
   options,
   commits,
   targetBranches,
-  gitConfigAuthor,
 }: {
   options: ValidConfigOptions;
   commits: Commit[];
   targetBranches: string[];
-  gitConfigAuthor?: GitConfigAuthor;
 }): Promise<Result[]> {
   logger.verbose('Backport options', options);
 
@@ -51,7 +48,6 @@ export async function runSequentially({
           options,
           commits,
           targetBranch,
-          gitConfigAuthor: gitConfigAuthor,
         });
 
       results.push({
@@ -82,7 +78,7 @@ export async function runSequentially({
       consoleLog(
         isHandledError
           ? e.message
-          : 'An error occurred while backporting commit. Please see the logs for details'
+          : 'An unhandled error occurred while backporting commit. Please see the logs for details'
       );
 
       logger.error('runSequentially failed', e);

@@ -2,6 +2,7 @@ import { TargetBranchChoice } from '../options/ConfigOptions';
 import { ValidConfigOptions } from '../options/options';
 import { SpyHelper } from '../types/SpyHelper';
 import { getTargetBranches, getTargetBranchChoices } from './getTargetBranches';
+import * as validateTargetBranches from './github/v4/validateTargetBranches';
 import * as prompts from './prompts';
 import { Commit } from './sourceCommit/parseSourceCommit';
 
@@ -17,7 +18,7 @@ describe('getTargetBranches', () => {
   });
 
   describe('when `options.targetBranches` is empty', () => {
-    let branches: ReturnType<typeof getTargetBranches>;
+    let branches: string[];
 
     beforeEach(async () => {
       const options = {
@@ -64,10 +65,14 @@ describe('getTargetBranches', () => {
   });
 
   describe('when `options.targetBranches` is not empty', () => {
-    let branches: ReturnType<typeof getTargetBranches>;
+    let branches: string[];
 
-    beforeEach(() => {
-      branches = getTargetBranches(
+    beforeEach(async () => {
+      jest
+        .spyOn(validateTargetBranches, 'validateTargetBranches')
+        .mockResolvedValueOnce();
+
+      branches = await getTargetBranches(
         {
           targetBranches: ['branchA', 'branchB'],
           targetBranchChoices: [],
@@ -87,10 +92,10 @@ describe('getTargetBranches', () => {
   });
 
   describe('when interactive=false', () => {
-    it('should throw when there are no missing backports', () => {
+    it('should throw when there are no missing backports', async () => {
       const commits: Commit[] = [];
 
-      expect(() => {
+      await expect(() => {
         return getTargetBranches(
           {
             expectedTargetPullRequests: [],
@@ -98,10 +103,12 @@ describe('getTargetBranches', () => {
           } as unknown as ValidConfigOptions,
           commits
         );
-      }).toThrow('There are no branches to backport to. Aborting.');
+      }).rejects.toThrowError(
+        'There are no branches to backport to. Aborting.'
+      );
     });
 
-    it('should return missing backports', () => {
+    it('should return missing backports', async () => {
       const commits = [
         {
           expectedTargetPullRequests: [
@@ -112,7 +119,7 @@ describe('getTargetBranches', () => {
         },
       ] as Commit[];
 
-      const targetBranches = getTargetBranches(
+      const targetBranches = await getTargetBranches(
         { interactive: false } as unknown as ValidConfigOptions,
         commits
       );

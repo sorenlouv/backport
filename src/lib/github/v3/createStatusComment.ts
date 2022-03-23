@@ -159,7 +159,11 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
         ];
       }
 
-      return ['❌', result.targetBranch, result.error.message];
+      const message =
+        result.status === 'handled-error'
+          ? result.error.message
+          : 'An unhandled error occurred. Please see the logs for details';
+      return ['❌', result.targetBranch, message];
     })
     .map((line) => line.join('|'))
     .join('|\n|');
