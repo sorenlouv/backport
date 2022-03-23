@@ -8,7 +8,7 @@ describe('different-merge-strategies', () => {
   it('list all commits regardless how they were merged', async () => {
     const { output } = await runBackportViaCli(
       [
-        '--branch=foo',
+        '--branch=7.x',
         '--repo=backport-org/different-merge-strategies',
         `--accessToken=${accessToken}`,
         '-n=20',

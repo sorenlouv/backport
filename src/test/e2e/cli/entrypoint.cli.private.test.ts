@@ -1,11 +1,3 @@
-import fs from 'fs/promises';
-import path from 'path';
-import {
-  BackportAbortResponse,
-  BackportFailureResponse,
-  BackportSuccessResponse,
-} from '../../../backportRun';
-import { ConfigFileOptions } from '../../../entrypoint.module';
 import { exec } from '../../../lib/child-process-promisified';
 import * as packageVersion from '../../../utils/packageVersion';
 import { getDevAccessToken } from '../../private/getDevAccessToken';
@@ -110,7 +102,7 @@ describe('entrypoint cli', () => {
     `);
   });
 
-  it('should list commits based on .git/config when `repoOwner`/`repoName` is missing', async () => {
+  it('lists commits based on .git/config when `repoOwner`/`repoName` is missing', async () => {
     const sandboxPath = getSandboxPath({ filename: __filename });
     await resetSandbox(sandboxPath);
     await exec(`git init`, { cwd: sandboxPath });
@@ -142,10 +134,10 @@ describe('entrypoint cli', () => {
     `);
   });
 
-  it(`should list commits from master`, async () => {
+  it(`lists commits from master`, async () => {
     const { output } = await runBackportViaCli(
       [
-        '--branch=foo',
+        '--branch=7.x',
         '--repo=backport-org/backport-e2e',
         '--author=sqren',
         `--accessToken=${accessToken}`,
@@ -165,10 +157,10 @@ describe('entrypoint cli', () => {
     `);
   });
 
-  it(`should filter commits by "since" and "until"`, async () => {
+  it(`filters commits by "since" and "until"`, async () => {
     const { output } = await runBackportViaCli(
       [
-        '--branch=foo',
+        '--branch=7.x',
         '--repo=backport-org/backport-e2e',
         `--accessToken=${accessToken}`,
         '--since=2020-08-15T10:00:00.000Z',
@@ -186,10 +178,10 @@ describe('entrypoint cli', () => {
     `);
   });
 
-  it(`should list commits from 7.x`, async () => {
+  it(`lists commits from 7.x`, async () => {
     const { output } = await runBackportViaCli(
       [
-        '--branch=foo',
+        '--branch=7.x',
         '--repo=backport-org/backport-e2e',
         '--author=sqren',
         `--accessToken=${accessToken}`,
@@ -208,312 +200,5 @@ describe('entrypoint cli', () => {
         5. Branch off: 7.9.0 (7.x)  
         6. Bump to 8.0.0"
     `);
-  });
-
-  async function createConfigFile(options: ConfigFileOptions) {
-    const sandboxPath = getSandboxPath({ filename: __filename });
-    const configPath = path.join(sandboxPath, 'config.json');
-    await fs.writeFile(configPath, JSON.stringify(options));
-    return configPath;
-  }
-
-  describe('errors in interactive mode (non-json)', () => {
-    it('when branch is missing', async () => {
-      const { output } = await runBackportViaCli([
-        '--skip-remote-config',
-        '--repo=backport-org/backport-e2e',
-        `--accessToken=${accessToken}`,
-      ]);
-      expect(output).toMatchInlineSnapshot(`
-        "Please specify a target branch: \\"--branch 6.1\\".
-
-        Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#project-config-backportrcjson"
-      `);
-    });
-
-    it('when supplying invalid argument', async () => {
-      const { output } = await runBackportViaCli([`--foo`]);
-      expect(output).toMatchInlineSnapshot(`
-        "Unknown argument: foo
-        Run \\"backport --help\\" to see all options"
-      `);
-    });
-
-    it('when access token is invalid', async () => {
-      const { output } = await runBackportViaCli([
-        '--branch=foo',
-        '--repo=foo/bar',
-        '--accessToken=some-token',
-      ]);
-      expect(output).toContain(
-        'Please check your access token and make sure it is valid'
-      );
-    });
-
-    it(`should output error when repo doesn't exist`, async () => {
-      const { output } = await runBackportViaCli([
-        '--branch=foo',
-        '--repo=foo/bar',
-        '--author=sqren',
-        `--accessToken=${accessToken}`,
-      ]);
-      expect(output).toMatchInlineSnapshot(
-        `"The repository \\"foo/bar\\" doesn't exist"`
-      );
-    });
-
-    it(`should output error when given branch is invalid`, async () => {
-      const { output } = await runBackportViaCli([
-        '--branch=foo',
-        '--repo=backport-org/backport-e2e',
-        '--pr=9',
-        `--accessToken=${accessToken}`,
-      ]);
-      expect(output).toMatchInlineSnapshot(`
-        "Backporting to foo:
-        The branch \\"foo\\" is invalid or doesn't exist"
-      `);
-    });
-
-    it(`should output merge conflict`, async () => {
-      const backportDir = getSandboxPath({ filename: __filename });
-      await resetSandbox(backportDir);
-      const { output } = await runBackportViaCli(
-        [
-          '--repo=backport-org/repo-with-conflicts',
-          '--pr=12',
-          '--branch=7.x',
-          `--accessToken=${accessToken}`,
-          `--dir=${backportDir}`,
-          '--dry-run',
-        ],
-        {
-          waitForString: 'Press ENTER when the conflicts',
-          timeoutSeconds: 5,
-        }
-      );
-
-      // //@ts-expect-error
-      // const lineToReplace = output.match(
-      //   /Conflicting files:[\s]+- (.*[\s].*)la-liga.md/
-      // )[1];
-
-      // const lineWithoutBreaks = lineToReplace.replace(/\s/g, '');
-      // const outputReplaced = output
-      //   .replace(lineToReplace, lineWithoutBreaks)
-      //   .replaceAll(backportDir, '<BACKPORT_DIR>');
-
-      const outputReplaced = output
-        .replaceAll('\n', '')
-        .replaceAll(backportDir, '<BACKPORT_DIR>');
-
-      expect(outputReplaced).toMatchInlineSnapshot(
-        `"Backporting to 7.x:The commit could not be backported due to conflictsPlease fix the conflicts in <BACKPORT_DIR>Hint: Before fixing the conflicts manually you should consider backporting the following pull requests to \\"7.x\\": - Change Barca to Braithwaite (#8) (backport missing)   https://github.com/backport-org/repo-with-conflicts/pull/8? Fix the following conflicts manually:Conflicting files: - <BACKPORT_DIR>/la-liga.mdPress ENTER when the conflicts are resolved and files are staged (Y/n)"`
-      );
-    });
-  });
-
-  describe('failure cases in json mode (and non-interactive)', () => {
-    it(`when access token is missing`, async () => {
-      const configFilePath = await createConfigFile({});
-      const { output, code } = await runBackportViaCli([
-        '--json',
-        `--globalConfigFile=${configFilePath}`,
-      ]);
-
-      const backportResult = JSON.parse(output) as BackportFailureResponse;
-
-      // remove absolute path to avoid issues on ci
-      const errorMessage = backportResult.errorMessage.replace(
-        configFilePath,
-        '<GLOBAL_CONFIG_FILE>'
-      );
-
-      expect(code).toBe(1);
-      expect(backportResult.status).toBe('failure');
-      expect(errorMessage).toMatchInlineSnapshot(`
-        "Please update your config file: \\"<GLOBAL_CONFIG_FILE>\\".
-        It must contain a valid \\"accessToken\\".
-
-        Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#global-config-backportconfigjson"
-      `);
-    });
-
-    it('when target branches cannot be inferred from pull request', async () => {
-      const { output, code } = await runBackportViaCli([
-        '--json',
-        '--repo=backport-org/backport-e2e',
-        '--pr=9',
-        `--accessToken=${accessToken}`,
-      ]);
-
-      expect(code).toBe(0);
-      const backportResult = JSON.parse(output) as BackportAbortResponse;
-      expect(backportResult.status).toBe('aborted');
-      expect(backportResult.error).toEqual({
-        errorContext: { code: 'no-branches-exception' },
-        name: 'BackportError',
-      });
-      expect(backportResult.errorMessage).toBe(
-        'There are no branches to backport to. Aborting.'
-      );
-    });
-
-    it(`when target branch and branch label mapping are missing`, async () => {
-      const { output, code } = await runBackportViaCli([
-        '--json',
-        `--access-token=${accessToken}`,
-      ]);
-
-      expect(code).toBe(1);
-      const backportResult = JSON.parse(output) as BackportFailureResponse;
-      expect(backportResult.status).toBe('failure');
-      expect(backportResult.errorMessage).toMatchInlineSnapshot(`
-        "Please specify a target branch: \\"--branch 6.1\\".
-
-        Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#project-config-backportrcjson"
-      `);
-    });
-
-    it(`when argument is invalid`, async () => {
-      const { output } = await runBackportViaCli(['--json', '--foo'], {});
-
-      const backportResult = JSON.parse(output) as BackportFailureResponse;
-      expect(backportResult.status).toBe('failure');
-      expect(backportResult.errorMessage).toEqual('Unknown argument: foo');
-    });
-
-    it('when `--repo` is invalid', async () => {
-      const { output } = await runBackportViaCli([
-        '--json',
-        '--repo=backport-org/backport-e2e-foo',
-        `--accessToken=${accessToken}`,
-      ]);
-
-      const backportResult = JSON.parse(output) as BackportFailureResponse;
-      expect(backportResult.status).toBe('failure');
-      expect(backportResult.errorMessage).toEqual(
-        'The repository "backport-org/backport-e2e-foo" doesn\'t exist'
-      );
-    });
-
-    it('when `--sha` is invalid', async () => {
-      const { output } = await runBackportViaCli([
-        '--json',
-        '--repo=backport-org/backport-e2e',
-        '--sha=abcdefg',
-        `--accessToken=${accessToken}`,
-      ]);
-
-      const backportResult = JSON.parse(output) as BackportFailureResponse;
-      expect(backportResult.status).toBe('failure');
-      expect(backportResult.errorMessage).toEqual(
-        'No commit found on branch "master" with sha "abcdefg"'
-      );
-    });
-
-    it('when `--branch` is invalid', async () => {
-      const { output } = await runBackportViaCli([
-        '--json',
-        '--repo=backport-org/backport-e2e',
-        '--pr=9',
-        '--branch=foobar',
-        `--accessToken=${accessToken}`,
-      ]);
-
-      const backportResult = JSON.parse(output) as BackportSuccessResponse;
-      expect(backportResult.status).toBe('success');
-      expect(backportResult.results[0]).toEqual({
-        error: {
-          errorContext: {
-            code: 'message-only-exception',
-            message: 'The branch "foobar" is invalid or doesn\'t exist',
-          },
-          name: 'BackportError',
-        },
-        status: 'handled-error',
-        targetBranch: 'foobar',
-      });
-    });
-
-    it('when `--pr` is invalid', async () => {
-      const { output } = await runBackportViaCli([
-        '--json',
-        '--repo=backport-org/backport-e2e',
-        '--pr=900',
-        '--branch=foobar',
-        `--accessToken=${accessToken}`,
-      ]);
-
-      const backportResult = JSON.parse(output) as BackportFailureResponse;
-      expect(backportResult.status).toEqual('failure');
-      expect(backportResult.errorMessage).toEqual(
-        'Could not resolve to a PullRequest with the number of 900. (Github API v4)'
-      );
-    });
-
-    it('when having conflicts in non-interactive mode', async () => {
-      const { output } = await runBackportViaCli([
-        '--json',
-        '--repo=backport-org/repo-with-conflicts',
-        '--pr=12',
-        '--branch=7.x',
-        `--accessToken=${accessToken}`,
-      ]);
-
-      const backportResult = JSON.parse(output) as BackportSuccessResponse;
-      expect(backportResult.status).toEqual('success');
-      expect(
-        //@ts-expect-error
-        backportResult.results[0].error.errorContext.conflictingFiles
-      ).toEqual(['la-liga.md']);
-    });
-
-    it('when `--source-branch` is invalid', async () => {
-      const { output } = await runBackportViaCli([
-        '--json',
-        '--repo=backport-org/backport-e2e',
-        '--pr=9',
-        '--branch=7.x',
-        '--source-branch=foo',
-        `--accessToken=${accessToken}`,
-      ]);
-
-      const backportResult = JSON.parse(output) as BackportSuccessResponse;
-      expect(backportResult.status).toBe('success');
-      expect(backportResult.results[0]).toEqual({
-        error: {
-          context: {
-            cmdArgs: ['checkout', 'foo'],
-            code: 1,
-            stderr:
-              "error: pathspec 'foo' did not match any file(s) known to git\n",
-            stdout: '',
-          },
-          name: 'SpawnError',
-        },
-        status: 'unhandled-error',
-        targetBranch: '7.x',
-      });
-    });
-
-    it('when PR is not merged', async () => {
-      const { output } = await runBackportViaCli([
-        '--json',
-        '--repo=backport-org/backport-e2e',
-        '--pr=12',
-        `--accessToken=${accessToken}`,
-      ]);
-
-      const backportResult = JSON.parse(output) as BackportFailureResponse;
-      expect(backportResult.status).toBe('failure');
-      expect(backportResult.error).toEqual({
-        errorContext: {
-          code: 'message-only-exception',
-          message: 'The PR #12 is not merged',
-        },
-        name: 'BackportError',
-      });
-    });
   });
 });

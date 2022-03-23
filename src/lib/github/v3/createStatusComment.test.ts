@@ -181,8 +181,8 @@ describe('getCommentBody', () => {
 
         | Status | Branch | Result |
         |:------:|:------:|:------|
-        |❌|7.x|My boom error!|
-        |❌|7.1|My boom error!|
+        |❌|7.x|An unhandled error occurred. Please see the logs for details|
+        |❌|7.1|An unhandled error occurred. Please see the logs for details|
 
         ### Manual backport
         To create the backport manually run:
@@ -240,7 +240,7 @@ describe('getCommentBody', () => {
         | Status | Branch | Result |
         |:------:|:------:|:------|
         |✅|7.x|[<img src=\\"https://img.shields.io/github/pulls/detail/state/elastic/kibana/55\\">](url-to-pr-55)|
-        |❌|7.1|My boom error!|
+        |❌|7.1|An unhandled error occurred. Please see the logs for details|
 
         Note: Successful backport PRs will be merged automatically after passing CI.
 
@@ -536,6 +536,60 @@ describe('getCommentBody', () => {
         | Status | Branch | Result |
         |:------:|:------:|:------|
         |❌|main|The branch \\"main\\" is invalid or doesn't exist|
+
+        ### Manual backport
+        To create the backport manually run:
+        \`\`\`
+        node scripts/backport --pr 55
+        \`\`\`
+
+        ### Questions ?
+        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
+
+        <!--- Backport version: 1.2.3-mocked -->"
+      `);
+    });
+
+    it('does not post a comment when `publishStatusCommentOnFailure = false`', () => {
+      const params = getParams({ publishStatusCommentOnFailure: false });
+      expect(getCommentBody(params)).toBe(undefined);
+    });
+  });
+
+  describe('when target branch is invalid', () => {
+    const getParams = (opts: Partial<ValidConfigOptions>) => ({
+      options: {
+        interactive: true,
+        repoName: 'kibana',
+        repoOwner: 'elastic',
+        autoMerge: true,
+        backportBinary: 'node scripts/backport',
+        ...opts,
+      } as ValidConfigOptions,
+      pullNumber: 55,
+      backportResponse: {
+        status: 'success',
+        commits: [],
+        results: [
+          {
+            targetBranch: '--foo',
+            status: 'unhandled-error',
+            error: new BackportError('The branch "--foo" does not exist'),
+          },
+        ],
+      } as BackportResponse,
+    });
+
+    it('posts a comment when `publishStatusCommentOnFailure = true`', () => {
+      const params = getParams({
+        publishStatusCommentOnFailure: true,
+      });
+      expect(getCommentBody(params)).toMatchInlineSnapshot(`
+        "## 💔 All backports failed
+
+        | Status | Branch | Result |
+        |:------:|:------:|:------|
+        |❌|--foo|An unhandled error occurred. Please see the logs for details|
 
         ### Manual backport
         To create the backport manually run:
