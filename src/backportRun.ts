@@ -5,6 +5,7 @@ import { getCommits } from './lib/getCommits';
 import { getTargetBranches } from './lib/getTargetBranches';
 import { createStatusComment } from './lib/github/v3/createStatusComment';
 import { GithubV4Exception } from './lib/github/v4/apiRequestV4';
+import { validateTargetBranches } from './lib/github/v4/validateTargetBranches';
 import { consoleLog, initLogger } from './lib/logger';
 import { ora } from './lib/ora';
 import { setupRepo } from './lib/setupRepo';
@@ -95,7 +96,10 @@ export async function backportRun({
     const targetBranches = await getTargetBranches(options, commits);
     logger.info('Target branches', targetBranches);
 
-    await setupRepo(options);
+    await Promise.all([
+      setupRepo(options),
+      validateTargetBranches(options, targetBranches),
+    ]);
 
     const results = await runSequentially({
       options,

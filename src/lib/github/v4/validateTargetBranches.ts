@@ -1,4 +1,5 @@
 import gql from 'graphql-tag';
+import { ValidConfigOptions } from '../../../options/options';
 import { BackportError } from '../../BackportError';
 import { apiRequestV4 } from './apiRequestV4';
 
@@ -47,19 +48,10 @@ async function fetchTargetBranch({
   return res.repository.ref;
 }
 
-export async function validateTargetBranches({
-  accessToken,
-  repoName,
-  repoOwner,
-  targetBranches = [],
-  githubApiBaseUrlV4,
-}: {
-  accessToken: string;
-  repoOwner: string;
-  repoName: string;
-  targetBranches?: string[];
-  githubApiBaseUrlV4?: string;
-}) {
+export async function validateTargetBranches(
+  { accessToken, repoName, repoOwner, githubApiBaseUrlV4 }: ValidConfigOptions,
+  targetBranches: string[]
+) {
   await Promise.all(
     targetBranches.map((targetBranch) => {
       return fetchTargetBranch({
