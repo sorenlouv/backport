@@ -6,7 +6,6 @@ import {
   OptionsFromGithub,
 } from '../lib/github/v4/getOptionsFromGithub/getOptionsFromGithub';
 import { getRepoOwnerAndNameFromGitRemotes } from '../lib/github/v4/getRepoOwnerAndNameFromGitRemotes';
-import { validateTargetBranches } from '../lib/github/v4/validateTargetBranches';
 import { setAccessToken } from '../lib/logger';
 import { ConfigFileOptions, TargetBranchChoiceOrString } from './ConfigOptions';
 import { OptionsFromCliArgs } from './cliArgs';
@@ -115,10 +114,6 @@ export async function getOptions({
   };
 
   throwForRequiredOptions(options);
-
-  if (options.targetBranches.length > 0) {
-    await validateTargetBranches(options);
-  }
 
   return options;
 }

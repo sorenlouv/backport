@@ -1,3 +1,4 @@
+import { ValidConfigOptions } from '../../../options/options';
 import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
 import { validateTargetBranches } from './validateTargetBranches';
 
@@ -10,10 +11,12 @@ describe('validateTargetBranches', () => {
         repoOwner: 'backport-org',
         repoName: 'repo-with-target-branches',
         accessToken,
-        targetBranches: [],
-      };
+      } as ValidConfigOptions;
+      const targetBranches: string[] = [];
 
-      expect(await validateTargetBranches(options)).toEqual(undefined);
+      expect(await validateTargetBranches(options, targetBranches)).toEqual(
+        undefined
+      );
     });
   });
 
@@ -23,12 +26,12 @@ describe('validateTargetBranches', () => {
         repoOwner: 'backport-org',
         repoName: 'repo-with-target-branches',
         accessToken,
-        targetBranches: ['production', 'foo'],
-      };
+      } as ValidConfigOptions;
+      const targetBranches = ['production', 'foo'];
 
-      await expect(() => validateTargetBranches(options)).rejects.toThrowError(
-        'The branch "foo" does not exist'
-      );
+      await expect(() =>
+        validateTargetBranches(options, targetBranches)
+      ).rejects.toThrowError('The branch "foo" does not exist');
     });
   });
 
@@ -38,10 +41,12 @@ describe('validateTargetBranches', () => {
         repoOwner: 'backport-org',
         repoName: 'repo-with-target-branches',
         accessToken,
-        targetBranches: ['production', 'staging'],
-      };
+      } as ValidConfigOptions;
+      const targetBranches = ['production', 'staging'];
 
-      expect(await validateTargetBranches(options)).toEqual(undefined);
+      expect(await validateTargetBranches(options, targetBranches)).toEqual(
+        undefined
+      );
     });
   });
 
@@ -51,12 +56,12 @@ describe('validateTargetBranches', () => {
         repoOwner: 'backport-org',
         repoName: 'repo-with-target-branches',
         accessToken,
-        targetBranches: ['foo', 'bar'],
-      };
+      } as ValidConfigOptions;
+      const targetBranches = ['foo', 'bar'];
 
-      await expect(() => validateTargetBranches(options)).rejects.toThrow(
-        /The branch "(foo|bar)" does not exist/
-      );
+      await expect(() =>
+        validateTargetBranches(options, targetBranches)
+      ).rejects.toThrow(/The branch "(foo|bar)" does not exist/);
     });
   });
 });
