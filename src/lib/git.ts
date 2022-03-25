@@ -42,7 +42,7 @@ export async function cloneRepo(
     subprocess.on('error', (err) => reject(err));
 
     subprocess.stderr.on('data', (data: string) => {
-      logger.verbose(data);
+      logger.verbose(`Cloning repo: ${data.toString()}`);
       const [, objectReceiveProgress]: RegExpMatchArray =
         data.toString().match(/^Receiving objects:\s+(\d+)%/) || [];
 
