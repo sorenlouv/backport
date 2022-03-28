@@ -12,12 +12,21 @@ import { fetchPullRequestAutoMergeMethod } from './fetchPullRequestAutoMergeMeth
 // otherwise it will be merged when auto-merge is turned on
 const TEST_REPO_OWNER = 'backport-org';
 const TEST_REPO_NAME = 'repo-with-auto-merge-enabled';
+const INITIAL_SHA = '70aa879411e95b6662f8ddcb80a944fc4444579f';
 
-// commit to create new branch from
-// https://github.com/backport-org/repo-with-auto-merge-enabled/commit/1a88d210f90a22e2a06253c5760909833dc820e9
-const COMMIT_SHA = '1a88d210f90a22e2a06253c5760909833dc820e9';
+jest.setTimeout(10_000);
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function resetReference(octokit: Octokit) {
+  return octokit.rest.git.updateRef({
+    owner: TEST_REPO_OWNER,
+    repo: TEST_REPO_NAME,
+    ref: 'heads/main',
+    sha: INITIAL_SHA,
+    force: true,
+  });
+}
 
 async function closePr(octokit: Octokit, pullNumber: number) {
   await octokit.pulls.update({
@@ -30,7 +39,7 @@ async function closePr(octokit: Octokit, pullNumber: number) {
 
 async function createPr(options: ValidConfigOptions, branchName: string) {
   const prPayload: PullRequestPayload = {
-    base: 'main',
+    base: '7.x',
     head: branchName,
     body: 'testing...',
     owner: TEST_REPO_OWNER,
@@ -59,10 +68,25 @@ async function createBranch(octokit: Octokit, branchName: string, sha: string) {
   });
 }
 
-// causes flaky test runs on CI because parallel builds are racing each other
-// might also be an issue with Github's API being slow at updating after a mutation happens
+async function addCommit(octokit: Octokit) {
+  const randomString = Math.random().toString(36).slice(2);
+  const res = await octokit.rest.repos.createOrUpdateFileContents({
+    owner: TEST_REPO_OWNER,
+    repo: TEST_REPO_NAME,
+    path: `file-to-change-${randomString}`,
+    message: 'Automatically changed',
+    content: Buffer.from(`My new hash ${randomString}`).toString('base64'),
+    branch: 'main',
+  });
+
+  const sha = res.data.commit.sha;
+  return sha;
+}
+
+// Error: cannot have more than 100 pull requests with the same head_sha
+// TODO: have unique head sha for every test run
 // eslint-disable-next-line jest/no-disabled-tests
-describe.skip('enablePullRequestAutoMerge', () => {
+describe('enablePullRequestAutoMerge', () => {
   let pullNumber: number;
   let branchName: string;
   let octokit: Octokit;
@@ -80,7 +104,12 @@ describe.skip('enablePullRequestAutoMerge', () => {
     } as ValidConfigOptions;
 
     octokit = new Octokit({ auth: accessToken });
-    await createBranch(octokit, branchName, COMMIT_SHA);
+    await resetReference(octokit);
+
+    const sha = await addCommit(octokit);
+    if (sha) {
+      await createBranch(octokit, branchName, sha);
+    }
     pullNumber = await createPr(options, branchName);
   });
 
@@ -88,6 +117,7 @@ describe.skip('enablePullRequestAutoMerge', () => {
   afterAll(async () => {
     await closePr(octokit, pullNumber);
     await deleteBranch(octokit, branchName);
+    await resetReference(octokit);
   });
 
   // reset auto-merge state between runs

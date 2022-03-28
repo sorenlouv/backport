@@ -26,6 +26,8 @@ export async function cloneRepo(
   { sourcePath, targetPath }: { sourcePath: string; targetPath: string },
   onProgress: (progress: number) => void
 ) {
+  logger.info(`Cloning repo from ${sourcePath} to ${targetPath}`);
+
   return new Promise<void>((resolve, reject) => {
     const subprocess = spawnOriginal('git', [
       'clone',
@@ -42,7 +44,7 @@ export async function cloneRepo(
     subprocess.on('error', (err) => reject(err));
 
     subprocess.stderr.on('data', (data: string) => {
-      logger.verbose(`Cloning repo: ${data.toString()}`);
+      logger.verbose(data.toString());
       const [, objectReceiveProgress]: RegExpMatchArray =
         data.toString().match(/^Receiving objects:\s+(\d+)%/) || [];
 

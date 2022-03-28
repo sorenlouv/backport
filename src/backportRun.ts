@@ -153,7 +153,7 @@ export async function backportRun({
       process.exitCode = 1;
     }
 
-    logger.error('Unhandled exception', e);
+    logger.error('Unhandled exception:', e);
 
     return backportResponse;
   }
