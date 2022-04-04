@@ -237,6 +237,18 @@ Config:
 }
 ```
 
+#### `dateSince`
+
+Only display commits newer than the specified date
+
+CLI: `--since=2020-12-10`
+
+#### `dateUntil`
+
+Only display commits older than the specified date
+
+CLI: `--until=2020-12-15`
+
 #### `fork`
 
 `true`: Create backport branch in users own fork
@@ -245,7 +257,7 @@ Config:
 
 Default: `true`
 
-CLI: `--fork=false`
+CLI: `--no-fork`
 
 Config:
 

@@ -52,8 +52,12 @@ export function parseRemoteConfig(remoteConfig: RemoteConfig) {
 }
 
 export function swallowMissingConfigFileException<T>(
-  error: GithubV4Exception<T>
+  error: GithubV4Exception<T> | unknown
 ) {
+  if (!(error instanceof GithubV4Exception)) {
+    throw error;
+  }
+
   const { data, errors } = error.githubResponse.data;
 
   const missingConfigError = errors?.some((error) => {
@@ -62,7 +66,7 @@ export function swallowMissingConfigFileException<T>(
 
   // swallow error if it's just the config file that's missing
   if (missingConfigError && data != null) {
-    return data;
+    return data as T;
   }
 
   // Throw unexpected error

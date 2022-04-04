@@ -14,6 +14,8 @@ import { apiRequestV4 } from '../apiRequestV4';
 export async function fetchPullRequestsBySearchQuery(options: {
   accessToken: string;
   author: string | null;
+  dateSince: string | null;
+  dateUntil: string | null;
   githubApiBaseUrlV4?: string;
   maxNumber?: number;
   onlyMissing?: boolean;
@@ -24,13 +26,15 @@ export async function fetchPullRequestsBySearchQuery(options: {
 }): Promise<Commit[]> {
   const {
     accessToken,
+    author,
+    dateSince,
+    dateUntil,
     githubApiBaseUrlV4 = 'https://api.github.com/graphql',
     maxNumber = 10,
     prFilter,
     repoName,
     repoOwner,
     sourceBranch,
-    author,
   } = options;
 
   const query = gql`
@@ -49,11 +53,32 @@ export async function fetchPullRequestsBySearchQuery(options: {
     ${SourceCommitWithTargetPullRequestFragment}
   `;
 
-  const authorFilter = options.author ? ` author:${options.author}` : '';
-  const sourceBranchFilter = prFilter.includes('base:')
-    ? ''
-    : ` base:${sourceBranch}`;
-  const searchQuery = `type:pr is:merged sort:updated-desc repo:${repoOwner}/${repoName}${authorFilter}${sourceBranchFilter} ${prFilter} `;
+  function dateFilter() {
+    if (dateUntil && dateSince) {
+      return [`merged:${dateSince}..${dateUntil}`];
+    }
+
+    if (dateUntil) {
+      return [`merged:<${dateUntil}`];
+    }
+
+    if (dateSince) {
+      return [`merged:>${dateSince}`];
+    }
+
+    return [];
+  }
+
+  const searchQuery = [
+    'type:pr',
+    'is:merged',
+    'sort:created-desc',
+    `repo:${repoOwner}/${repoName}`,
+    ...(options.author ? [`author:${options.author}`] : []),
+    ...(prFilter.includes('base:') ? [] : [`base:${sourceBranch}`]),
+    ...dateFilter(),
+    prFilter,
+  ].join(' ');
 
   const variables = {
     query: searchQuery,
@@ -69,7 +94,6 @@ export async function fetchPullRequestsBySearchQuery(options: {
       variables,
     });
   } catch (e) {
-    //@ts-expect-error
     res = swallowMissingConfigFileException<ResponseData>(e);
   }
 

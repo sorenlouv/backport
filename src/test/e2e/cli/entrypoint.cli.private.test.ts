@@ -48,8 +48,8 @@ describe('entrypoint cli', () => {
                                                                                                  [boolean]
             --projectConfigFile, --config     Path to project config                              [string]
             --globalConfigFile                Path to global config                               [string]
-            --since                           ISO-8601 date for filtering commits                 [string]
-            --until                           ISO-8601 date for filtering commits                 [string]
+            --dateSince, --since              ISO-8601 date for filtering commits                 [string]
+            --dateUntil, --until              ISO-8601 date for filtering commits                 [string]
             --dir                             Path to temporary backport repo                     [string]
             --details                         Show details about each commit                     [boolean]
             --dryRun                          Run backport locally without pushing to Github     [boolean]
@@ -154,27 +154,6 @@ describe('entrypoint cli', () => {
         4. Add family emoji (#2) 7.x 
         5. Add \`backport\` dep  
         6. Merge pull request #1 from backport-org/add-heart-emoji"
-    `);
-  });
-
-  it(`filters commits by "since" and "until"`, async () => {
-    const { output } = await runBackportViaCli(
-      [
-        '--branch=7.x',
-        '--repo=backport-org/backport-e2e',
-        `--accessToken=${accessToken}`,
-        '--since=2020-08-15T10:00:00.000Z',
-        '--until=2020-08-15T10:30:00.000Z',
-      ],
-      { waitForString: 'Select commit' }
-    );
-
-    expect(output).toMatchInlineSnapshot(`
-      "? Select commit (Use arrow keys)
-      ❯ 1. Bump to 8.0.0  
-        2. Add package.json  
-        3. Update .backportrc.json  
-        4. Create .backportrc.json"
     `);
   });
 

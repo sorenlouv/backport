@@ -283,7 +283,8 @@ describe('entrypoint.module', () => {
         accessToken: accessToken,
         repoName: 'kibana',
         repoOwner: 'elastic',
-        prFilter: 'label:Team:apm merged:<2021-06-02 base:master',
+        dateUntil: '2021-06-02',
+        prFilter: 'label:Team:apm base:master',
         maxNumber: 3,
       });
 
@@ -297,19 +298,19 @@ describe('entrypoint.module', () => {
       expect(commitMessage).toMatchInlineSnapshot(`
         Array [
           Object {
-            "committedDate": "2021-06-01T15:53:07Z",
-            "message": "Upgrade EUI to v33.0.0 (#99382)",
-            "sha": "38fd8a268ad7661d92f0d84c52d6f0a3d84c9801",
+            "committedDate": "2021-05-28T12:41:42Z",
+            "message": "[Observability] Fix typo in readme for new navigation (#100861)",
+            "sha": "79945fe0275b2ec9c93747e26154110133ec51fb",
           },
           Object {
-            "committedDate": "2021-02-08T09:19:54Z",
-            "message": "Migrate most plugins to synchronous lifecycle (#89562)",
-            "sha": "3b3327dbc3c3041c9681e0cd86bd31cf411dc460",
+            "committedDate": "2021-05-28T19:43:30Z",
+            "message": "[APM] Move APM tutorial from apm_oss to x-pack/apm (#100780)",
+            "sha": "0bcd78b0e999feb95057f5e6eafdb572b9b2fe39",
           },
           Object {
-            "committedDate": "2021-04-01T12:40:47Z",
-            "message": "TS Incremental build exclude test files (#95610)",
-            "sha": "b6e582c53ebb9c496c232408066b128d2ca2f92c",
+            "committedDate": "2021-05-18T10:33:16Z",
+            "message": "Migrate from Joi to @kbn/config-schema in \\"home\\" and \\"features\\" plugins (#100201)",
+            "sha": "574f6595ad2e5452fa90e6a3111220a599e473c0",
           },
         ]
       `);

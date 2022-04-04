@@ -61,6 +61,8 @@ export async function getCommits(options: {
   // optional
   author?: string;
   branchLabelMapping?: ValidConfigOptions['branchLabelMapping'];
+  dateSince?: string;
+  dateUntil?: string;
   githubApiBaseUrlV4?: string;
   maxNumber?: number;
   onlyMissing?: boolean;
@@ -69,8 +71,6 @@ export async function getCommits(options: {
   sha?: string | string[];
   skipRemoteConfig?: boolean;
   sourceBranch?: string;
-  dateUntil?: string;
-  dateSince?: string;
 }): Promise<Commit[]> {
   initLogger({ interactive: false, accessToken: options.accessToken });
 
@@ -102,6 +102,8 @@ export async function getCommits(options: {
       ...options,
       prFilter: options.prFilter,
       author: options.author ?? null,
+      dateSince: options.dateSince ?? null,
+      dateUntil: options.dateUntil ?? null,
     });
   }
 

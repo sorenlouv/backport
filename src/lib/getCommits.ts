@@ -68,12 +68,13 @@ export async function getCommits(options: ValidConfigOptions) {
       ? 'Loading pull requests...'
       : `Loading commits from branch "${options.sourceBranch}"...`;
 
-    const commitChoices = options.prFilter
-      ? await fetchPullRequestsBySearchQuery({
-          ...options,
-          prFilter: options.prFilter,
-        })
-      : await fetchCommitsByAuthor(options);
+    const commitChoices =
+      options.prFilter !== undefined
+        ? await fetchPullRequestsBySearchQuery({
+            ...options,
+            prFilter: options.prFilter,
+          })
+        : await fetchCommitsByAuthor(options);
     spinner.stop();
 
     if (options.ls) {
