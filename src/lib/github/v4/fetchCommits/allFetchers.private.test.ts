@@ -56,13 +56,15 @@ describe('allFetchers', () => {
 
   it('matches commitByAuthor with commitBySearchQuery', async () => {
     const commitsBySearchQuery = await fetchPullRequestsBySearchQuery({
-      repoOwner: 'elastic',
-      repoName: 'kibana',
       accessToken,
+      author: 'sqren',
+      dateSince: null,
+      dateUntil: null,
       maxNumber: 1,
       prFilter: `created:2021-12-20..2021-12-20`,
+      repoName: 'kibana',
+      repoOwner: 'elastic',
       sourceBranch: 'main',
-      author: 'sqren',
     });
 
     const commitBySearchQuery = commitsBySearchQuery[0];

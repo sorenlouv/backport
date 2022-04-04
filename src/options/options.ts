@@ -181,7 +181,6 @@ function throwForRequiredOptions(
     'githubApiBaseUrlV4',
     'logFilePath',
     'prDescription',
-    'prFilter',
     'projectConfigFile',
     'prTitle',
     'repoForkOwner',

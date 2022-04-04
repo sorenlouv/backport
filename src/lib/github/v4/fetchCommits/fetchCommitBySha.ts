@@ -53,7 +53,6 @@ export async function fetchCommitBySha(options: {
       },
     });
   } catch (e) {
-    //@ts-expect-error
     res = swallowMissingConfigFileException<CommitsByShaResponse>(e);
   }
 

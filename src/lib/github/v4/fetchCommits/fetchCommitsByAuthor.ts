@@ -21,38 +21,38 @@ async function fetchByCommitPath({
 }: {
   options: {
     accessToken: string;
+    dateSince: string | null;
+    dateUntil: string | null;
     githubApiBaseUrlV4?: string;
     maxNumber?: number;
     repoName: string;
     repoOwner: string;
     sourceBranch: string;
-    dateSince: string | null;
-    dateUntil: string | null;
   };
   authorId: string | null;
   commitPath: string | null;
 }) {
   const {
     accessToken,
+    dateSince,
+    dateUntil,
     githubApiBaseUrlV4 = 'https://api.github.com/graphql',
     maxNumber = 10,
     repoName,
     repoOwner,
     sourceBranch,
-    dateSince,
-    dateUntil,
   } = options;
 
   const query = gql`
     query CommitsByAuthor(
-      $repoOwner: String!
-      $repoName: String!
-      $maxNumber: Int!
-      $sourceBranch: String!
       $authorId: ID
       $commitPath: String
       $dateSince: GitTimestamp
       $dateUntil: GitTimestamp
+      $maxNumber: Int!
+      $repoName: String!
+      $repoOwner: String!
+      $sourceBranch: String!
     ) {
       repository(owner: $repoOwner, name: $repoName) {
         ref(qualifiedName: $sourceBranch) {
@@ -99,7 +99,6 @@ async function fetchByCommitPath({
       variables,
     });
   } catch (e) {
-    //@ts-expect-error
     return swallowMissingConfigFileException<CommitByAuthorResponse>(e);
   }
 }

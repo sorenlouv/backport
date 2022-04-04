@@ -9,7 +9,7 @@ exports[`fetchCommitsByAuthor snapshot request/response makes the right queries:
 `;
 
 exports[`fetchCommitsByAuthor snapshot request/response makes the right queries: Query: CommitsByAuthor 1`] = `
-"query CommitsByAuthor($repoOwner: String!, $repoName: String!, $maxNumber: Int!, $sourceBranch: String!, $authorId: ID, $commitPath: String, $dateSince: GitTimestamp, $dateUntil: GitTimestamp) {
+"query CommitsByAuthor($authorId: ID, $commitPath: String, $dateSince: GitTimestamp, $dateUntil: GitTimestamp, $maxNumber: Int!, $repoName: String!, $repoOwner: String!, $sourceBranch: String!) {
   repository(owner: $repoOwner, name: $repoName) {
     ref(qualifiedName: $sourceBranch) {
       target {

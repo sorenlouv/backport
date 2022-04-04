@@ -92,7 +92,7 @@ function addDebugLogs({
     }${didThrow ? ', EXCEPTION THROWN' : ''})`
   );
 
-  logger.verbose(`Query: ${query}`);
+  logger.verbose(`Query: ${print(query)}`);
   logger.verbose('Variables:', variables);
   logger.verbose('Response headers:', githubResponse.headers);
   logger.verbose('Response data:', githubResponse.data);

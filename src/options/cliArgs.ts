@@ -86,14 +86,26 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       type: 'string',
     })
 
-    .option('since', {
+    .option('dateSince', {
+      alias: 'since',
       description: 'ISO-8601 date for filtering commits',
       type: 'string',
+      coerce: (since) => {
+        if (since) {
+          return new Date(since).toISOString();
+        }
+      },
     })
 
-    .option('until', {
+    .option('dateUntil', {
+      alias: 'until',
       description: 'ISO-8601 date for filtering commits',
       type: 'string',
+      coerce: (until) => {
+        if (until) {
+          return new Date(until).toISOString();
+        }
+      },
     })
 
     .option('dir', {
@@ -274,7 +286,7 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
     })
 
     .option('prFilter', {
-      conflicts: ['pullNumber', 'sha'],
+      conflicts: ['pullNumber', 'sha', 'path'],
       description: `Filter source pull requests by a query`,
       type: 'string',
     })
@@ -401,8 +413,6 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
 
     // filters
     author,
-    since,
-    until,
 
     // negations
     noCherrypickRef,
@@ -438,8 +448,6 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
 
     // filters
     author: all ? null : author,
-    dateSince: since ? new Date(since).toISOString() : undefined,
-    dateUntil: until ? new Date(until).toISOString() : undefined,
 
     // `multiple` is a cli-only flag to override `multipleBranches` and `multipleCommits`
     multipleBranches: multiple ?? multipleBranches,
