@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: `${__dirname}/.env` });
 
 const accessToken = process.env.ACCESS_TOKEN;
 
@@ -9,7 +9,7 @@ module.exports = {
       'GitHub API V4': {
         url: 'https://api.github.com/graphql',
         headers: {
-          Authorization: `token ${accessToken}`,
+          Authorization: `bearer ${accessToken}`,
           'user-agent': 'JS GraphQL',
         },
       },
