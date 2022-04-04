@@ -78,6 +78,7 @@ export async function getOptionsFromGithub(options: {
   return {
     authenticatedUsername: res.viewer.login,
     sourceBranch: res.repository.defaultBranchRef.name,
+    isRepoPrivate: res.repository.isPrivate,
     ...remoteConfig,
   };
 }

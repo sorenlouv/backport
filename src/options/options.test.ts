@@ -221,6 +221,7 @@ describe('getOptions', () => {
       gitHostname: 'github.com',
       githubApiBaseUrlV4: 'http://localhost/graphql',
       interactive: true,
+      isRepoPrivate: false,
       maxNumber: 10,
       multipleBranches: true,
       multipleCommits: false,
@@ -454,6 +455,7 @@ function mockGithubConfigOptions({
           login: viewerLogin,
         },
         repository: {
+          isPrivate: false,
           illegalBackportBranch: hasBackportBranch ? { id: 'foo' } : null,
           defaultBranchRef: {
             name: defaultBranchRef,

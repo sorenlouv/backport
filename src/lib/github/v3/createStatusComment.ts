@@ -66,6 +66,7 @@ export function getCommentBody({
     repoName,
     repoOwner,
     autoMerge,
+    isRepoPrivate,
     publishStatusCommentOnAbort,
     publishStatusCommentOnFailure,
     publishStatusCommentOnSuccess,
@@ -127,10 +128,12 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
   const tableBody = backportResponse.results
     .map((result) => {
       if (result.status === 'success') {
+        const prShield = `[<img src="https://img.shields.io/github/pulls/detail/state/${repoOwner}/${repoName}/${result.pullRequestNumber}">](${result.pullRequestUrl})`;
+
         return [
           '✅',
           result.targetBranch,
-          `[<img src="https://img.shields.io/github/pulls/detail/state/${repoOwner}/${repoName}/${result.pullRequestNumber}">](${result.pullRequestUrl})`,
+          isRepoPrivate ? result.pullRequestUrl : prShield,
         ];
       }
 

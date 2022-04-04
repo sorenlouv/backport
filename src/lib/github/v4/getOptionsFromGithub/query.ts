@@ -9,6 +9,7 @@ export interface GithubConfigOptionsResponse {
     login: string;
   };
   repository: {
+    isPrivate: boolean;
     illegalBackportBranch: { id: string } | null;
     defaultBranchRef: {
       name: string;
@@ -27,6 +28,7 @@ export const query = gql`
       illegalBackportBranch: ref(qualifiedName: "refs/heads/backport") {
         id
       }
+      isPrivate
       defaultBranchRef {
         name
         target {

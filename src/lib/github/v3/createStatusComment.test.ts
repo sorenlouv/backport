@@ -111,7 +111,6 @@ describe('getCommentBody', () => {
             pullRequestNumber: 55,
             pullRequestUrl: 'url-to-pr',
           },
-
           {
             status: 'success',
             targetBranch: '7.1',
@@ -607,6 +606,70 @@ describe('getCommentBody', () => {
     it('does not post a comment when `publishStatusCommentOnFailure = false`', () => {
       const params = getParams({ publishStatusCommentOnFailure: false });
       expect(getCommentBody(params)).toBe(undefined);
+    });
+  });
+
+  describe('when repo is private or public', () => {
+    const getParams = (opts: Partial<ValidConfigOptions>) => ({
+      options: {
+        interactive: true,
+        repoName: 'kibana',
+        repoOwner: 'elastic',
+        autoMerge: true,
+        backportBinary: 'node scripts/backport',
+        publishStatusCommentOnSuccess: true,
+        ...opts,
+      } as ValidConfigOptions,
+      pullNumber: 55,
+      backportResponse: {
+        status: 'success',
+        results: [
+          {
+            status: 'success',
+            targetBranch: '7.x',
+            pullRequestNumber: 55,
+            pullRequestUrl: 'url-to-pr',
+          },
+        ],
+      } as BackportResponse,
+    });
+
+    it('posts a comment without shields.io badge`', () => {
+      const params = getParams({ isRepoPrivate: true });
+      expect(getCommentBody(params)).not.toContain('img.shields.io');
+      expect(getCommentBody(params)).toMatchInlineSnapshot(`
+        "## 💚 All backports created successfully
+
+        | Status | Branch | Result |
+        |:------:|:------:|:------|
+        |✅|7.x|url-to-pr|
+
+        Note: Successful backport PRs will be merged automatically after passing CI.
+
+        ### Questions ?
+        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
+
+        <!--- Backport version: 1.2.3-mocked -->"
+      `);
+    });
+
+    it('posts a comment with shields.io badge`', () => {
+      const params = getParams({ isRepoPrivate: false });
+      expect(getCommentBody(params)).toContain('img.shields.io');
+      expect(getCommentBody(params)).toMatchInlineSnapshot(`
+        "## 💚 All backports created successfully
+
+        | Status | Branch | Result |
+        |:------:|:------:|:------|
+        |✅|7.x|[<img src=\\"https://img.shields.io/github/pulls/detail/state/elastic/kibana/55\\">](url-to-pr)|
+
+        Note: Successful backport PRs will be merged automatically after passing CI.
+
+        ### Questions ?
+        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
+
+        <!--- Backport version: 1.2.3-mocked -->"
+      `);
     });
   });
 });
