@@ -609,7 +609,7 @@ describe('getCommentBody', () => {
     });
   });
 
-  describe('when repo is private or public', () => {
+  describe('shield.io badges', () => {
     const getParams = (opts: Partial<ValidConfigOptions>) => ({
       options: {
         interactive: true,
@@ -634,7 +634,7 @@ describe('getCommentBody', () => {
       } as BackportResponse,
     });
 
-    it('posts a comment without shields.io badge`', () => {
+    it('posts a comment without shields.io badge when repo is private`', () => {
       const params = getParams({ isRepoPrivate: true });
       expect(getCommentBody(params)).not.toContain('img.shields.io');
       expect(getCommentBody(params)).toMatchInlineSnapshot(`
@@ -653,7 +653,7 @@ describe('getCommentBody', () => {
       `);
     });
 
-    it('posts a comment with shields.io badge`', () => {
+    it('posts a comment with shields.io badge when repo is public`', () => {
       const params = getParams({ isRepoPrivate: false });
       expect(getCommentBody(params)).toContain('img.shields.io');
       expect(getCommentBody(params)).toMatchInlineSnapshot(`
