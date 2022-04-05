@@ -45,6 +45,7 @@ describe('getOptionsFromGithub', () => {
             '^v7.9.0$': '7.x',
             '^v8.0.0$': 'master',
           },
+          isRepoPrivate: false,
           sourceBranch: 'master',
           targetBranchChoices: [
             { checked: true, name: 'master' },
@@ -127,6 +128,7 @@ describe('getOptionsFromGithub', () => {
 
       expect(options).toEqual({
         authenticatedUsername: 'sqren',
+        isRepoPrivate: false,
         sourceBranch: 'main',
       });
     });
