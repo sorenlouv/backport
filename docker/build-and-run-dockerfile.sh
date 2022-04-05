@@ -9,5 +9,4 @@
 # "$@": pass all bash arguments to docker (which into turn passes them to backport cli inside container)
 
 cd $(dirname $0)
-docker run -it --rm --name backport -v $(pwd):/app:ro -v ~/.backport:/root/.backport $(docker build -q .) "$@"
-
+docker run -it --rm -v $(pwd):/app:ro -v ~/.backport:/root/.backport $(docker build --tag backport -q .) "$@"
