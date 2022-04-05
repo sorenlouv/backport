@@ -34,7 +34,7 @@
     "test-mutation": "jest --config ./jest.config.mutation.js",
     "test-private": "jest --config ./jest.config.private.js",
     "test": "jest",
-    "docker-run": "./docker/backport.sh"
+    "docker-run": "./docker/build-and-run-dockerfile.sh"
   },
   "lint-staged": {
     "*.ts": [
