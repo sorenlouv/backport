@@ -3,17 +3,17 @@
 ### Running backport via docker
 
 ```
-alias backport="docker run -it --rm -v $(pwd):/app:ro -v ~/.backport:/root/.backport sqren/backport"
+alias backport='docker run -it --rm -v $(pwd):/app:ro -v ~/.backport:/root/.backport sqren/backport'
 backport
 ```
+
+# Development
 
 ### Running from source
 
 ```
-yarn docker-run
+docker run -it --rm -v $(pwd):/app:ro -v ~/.backport:/root/.backport $(docker build --tag backport-dev -q .)
 ```
-
-# Development
 
 ### Build docker image
 

@@ -33,8 +33,7 @@
     "test-all": "rm -rf src/test/_tmp_sandbox_ && jest --config ./jest.config.all.js",
     "test-mutation": "jest --config ./jest.config.mutation.js",
     "test-private": "jest --config ./jest.config.private.js",
-    "test": "jest",
-    "docker-run": "./docker/build-and-run-dockerfile.sh"
+    "test": "jest"
   },
   "lint-staged": {
     "*.ts": [
