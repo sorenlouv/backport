@@ -1,9 +1,10 @@
 # Using the docker image
 
-### Running the published image
+### Running backport via docker
 
 ```
-docker run -it --rm -v $(pwd):/app:ro -v ~/.backport:/root/.backport sqren/backport "$@"
+alias backport="docker run -it --rm -v $(pwd):/app:ro -v ~/.backport:/root/.backport sqren/backport"
+backport
 ```
 
 ### Running from source
@@ -23,7 +24,7 @@ docker build -t sqren/backport .
 ### Test image locally before publishing:
 
 ```
-docker run -it --rm -v $(pwd):/app:ro -v ~/.backport:/root/.backport sqren/backport "$@"
+docker run -it --rm -v $(pwd):/app:ro -v ~/.backport:/root/.backport sqren/backport --repo backport-org/backport-demo --no-fork
 ```
 
 ### Publish to Docker hub
