@@ -24,7 +24,7 @@ docker build -t sqren/backport .
 ### Test image locally before publishing:
 
 ```
-docker run -it --rm -v $(pwd):/app:ro -v ~/.backport:/root/.backport sqren/backport --repo backport-org/backport-demo --no-fork
+docker run --rm -v $(pwd):/app:ro -v ~/.backport:/root/.backport sqren/backport -v
 ```
 
 ### Publish to Docker hub
@@ -39,12 +39,8 @@ Go to the [Docker push action](https://github.com/sqren/backport/actions/workflo
 docker push sqren/backport
 ```
 
-Note: this will not produce multi-platform images
+**Note: this will not produce multi-platform images**
 
 ## Authenticate with docker hub
 
-```
-docker login
-```
-
-A personal access token can be created [here](https://hub.docker.com/settings/security)
+Create a personal access token can be created [on Docker Hub](https://hub.docker.com/settings/security), then run `docker login` to authenticate.
