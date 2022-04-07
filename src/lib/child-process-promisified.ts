@@ -25,6 +25,9 @@ export async function spawnPromise(
   stderr: string;
   stdout: string;
 }> {
+  const fullCmd = `${cmd} ${cmdArgs.join(' ')}`;
+  logger.info(`Running command: "${fullCmd}"`);
+
   return new Promise(function (resolve, reject) {
     const subprocess = childProcess.spawn(cmd, cmdArgs, { cwd });
     let stderr = '';
@@ -39,9 +42,6 @@ export async function spawnPromise(
     });
 
     subprocess.on('close', (code) => {
-      const fullCmd = `${cmd} ${cmdArgs.join(' ')}`;
-      logger.info(`Running command: "${fullCmd}"`);
-
       if (code === 0 || code === null) {
         resolve({ cmdArgs, code, stderr, stdout });
       } else {

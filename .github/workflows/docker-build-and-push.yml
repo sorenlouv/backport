@@ -2,13 +2,15 @@ name: docker-build-and-push
 
 on:
   workflow_dispatch:
-  pull_request_target:
-    types:
-      - labeled
+    inputs:
+      push_to_docker_hub:
+        description: Push to Docker Hub
+        type: boolean
+        required: true
+        default: false
 
 jobs:
   docker:
-    if: contains(github.event.pull_request.labels.*.name, 'docker-push') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,7 +32,8 @@ jobs:
           tags: sqren/backport:dev
       - name: Test image before push
         run: docker run --rm -v $(pwd):/app:ro -v ~/.backport:/root/.backport sqren/backport:dev -v
-      - name: Build and push
+      - name: Push to Docker Hub
+        if: github.event.inputs.push_to_docker_hub == 'true'
         uses: docker/build-push-action@v2
         with:
           context: ./docker

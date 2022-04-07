@@ -25,7 +25,7 @@
     "postinstall": "test -f ./dist/scripts/runPostinstall.js && node ./dist/scripts/runPostinstall.js || echo 'Dist folder missing'",
     "version": "echo \"Bumping version\" && yarn extractPackageVersion && git add src/utils/packageVersion.ts && yarn tsc",
     "prepare": "husky install",
-    "prepublishOnly": "yarn lint && yarn tsc",
+    "prepublishOnly": "rm -rf ./dist/ && yarn lint && yarn tsc",
     "extractPackageVersion": "node -p \"'export const PACKAGE_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" | prettier --parser typescript > src/utils/packageVersion.ts",
     "lint-and-test": "yarn tsc && yarn lint && yarn test-all",
     "lint": "echo \"Running lint\" && eslint './**/*.{ts,js}'",
