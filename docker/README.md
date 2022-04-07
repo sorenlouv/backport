@@ -2,9 +2,14 @@
 
 ### Running backport via docker
 
-```
+**Create a bash alias**
+```sh
 alias backport='docker run -it --rm -v $(pwd):/app:ro -v ~/.backport:/root/.backport sqren/backport'
-backport
+```
+
+You can now run backport via Docker like:
+```sh
+backport --help
 ```
 
 # Development
