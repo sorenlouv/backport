@@ -33,7 +33,7 @@ The remaining documentation focuses on the Backport CLI tool (not the Github Act
 npm install -g backport
 ```
 
-After installation you should add an access token to the [global config](https://github.com/sqren/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson) in `~/.backport/config.json`. See the [documentation](https://github.com/sqren/backport/blob/main/docs/config-file-options.md#accesstoken-required) for how the access token is generated.
+After installation you should add an access token to the [global config](/docs/config-file-options.md#global-config-backportconfigjson) in `~/.backport/config.json`. See the [documentation](/docs/config-file-options.md#accesstoken-required) for how the access token is generated.
 
 ## Quick start
 
@@ -41,7 +41,7 @@ After installation you should add an access token to the [global config](https:/
 npm install backport
 ```
 
-Add a [project config](https://github.com/sqren/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson) to the root of your repository:
+Add a [project config](/docs/config-file-options.md#project-config-backportrcjson) to the root of your repository:
 
 ```js
 // .backportrc.json
@@ -60,7 +60,7 @@ Add a [project config](https://github.com/sqren/backport/blob/main/docs/config-f
 }
 ```
 
-Add personal access token to [global config](https://github.com/sqren/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson):
+Add personal access token to [global config](/docs/config-file-options.md#global-config-backportconfigjson):
 
 ```js
 // ~/.backport/config.json
@@ -79,15 +79,15 @@ _This will start an interactive prompt. You can use your keyboards arrow keys to
 
 ### Config options
 
-See [config-file-options.md](https://github.com/sqren/backport/blob/main/docs/config-file-options.md)
+See [config-file-options.md](/docs/config-file-options.md)
 
 ### CLI options
 
-See [cli-options.md](https://github.com/sqren/backport/blob/main/docs/cli-options.md)
+See [cli-options.md](/docs/cli-options.md)
 
 ## API
 
-See [api.md](https://github.com/sqren/backport/blob/main/docs/api.md)
+See [api.md](/docs/api.md)
 
 ## What is backporting?
 

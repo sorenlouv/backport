@@ -1,6 +1,6 @@
 # CLI options
 
-The CLI options will override the [config-file-options.md](https://github.com/sqren/backport/blob/main/docs/config-file-options.md).
+The CLI options will override the [config-file-options.md](/docs/config-file-options.md).
 
 
 | Option              | Shorthand notation | Description                                                                | Default                   |
@@ -44,4 +44,3 @@ The CLI options will override the [config-file-options.md](https://github.com/sq
 | --help              |                    | Show help                                                                  |                           |
 | -v, --version       |                    | Show version number                                                        |                           |
 
-diff --git a/docs/api.md b/docs/api.md

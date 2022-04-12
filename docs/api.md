@@ -8,7 +8,7 @@ Backport a commit programatically. Commits can be selected via `pullNumber` or `
 
 #### Arguments:
 
-All of the options listed on [config-file-options.md](https://github.com/sqren/backport/blob/main/docs/config-file-options.md) are valid. The most common options are:
+All of the options listed on [config-file-options.md](/docs/config-file-options.md) are valid. The most common options are:
 
 `accessToken` _string_ **(Required)**<br/>
 Github access token to authenticate the request
