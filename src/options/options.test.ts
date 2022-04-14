@@ -234,6 +234,7 @@ describe('getOptions', () => {
       repoOwner: 'elastic',
       resetAuthor: false,
       reviewers: [],
+      signoff: false,
       sourceBranch: 'default-branch-from-github',
       sourcePRLabels: [],
       targetBranchChoices: ['7.9', '8.0'],
