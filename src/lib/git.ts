@@ -331,6 +331,7 @@ export async function cherrypick({
       ? ['--mainline', `${options.mainline}`]
       : []),
     ...(options.cherrypickRef === false ? [] : ['-x']),
+    ...(options.signoff ? ['--signoff'] : []),
     shaOrRange,
   ];
 

@@ -52,6 +52,7 @@ export const defaultConfigOptions = {
   targetBranchChoices: [] as TargetBranchChoiceOrString[],
   targetBranches: [] as string[],
   targetPRLabels: [] as string[],
+  signoff: false,
 };
 
 export async function getOptions({

@@ -403,6 +403,35 @@ describe('cherrypick', () => {
     ]);
   });
 
+  it('should use signoff option when specified', async () => {
+    const spawnSpy = jest
+      .spyOn(childProcess, 'spawnPromise')
+      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] }) // mock getIsMergeCommit(...)
+      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] }); // mock cherrypick(...)
+
+    await cherrypick({
+      options: { ...options, signoff: true },
+      sha: 'abcd',
+      commitAuthor,
+    });
+
+    const args = spawnSpy.mock.calls[1];
+    expect(args).toEqual([
+      'git',
+      [
+        '-c',
+        'user.name="Soren L"',
+        '-c',
+        'user.email="soren@mail.dk"',
+        'cherry-pick',
+        '-x',
+        '--signoff',
+        'abcd',
+      ],
+      '/myHomeDir/.backport/repositories/elastic/kibana',
+    ]);
+  });
+
   it('should return `needsResolving: true` upon cherrypick error', async () => {
     jest
       .spyOn(childProcess, 'spawnPromise')

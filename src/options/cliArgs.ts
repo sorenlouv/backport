@@ -208,6 +208,12 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       },
     })
 
+    .option('signoff', {
+      description: 'Pass the --signoff option to the cherry-pick command',
+      type: 'boolean',
+      alias: ['s'],
+    })
+
     // display 10 commits to pick from
     .option('maxNumber', {
       description: 'Number of commits to choose from',
