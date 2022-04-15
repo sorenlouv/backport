@@ -65,6 +65,8 @@ describe('entrypoint cli', () => {
             --ls                              List commits instead of backporting them           [boolean]
             --mainline                        Parent id of merge commit. Defaults to 1 when supplied
                                               without arguments                                   [number]
+        -s, --signoff                         Pass the --signoff option to the cherry-pick command
+                                                                                                 [boolean]
         -n, --maxNumber, --number             Number of commits to choose from                    [number]
             --multiple                        Select multiple branches/commits                   [boolean]
             --multipleBranches                Backport to multiple branches                      [boolean]
