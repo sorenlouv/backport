@@ -118,6 +118,3 @@ This tools is for anybody who is working on a codebase where they have to mainta
 ## Contributing
 
 See [CONTRIBUTING.md](https://github.com/sqren/backport/blob/master/CONTRIBUTING.md)
-
-[1]: https://git-scm.com/docs/git-cherry-pick#Documentation/git-cherry-pick.txt--x
-[2]: https://docs.github.com/en/search-github/getting-started-with-searching-on-github/understanding-the-search-syntax
