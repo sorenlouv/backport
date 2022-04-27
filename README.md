@@ -77,17 +77,10 @@ npx backport
 
 _This will start an interactive prompt. You can use your keyboards arrow keys to choose options, `<space>` to select checkboxes and `<enter>` to proceed._
 
-### Config options
-
-See [config-file-options.md](/docs/config-file-options.md)
-
-### CLI options
-
-See [cli-options.md](/docs/cli-options.md)
-
-## API
-
-See [api.md](/docs/api.md)
+## Documentation
+ - [Config file options](/docs/config-file-options.md)
+ - [CLI options](/docs/cli-options.md)
+ - [Module API](/docs/api.md)
 
 ## What is backporting?
 
