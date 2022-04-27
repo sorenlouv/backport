@@ -117,6 +117,7 @@ See [configuration.md](https://github.com/sqren/backport/blob/main/docs/configur
 | --reset-author      |                    | Set yourself as commit author                                              |                           |
 | --reviewer          |                    | Add reviewer to the target PR                                              |                           |
 | --sha               |                    | Sha of commit to backport                                                  |                           |
+| --signoff           |-s                  | Pass the --signoff option to the cherry-pick command                       | false                     |     
 | --source-branch     |                    | Specify a non-default branch to backport from                              |                           |
 | --source-pr-label   |                    | Labels added to the source PR                                              |                           |
 | --target-branch     | -b                 | Target branch(es) to backport to                                           |                           |
