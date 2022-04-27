@@ -6,7 +6,7 @@
 	<br>
 </div>
 
-## 🎉 New! The Backport Tool as a Github Action 🎉
+## 🎉 New: The Backport Tool as a Github Action 🎉
 
 A [Github Action](https://github.com/sqren/backport-github-action) around The Backport Tool now exists. It makes it a breeze to get automatic backports when pull requests are merged.
 
