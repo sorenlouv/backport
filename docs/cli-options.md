@@ -2,7 +2,6 @@
 
 The CLI options will override the [config-file-options.md](/docs/config-file-options.md).
 
-
 | Option              | Shorthand notation | Description                                                                | Default                   |
 | ------------------- | ------------------ | -------------------------------------------------------------------------- | ------------------------- |
 | --access-token      |                    | Github access token                                                        |                           |
@@ -37,10 +36,10 @@ The CLI options will override the [config-file-options.md](/docs/config-file-opt
 | --reset-author      |                    | Set yourself as commit author                                              |                           |
 | --reviewer          |                    | Add reviewer to the target PR                                              |                           |
 | --sha               |                    | Sha of commit to backport                                                  |                           |
+| --signoff           | -s                 | Pass the --signoff option to the cherry-pick command                       | false                     |
 | --source-branch     |                    | Specify a non-default branch to backport from                              |                           |
 | --source-pr-label   |                    | Labels added to the source PR                                              |                           |
 | --target-branch     | -b                 | Target branch(es) to backport to                                           |                           |
 | --target-pr-label   | --label, -l        | Labels added to the target PR                                              |                           |
 | --help              |                    | Show help                                                                  |                           |
 | -v, --version       |                    | Show version number                                                        |                           |
-
