@@ -82,19 +82,19 @@ _This will start an interactive prompt. You can use your keyboards arrow keys to
  - [CLI options](/docs/cli-options.md)
  - [Module API](/docs/api.md)
 
-## What is backporting?
+### What is backporting?
 
 > Backporting is the action of taking parts from a newer version of a software system [..] and porting them to an older version of the same software. It forms part of the maintenance step in a software development process, and it is commonly used for fixing security issues in older versions of the software and also for providing new features to older versions.
 
 Source: [https://en.wikipedia.org/wiki/Backporting](https://en.wikipedia.org/wiki/Backporting)
 
-## Who is this tool for?
+### Who is this tool for?
 
 This tools is for anybody who is working on a codebase where they have to maintain multiple versions. If you manually cherry-pick commits from master and apply them to one or more branches, this tool might save you a lot of time.
 
 `backport` is a CLI tool that will let you backport commit(s) interactively and then cherry-pick and create pull requests automatically. `backport` will perform all git operations in a temporary folder (`~/.backport/repositories/`) separate from your working directory, thereby never interfering with any unstages changes your might have.
 
-**Features:**
+### Features:
 
 - interactively backport one or more commits to one or more branches with an intuitive UI
 - ability to see which commits have been backported and to which branches
