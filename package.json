@@ -74,7 +74,7 @@
     "inquirer": "^8.2.2",
     "lodash": "^4.17.21",
     "make-dir": "^3.1.0",
-    "ora": "^5.4.1",
+    "ora": "^6.1.0",
     "safe-json-stringify": "^1.2.0",
     "strip-json-comments": "^3.1.1",
     "terminal-link": "^2.1.1",
