@@ -627,7 +627,7 @@ export async function pushBackportBranch({
       e.context.stderr.toLowerCase().includes(`repository not found`)
     ) {
       throw new BackportError(
-        `Error pushing to https://github.com/${repoForkOwner}/${options.repoName}. Repository does not exist. Either fork the repository (https://github.com/${options.repoOwner}/${options.repoName}) or disable fork mode via "--no-fork".\nRead more about fork mode in the docs: https://github.com/sqren/backport/blob/main/docs/configuration.md#fork`
+        `Error pushing to https://github.com/${repoForkOwner}/${options.repoName}. Repository does not exist. Either fork the repository (https://github.com/${options.repoOwner}/${options.repoName}) or disable fork mode via "--no-fork".\nRead more about fork mode in the docs: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#fork`
       );
     }
 

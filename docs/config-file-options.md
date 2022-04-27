@@ -1,11 +1,11 @@
-# Configuration
+# Config file options
 
 `backport` reads options from two configuration files:
 
 - [Global config](#global-config-backportconfigjson)
 - [Project config](#project-config-backportrcjson)
 
-All config options can additionally be overriden via CLI options.
+All file config options be overriden via CLI options.
 
 ## Global config (`.backport/config.json`)
 
@@ -32,15 +32,9 @@ Please select the necessary access scopes:
 **For public repos only**
 ![image](https://user-images.githubusercontent.com/209966/67081207-018ec400-f197-11e9-86aa-4ae4a003fcbd.png)
 
-CLI: `--accessToken myAccessToken`
-
 #### `editor`
 
 If a merge conflicts occurs during backportin your editor of choice will be opened to make it easier for you to resolve the conflict
-
-CLI: `--editor code`
-
-Config:
 
 ```json
 {
@@ -67,10 +61,6 @@ Example:
 
 Name of repository
 
-CLI: `--repo-name kibana`
-
-Config:
-
 ```json
 {
   "repoName": "kibana"
@@ -81,10 +71,6 @@ Config:
 
 Owner of repository (Github organization or Github username)
 
-CLI: `--repo-owner elastic`
-
-Config:
-
 ```json
 {
   "repoOwner": "elastic"
@@ -94,10 +80,6 @@ Config:
 #### `targetBranchChoices` **required**
 
 List of target branches the user can select interactively.
-
-CLI: `--target-branch-choice <branch>`
-
-Config:
 
 ```json
 {
@@ -126,10 +108,6 @@ The following options can be used in both the global config, project config, and
 
 Add assignees to the target pull request
 
-CLI: `--assignee <username>`, `--assign <username>`
-
-Config:
-
 ```json
 {
   "assignees": ["sqren"]
@@ -139,10 +117,6 @@ Config:
 #### `author`
 
 By default only commits from the authenticated user are displayed. To see commits from another user use `--author john.doe`. To see commits from any user use `--all` (cli-only flag).
-
-CLI: `--author sqren`
-
-Config:
 
 ```json
 {
@@ -161,10 +135,6 @@ To view commits form all users (equivalent to `backport --all`):
 #### `autoAssign`
 
 Automatically add the current user as assignee to the target pull request
-
-CLI: `--auto-assign`
-
-Config:
 
 ```json
 {
@@ -186,10 +156,6 @@ Example of how `backportBinary` is used:
 
 Default: `backport`
 
-CLI: N/A
-
-Config:
-
 ```json
 {
   "backportBinary": "node scripts/backport"
@@ -199,10 +165,6 @@ Config:
 #### `branchLabelMapping`
 
 Automatically detech which branches a pull request should be backported to, based on the pull request labels.
-
-CLI: N/A
-
-Config:
 
 ```json
 {
@@ -219,17 +181,11 @@ _Note: backslashes must be escaped._
 
 Custom path to project config file (.backportrc.json).
 
-CLI: `--config-file /my/project/.backportrc.json`
-
 #### `dir`
 
 Clone repository into custom directory
 
 Default: `~/.backport/repositories/`
-
-CLI: `--dir=my/custom/tmp/repo/location`
-
-Config:
 
 ```json
 {
@@ -241,13 +197,9 @@ Config:
 
 Only display commits newer than the specified date
 
-CLI: `--since=2020-12-10`
-
 #### `dateUntil`
 
 Only display commits older than the specified date
-
-CLI: `--until=2020-12-15`
 
 #### `fork`
 
@@ -256,10 +208,6 @@ CLI: `--until=2020-12-15`
 `false`: Create backport branch in the origin repository
 
 Default: `true`
-
-CLI: `--no-fork`
-
-Config:
 
 ```json
 {
@@ -273,10 +221,6 @@ Hostname for Github.
 
 Default: `github.com`
 
-CLI: `--git-hostname "github.my-private-company.com"`
-
-Config:
-
 ```json
 {
   "gitHostname": "github.my-private-company.com"
@@ -289,10 +233,6 @@ Base url for Github's REST (v3) API
 
 Default: `https://api.github.com`
 
-CLI: `--github-api-base-url-v3 "https://api.github.my-private-company.com"`
-
-Config:
-
 ```json
 {
   "githubApiBaseUrlV3": "https://api.github.my-private-company.com"
@@ -304,10 +244,6 @@ Config:
 Base url for Github's GraphQL (v4) API
 
 Default: `https://api.github.com/graphql`
-
-CLI: `--github-api-base-url-v4 "https://github-enterprise.acme-inc.com/api"`
-
-Config:
 
 ```json
 {
@@ -329,10 +265,6 @@ When backporting a merge commit the parent id must be specified. This is directl
 Number of commits that will be listed for the user to choose from.
 
 Default: 10
-
-CLI: `--max-number <number>`, `--number <number>`, `-n <number>`
-
-Config:
 
 ```json
 {
@@ -360,10 +292,6 @@ Default: `true`
 
 Only list commits touching files under the specified path
 
-CLI: `--path <path>`, `-p <path>`
-
-Config:
-
 ```json
 {
   "commitPaths": ["my/folder"]
@@ -380,10 +308,6 @@ Template values:
 
 Default: `"[{targetBranch}] {commitMessages}"`
 
-CLI: `--pr-title "<title>"`, `--title "<title>"`
-
-Config:
-
 ```json
 {
   "prTitle": "{commitMessages} backport for {targetBranch}"
@@ -398,10 +322,6 @@ Template values:
 - `{targetBranch}`: Branch the backport PR will be targeting
 - `{commitMessages}`: Message of backported commit. For multiple commits the messages will be separated by pipes (`|`).
 - `{defaultPrDescription}`: The default PR description. Using this makes it easy to append and prepend text to the existing description
-
-CLI: `--pr-description "<text>"`, `--description "<text>"`
-
-Config:
 
 ```json
 {
@@ -420,10 +340,6 @@ alias backport-skip-ci='backport --pr-description "{defaultPrDescription} [skip-
 
 Filter source pull requests by any [Github query](https://help.github.com/en/github/searching-for-information-on-github/understanding-the-search-syntax). Text with whitespace [must contain escaped quotes](https://help.github.com/en/github/searching-for-information-on-github/understanding-the-search-syntax#use-quotation-marks-for-queries-with-whitespace).
 
-CLI: `--pr-filter "<query>"`
-
-Config:
-
 ```json
 {
   "prFilter": "label: \"Backport Needed\""
@@ -435,8 +351,6 @@ Config:
 Publish a status comment to the source pull request if the backport was aborted
 
 Default: `False`
-
-Config:
 
 ```json
 {
@@ -450,8 +364,6 @@ Publish a status comment to the source pull request if all backports succeeded
 
 Default: `true`
 
-Config:
-
 ```json
 {
   "publishStatusCommentOnSuccess": false
@@ -464,8 +376,6 @@ Publish a status comment to the source pull request if some backports failed
 
 Default: `false`
 
-Config:
-
 ```json
 {
   "publishStatusCommentOnFailure": false
@@ -476,25 +386,17 @@ Config:
 
 Backport a pull request by specifying its number
 
-CLI: `--pull-number "<number>"`, `--pr "<number>"`
-
 #### `resetAuthor`
 
 Change the author of the backported commit to the current user
-
-CLI: `--reset-author`
 
 #### `reviewers`
 
 Add reviewers to the target pull request
 
-CLI: `--reviewer`
-
 #### `sha`
 
 Backport a commit by specifying its commit sha
-
-CLI: `--sha "<sha>"`, `--commit "<sha>"`
 
 #### `signoff`
 
@@ -508,10 +410,6 @@ By default the list of commits will be sourced from the repository's default bra
 
 Default: master (unless the default branch on Github is changed)
 
-CLI: `--source-branch 7.x`
-
-Config:
-
 ```json
 {
   "sourceBranch": "7.x"
@@ -521,10 +419,6 @@ Config:
 #### `sourcePRLabels`
 
 Labels that will be added to the source (original) pull request. This can be useful if you, at a later time, want to find the PRs that were already backported.
-
-CLI: `--source-pr-label <label>`
-
-Config:
 
 ```json
 {
@@ -536,10 +430,6 @@ Config:
 
 Overrides `targetBranchChoices` so instead of displaying a prompt with target branches to choose from, the selected commit(s) will be backported directly to the branches defined in `targetBranches`
 
-CLI: `--target-branch <branch>`, `--branch <branch>`, `-b <branch>`
-
-Config:
-
 ```json
 {
   "targetBranches": ["7.x", "7.7"]
@@ -549,10 +439,6 @@ Config:
 #### `targetPRLabels`
 
 Labels that will be added to the target (backport) pull request. This can be useful if you, at a later time, want to find the backport PRs.
-
-CLI: `--target-pr-label <label>`, `-l <label>`
-
-Config:
 
 ```json
 {

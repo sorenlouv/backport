@@ -204,7 +204,7 @@ describe('git.integration', () => {
         });
       }).rejects.toThrowErrorMatchingInlineSnapshot(`
               "Error pushing to https://github.com/sqren/repo-with-conflicts. Repository does not exist. Either fork the repository (https://github.com/sqren/repo-with-conflicts) or disable fork mode via \\"--no-fork\\".
-              Read more about fork mode in the docs: https://github.com/sqren/backport/blob/main/docs/configuration.md#fork"
+              Read more about fork mode in the docs: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#fork"
             `);
     });
   });

@@ -54,7 +54,7 @@ describe('getOptions', () => {
                     "Please update your config file: \\"/myHomeDir/.backport/config.json\\".
                     It must contain a valid \\"accessToken\\".
 
-                    Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#global-config-backportconfigjson"
+                    Read more: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson"
                   `);
     });
 
@@ -70,7 +70,7 @@ describe('getOptions', () => {
       ).rejects.toThrowErrorMatchingInlineSnapshot(`
               "Please specify a target branch: \\"--branch 6.1\\".
 
-              Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#project-config-backportrcjson"
+              Read more: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson"
             `);
     });
 
@@ -107,7 +107,7 @@ describe('getOptions', () => {
                 "Please update your config file: \\"/myHomeDir/.backport/config.json\\".
                 It must contain a valid \\"accessToken\\".
 
-                Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#global-config-backportconfigjson"
+                Read more: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson"
               `);
       });
     });
@@ -125,7 +125,7 @@ describe('getOptions', () => {
         ).rejects.toThrowErrorMatchingInlineSnapshot(`
                               "Please specify a repository: \\"--repo elastic/kibana\\".
 
-                              Read more: https://github.com/sqren/backport/blob/main/docs/configuration.md#project-config-backportrcjson"
+                              Read more: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson"
                           `);
       });
 

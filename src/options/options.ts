@@ -15,10 +15,10 @@ import {
 } from './config/config';
 
 const PROJECT_CONFIG_DOCS_LINK =
-  'https://github.com/sqren/backport/blob/main/docs/configuration.md#project-config-backportrcjson';
+  'https://github.com/sqren/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson';
 
 const GLOBAL_CONFIG_DOCS_LINK =
-  'https://github.com/sqren/backport/blob/main/docs/configuration.md#global-config-backportconfigjson';
+  'https://github.com/sqren/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson';
 
 export type ValidConfigOptions = Readonly<
   Awaited<ReturnType<typeof getOptions>>
