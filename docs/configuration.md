@@ -496,6 +496,12 @@ Backport a commit by specifying its commit sha
 
 CLI: `--sha "<sha>"`, `--commit "<sha>"`
 
+#### `signoff`
+
+Pass the --signoff option to the cherry-pick command
+
+CLI: `--signoff`, `-s`
+
 #### `sourceBranch`
 
 By default the list of commits will be sourced from the repository's default branch (mostly "master"). Use `sourceBranch` to list and backport commits from other branches than the default.
