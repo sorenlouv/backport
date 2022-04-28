@@ -68,7 +68,7 @@
     "dedent": "^0.7.0",
     "del": "^6.0.0",
     "dotenv": "^16.0.0",
-    "find-up": "^5.0.0",
+    "find-up": "^6.3.0",
     "graphql": "^16.4.0",
     "graphql-tag": "^2.12.6",
     "inquirer": "^8.2.3",
