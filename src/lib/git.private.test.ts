@@ -12,7 +12,7 @@ import {
   cloneRepo,
   commitChanges,
   createBackportBranch,
-  getCommitsInMergeCommit,
+  getShasInMergeCommit,
   getGitConfig,
   getGitProjectRootPath,
   getIsCommitInBranch,
@@ -704,16 +704,16 @@ describe('git.integration', () => {
       });
     });
 
-    describe('getCommitsInMergeCommit', () => {
+    describe('getShasInMergeCommit', () => {
       it('returns a list of commit hashes - excluding the merge hash itself', async () => {
-        const res = await getCommitsInMergeCommit(
+        const shas = await getShasInMergeCommit(
           { dir: cwd } as ValidConfigOptions,
           MERGE_COMMIT_HASH_1
         );
 
-        expect(res).not.toContain(MERGE_COMMIT_HASH_1);
+        expect(shas).not.toContain(MERGE_COMMIT_HASH_1);
 
-        expect(res).toEqual([
+        expect(shas).toEqual([
           'f9a760e0d9eb3ebcc64f8cb75ce885714b836496',
           '7b92e29e88266004485ce0fae0260605b01df887',
           'a1facf8c006fb815d6a6ecd1b2907e6e64f29576',
@@ -726,12 +726,12 @@ describe('git.integration', () => {
       });
 
       it('returns empty for squash commits', async () => {
-        const res = await getCommitsInMergeCommit(
+        const shas = await getShasInMergeCommit(
           { dir: cwd } as ValidConfigOptions,
           SQUASH_COMMIT_HASH
         );
 
-        expect(res).toEqual([]);
+        expect(shas).toEqual([]);
       });
     });
   });
