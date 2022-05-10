@@ -84,7 +84,7 @@ function getPromise(
         reject(
           waitForString
             ? `Expectation '${waitForString}' not found within ${timeoutSeconds} second in:\n\n${formattedChunks}\n\nCommand: ${cmd}`
-            : `Timeout. Received:\n${formattedChunks}\n\nCommand: ${cmd}`
+            : `Process did not complete within ${timeoutSeconds} seconds. Received:\n${formattedChunks}\n\nCommand: ${cmd}`
         );
       },
       timeoutSeconds * 1000,
