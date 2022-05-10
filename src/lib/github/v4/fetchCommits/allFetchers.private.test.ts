@@ -6,6 +6,7 @@ import { fetchCommitsByAuthor } from './fetchCommitsByAuthor';
 import { fetchPullRequestsBySearchQuery } from './fetchPullRequestsBySearchQuery';
 
 const accessToken = getDevAccessToken();
+jest.setTimeout(15_000);
 
 describe('allFetchers', () => {
   let commitByAuthor: Commit;

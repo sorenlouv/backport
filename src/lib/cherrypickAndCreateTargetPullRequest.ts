@@ -33,7 +33,7 @@ import {
 import { enablePullRequestAutoMerge } from './github/v4/enablePullRequestAutoMerge';
 import { fetchCommitBySha } from './github/v4/fetchCommits/fetchCommitBySha';
 import { consoleLog, logger } from './logger';
-import { ora } from './ora';
+import { ora, Ora } from './ora';
 import { confirmPrompt } from './prompts';
 import { sequentially } from './sequentially';
 import { Commit } from './sourceCommit/parseSourceCommit';
@@ -183,26 +183,29 @@ async function waitForCherrypick(
   targetBranch: string,
   gitConfigAuthor?: GitConfigAuthor
 ) {
+  const spinnerText = `Cherry-picking: ${chalk.greenBright(
+    getFirstLine(commit.sourceCommit.message)
+  )}`;
+  const cherrypickSpinner = ora(options.interactive, spinnerText).start();
+
   await fetchBranch(options, commit.sourceBranch);
 
   await cherrypickAndHandleConflicts(
     options,
     commit,
     targetBranch,
+    cherrypickSpinner,
     gitConfigAuthor
   );
 
   // Conflicts should be resolved and files staged at this point
-  const stagingSpinner = ora(
-    options.interactive,
-    `Finalizing cherrypick`
-  ).start();
+
   try {
     // Run `git commit`
     await commitChanges(commit, options);
-    stagingSpinner.succeed();
+    cherrypickSpinner.succeed();
   } catch (e) {
-    stagingSpinner.fail();
+    cherrypickSpinner.fail();
     throw e;
   }
 }
@@ -211,18 +214,13 @@ async function cherrypickAndHandleConflicts(
   options: ValidConfigOptions,
   commit: Commit,
   targetBranch: string,
+  cherrypickSpinner: Ora,
   gitConfigAuthor?: GitConfigAuthor
 ) {
-  const spinnerText = `Cherry-picking: ${chalk.greenBright(
-    getFirstLine(commit.sourceCommit.message)
-  )}`;
-
   const mergedTargetPullRequest = commit.expectedTargetPullRequests.find(
     (pr) => pr.state === 'MERGED' && pr.branch === targetBranch
   );
   const commitAuthor = getCommitAuthor({ options, gitConfigAuthor, commit });
-
-  const cherrypickSpinner = ora(options.interactive, spinnerText).start();
 
   let conflictingFiles: ConflictingFiles;
   let unstagedFiles: string[];
@@ -238,7 +236,6 @@ async function cherrypickAndHandleConflicts(
 
     // no conflicts encountered
     if (!needsResolving) {
-      cherrypickSpinner.succeed();
       return;
     }
     // cherrypick failed due to conflicts

@@ -17,3 +17,5 @@ export function ora(
 ): oraOriginal.Ora {
   return interactive ? oraOriginal({ text }) : oraMock;
 }
+
+export type Ora = oraOriginal.Ora;

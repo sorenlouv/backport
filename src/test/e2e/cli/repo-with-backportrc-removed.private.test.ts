@@ -10,7 +10,7 @@ describe('repo-with-backportrc-removed (missing .backportrc.json config file)', 
         '--repo=backport-org/repo-with-backportrc-removed',
         `--accessToken=${accessToken}`,
       ],
-      { waitForString: 'Select commit' }
+      { waitForString: 'Select commit', timeoutSeconds: 4 }
     );
 
     expect(output).toMatchInlineSnapshot(`
@@ -39,9 +39,7 @@ describe('repo-with-backportrc-removed (missing .backportrc.json config file)', 
       }
     );
 
-    expect(output).toContain(
-      'Cherry-picking: Merge pull request #1 from backport-org/add-readme'
-    );
+    expect(output).toContain('Cherry-picking: Create README.me');
   });
 
   it('backport by commit sha', async () => {

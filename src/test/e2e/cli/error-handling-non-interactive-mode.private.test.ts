@@ -11,6 +11,7 @@ import { getSandboxPath, resetSandbox } from '../../sandbox';
 import { runBackportViaCli } from './runBackportViaCli';
 
 const accessToken = getDevAccessToken();
+jest.setTimeout(15_000);
 
 describe('non interactive (json) error handling', () => {
   it(`when access token is missing`, async () => {
