@@ -7,6 +7,8 @@ import { getSandboxPath, resetSandbox } from '../../sandbox';
 const tsNodeBinary = path.resolve('./node_modules/.bin/ts-node');
 const entrypointFile = path.resolve('./src/entrypoint.cli.ts');
 
+jest.setTimeout(15_000);
+
 type RunBackportOptions = {
   timeoutSeconds?: number;
   showOra?: boolean;
