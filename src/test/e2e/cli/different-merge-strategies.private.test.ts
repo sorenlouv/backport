@@ -136,6 +136,7 @@ describe('different-merge-strategies', () => {
 
   describe('when selecting a merge commit with eight commits and a conflict occurs', () => {
     let sandboxPath: string;
+    let output: string;
     beforeAll(async () => {
       sandboxPath = getSandboxPath({ filename: __filename });
       await resetSandbox(sandboxPath);
@@ -165,7 +166,64 @@ describe('different-merge-strategies', () => {
       );
 
       await exec(`git add -A`, { cwd: sandboxPath });
-      await proc.keypress('enter');
+      const res = await proc.keypress('enter', { showOra: true });
+      output = res.output.replaceAll(sandboxPath, '');
+    });
+
+    it('has the right output', async () => {
+      function stripSandboxPath(str: string) {
+        const regex = sandboxPath
+          .split('')
+          .map((s) => `${s}\\s?`)
+          .join('');
+
+        return str.replace(new RegExp(regex, 'g'), '<SANDBOX_PATH>');
+      }
+
+      expect(stripSandboxPath(output)).toMatchInlineSnapshot(`
+        "- Initializing...
+        ? Select pull request Merge pull request #9 from backport-org/many-merge-commits
+        ✔ 100% Cloning repository from github.com (one-time operation)
+
+        Backporting to 7.1:
+        - Pulling latest changes
+        ✔ Pulling latest changes
+        - Cherry-picking: Merge strategy: First of many merges
+        ✖ Cherry-picking: Merge strategy: First of many merges
+
+        The commit could not be backported due to conflicts
+
+        Please fix the conflicts in 
+        ? Fix the following conflicts manually:
+
+        Conflicting files:
+         - <SANDBOX_PATH>/new-file-added-with-many-merge-commits.txt
+
+
+        Press ENTER when the conflicts are resolved and files are staged (Y/n) ? Fix the following conflicts manually:
+
+        Conflicting files:
+         - <SANDBOX_PATH>/new-file-added-with-many-merge-commits.txt
+
+
+        Press ENTER when the conflicts are resolved and files are staged Yes
+        ✔ Cherry-picking: Merge strategy: First of many merges
+        - Cherry-picking: Merge strategy: Second of many merges
+        ✔ Cherry-picking: Merge strategy: Second of many merges
+        - Cherry-picking: Merge strategy: Third of many merges
+        ✔ Cherry-picking: Merge strategy: Third of many merges
+        - Cherry-picking: Merge strategy: Fourth of many merges
+        ✔ Cherry-picking: Merge strategy: Fourth of many merges
+        - Cherry-picking: Merge strategy: Fifth of many merges
+        ✔ Cherry-picking: Merge strategy: Fifth of many merges
+        - Cherry-picking: Merge strategy: Sixth of many merges
+        ✔ Cherry-picking: Merge strategy: Sixth of many merges
+        - Cherry-picking: Merge strategy: Seventh of many merges
+        ✔ Cherry-picking: Merge strategy: Seventh of many merges
+        - Cherry-picking: Merge strategy: Eighth of many merges
+        ✔ Cherry-picking: Merge strategy: Eighth of many merges
+        ✔ Dry run complete"
+      `);
     });
 
     it('backports all immediate children of the merge commit', async () => {

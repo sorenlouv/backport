@@ -4,7 +4,7 @@ import { getSandboxPath, resetSandbox } from './sandbox';
 
 const accessToken = getDevAccessToken();
 jest.unmock('find-up');
-jest.setTimeout(15_000);
+jest.setTimeout(20_000);
 
 describe('Handle unbackported pull requests', () => {
   it('shows missing backports for PR number 8', async () => {

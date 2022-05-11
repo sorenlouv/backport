@@ -21,6 +21,7 @@ export function runBackportViaCli(
   backportArgs: string[],
   runBackportOptions: RunBackportOptions = {}
 ) {
+  const chunks = '';
   const randomString = Math.random().toString(36).slice(2);
   const sandboxPath = getSandboxPath({
     filename: __filename,
@@ -39,7 +40,7 @@ export function runBackportViaCli(
   ];
 
   const proc = spawn(tsNodeBinary, cmdArgs, { cwd: runBackportOptions.cwd });
-  return getPromise(proc, runBackportOptions, cmdArgs);
+  return getPromise(proc, runBackportOptions, cmdArgs, chunks);
 }
 
 const keyCodeMap = {
@@ -52,7 +53,8 @@ type KeyCode = keyof typeof keyCodeMap;
 function getPromise(
   proc: ChildProcessWithoutNullStreams,
   runBackportOptions: RunBackportOptions,
-  cmdArgs: string[]
+  cmdArgs: string[],
+  chunks: string
 ) {
   if (proc.killed) {
     throw new Error(
@@ -75,8 +77,6 @@ function getPromise(
       runBackportOptions?: RunBackportOptions
     ) => Promise<{ output: string }>;
   }>((resolve, reject) => {
-    let chunks = '';
-
     const postponeTimeout = debounce(
       () => {
         const formattedChunks = formatChunk(chunks);
@@ -99,7 +99,7 @@ function getPromise(
       keyCode: KeyCode,
       runBackportOptions: RunBackportOptions = {}
     ) {
-      const p = getPromise(proc, runBackportOptions, cmdArgs);
+      const p = getPromise(proc, runBackportOptions, cmdArgs, chunks);
       proc.stdin.write(keyCodeMap[keyCode]);
       return p;
     }
@@ -117,7 +117,9 @@ function getPromise(
     proc.on('exit', (code) => {
       postponeTimeout.cancel();
       if (waitForString) {
-        reject(`runBackportViaCli exited before finding: ${waitForString}`);
+        reject(
+          `runBackportViaCli exited before finding: ${waitForString}. Output: `
+        );
       } else {
         resolve({ output: formatChunk(chunks), code, keypress });
       }
@@ -129,7 +131,7 @@ function getPromise(
     });
 
     // ora (loading spinner) is redirected to stderr
-    proc.stderr.on('data', (chunk: any) => {
+    proc.stderr.on('data', (chunk: string) => {
       postponeTimeout();
       if (showOra) {
         onChunk(chunk);
