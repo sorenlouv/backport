@@ -1,5 +1,5 @@
 import { resolve as pathResolve } from 'path';
-import { uniq, isEmpty, first, last } from 'lodash';
+import { uniq, isEmpty } from 'lodash';
 import { ora } from '../lib/ora';
 import { ValidConfigOptions } from '../options/options';
 import { filterNil } from '../utils/filterEmpty';
@@ -254,7 +254,7 @@ export async function getIsMergeCommit(
   return res.stdout !== '';
 }
 
-export async function getCommitsInMergeCommit(
+export async function getShasInMergeCommit(
   options: ValidConfigOptions,
   sha: string
 ) {
@@ -279,32 +279,6 @@ export async function getCommitsInMergeCommit(
   }
 }
 
-async function getShaOrRange(
-  options: ValidConfigOptions,
-  sha: string
-): Promise<string> {
-  if (!options.mainline) {
-    try {
-      const isMergeCommit = await getIsMergeCommit(options, sha);
-      if (isMergeCommit) {
-        const shas = await getCommitsInMergeCommit(options, sha);
-        return `${last(shas)}^..${first(shas)}`;
-      }
-    } catch (e) {
-      const isSpawnError = e instanceof SpawnError;
-
-      // swallow error if it's a 128 exit code
-      // exit 128 happens when the cherrypicked commit is empty which is handled below
-      // (128 also applies to many other types of errors)
-      if (!isSpawnError || e.context.code !== 128) {
-        throw e;
-      }
-    }
-  }
-
-  return sha;
-}
-
 export async function cherrypick({
   options,
   sha,
@@ -320,7 +294,6 @@ export async function cherrypick({
   unstagedFiles: string[];
   needsResolving: boolean;
 }> {
-  const shaOrRange = await getShaOrRange(options, sha);
   const cmdArgs = [
     '-c',
     `user.name="${commitAuthor.name}"`,
@@ -332,7 +305,7 @@ export async function cherrypick({
       : []),
     ...(options.cherrypickRef === false ? [] : ['-x']),
     ...(options.signoff ? ['--signoff'] : []),
-    shaOrRange,
+    sha,
   ];
 
   try {

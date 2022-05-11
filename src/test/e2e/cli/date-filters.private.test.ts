@@ -2,6 +2,7 @@ import { getDevAccessToken } from '../../private/getDevAccessToken';
 import { runBackportViaCli } from './runBackportViaCli';
 
 const accessToken = getDevAccessToken();
+jest.setTimeout(15_000);
 
 describe('date filters (dateSince, dateUntil)', () => {
   it(`filters commits by "since" and "until"`, async () => {

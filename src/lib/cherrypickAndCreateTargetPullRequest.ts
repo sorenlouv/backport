@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { isEmpty, difference } from 'lodash';
+import { isEmpty, difference, flatten } from 'lodash';
 import { ValidConfigOptions } from '../options/options';
 import { BackportError } from './BackportError';
 import { spawnPromise } from './child-process-promisified';
@@ -17,6 +17,8 @@ import {
   getRepoForkOwner,
   fetchBranch,
   ConflictingFiles,
+  getIsMergeCommit,
+  getShasInMergeCommit,
 } from './git';
 import { getFirstLine, getShortSha } from './github/commitFormatters';
 import { addAssigneesToPullRequest } from './github/v3/addAssigneesToPullRequest';
@@ -29,8 +31,9 @@ import {
   PullRequestPayload,
 } from './github/v3/createPullRequest';
 import { enablePullRequestAutoMerge } from './github/v4/enablePullRequestAutoMerge';
+import { fetchCommitBySha } from './github/v4/fetchCommits/fetchCommitBySha';
 import { consoleLog, logger } from './logger';
-import { ora } from './ora';
+import { ora, Ora } from './ora';
 import { confirmPrompt } from './prompts';
 import { sequentially } from './sequentially';
 import { Commit } from './sourceCommit/parseSourceCommit';
@@ -53,7 +56,11 @@ export async function cherrypickAndCreateTargetPullRequest({
     createBackportBranch({ options, targetBranch, backportBranch }),
   ]);
 
-  await sequentially(commits, (commit) =>
+  const commitsFlattened = flatten(
+    await Promise.all(commits.map((c) => getMergeCommits(options, c)))
+  );
+
+  await sequentially(commitsFlattened, (commit) =>
     waitForCherrypick(options, commit, targetBranch, gitConfigAuthor)
   );
 
@@ -132,6 +139,24 @@ export async function cherrypickAndCreateTargetPullRequest({
   return targetPullRequest;
 }
 
+async function getMergeCommits(
+  options: ValidConfigOptions,
+  commit: Commit
+): Promise<Commit[]> {
+  const { sha } = commit.sourceCommit;
+  if (!options.mainline) {
+    const isMergeCommit = await getIsMergeCommit(options, sha);
+    if (isMergeCommit) {
+      const shas = await getShasInMergeCommit(options, sha);
+      return Promise.all(
+        shas.reverse().map((sha) => fetchCommitBySha({ ...options, sha }))
+      );
+    }
+  }
+
+  return [commit];
+}
+
 /*
  * Returns the name of the backport branch without remote name
  *
@@ -161,26 +186,47 @@ async function waitForCherrypick(
   const spinnerText = `Cherry-picking: ${chalk.greenBright(
     getFirstLine(commit.sourceCommit.message)
   )}`;
+  const cherrypickSpinner = ora(options.interactive, spinnerText).start();
 
+  await fetchBranch(options, commit.sourceBranch);
+
+  await cherrypickAndHandleConflicts(
+    options,
+    commit,
+    targetBranch,
+    cherrypickSpinner,
+    gitConfigAuthor
+  );
+
+  // Conflicts should be resolved and files staged at this point
+
+  try {
+    // Run `git commit`
+    await commitChanges(commit, options);
+    cherrypickSpinner.succeed();
+  } catch (e) {
+    cherrypickSpinner.fail();
+    throw e;
+  }
+}
+
+async function cherrypickAndHandleConflicts(
+  options: ValidConfigOptions,
+  commit: Commit,
+  targetBranch: string,
+  cherrypickSpinner: Ora,
+  gitConfigAuthor?: GitConfigAuthor
+) {
   const mergedTargetPullRequest = commit.expectedTargetPullRequests.find(
     (pr) => pr.state === 'MERGED' && pr.branch === targetBranch
   );
-
-  const cherrypickSpinner = ora(options.interactive, spinnerText).start();
+  const commitAuthor = getCommitAuthor({ options, gitConfigAuthor, commit });
 
   let conflictingFiles: ConflictingFiles;
   let unstagedFiles: string[];
   let needsResolving: boolean;
 
-  const commitAuthor = getCommitAuthor({
-    options,
-    gitConfigAuthor,
-    commit,
-  });
-
   try {
-    await fetchBranch(options, commit.sourceBranch);
-
     ({ conflictingFiles, unstagedFiles, needsResolving } = await cherrypick({
       options,
       sha: commit.sourceCommit.sha,
@@ -190,7 +236,6 @@ async function waitForCherrypick(
 
     // no conflicts encountered
     if (!needsResolving) {
-      cherrypickSpinner.succeed();
       return;
     }
     // cherrypick failed due to conflicts
@@ -275,20 +320,6 @@ async function waitForCherrypick(
     conflictingFiles: conflictingFiles.map((f) => f.absolute),
     unstagedFiles,
   });
-
-  // Conflicts should be resolved and files staged at this point
-  const stagingSpinner = ora(
-    options.interactive,
-    `Finalizing cherrypick`
-  ).start();
-  try {
-    // Run `git commit`
-    await commitChanges(commit, options);
-    stagingSpinner.succeed();
-  } catch (e) {
-    stagingSpinner.fail();
-    throw e;
-  }
 }
 
 async function listConflictingAndUnstagedFiles({

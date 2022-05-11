@@ -357,8 +357,7 @@ describe('cherrypick', () => {
   it('should return `needsResolving: false` when no errors are encountered', async () => {
     jest
       .spyOn(childProcess, 'spawnPromise')
-      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] }) // mock getIsMergeCommit(...)
-      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] }); // mock cherrypick(...)
+      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] }); // mock `git cherrypick`
 
     expect(
       await cherrypick({
@@ -376,8 +375,7 @@ describe('cherrypick', () => {
   it('should use mainline option when specified', async () => {
     const spawnSpy = jest
       .spyOn(childProcess, 'spawnPromise')
-      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] }) // mock getIsMergeCommit(...)
-      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] }); // mock cherrypick(...)
+      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] }); // mock `git cherrypick`
 
     await cherrypick({
       options: { ...options, mainline: 1 },
@@ -406,8 +404,7 @@ describe('cherrypick', () => {
   it('should use signoff option when specified', async () => {
     const spawnSpy = jest
       .spyOn(childProcess, 'spawnPromise')
-      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] }) // mock getIsMergeCommit(...)
-      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] }); // mock cherrypick(...)
+      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] }); // mock `git cherrypick`
 
     await cherrypick({
       options: { ...options, signoff: true },
@@ -415,7 +412,7 @@ describe('cherrypick', () => {
       commitAuthor,
     });
 
-    const args = spawnSpy.mock.calls[1];
+    const args = spawnSpy.mock.calls[0];
     expect(args).toEqual([
       'git',
       [
@@ -435,7 +432,6 @@ describe('cherrypick', () => {
   it('should return `needsResolving: true` upon cherrypick error', async () => {
     jest
       .spyOn(childProcess, 'spawnPromise')
-      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] }) // mock getIsMergeCommit(...)
       // mock `git cherrypick`
       .mockRejectedValueOnce(
         new childProcess.SpawnError({
@@ -483,9 +479,6 @@ describe('cherrypick', () => {
     jest
       .spyOn(childProcess, 'spawnPromise')
 
-      // mock getIsMergeCommit(...)
-      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] })
-
       // mock cherry pick command
       .mockRejectedValueOnce(
         new childProcess.SpawnError({
@@ -519,9 +512,6 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
     jest
       .spyOn(childProcess, 'spawnPromise')
 
-      // mock getIsMergeCommit(...)
-      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] })
-
       // mock cherry pick command
       .mockRejectedValueOnce(
         new childProcess.SpawnError({
@@ -548,9 +538,6 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
   it('should re-throw non-cherrypick errors', async () => {
     jest
       .spyOn(childProcess, 'spawnPromise')
-
-      // mock getIsMergeCommit(...)
-      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] })
 
       // mock cherry pick command
       .mockRejectedValueOnce(new Error('non-cherrypick error'))

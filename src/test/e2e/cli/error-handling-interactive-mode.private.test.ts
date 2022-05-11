@@ -3,6 +3,7 @@ import { getSandboxPath, resetSandbox } from '../../sandbox';
 import { runBackportViaCli } from './runBackportViaCli';
 
 const accessToken = getDevAccessToken();
+jest.setTimeout(15_000);
 
 describe('interactive error handling', () => {
   it('when branch is missing', async () => {

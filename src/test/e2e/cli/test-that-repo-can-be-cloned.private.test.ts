@@ -3,6 +3,7 @@ import { getDevAccessToken } from '../../private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
 import { runBackportViaCli } from './runBackportViaCli';
 const accessToken = getDevAccessToken();
+jest.setTimeout(15_000);
 
 describe('test-that-repo-can-be-cloned', () => {
   describe('when local repo does not exist', () => {

@@ -8,7 +8,7 @@ jest.unmock('find-up');
 jest.unmock('del');
 jest.unmock('make-dir');
 
-jest.setTimeout(10_000);
+jest.setTimeout(15_000);
 
 const accessToken = getDevAccessToken();
 const octokit = new Octokit({ auth: accessToken });
