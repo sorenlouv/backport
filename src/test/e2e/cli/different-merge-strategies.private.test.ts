@@ -30,8 +30,8 @@ describe('different-merge-strategies', () => {
         7. Merge strategy: Third of many merges  
         8. Merge strategy: Second of many merges  
         9. Merge strategy: First of many merges  
-        10.Using squash to merge commits (#3) 7.x 
-        11.Rebase strategy: Second commit 7.x 
+        10.Using squash to merge commits (#3)  
+        11.Rebase strategy: Second commit  
         12.Rebase strategy: First commit  
         13.Merge pull request #1 from backport-org/merge-strategy  
         14.Merge strategy: Second commit  
