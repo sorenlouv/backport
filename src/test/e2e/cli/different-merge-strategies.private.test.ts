@@ -166,7 +166,10 @@ describe('different-merge-strategies', () => {
       );
 
       await exec(`git add -A`, { cwd: sandboxPath });
-      const res = await proc.keypress('enter', { showOra: true });
+      const res = await proc.keypress('enter', {
+        showOra: true,
+        timeoutSeconds: 5,
+      });
       output = res.output.replaceAll(sandboxPath, '');
     });
 
