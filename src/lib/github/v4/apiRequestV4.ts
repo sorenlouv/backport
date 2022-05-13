@@ -79,8 +79,7 @@ function isAxiosGithubError(
   return (
     axios.isAxiosError(e) &&
     e.response !== undefined &&
-    isObject(e.response.data) &&
-    'data' in e.response.data
+    isObject(e.response.data)
   );
 }
 
