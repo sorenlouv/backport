@@ -1,6 +1,7 @@
 import fs from 'fs/promises';
 import { exec } from '../../../lib/child-process-promisified';
 import { getDevAccessToken } from '../../private/getDevAccessToken';
+import { replaceStringAndLinebreaks } from '../../replaceStringAndLinebreaks';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
 import { runBackportViaCli } from './runBackportViaCli';
 const accessToken = getDevAccessToken();
@@ -170,20 +171,15 @@ describe('different-merge-strategies', () => {
         showOra: true,
         timeoutSeconds: 5,
       });
-      output = res.output.replaceAll(sandboxPath, '');
+      output = replaceStringAndLinebreaks(
+        res.output,
+        sandboxPath,
+        '<SANDBOX_PATH>'
+      );
     });
 
     it('has the right output', async () => {
-      function stripSandboxPath(str: string) {
-        const regex = sandboxPath
-          .split('')
-          .map((s) => `${s}\\s?`)
-          .join('');
-
-        return str.replace(new RegExp(regex, 'g'), '<SANDBOX_PATH>');
-      }
-
-      expect(stripSandboxPath(output)).toMatchInlineSnapshot(`
+      expect(output).toMatchInlineSnapshot(`
         "- Initializing...
         ? Select pull request Merge pull request #9 from backport-org/many-merge-commits
         ✔ 100% Cloning repository from github.com (one-time operation)
@@ -196,7 +192,7 @@ describe('different-merge-strategies', () => {
 
         The commit could not be backported due to conflicts
 
-        Please fix the conflicts in 
+        Please fix the conflicts in <SANDBOX_PATH>
         ? Fix the following conflicts manually:
 
         Conflicting files:
