@@ -1,6 +1,7 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { DocumentNode } from 'graphql';
 import { print } from 'graphql/language/printer';
+import { isObject } from 'lodash';
 import { BackportError } from '../../BackportError';
 import { logger } from '../../logger';
 
@@ -57,7 +58,7 @@ export async function apiRequestV4<DataResponse>({
 
     return response.data.data;
   } catch (e) {
-    if (axios.isAxiosError(e) && e.response) {
+    if (isAxiosGithubError(e) && e.response) {
       addDebugLogs({
         githubApiBaseUrlV4,
         query,
@@ -72,36 +73,22 @@ export async function apiRequestV4<DataResponse>({
   }
 }
 
-function addDebugLogs({
-  githubApiBaseUrlV4,
-  query,
-  variables,
-  githubResponse,
-  didThrow = false,
-}: {
-  githubApiBaseUrlV4: string;
-  query: DocumentNode;
-  variables?: Variables;
-  githubResponse: AxiosResponse;
-  didThrow?: boolean;
-}) {
-  const gqlQueryName = getQueryName(query);
-  logger.info(
-    `POST ${githubApiBaseUrlV4} (name:${gqlQueryName}, status: ${
-      githubResponse.status
-    }${didThrow ? ', EXCEPTION THROWN' : ''})`
+function isAxiosGithubError(
+  e: unknown
+): e is AxiosError<GithubV4Response<unknown>, any> {
+  return (
+    axios.isAxiosError(e) &&
+    e.response !== undefined &&
+    isObject(e.response.data) &&
+    'data' in e.response.data
   );
-
-  logger.verbose(`Query: ${print(query)}`);
-  logger.verbose('Variables:', variables);
-  logger.verbose('Response headers:', githubResponse.headers);
-  logger.verbose('Response data:', githubResponse.data);
 }
 
 type AxiosGithubResponse<DataResponse> = AxiosResponse<
   GithubV4Response<DataResponse | null>,
   any
 >;
+
 export class GithubV4Exception<DataResponse> extends Error {
   githubResponse: AxiosGithubResponse<DataResponse> & { request: undefined };
 
@@ -128,4 +115,30 @@ export class GithubV4Exception<DataResponse> extends Error {
 export function getQueryName(query: DocumentNode): string {
   //@ts-expect-error
   return query.definitions[0].name?.value;
+}
+
+function addDebugLogs({
+  githubApiBaseUrlV4,
+  query,
+  variables,
+  githubResponse,
+  didThrow = false,
+}: {
+  githubApiBaseUrlV4: string;
+  query: DocumentNode;
+  variables?: Variables;
+  githubResponse: AxiosResponse<unknown>;
+  didThrow?: boolean;
+}) {
+  const gqlQueryName = getQueryName(query);
+  logger.info(
+    `POST ${githubApiBaseUrlV4} (name:${gqlQueryName}, status: ${
+      githubResponse.status
+    }${didThrow ? ', EXCEPTION THROWN' : ''})`
+  );
+
+  logger.verbose(`Query: ${print(query)}`);
+  logger.verbose('Variables:', variables);
+  logger.verbose('Response headers:', githubResponse.headers);
+  logger.verbose('Response data:', githubResponse.data);
 }
