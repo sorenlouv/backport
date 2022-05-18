@@ -161,9 +161,8 @@ describe('different-merge-strategies', () => {
 
       await exec(`git status`, { cwd: sandboxPath });
 
-      const filePath = `${sandboxPath}/new-file-added-with-many-merge-commits.txt`;
       await fs.writeFile(
-        filePath,
+        `${sandboxPath}/new-file-added-with-many-merge-commits.txt`,
         `File added directly to 7.1 to cause merge conflict\nPrevious merge commit didn't have enough commits\n`
       );
 
@@ -175,8 +174,8 @@ describe('different-merge-strategies', () => {
 
       output = replaceStringAndLinebreaks({
         haystack: res.output,
-        stringBefore: filePath,
-        stringAfter: '<FILE_PATH>',
+        stringBefore: sandboxPath,
+        stringAfter: '<SANDBOX_PATH>',
       });
     });
 
@@ -194,17 +193,19 @@ describe('different-merge-strategies', () => {
 
         The commit could not be backported due to conflicts
 
-        Please fix the conflicts in /Users/sqren/.backport_testing/different-merge-strategies.private.test
+        Please fix the conflicts in <SANDBOX_PATH>
         ? Fix the following conflicts manually:
 
         Conflicting files:
-         - <FILE_PATH>
+         - <SANDBOX_PATH>/new-fi
+        le-added-with-many-merge-commits.txt
 
 
         Press ENTER when the conflicts are resolved and files are staged (Y/n) ? Fix the following conflicts manually:
 
         Conflicting files:
-         - <FILE_PATH>
+         - <SANDBOX_PATH>/new-fi
+        le-added-with-many-merge-commits.txt
 
 
         Press ENTER when the conflicts are resolved and files are staged Yes
