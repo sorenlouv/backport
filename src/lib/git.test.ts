@@ -267,6 +267,7 @@ describe('createBackportBranch', () => {
     repoName: 'kibana',
   } as ValidConfigOptions;
 
+  const sourceBranch = 'main';
   const targetBranch = '4.x';
   const backportBranch = 'backport/4.x/commit-72f94e76';
 
@@ -282,7 +283,12 @@ describe('createBackportBranch', () => {
 
     jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
     await expect(
-      createBackportBranch({ options, targetBranch, backportBranch })
+      createBackportBranch({
+        options,
+        sourceBranch,
+        targetBranch,
+        backportBranch,
+      })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"The branch \\"4.x\\" is invalid or doesn't exist"`
     );
@@ -300,7 +306,12 @@ describe('createBackportBranch', () => {
 
     jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
     await expect(
-      createBackportBranch({ options, targetBranch, backportBranch })
+      createBackportBranch({
+        options,
+        sourceBranch,
+        targetBranch,
+        backportBranch,
+      })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"The branch \\"4.x\\" is invalid or doesn't exist"`
     );
@@ -313,7 +324,12 @@ describe('createBackportBranch', () => {
     expect.assertions(1);
 
     await expect(
-      createBackportBranch({ options, targetBranch, backportBranch })
+      createBackportBranch({
+        options,
+        sourceBranch,
+        targetBranch,
+        backportBranch,
+      })
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"just a normal error"`);
   });
 });

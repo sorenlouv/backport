@@ -489,12 +489,14 @@ export async function getGitConfig({
 //     master      ->  backport/7.x/pr-1234 ->      7.x
 export async function createBackportBranch({
   options,
-  targetBranch,
+  sourceBranch,
   backportBranch,
+  targetBranch,
 }: {
   options: ValidConfigOptions;
-  targetBranch: string;
+  sourceBranch: string;
   backportBranch: string;
+  targetBranch: string;
 }) {
   const spinner = ora(options.interactive, 'Pulling latest changes').start();
 
@@ -503,7 +505,15 @@ export async function createBackportBranch({
 
     await spawnPromise('git', ['reset', '--hard'], cwd);
     await spawnPromise('git', ['clean', '-d', '--force'], cwd);
-    await spawnPromise('git', ['fetch', options.repoOwner, targetBranch], cwd);
+
+    // create tmp branch
+    const tmpBranchName = '__backport_tool_tmp';
+    await spawnPromise('git', ['checkout', '-B', tmpBranchName], cwd);
+
+    // fetch target branch
+    await fetchBranch(options, targetBranch);
+
+    // checkout backport branch and point it to target branch
     await spawnPromise(
       'git',
       [
@@ -515,6 +525,11 @@ export async function createBackportBranch({
       ],
       cwd
     );
+
+    await spawnPromise('git', ['branch', '-D', tmpBranchName], cwd);
+
+    // // fetch commits for source branch
+    await fetchBranch(options, sourceBranch);
 
     spinner.succeed();
   } catch (e) {

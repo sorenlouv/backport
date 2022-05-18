@@ -118,7 +118,9 @@ function getPromise(
       postponeTimeout.cancel();
       if (waitForString) {
         reject(
-          `runBackportViaCli exited before finding: ${waitForString}. Output: `
+          `runBackportViaCli exited before finding: ${waitForString}. Output: ${formatChunk(
+            chunks
+          )}`
         );
       } else {
         resolve({ output: formatChunk(chunks), code, keypress });
