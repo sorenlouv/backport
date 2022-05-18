@@ -1,3 +1,4 @@
+import { homedir } from 'os';
 import path, { resolve } from 'path';
 import del from 'del';
 import makeDir from 'make-dir';
@@ -14,14 +15,18 @@ export function getSandboxPath({
 }) {
   const baseFilename = getFilenameWithoutExtension(filename);
   return resolve(
-    `${__dirname}/_tmp_sandbox_/${baseFilename}${
+    `${homedir()}/.backport_testing/${baseFilename}${
       specname ? `/${specname}` : ''
     }`
   );
 }
 
 export async function resetSandbox(sandboxPath: string) {
-  await del(sandboxPath);
+  if (sandboxPath.length < 30) {
+    throw new Error(`sandboxPath "${sandboxPath}" is too short. Reset aborted`);
+  }
+
+  await del(sandboxPath, { force: true });
   await makeDir(sandboxPath);
 }
 

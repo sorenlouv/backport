@@ -81,8 +81,13 @@ describe('interactive error handling', () => {
       }
     );
 
-    expect(replaceStringAndLinebreaks(output, backportDir, '<BACKPORT_DIR>'))
-      .toMatchInlineSnapshot(`
+    expect(
+      replaceStringAndLinebreaks({
+        haystack: output,
+        stringBefore: backportDir,
+        stringAfter: '<BACKPORT_DIR>',
+      })
+    ).toMatchInlineSnapshot(`
       "Backporting to 7.x:
 
       The commit could not be backported due to conflicts
@@ -96,7 +101,8 @@ describe('interactive error handling', () => {
       ? Fix the following conflicts manually:
 
       Conflicting files:
-       - <BACKPORT_DIR>/la-liga.md
+       - <BACKPORT_DIR>/l
+      a-liga.md
 
 
       Press ENTER when the conflicts are resolved and files are staged (Y/n)"

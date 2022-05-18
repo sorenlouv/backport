@@ -506,7 +506,7 @@ export async function createBackportBranch({
     await spawnPromise('git', ['reset', '--hard'], cwd);
     await spawnPromise('git', ['clean', '-d', '--force'], cwd);
 
-    // create tmp branch
+    // create tmp branch. This can be necessary when fetching to the currently selected branch
     const tmpBranchName = '__backport_tool_tmp';
     await spawnPromise('git', ['checkout', '-B', tmpBranchName], cwd);
 
@@ -526,9 +526,14 @@ export async function createBackportBranch({
       cwd
     );
 
-    await spawnPromise('git', ['branch', '-D', tmpBranchName], cwd);
+    // delete tmp branch (if it still exists)
+    try {
+      await spawnPromise('git', ['branch', '-D', tmpBranchName], cwd);
+    } catch (e) {
+      //
+    }
 
-    // // fetch commits for source branch
+    // fetch commits for source branch
     await fetchBranch(options, sourceBranch);
 
     spinner.succeed();
