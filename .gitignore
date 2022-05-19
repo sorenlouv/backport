@@ -4,5 +4,4 @@
 /dist
 /yarn-error.log
 .DS_Store
-/src/test/_tmp_sandbox_
 /.env
