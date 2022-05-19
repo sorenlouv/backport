@@ -15,7 +15,6 @@ import {
   commitChanges,
   getConflictingFiles,
   getRepoForkOwner,
-  fetchBranch,
   ConflictingFiles,
   getIsMergeCommit,
   getShasInMergeCommit,
@@ -38,6 +37,13 @@ import { confirmPrompt } from './prompts';
 import { sequentially } from './sequentially';
 import { Commit } from './sourceCommit/parseSourceCommit';
 
+function getSourceBranchFromCommits(commits: Commit[]) {
+  // sourceBranch should be the same for all commits, so picking `sourceBranch` from the first commit should be fine 🤞
+  // this is specifically needed when backporting a PR like `backport --pr 123` and the source PR was merged to a non-default (aka non-master) branch.
+  const { sourceBranch } = commits[0];
+  return sourceBranch;
+}
+
 export async function cherrypickAndCreateTargetPullRequest({
   options,
   commits,
@@ -51,9 +57,16 @@ export async function cherrypickAndCreateTargetPullRequest({
   const repoForkOwner = getRepoForkOwner(options);
   consoleLog(`\n${chalk.bold(`Backporting to ${targetBranch}:`)}`);
 
+  const sourceBranch = getSourceBranchFromCommits(commits);
+
   const [gitConfigAuthor] = await Promise.all([
     getGitConfigAuthor(options),
-    createBackportBranch({ options, targetBranch, backportBranch }),
+    createBackportBranch({
+      options,
+      sourceBranch,
+      targetBranch,
+      backportBranch,
+    }),
   ]);
 
   const commitsFlattened = flatten(
@@ -187,8 +200,6 @@ async function waitForCherrypick(
     getFirstLine(commit.sourceCommit.message)
   )}`;
   const cherrypickSpinner = ora(options.interactive, spinnerText).start();
-
-  await fetchBranch(options, commit.sourceBranch);
 
   await cherrypickAndHandleConflicts(
     options,

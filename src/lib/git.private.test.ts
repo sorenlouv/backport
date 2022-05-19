@@ -145,6 +145,7 @@ describe('git.integration', () => {
           repoOwner: 'origin',
           dir: cwd,
         } as ValidConfigOptions,
+        sourceBranch: 'main',
         targetBranch: '7.x',
         backportBranch: 'my-backport-branch',
       });
@@ -159,6 +160,7 @@ describe('git.integration', () => {
             repoOwner: 'origin',
             dir: cwd,
           } as ValidConfigOptions,
+          sourceBranch: 'main',
           targetBranch: 'foo',
           backportBranch: 'my-backport-branch',
         });
@@ -183,6 +185,7 @@ describe('git.integration', () => {
           repoOwner: 'origin',
           dir: cwd,
         } as ValidConfigOptions,
+        sourceBranch: 'main',
         targetBranch: '7.x',
         backportBranch: 'my-backport-branch',
       });

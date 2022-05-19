@@ -30,9 +30,19 @@ Array [
   Array [
     "git",
     Array [
+      "checkout",
+      "-B",
+      "__backport_tool_tmp",
+    ],
+    "/myHomeDir/.backport/repositories/elastic/kibana",
+  ],
+  Array [
+    "git",
+    Array [
       "fetch",
       "elastic",
-      "6.x",
+      "6.x:6.x",
+      "--force",
     ],
     "/myHomeDir/.backport/repositories/elastic/kibana",
   ],
@@ -44,6 +54,25 @@ Array [
       "backport/6.x/pr-1000_pr-2000",
       "elastic/6.x",
       "--no-track",
+    ],
+    "/myHomeDir/.backport/repositories/elastic/kibana",
+  ],
+  Array [
+    "git",
+    Array [
+      "branch",
+      "-D",
+      "__backport_tool_tmp",
+    ],
+    "/myHomeDir/.backport/repositories/elastic/kibana",
+  ],
+  Array [
+    "git",
+    Array [
+      "fetch",
+      "elastic",
+      "7.x:7.x",
+      "--force",
     ],
     "/myHomeDir/.backport/repositories/elastic/kibana",
   ],
@@ -70,16 +99,6 @@ Array [
   Array [
     "git",
     Array [
-      "fetch",
-      "elastic",
-      "7.x:7.x",
-      "--force",
-    ],
-    "/myHomeDir/.backport/repositories/elastic/kibana",
-  ],
-  Array [
-    "git",
-    Array [
       "-c",
       "user.name=\\"Søren Louv-Jansen\\"",
       "-c",
@@ -95,16 +114,6 @@ Array [
     Array [
       "commit",
       "--no-edit",
-    ],
-    "/myHomeDir/.backport/repositories/elastic/kibana",
-  ],
-  Array [
-    "git",
-    Array [
-      "fetch",
-      "elastic",
-      "7.x:7.x",
-      "--force",
     ],
     "/myHomeDir/.backport/repositories/elastic/kibana",
   ],

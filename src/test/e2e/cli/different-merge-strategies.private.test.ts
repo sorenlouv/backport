@@ -171,11 +171,12 @@ describe('different-merge-strategies', () => {
         showOra: true,
         timeoutSeconds: 5,
       });
-      output = replaceStringAndLinebreaks(
-        res.output,
-        sandboxPath,
-        '<SANDBOX_PATH>'
-      );
+
+      output = replaceStringAndLinebreaks({
+        haystack: res.output,
+        stringBefore: sandboxPath,
+        stringAfter: '<SANDBOX_PATH>',
+      });
     });
 
     it('has the right output', async () => {
@@ -196,13 +197,15 @@ describe('different-merge-strategies', () => {
         ? Fix the following conflicts manually:
 
         Conflicting files:
-         - <SANDBOX_PATH>/new-file-added-with-many-merge-commits.txt
+         - <SANDBOX_PATH>/new-fi
+        le-added-with-many-merge-commits.txt
 
 
         Press ENTER when the conflicts are resolved and files are staged (Y/n) ? Fix the following conflicts manually:
 
         Conflicting files:
-         - <SANDBOX_PATH>/new-file-added-with-many-merge-commits.txt
+         - <SANDBOX_PATH>/new-fi
+        le-added-with-many-merge-commits.txt
 
 
         Press ENTER when the conflicts are resolved and files are staged Yes

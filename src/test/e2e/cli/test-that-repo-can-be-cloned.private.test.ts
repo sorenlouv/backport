@@ -1,5 +1,6 @@
 import { exec } from '../../../lib/child-process-promisified';
 import { getDevAccessToken } from '../../private/getDevAccessToken';
+import { replaceStringAndLinebreaks } from '../../replaceStringAndLinebreaks';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
 import { runBackportViaCli } from './runBackportViaCli';
 const accessToken = getDevAccessToken();
@@ -66,6 +67,7 @@ describe('test-that-repo-can-be-cloned', () => {
   describe('when local repo exists', () => {
     let sourceRepo: string;
     let backportRepo: string;
+
     beforeEach(async () => {
       const sandboxPath = getSandboxPath({ filename: __filename });
       await resetSandbox(sandboxPath);
@@ -94,10 +96,14 @@ describe('test-that-repo-can-be-cloned', () => {
     it('clones using the local repo', async () => {
       const { output } = await run();
 
-      expect(output).toEqual(
-        expect.stringMatching(
-          /100% Cloning repository from .*\/src\/test\/_tmp_sandbox_\/test-that-repo-can-be-cloned.private.test\/source \(one-time operation\)/gm
-        )
+      expect(
+        replaceStringAndLinebreaks({
+          haystack: output,
+          stringBefore: sourceRepo,
+          stringAfter: '<SOURCE_REPO>',
+        })
+      ).toContain(
+        '✔ 100% Cloning repository from <SOURCE_REPO> (one-time operation)'
       );
     });
   });
