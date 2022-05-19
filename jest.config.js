@@ -10,12 +10,7 @@ module.exports = {
 
   // exclude "private" tests that requires credentials and can therefore not run on CI for external contributors
   // exclude "mutation" tests that cannot run on in parallel (like they are on CI) because they mutate shared state
-  modulePathIgnorePatterns: [
-    '.*.private.test.ts$',
-    '.*.mutation.test.ts$',
-    '.*/_tmp_sandbox_/.*$',
-  ],
-
+  modulePathIgnorePatterns: ['.*.private.test.ts$', '.*.mutation.test.ts$'],
   moduleFileExtensions: ['ts', 'js', 'json'],
   globals: {
     'ts-jest': {

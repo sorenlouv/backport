@@ -3,7 +3,6 @@ const config = require('./jest.config');
 
 module.exports = {
   ...config,
-
-  modulePathIgnorePatterns: ['.*/_tmp_sandbox_/.*$'],
+  modulePathIgnorePatterns: [],
   testSequencer: './jest.testSequencer.js',
 };

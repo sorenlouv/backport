@@ -6,5 +6,5 @@ module.exports = {
 
   // only include "mutation" tests that cannot run on in parallel (like they are on CI) because they mutate shared state
   testRegex: ['.*.mutation.test.ts$'],
-  modulePathIgnorePatterns: ['.*/_tmp_sandbox_/.*$'],
+  modulePathIgnorePatterns: [],
 };
