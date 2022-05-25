@@ -6,6 +6,8 @@ import makeDir from 'make-dir';
 jest.unmock('make-dir');
 jest.unmock('del');
 
+export const SANDBOX_PATH = `${homedir()}/.backport_testing/`;
+
 export function getSandboxPath({
   filename,
   specname,
@@ -15,9 +17,7 @@ export function getSandboxPath({
 }) {
   const baseFilename = getFilenameWithoutExtension(filename);
   return resolve(
-    `${homedir()}/.backport_testing/${baseFilename}${
-      specname ? `/${specname}` : ''
-    }`
+    `${SANDBOX_PATH}/${baseFilename}${specname ? `/${specname}` : ''}`
   );
 }
 

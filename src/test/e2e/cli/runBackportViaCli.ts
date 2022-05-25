@@ -2,7 +2,7 @@ import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import path from 'path';
 import { debounce } from 'lodash';
 import stripAnsi from 'strip-ansi';
-import { getSandboxPath, resetSandbox } from '../../sandbox';
+import { getSandboxPath, resetSandbox, SANDBOX_PATH } from '../../sandbox';
 
 const tsNodeBinary = path.resolve('./node_modules/.bin/ts-node');
 const entrypointFile = path.resolve('./src/entrypoint.cli.ts');
@@ -32,7 +32,7 @@ export function runBackportViaCli(
   const cmdArgs = [
     '--transpile-only',
     entrypointFile,
-    '--log-file-path=/dev/null',
+    `--log-file-path=${SANDBOX_PATH}/backport.log`,
     ...(backportArgs.some((arg) => arg.includes('--dir'))
       ? []
       : [`--dir=${sandboxPath}`]),
