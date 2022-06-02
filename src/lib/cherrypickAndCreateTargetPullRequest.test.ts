@@ -47,6 +47,8 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
       const options = {
         assignees: [] as string[],
         authenticatedUsername: 'sqren_authenticated',
+        gitAuthorName: 'Soren L',
+        gitAuthorEmail: 'soren@louv.dk',
         author: 'sqren',
         fork: true,
         interactive: true,

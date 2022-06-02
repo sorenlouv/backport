@@ -4,6 +4,7 @@ import { ora } from '../lib/ora';
 import { ValidConfigOptions } from '../options/options';
 import { filterNil } from '../utils/filterEmpty';
 import { BackportError } from './BackportError';
+import { CommitAuthor } from './author';
 import {
   spawnPromise,
   SpawnError,
@@ -288,16 +289,16 @@ export async function cherrypick({
   options: ValidConfigOptions;
   sha: string;
   mergedTargetPullRequest?: ExpectedTargetPullRequest;
-  commitAuthor: { name: string; email: string };
+  commitAuthor: CommitAuthor;
 }): Promise<{
   conflictingFiles: { absolute: string; relative: string }[];
   unstagedFiles: string[];
   needsResolving: boolean;
 }> {
   const cmdArgs = [
-    '-c',
+    `-c`,
     `user.name="${commitAuthor.name}"`,
-    '-c',
+    `-c`,
     `user.email="${commitAuthor.email}"`,
     `cherry-pick`,
     ...(options.mainline != undefined
@@ -359,10 +360,15 @@ export async function cherrypick({
   }
 }
 
-export async function commitChanges(
-  commit: Commit,
-  options: ValidConfigOptions
-) {
+export async function commitChanges({
+  options,
+  commit,
+  commitAuthor,
+}: {
+  options: ValidConfigOptions;
+  commit: Commit;
+  commitAuthor: CommitAuthor;
+}) {
   const noVerifyFlag = options.noVerify ? ['--no-verify'] : [];
   const cwd = getRepoPath(options);
 
@@ -370,6 +376,10 @@ export async function commitChanges(
     await spawnPromise(
       'git',
       [
+        `-c`,
+        `user.name="${commitAuthor.name}"`,
+        `-c`,
+        `user.email="${commitAuthor.email}"`,
         'commit',
         '--no-edit', // Use the selected commit message without launching an editor.
         ...noVerifyFlag, // bypass pre-commit and commit-msg hooks
@@ -396,6 +406,10 @@ export async function commitChanges(
         await spawnPromise(
           'git',
           [
+            `-c`,
+            `user.name="${commitAuthor.name}"`,
+            `-c`,
+            `user.email="${commitAuthor.email}"`,
             'commit',
             `--message=${commit.sourceCommit.message}`,
             ...noVerifyFlag, // bypass pre-commit and commit-msg hooks
