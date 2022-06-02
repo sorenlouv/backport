@@ -4,6 +4,7 @@ import { ora } from '../lib/ora';
 import { ValidConfigOptions } from '../options/options';
 import { filterNil } from '../utils/filterEmpty';
 import { BackportError } from './BackportError';
+import { CommitAuthor } from './author';
 import {
   spawnPromise,
   SpawnError,
@@ -288,7 +289,7 @@ export async function cherrypick({
   options: ValidConfigOptions;
   sha: string;
   mergedTargetPullRequest?: ExpectedTargetPullRequest;
-  commitAuthor: { name: string; email: string };
+  commitAuthor: CommitAuthor;
 }): Promise<{
   conflictingFiles: { absolute: string; relative: string }[];
   unstagedFiles: string[];
@@ -361,6 +362,7 @@ export async function cherrypick({
 
 export async function commitChanges(
   commit: Commit,
+  commitAuthor: CommitAuthor,
   options: ValidConfigOptions
 ) {
   const noVerifyFlag = options.noVerify ? ['--no-verify'] : [];
@@ -370,6 +372,10 @@ export async function commitChanges(
     await spawnPromise(
       'git',
       [
+        '-c',
+        `user.name="${commitAuthor.name}"`,
+        '-c',
+        `user.email="${commitAuthor.email}"`,
         'commit',
         '--no-edit', // Use the selected commit message without launching an editor.
         ...noVerifyFlag, // bypass pre-commit and commit-msg hooks

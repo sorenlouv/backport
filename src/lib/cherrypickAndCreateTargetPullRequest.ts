@@ -2,10 +2,15 @@ import chalk from 'chalk';
 import { isEmpty, difference, flatten } from 'lodash';
 import { ValidConfigOptions } from '../options/options';
 import { BackportError } from './BackportError';
+import {
+  CommitAuthor,
+  getCommitAuthor,
+  getGitConfigAuthor,
+  GitConfigAuthor,
+} from './author';
 import { spawnPromise } from './child-process-promisified';
 import { getRepoPath } from './env';
 import { getCommitsWithoutBackports } from './getCommitsWithoutBackports';
-import { getGitConfigAuthor, GitConfigAuthor } from './getGitConfigAuthor';
 import {
   cherrypick,
   createBackportBranch,
@@ -200,20 +205,21 @@ async function waitForCherrypick(
     getFirstLine(commit.sourceCommit.message)
   )}`;
   const cherrypickSpinner = ora(options.interactive, spinnerText).start();
+  const commitAuthor = getCommitAuthor({ options, gitConfigAuthor, commit });
 
   await cherrypickAndHandleConflicts(
     options,
     commit,
     targetBranch,
     cherrypickSpinner,
-    gitConfigAuthor
+    commitAuthor
   );
 
   // Conflicts should be resolved and files staged at this point
 
   try {
     // Run `git commit`
-    await commitChanges(commit, options);
+    await commitChanges(commit, commitAuthor, options);
     cherrypickSpinner.succeed();
   } catch (e) {
     cherrypickSpinner.fail();
@@ -226,12 +232,11 @@ async function cherrypickAndHandleConflicts(
   commit: Commit,
   targetBranch: string,
   cherrypickSpinner: Ora,
-  gitConfigAuthor?: GitConfigAuthor
+  commitAuthor: CommitAuthor
 ) {
   const mergedTargetPullRequest = commit.expectedTargetPullRequests.find(
     (pr) => pr.state === 'MERGED' && pr.branch === targetBranch
   );
-  const commitAuthor = getCommitAuthor({ options, gitConfigAuthor, commit });
 
   let conflictingFiles: ConflictingFiles;
   let unstagedFiles: string[];
@@ -397,27 +402,4 @@ async function listConflictingAndUnstagedFiles({
     conflictingFiles: _conflictingFiles.map((file) => file.absolute),
     unstagedFiles: _unstagedFiles,
   });
-}
-
-function getCommitAuthor({
-  options,
-  gitConfigAuthor,
-  commit,
-}: {
-  options: ValidConfigOptions;
-  gitConfigAuthor?: GitConfigAuthor;
-  commit: Commit;
-}) {
-  if (options.resetAuthor) {
-    return {
-      name: options.authenticatedUsername,
-      email: `<${options.authenticatedUsername}@users.noreply.github.com>`,
-    };
-  }
-
-  return {
-    name: options.gitAuthorName ?? gitConfigAuthor?.name ?? commit.author.name,
-    email:
-      options.gitAuthorEmail ?? gitConfigAuthor?.email ?? commit.author.email,
-  };
 }
