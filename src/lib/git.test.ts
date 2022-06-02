@@ -642,16 +642,31 @@ describe('commitChanges', () => {
 
     it('should manually set the commit message', () => {
       expect(spy).toHaveBeenCalledTimes(2);
-      expect(spy).toHaveBeenCalledWith(
+      expect(spy.mock.calls[0]).toEqual([
         'git',
-        ['commit', '--no-edit'],
-        expect.any(String)
-      );
-      expect(spy).toHaveBeenCalledWith(
+        [
+          '-c',
+          'user.name="Soren L"',
+          '-c',
+          'user.email="soren@mail.dk"',
+          'commit',
+          '--no-edit',
+        ],
+        expect.any(String),
+      ]);
+
+      expect(spy.mock.calls[1]).toEqual([
         'git',
-        ['commit', '--message=The original commit message'],
-        expect.any(String)
-      );
+        [
+          '-c',
+          'user.name="Soren L"',
+          '-c',
+          'user.email="soren@mail.dk"',
+          'commit',
+          '--message=The original commit message',
+        ],
+        expect.any(String),
+      ]);
     });
 
     it('should handle the error and resolve successfully', async () => {

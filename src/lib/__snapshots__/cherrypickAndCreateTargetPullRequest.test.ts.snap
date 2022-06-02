@@ -100,9 +100,9 @@ Array [
     "git",
     Array [
       "-c",
-      "user.name=\\"Søren Louv-Jansen\\"",
+      "user.name=\\"Soren L\\"",
       "-c",
-      "user.email=\\"soren.louv@elastic.co\\"",
+      "user.email=\\"soren@louv.dk\\"",
       "cherry-pick",
       "-x",
       "mySha",
@@ -112,6 +112,10 @@ Array [
   Array [
     "git",
     Array [
+      "-c",
+      "user.name=\\"Soren L\\"",
+      "-c",
+      "user.email=\\"soren@louv.dk\\"",
       "commit",
       "--no-edit",
     ],
@@ -121,9 +125,9 @@ Array [
     "git",
     Array [
       "-c",
-      "user.name=\\"Søren Louv-Jansen\\"",
+      "user.name=\\"Soren L\\"",
       "-c",
-      "user.email=\\"soren.louv@elastic.co\\"",
+      "user.email=\\"soren@louv.dk\\"",
       "cherry-pick",
       "-x",
       "mySha2",
@@ -133,6 +137,10 @@ Array [
   Array [
     "git",
     Array [
+      "-c",
+      "user.name=\\"Soren L\\"",
+      "-c",
+      "user.email=\\"soren@louv.dk\\"",
       "commit",
       "--no-edit",
     ],

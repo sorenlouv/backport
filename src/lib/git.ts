@@ -296,9 +296,9 @@ export async function cherrypick({
   needsResolving: boolean;
 }> {
   const cmdArgs = [
-    '-c',
+    `-c`,
     `user.name="${commitAuthor.name}"`,
-    '-c',
+    `-c`,
     `user.email="${commitAuthor.email}"`,
     `cherry-pick`,
     ...(options.mainline != undefined
@@ -376,9 +376,9 @@ export async function commitChanges({
     await spawnPromise(
       'git',
       [
-        '-c',
+        `-c`,
         `user.name="${commitAuthor.name}"`,
-        '-c',
+        `-c`,
         `user.email="${commitAuthor.email}"`,
         'commit',
         '--no-edit', // Use the selected commit message without launching an editor.
@@ -406,6 +406,10 @@ export async function commitChanges({
         await spawnPromise(
           'git',
           [
+            `-c`,
+            `user.name="${commitAuthor.name}"`,
+            `-c`,
+            `user.email="${commitAuthor.email}"`,
             'commit',
             `--message=${commit.sourceCommit.message}`,
             ...noVerifyFlag, // bypass pre-commit and commit-msg hooks

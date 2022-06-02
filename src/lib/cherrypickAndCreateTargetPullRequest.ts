@@ -218,7 +218,7 @@ async function waitForCherrypick(
   // Conflicts should be resolved and files staged at this point
 
   try {
-    // Run `git commit`
+    // Run `git commit` in case conflicts were not manually committed
     await commitChanges({ options, commit, commitAuthor });
     cherrypickSpinner.succeed();
   } catch (e) {
