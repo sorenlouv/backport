@@ -360,11 +360,15 @@ export async function cherrypick({
   }
 }
 
-export async function commitChanges(
-  commit: Commit,
-  commitAuthor: CommitAuthor,
-  options: ValidConfigOptions
-) {
+export async function commitChanges({
+  options,
+  commit,
+  commitAuthor,
+}: {
+  options: ValidConfigOptions;
+  commit: Commit;
+  commitAuthor: CommitAuthor;
+}) {
   const noVerifyFlag = options.noVerify ? ['--no-verify'] : [];
   const cwd = getRepoPath(options);
 

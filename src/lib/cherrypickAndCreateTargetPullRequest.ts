@@ -205,21 +205,21 @@ async function waitForCherrypick(
     getFirstLine(commit.sourceCommit.message)
   )}`;
   const cherrypickSpinner = ora(options.interactive, spinnerText).start();
-  const commitAuthor = getCommitAuthor({ options, gitConfigAuthor, commit });
+  const commitAuthor = getCommitAuthor({ options, commit, gitConfigAuthor });
 
-  await cherrypickAndHandleConflicts(
+  await cherrypickAndHandleConflicts({
     options,
     commit,
+    commitAuthor,
     targetBranch,
     cherrypickSpinner,
-    commitAuthor
-  );
+  });
 
   // Conflicts should be resolved and files staged at this point
 
   try {
     // Run `git commit`
-    await commitChanges(commit, commitAuthor, options);
+    await commitChanges({ options, commit, commitAuthor });
     cherrypickSpinner.succeed();
   } catch (e) {
     cherrypickSpinner.fail();
@@ -227,13 +227,19 @@ async function waitForCherrypick(
   }
 }
 
-async function cherrypickAndHandleConflicts(
-  options: ValidConfigOptions,
-  commit: Commit,
-  targetBranch: string,
-  cherrypickSpinner: Ora,
-  commitAuthor: CommitAuthor
-) {
+async function cherrypickAndHandleConflicts({
+  options,
+  commit,
+  commitAuthor,
+  targetBranch,
+  cherrypickSpinner,
+}: {
+  options: ValidConfigOptions;
+  commit: Commit;
+  commitAuthor: CommitAuthor;
+  targetBranch: string;
+  cherrypickSpinner: Ora;
+}) {
   const mergedTargetPullRequest = commit.expectedTargetPullRequests.find(
     (pr) => pr.state === 'MERGED' && pr.branch === targetBranch
   );

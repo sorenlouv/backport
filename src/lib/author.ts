@@ -20,12 +20,12 @@ export async function getGitConfigAuthor(
 export type CommitAuthor = Required<GitConfigAuthor>;
 export function getCommitAuthor({
   options,
-  gitConfigAuthor,
   commit,
+  gitConfigAuthor,
 }: {
   options: ValidConfigOptions;
-  gitConfigAuthor?: GitConfigAuthor;
   commit: Commit;
+  gitConfigAuthor?: GitConfigAuthor;
 }): CommitAuthor {
   if (options.resetAuthor) {
     return {

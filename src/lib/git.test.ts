@@ -596,7 +596,9 @@ describe('commitChanges', () => {
       .spyOn(childProcess, 'spawnPromise')
       .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] });
 
-    await expect(await commitChanges(commit, options)).toBe(undefined);
+    await expect(await commitChanges({ commit, commitAuthor, options })).toBe(
+      undefined
+    );
   });
 
   it('should swallow error if changes have already been committed manaully', async () => {
@@ -609,7 +611,9 @@ describe('commitChanges', () => {
     });
 
     jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
-    await expect(await commitChanges(commit, options)).toBe(undefined);
+    await expect(await commitChanges({ commit, commitAuthor, options })).toBe(
+      undefined
+    );
   });
 
   describe('when commit fails due to empty message', () => {
@@ -633,7 +637,7 @@ describe('commitChanges', () => {
           cmdArgs: [],
         });
 
-      res = await commitChanges(commit, options);
+      res = await commitChanges({ commit, commitAuthor, options });
     });
 
     it('should manually set the commit message', () => {
@@ -661,7 +665,7 @@ describe('commitChanges', () => {
     expect.assertions(1);
 
     await expect(
-      commitChanges(commit, options)
+      commitChanges({ commit, commitAuthor, options })
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"another error"`);
   });
 });

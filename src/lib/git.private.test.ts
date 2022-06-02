@@ -354,7 +354,7 @@ describe('git.integration', () => {
       });
 
       expect(async () => {
-        return await commitChanges(commit, options);
+        return await commitChanges({ commit, commitAuthor, options });
       }).not.toThrowError();
 
       const message = await getMostRecentCommitMessage(cwd);
@@ -374,7 +374,7 @@ describe('git.integration', () => {
         cwd,
       });
 
-      await commitChanges(commit, options);
+      await commitChanges({ commit, commitAuthor, options });
 
       const message = await getMostRecentCommitMessage(cwd);
       expect(message).toBe('my fallback commit message');
@@ -407,7 +407,7 @@ describe('git.integration', () => {
       // disregard conflicts and stage all files
       await childProcess.exec('git add -A', { cwd });
 
-      await commitChanges(commit, options);
+      await commitChanges({ commit, commitAuthor, options });
 
       const message = await getMostRecentCommitMessage(cwd);
       expect(message).toMatchInlineSnapshot(`
