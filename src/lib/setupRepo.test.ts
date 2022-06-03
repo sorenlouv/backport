@@ -27,7 +27,7 @@ describe('setupRepo', () => {
       expect.assertions(2);
 
       jest
-        .spyOn(childProcess, 'spawnOriginal')
+        .spyOn(childProcess, 'spawnStream')
         .mockImplementation((cmd, cmdArgs) => {
           if (cmdArgs.includes('clone')) {
             throw new Error('Simulated git clone failure');
@@ -66,7 +66,7 @@ describe('setupRepo', () => {
         .mockResolvedValue(undefined);
 
       jest
-        .spyOn(childProcess, 'spawnOriginal')
+        .spyOn(childProcess, 'spawnStream')
         //@ts-expect-error
         .mockImplementation(() => {
           return {
@@ -206,7 +206,7 @@ describe('setupRepo', () => {
 
   function mockGitClone() {
     jest
-      .spyOn(childProcess, 'spawnOriginal')
+      .spyOn(childProcess, 'spawnStream')
       //@ts-expect-error
       .mockImplementation((cmd, cmdArgs) => {
         if (cmdArgs.includes('clone')) {
@@ -246,7 +246,7 @@ describe('setupRepo', () => {
         '100% Cloning repository from github.com (one-time operation)'
       );
 
-      expect(childProcess.spawnOriginal).toHaveBeenCalledWith('git', [
+      expect(childProcess.spawnStream).toHaveBeenCalledWith('git', [
         'clone',
         'https://x-access-token:myAccessToken@github.com/elastic/kibana.git',
         '/myHomeDir/.backport/repositories/elastic/kibana',
@@ -284,7 +284,7 @@ describe('setupRepo', () => {
         '100% Cloning repository from /path/to/source/repo (one-time operation)'
       );
 
-      expect(childProcess.spawnOriginal).toHaveBeenCalledWith('git', [
+      expect(childProcess.spawnStream).toHaveBeenCalledWith('git', [
         'clone',
         '/path/to/source/repo',
         '/myHomeDir/.backport/repositories/elastic/kibana',

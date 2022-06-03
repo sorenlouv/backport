@@ -8,7 +8,7 @@ import { CommitAuthor } from './author';
 import {
   spawnPromise,
   SpawnError,
-  spawnOriginal,
+  spawnStream,
 } from './child-process-promisified';
 import { getRepoPath } from './env';
 import { getShortSha } from './github/commitFormatters';
@@ -30,7 +30,7 @@ export async function cloneRepo(
   logger.info(`Cloning repo from ${sourcePath} to ${targetPath}`);
 
   return new Promise<void>((resolve, reject) => {
-    const subprocess = spawnOriginal('git', [
+    const subprocess = spawnStream('git', [
       'clone',
       sourcePath,
       targetPath,
