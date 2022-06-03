@@ -22,6 +22,7 @@ import {
   isLocalConfigFileModified,
   isLocalConfigFileUntracked,
   pushBackportBranch,
+  deleteRemote,
 } from './git';
 import { getShortSha } from './github/commitFormatters';
 
@@ -31,7 +32,7 @@ jest.unmock('make-dir');
 const commitAuthor = { name: 'Soren L', email: 'soren@mail.dk' };
 const accessToken = getDevAccessToken();
 
-describe('git.integration', () => {
+describe('git.private', () => {
   describe('getIsCommitInBranch', () => {
     let firstSha: string;
     let secondSha: string;
@@ -90,6 +91,27 @@ describe('git.integration', () => {
       );
 
       expect(isSecondCommitInBranch).toEqual(false);
+    });
+  });
+
+  describe('deleteRemote', () => {
+    const cwd = getSandboxPath({
+      filename: __filename,
+      specname: 'deleteRemote',
+    });
+
+    it('should handle when deleting a remote that does not exist', async () => {
+      const options = {
+        repoName: 'kibana',
+        repoOwner: 'elastic',
+        dir: cwd,
+      } as ValidConfigOptions;
+
+      await resetSandbox(cwd);
+      await gitInit(cwd);
+      const res = await deleteRemote(options, 'my-remote-foo');
+
+      expect(res).toBe(undefined);
     });
   });
 
