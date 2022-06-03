@@ -10,6 +10,9 @@ export async function exec(
   const res = await execPromisified(cmd, {
     maxBuffer: 100 * 1024 * 1024,
     ...options,
+
+    // ensure that git commands return english error messages
+    env: { ...process.env, LANG: 'en_US' },
   });
 
   return res;
@@ -29,7 +32,12 @@ export async function spawnPromise(
   logger.info(`Running command: "${fullCmd}"`);
 
   return new Promise(function (resolve, reject) {
-    const subprocess = childProcess.spawn(cmd, cmdArgs, { cwd });
+    const subprocess = childProcess.spawn(cmd, cmdArgs, {
+      cwd,
+
+      // ensure that git commands return english error messages
+      env: { ...process.env, LANG: 'en_US' },
+    });
     let stderr = '';
     let stdout = '';
 
@@ -57,7 +65,11 @@ export async function spawnPromise(
   });
 }
 
-export const spawnOriginal = childProcess.spawn;
+export const spawnStream = (cmd: string, cmdArgs: ReadonlyArray<string>) => {
+  return childProcess.spawn(cmd, cmdArgs, {
+    env: { ...process.env, LANG: 'en_US' },
+  });
+};
 
 export type SpawnErrorContext = {
   cmdArgs: string[];
