@@ -16,14 +16,14 @@ export async function setupRepo(options: ValidConfigOptions) {
   const repoPath = getRepoPath(options);
   const isAlreadyCloned = await getIsRepoCloned(options);
 
-  if (options.cwd.includes(repoPath)) {
-    throw new BackportError(
-      `Refusing to clone repo into "${repoPath}" when current working directory is "${options.cwd}". Please change backport directory via \`--dir\` option or run backport from another location`
-    );
-  }
-
   // clone repo if folder does not already exists
   if (!isAlreadyCloned) {
+    if (options.cwd.includes(repoPath)) {
+      throw new BackportError(
+        `Refusing to clone repo into "${repoPath}" when current working directory is "${options.cwd}". Please change backport directory via \`--dir\` option or run backport from another location`
+      );
+    }
+
     const spinner = ora(options.interactive).start();
     try {
       const localRepoPath = await getLocalSourceRepoPath(options);
