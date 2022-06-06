@@ -131,7 +131,7 @@ describe('fetchCommitsByAuthor', () => {
     });
   });
 
-  describe('expectedTargetPullRequests', () => {
+  describe('pullRequestStates', () => {
     let res: Awaited<ReturnType<typeof fetchCommitsByAuthor>>;
     beforeEach(async () => {
       res = await fetchCommitsByAuthor({
@@ -151,9 +151,11 @@ describe('fetchCommitsByAuthor', () => {
       const commitWithOpenPR = res.find(
         (commit) => commit.sourcePullRequest?.number === 9
       );
-      expect(commitWithOpenPR?.expectedTargetPullRequests).toEqual([
+      expect(commitWithOpenPR?.pullRequestStates).toEqual([
         {
           branch: '7.8',
+          label: 'v7.8.0',
+          isSourceBranch: false,
           state: 'OPEN',
           number: 10,
           url: 'https://github.com/backport-org/backport-e2e/pull/10',
@@ -165,26 +167,42 @@ describe('fetchCommitsByAuthor', () => {
       const commitWithMergedPRs = res.find(
         (commit) => commit.sourcePullRequest?.number === 5
       );
-      expect(commitWithMergedPRs?.expectedTargetPullRequests).toEqual([
-        {
-          branch: '7.x',
-          state: 'MERGED',
-          number: 6,
-          url: 'https://github.com/backport-org/backport-e2e/pull/6',
-          mergeCommit: {
-            message: 'Add 🍏 emoji (#5) (#6)',
-            sha: '4bcd876d4ceaa73cf437bfc89b74d1a4e704c0a6',
-          },
-        },
+      expect(commitWithMergedPRs?.pullRequestStates).toEqual([
         {
           branch: '7.8',
-          state: 'MERGED',
-          number: 7,
-          url: 'https://github.com/backport-org/backport-e2e/pull/7',
+          label: 'v7.8.0',
+          isSourceBranch: false,
           mergeCommit: {
             message: 'Add 🍏 emoji (#5) (#7)',
             sha: '46cd6f9999effdf894a36dbc7db90e890f4be840',
           },
+          number: 7,
+          state: 'MERGED',
+          url: 'https://github.com/backport-org/backport-e2e/pull/7',
+        },
+        {
+          branch: '7.x',
+          label: 'v7.9.0',
+          isSourceBranch: false,
+          mergeCommit: {
+            message: 'Add 🍏 emoji (#5) (#6)',
+            sha: '4bcd876d4ceaa73cf437bfc89b74d1a4e704c0a6',
+          },
+          number: 6,
+          state: 'MERGED',
+          url: 'https://github.com/backport-org/backport-e2e/pull/6',
+        },
+        {
+          branch: 'master',
+          label: 'v8.0.0',
+          isSourceBranch: true,
+          mergeCommit: {
+            message: 'Add 🍏 emoji (#5)',
+            sha: 'ee8c492334cef1ca077a56addb79a26f79821d2f',
+          },
+          number: 5,
+          state: 'MERGED',
+          url: 'https://github.com/backport-org/backport-e2e/pull/5',
         },
       ]);
     });
@@ -193,8 +211,25 @@ describe('fetchCommitsByAuthor', () => {
       const commitWithoutPRs = res.find(
         (commit) => commit.sourcePullRequest?.number === 8
       );
-      expect(commitWithoutPRs?.expectedTargetPullRequests).toEqual([
-        { branch: '7.x', state: 'NOT_CREATED' },
+      expect(commitWithoutPRs?.pullRequestStates).toEqual([
+        {
+          branch: '7.x',
+          label: 'v7.9.0',
+          isSourceBranch: false,
+          state: 'NOT_CREATED',
+        },
+        {
+          branch: 'master',
+          label: 'v8.0.0',
+          isSourceBranch: true,
+          mergeCommit: {
+            message: 'Change Ulysses to Gretha (conflict) (#8)',
+            sha: 'b484e161b705b39dbbfc5005e67ca24d05b23c37',
+          },
+          number: 8,
+          state: 'MERGED',
+          url: 'https://github.com/backport-org/backport-e2e/pull/8',
+        },
       ]);
     });
   });

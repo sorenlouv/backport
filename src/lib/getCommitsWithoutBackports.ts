@@ -51,7 +51,7 @@ export async function getCommitsWithoutBackports({
         }
 
         // only include commit if it has an unmerged PR for the given target branch
-        const hasUnmergedPr = c.expectedTargetPullRequests.some(
+        const hasUnmergedPr = c.pullRequestStates.some(
           (pr) => pr.branch === targetBranch && pr.state !== 'MERGED'
         );
 
@@ -60,7 +60,7 @@ export async function getCommitsWithoutBackports({
       .slice(0, 10) // limit to max 10 commits
       .map(async (c) => {
         const results = await Promise.all(
-          c.expectedTargetPullRequests.map(async (targetPr) => {
+          c.pullRequestStates.map(async (targetPr) => {
             if (!targetPr.mergeCommit) {
               return false;
             }
@@ -78,7 +78,7 @@ export async function getCommitsWithoutBackports({
     .filter(({ isCommitInBranch }) => !isCommitInBranch)
     .map(({ c }) => {
       // get pull request for the target branch (if it exists)
-      const pendingBackportPr = c.expectedTargetPullRequests.find(
+      const pendingBackportPr = c.pullRequestStates.find(
         (pr) => pr.branch === targetBranch && pr.state === 'OPEN'
       );
 

@@ -69,7 +69,9 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
             name: 'Søren Louv-Jansen',
           },
           sourceBranch: '7.x',
+          suggestedTargetBranches: [],
           sourceCommit: {
+            branchLabelMapping: {},
             committedDate: 'fff',
             sha: 'mySha',
             message: 'My original commit message (#1000)',
@@ -82,7 +84,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
               message: 'My original commit message (#1000)',
             },
           },
-          expectedTargetPullRequests: [],
+          pullRequestStates: [],
         },
         {
           author: {
@@ -90,7 +92,9 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
             name: 'Søren Louv-Jansen',
           },
           sourceBranch: '7.x',
+          suggestedTargetBranches: [],
           sourceCommit: {
+            branchLabelMapping: {},
             committedDate: 'ggg',
             sha: 'mySha2',
             message: 'My other commit message (#2000)',
@@ -103,7 +107,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
               message: 'My other commit message (#2000)',
             },
           },
-          expectedTargetPullRequests: [],
+          pullRequestStates: [],
         },
       ];
 
@@ -205,13 +209,15 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
             email: 'soren.louv@elastic.co',
             name: 'Søren Louv-Jansen',
           },
+          suggestedTargetBranches: [],
           sourceCommit: {
+            branchLabelMapping: {},
             committedDate: 'hhh',
             sha: 'mySha',
             message: 'My original commit message',
           },
           sourceBranch: '7.x',
-          expectedTargetPullRequests: [],
+          pullRequestStates: [],
         },
       ];
 
@@ -291,13 +297,15 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
               email: 'soren.louv@elastic.co',
               name: 'Søren Louv-Jansen',
             },
+            suggestedTargetBranches: [],
             sourceCommit: {
+              branchLabelMapping: {},
               committedDate: '2021-08-18T16:11:38Z',
               sha: 'mySha',
               message: 'My original commit message',
             },
             sourceBranch: '7.x',
-            expectedTargetPullRequests: [],
+            pullRequestStates: [],
           },
         ],
         targetBranch: '6.x',

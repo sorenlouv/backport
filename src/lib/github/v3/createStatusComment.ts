@@ -153,12 +153,17 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
             ? `<br><br>You might need to backport the following PRs to ${
                 result.targetBranch
               }:<br>${unmergedBackports.join('<br>')}`
-            : '';
+            : undefined;
+
+        const backportFailedLabel =
+          'Backport failed because of merge conflicts';
 
         return [
           '❌',
           result.targetBranch,
-          `**Backport failed because of merge conflicts**${unmergedBackportsSection}`,
+          unmergedBackportsSection
+            ? `**${backportFailedLabel}**${unmergedBackportsSection}`
+            : backportFailedLabel,
         ];
       }
 

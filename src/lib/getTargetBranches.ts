@@ -18,20 +18,16 @@ export async function getTargetBranches(
   }
 
   // target branches from the first commit
-  const missingTargetBranches =
-    commits.length === 1
-      ? commits[0].expectedTargetPullRequests
-          .filter((pr) => pr.state === 'NOT_CREATED' || pr.state === 'CLOSED')
-          .map((pr) => pr.branch)
-      : [];
+  const suggestedTargetBranches =
+    commits.length === 1 ? commits[0].suggestedTargetBranches : [];
 
   // require target branches to be specified when when in non-interactive mode
   if (!options.interactive) {
-    if (isEmpty(missingTargetBranches)) {
+    if (isEmpty(suggestedTargetBranches)) {
       throw new BackportError({ code: 'no-branches-exception' });
     }
 
-    return missingTargetBranches;
+    return suggestedTargetBranches;
   }
 
   // sourceBranch should be the same for all commits, so picking `sourceBranch` from the first commit should be fine 🤞
@@ -40,7 +36,7 @@ export async function getTargetBranches(
 
   const targetBranchChoices = getTargetBranchChoices(
     options,
-    missingTargetBranches,
+    suggestedTargetBranches,
     sourceBranch
   );
 
@@ -53,7 +49,7 @@ export async function getTargetBranches(
 
 export function getTargetBranchChoices(
   options: ValidConfigOptions,
-  missingTargetBranches: string[],
+  suggestedTargetBranches: string[],
   sourceBranch: string
 ) {
   // exclude sourceBranch from targetBranchChoices
@@ -71,7 +67,7 @@ export function getTargetBranchChoices(
 
   // select missing target branches (based on pull request labels)
   return targetBranchesChoices.map((choice) => {
-    const isChecked = missingTargetBranches.includes(choice.name);
+    const isChecked = suggestedTargetBranches.includes(choice.name);
     return { ...choice, checked: isChecked };
   });
 }

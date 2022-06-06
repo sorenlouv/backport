@@ -12,7 +12,7 @@ import {
   getFirstLine,
   getShortSha,
 } from './github/commitFormatters';
-import { ExpectedTargetPullRequest } from './sourceCommit/getExpectedTargetPullRequests';
+import { TargetPullRequest } from './sourceCommit/getPullRequestStates';
 import { Commit } from './sourceCommit/parseSourceCommit';
 
 type Question = CheckboxQuestion | ListQuestion | ConfirmQuestion;
@@ -24,7 +24,7 @@ async function prompt<T = unknown>(options: Question) {
   return promptResult;
 }
 
-function getPrStateIcon(state: ExpectedTargetPullRequest['state']) {
+function getPrStateIcon(state: TargetPullRequest['state']) {
   if (state === 'MERGED') {
     return '🟢';
   }
@@ -41,7 +41,7 @@ function getPrStateIcon(state: ExpectedTargetPullRequest['state']) {
   return '🔴';
 }
 
-function getPrStateText(state: ExpectedTargetPullRequest['state']) {
+function getPrStateText(state: TargetPullRequest['state']) {
   if (state === 'MERGED') {
     return chalk.gray('Merged');
   }
@@ -62,7 +62,7 @@ function getPrLink(number?: number, url?: string) {
 }
 
 function getDetailedPullStatus(c: Commit) {
-  const items = c.expectedTargetPullRequests.map((pr) => {
+  const items = c.pullRequestStates.map((pr) => {
     const prLink = getPrLink(pr.number, pr.url);
     return `     └ ${getPrStateIcon(pr.state)} ${
       pr.branch
@@ -78,7 +78,8 @@ function getDetailedPullStatus(c: Commit) {
 }
 
 function getSimplePullStatus(c: Commit) {
-  return c.expectedTargetPullRequests
+  return c.pullRequestStates
+    .filter(({ isSourceBranch }) => !isSourceBranch)
     .map(({ state, branch }) => {
       if (state === 'MERGED') {
         return chalk.green(branch);

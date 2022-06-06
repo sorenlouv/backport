@@ -1,4 +1,4 @@
-import { uniq } from 'lodash';
+import { keyBy, merge, uniqBy, values } from 'lodash';
 import { ValidConfigOptions } from '../../options/options';
 import { filterNil } from '../../utils/filterEmpty';
 import { getFirstLine } from '../github/commitFormatters';
@@ -10,33 +10,67 @@ import {
   TimelinePullRequestEdge,
 } from './parseSourceCommit';
 
-export type ExpectedTargetPullRequest = {
-  url?: string;
-  number?: number;
+export type PullRequestState = 'OPEN' | 'CLOSED' | 'MERGED' | 'NOT_CREATED';
+type CreatedPullRequest = {
+  url: string;
+  number: number;
   branch: string;
-  state: 'OPEN' | 'CLOSED' | 'MERGED' | 'NOT_CREATED';
+  state: PullRequestState;
   mergeCommit?: {
     sha: string;
     message: string;
   };
 };
 
-export function getExpectedTargetPullRequests({
-  sourceCommit,
-  latestBranchLabelMapping,
-}: {
-  sourceCommit: SourceCommitWithTargetPullRequest;
-  latestBranchLabelMapping: ValidConfigOptions['branchLabelMapping'];
-}): ExpectedTargetPullRequest[] {
-  const sourcePullRequest =
-    sourceCommit.associatedPullRequests.edges?.[0]?.node;
+type TargetBranchWithLabel = {
+  branch: string;
+  label: string;
+  isSourceBranch: boolean;
+};
+
+export type TargetPullRequest =
+  | (CreatedPullRequest & Partial<TargetBranchWithLabel>)
+  | ((TargetBranchWithLabel & Partial<CreatedPullRequest>) & {
+      state: PullRequestState;
+    });
+
+function getSourcePullRequest(
+  sourceCommit: SourceCommitWithTargetPullRequest
+): SourcePullRequestNode | undefined {
+  return sourceCommit.associatedPullRequests.edges?.[0]?.node;
+}
+
+export function getSourceCommitBranchLabelMapping(
+  sourceCommit: SourceCommitWithTargetPullRequest
+): ValidConfigOptions['branchLabelMapping'] {
+  const sourcePullRequest = getSourcePullRequest(sourceCommit);
 
   const remoteConfig =
     sourcePullRequest?.mergeCommit.remoteConfigHistory.edges?.[0]?.remoteConfig;
 
-  const branchLabelMapping =
-    (remoteConfig && parseRemoteConfig(remoteConfig)?.branchLabelMapping) ??
-    latestBranchLabelMapping;
+  if (remoteConfig) {
+    return parseRemoteConfig(remoteConfig)?.branchLabelMapping;
+  }
+}
+
+function mergeByKey<T, K>(
+  obj1: T[],
+  obj2: K[],
+  key: string
+): Array<(T & Partial<K>) | (K & Partial<T>)> {
+  const merged = merge(keyBy(obj1, key), keyBy(obj2, key));
+  const a = values(merged);
+  return a;
+}
+
+export function getPullRequestStates({
+  sourceCommit,
+  branchLabelMapping,
+}: {
+  sourceCommit: SourceCommitWithTargetPullRequest;
+  branchLabelMapping: ValidConfigOptions['branchLabelMapping'];
+}): TargetPullRequest[] {
+  const sourcePullRequest = getSourcePullRequest(sourceCommit);
 
   // if there is no source pull request the commit was pushed directly to the source branch
   // in that case there will be no labels, and thus not possible to deduce the expected target branches
@@ -44,31 +78,56 @@ export function getExpectedTargetPullRequests({
     return [];
   }
 
-  const existingTargetPullRequests = getExistingTargetPullRequests(
-    sourceCommit,
-    sourcePullRequest
-  );
+  const createdTargetPullRequests = getCreatedTargetPullRequests(sourceCommit);
 
-  // if there's no `branchLabelMapping`, it's not possible to deduce the missing target branches
+  // if there's no `branchLabelMapping`, it's not possible to determine the missing target branches
   if (!branchLabelMapping) {
-    return existingTargetPullRequests;
+    return createdTargetPullRequests;
   }
 
-  const missingTargetPullRequests = getMissingTargetPullRequests(
+  const targetBranchesFromLabels = getTargetBranchesFromLabels(
     sourcePullRequest,
-    existingTargetPullRequests,
     branchLabelMapping
   );
 
-  return [...existingTargetPullRequests, ...missingTargetPullRequests];
+  return mergeByKey(
+    targetBranchesFromLabels,
+    createdTargetPullRequests,
+    'branch'
+  ).map((res) => {
+    if (res.state) {
+      return { ...res, state: res.state };
+    }
+
+    // MERGED (source branch)
+    if (res.isSourceBranch) {
+      return {
+        ...res,
+        state: 'MERGED' as const,
+        url: sourcePullRequest.url,
+        number: sourcePullRequest.number,
+        mergeCommit: {
+          message: sourcePullRequest.mergeCommit.message,
+          sha: sourcePullRequest.mergeCommit.sha,
+        },
+      };
+    }
+
+    // NOT_CREATED
+    return { ...res, state: 'NOT_CREATED' as const };
+  });
 }
 
-function getExistingTargetPullRequests(
-  sourceCommit: SourceCommitWithTargetPullRequest,
-  sourcePullRequest: SourcePullRequestNode
-): ExpectedTargetPullRequest[] {
-  const sourceCommitMessage = getFirstLine(sourceCommit.message);
+function getCreatedTargetPullRequests(
+  sourceCommit: SourceCommitWithTargetPullRequest
+): CreatedPullRequest[] {
+  const sourcePullRequest = getSourcePullRequest(sourceCommit);
 
+  if (!sourcePullRequest) {
+    return [];
+  }
+
+  const sourceCommitMessage = getFirstLine(sourceCommit.message);
   return sourcePullRequest.timelineItems.edges
     .filter(filterNil)
     .filter(filterPullRequests)
@@ -125,28 +184,6 @@ function getExistingTargetPullRequests(
     });
 }
 
-function getMissingTargetPullRequests(
-  sourcePullRequest: SourcePullRequestNode,
-  existingTargetPullRequests: ExpectedTargetPullRequest[],
-  branchLabelMapping: NonNullable<ValidConfigOptions['branchLabelMapping']>
-): ExpectedTargetPullRequest[] {
-  const labels = sourcePullRequest.labels.nodes.map((label) => label.name);
-  const targetBranchesFromLabels = labels
-    .map((label) => getTargetBranchForLabel({ branchLabelMapping, label }))
-    .filter(filterNil)
-    .filter((targetBranch) => targetBranch !== sourcePullRequest.baseRefName);
-
-  const expectedTargetBranches = existingTargetPullRequests.map(
-    (pr) => pr.branch
-  );
-  const expected = uniq(targetBranchesFromLabels);
-  return expected
-    .filter((targetBranch) => !expectedTargetBranches.includes(targetBranch))
-    .map((branch) => {
-      return { branch, state: 'NOT_CREATED' as const };
-    });
-}
-
 // narrow TimelineEdge to TimelinePullRequestEdge
 function filterPullRequests(
   item: TimelineEdge
@@ -155,7 +192,25 @@ function filterPullRequests(
   return targetPullRequest.__typename === 'PullRequest';
 }
 
-function getTargetBranchForLabel({
+function getTargetBranchesFromLabels(
+  sourcePullRequest: SourcePullRequestNode,
+  branchLabelMapping: NonNullable<ValidConfigOptions['branchLabelMapping']>
+): TargetBranchWithLabel[] {
+  const targetBranchesFromLabels = sourcePullRequest.labels.nodes
+    .map((label) => label.name)
+    .map((label) => {
+      const branch = getTargetBranchFromLabel({ branchLabelMapping, label });
+      if (branch) {
+        const isSourceBranch = branch === sourcePullRequest.baseRefName;
+        return { branch, label, isSourceBranch };
+      }
+    })
+    .filter(filterNil);
+
+  return uniqBy(targetBranchesFromLabels, ({ branch }) => branch);
+}
+
+function getTargetBranchFromLabel({
   branchLabelMapping,
   label,
 }: {

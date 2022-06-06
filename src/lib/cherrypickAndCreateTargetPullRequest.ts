@@ -240,7 +240,7 @@ async function cherrypickAndHandleConflicts({
   targetBranch: string;
   cherrypickSpinner: Ora;
 }) {
-  const mergedTargetPullRequest = commit.expectedTargetPullRequests.find(
+  const mergedTargetPullRequest = commit.pullRequestStates.find(
     (pr) => pr.state === 'MERGED' && pr.branch === targetBranch
   );
 

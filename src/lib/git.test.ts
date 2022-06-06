@@ -582,13 +582,15 @@ describe('commitChanges', () => {
 
   const commit: Commit = {
     author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
+    suggestedTargetBranches: [],
     sourceCommit: {
+      branchLabelMapping: {},
       message: 'The original commit message',
       committedDate: '2020',
       sha: 'abc',
     },
     sourceBranch: 'master',
-    expectedTargetPullRequests: [],
+    pullRequestStates: [],
   };
 
   it('should return when changes committed successfully', async () => {

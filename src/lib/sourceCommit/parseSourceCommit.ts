@@ -1,13 +1,15 @@
 import gql from 'graphql-tag';
+import { differenceBy } from 'lodash';
 import { ValidConfigOptions } from '../../options/options';
 import {
   RemoteConfigHistory,
   RemoteConfigHistoryFragment,
 } from '../remoteConfig';
 import {
-  ExpectedTargetPullRequest,
-  getExpectedTargetPullRequests,
-} from './getExpectedTargetPullRequests';
+  TargetPullRequest,
+  getPullRequestStates,
+  getSourceCommitBranchLabelMapping,
+} from './getPullRequestStates';
 
 export interface Commit {
   author: SourceCommitWithTargetPullRequest['author'];
@@ -15,6 +17,7 @@ export interface Commit {
     committedDate: string;
     message: string;
     sha: string;
+    branchLabelMapping: ValidConfigOptions['branchLabelMapping'];
   };
   sourcePullRequest?: {
     number: number;
@@ -25,7 +28,8 @@ export interface Commit {
     };
   };
   sourceBranch: string;
-  expectedTargetPullRequests: ExpectedTargetPullRequest[];
+  suggestedTargetBranches: string[];
+  pullRequestStates: TargetPullRequest[];
 }
 
 export interface SourcePullRequestNode {
@@ -102,6 +106,23 @@ export type SourceCommitWithTargetPullRequest = {
   };
 };
 
+function getSuggestedTargetBranches(
+  sourceCommit: SourceCommitWithTargetPullRequest,
+  pullRequestStates: TargetPullRequest[],
+  branchLabelMapping?: ValidConfigOptions['branchLabelMapping']
+) {
+  const missingPrs = getPullRequestStates({
+    sourceCommit,
+    branchLabelMapping,
+  }).filter((pr) => pr.state === 'NOT_CREATED' || pr.state === 'CLOSED');
+
+  const mergedPrs = pullRequestStates.filter((pr) => pr.state === 'MERGED');
+
+  return differenceBy(missingPrs, mergedPrs, (pr) => pr.label).map(
+    (pr) => pr.branch
+  );
+}
+
 export function parseSourceCommit({
   sourceCommit,
   options,
@@ -115,12 +136,30 @@ export function parseSourceCommit({
   const sourcePullRequest =
     sourceCommit.associatedPullRequests.edges?.[0]?.node;
 
+  const sourceCommitBranchLabelMapping =
+    getSourceCommitBranchLabelMapping(sourceCommit);
+
+  const currentBranchLabelMapping = options.branchLabelMapping;
+
+  const pullRequestStates = getPullRequestStates({
+    sourceCommit,
+    branchLabelMapping:
+      sourceCommitBranchLabelMapping ?? currentBranchLabelMapping,
+  });
+
+  const suggestedTargetBranches = getSuggestedTargetBranches(
+    sourceCommit,
+    pullRequestStates,
+    currentBranchLabelMapping
+  );
+
   return {
     author: sourceCommit.author,
     sourceCommit: {
       committedDate: sourceCommit.committedDate,
       message: sourceCommit.message,
       sha: sourceCommit.sha,
+      branchLabelMapping: sourceCommitBranchLabelMapping,
     },
     sourcePullRequest: sourcePullRequest
       ? {
@@ -133,10 +172,8 @@ export function parseSourceCommit({
         }
       : undefined,
     sourceBranch: sourcePullRequest?.baseRefName ?? options.sourceBranch,
-    expectedTargetPullRequests: getExpectedTargetPullRequests({
-      sourceCommit,
-      latestBranchLabelMapping: options.branchLabelMapping,
-    }),
+    suggestedTargetBranches,
+    pullRequestStates,
   };
 }
 
