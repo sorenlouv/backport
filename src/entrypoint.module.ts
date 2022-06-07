@@ -67,7 +67,7 @@ export async function getCommits(options: {
   maxNumber?: number;
   onlyMissing?: boolean;
   prFilter?: string;
-  pullNumber?: number;
+  pullNumber?: number | number[];
   sha?: string | string[];
   skipRemoteConfig?: boolean;
   sourceBranch?: string;
@@ -77,13 +77,19 @@ export async function getCommits(options: {
   const optionsFromGithub = await getOptionsFromGithub(options);
 
   if (options.pullNumber) {
-    return [
-      await fetchCommitByPullNumber({
-        ...optionsFromGithub,
-        ...options,
-        pullNumber: options.pullNumber,
-      }),
-    ];
+    const pullNumbers = Array.isArray(options.pullNumber)
+      ? options.pullNumber
+      : [options.pullNumber];
+
+    return Promise.all(
+      pullNumbers.map((pullNumber) =>
+        fetchCommitByPullNumber({
+          ...optionsFromGithub,
+          ...options,
+          pullNumber,
+        })
+      )
+    );
   }
 
   if (options.sha) {
