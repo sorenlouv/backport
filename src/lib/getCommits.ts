@@ -22,10 +22,7 @@ export async function getCommits(options: ValidConfigOptions) {
   try {
     if (options.sha) {
       const shas = Array.isArray(options.sha) ? options.sha : [options.sha];
-
-      // TODO: use Intl.ListFormat to format the sha's
       spinner.text = `Loading commit "${shas.map(getShortSha)}"`;
-
       const commits = await Promise.all(
         shas.map((sha) => fetchCommitBySha({ ...options, sha }))
       );
@@ -47,7 +44,6 @@ export async function getCommits(options: ValidConfigOptions) {
         ? options.pullNumber
         : [options.pullNumber];
 
-      // TODO: use Intl.ListFormat to format the pull numbers
       spinner.text = `Loading pull request #${pullNumbers
         .map((pullNumber) => `#${pullNumber}`)
         .join(', ')}`;
