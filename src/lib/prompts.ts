@@ -62,12 +62,14 @@ function getPrLink(number?: number, url?: string) {
 }
 
 function getDetailedPullStatus(c: Commit) {
-  const items = c.pullRequestStates.map((pr) => {
-    const prLink = getPrLink(pr.number, pr.url);
-    return `     └ ${getPrStateIcon(pr.state)} ${
-      pr.branch
-    } ${prLink} ${getPrStateText(pr.state)}`;
-  });
+  const items = c.pullRequestStates
+    .filter(({ isSourceBranch }) => !isSourceBranch)
+    .map((pr) => {
+      const prLink = getPrLink(pr.number, pr.url);
+      return `     └ ${getPrStateIcon(pr.state)} ${
+        pr.branch
+      } ${prLink} ${getPrStateText(pr.state)}`;
+    });
 
   const list =
     items.length > 0
