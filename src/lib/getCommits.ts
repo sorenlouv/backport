@@ -22,10 +22,7 @@ export async function getCommits(options: ValidConfigOptions) {
   try {
     if (options.sha) {
       const shas = Array.isArray(options.sha) ? options.sha : [options.sha];
-
-      // TODO: use Intl.ListFormat to format the sha's
       spinner.text = `Loading commit "${shas.map(getShortSha)}"`;
-
       const commits = await Promise.all(
         shas.map((sha) => fetchCommitBySha({ ...options, sha }))
       );
@@ -33,7 +30,9 @@ export async function getCommits(options: ValidConfigOptions) {
       spinner.stopAndPersist(
         getOraPersistsOption(
           'Select commit',
-          commits.map((commit) => commit.sourceCommit.message).join(', ')
+          commits
+            .map((commit) => getFirstLine(commit.sourceCommit.message))
+            .join(', ')
         )
       );
 
@@ -41,21 +40,31 @@ export async function getCommits(options: ValidConfigOptions) {
     }
 
     if (options.pullNumber) {
-      spinner.text = `Loading pull request #${options.pullNumber}`;
-      const commit = await fetchCommitByPullNumber({
-        ...options,
-        pullNumber: options.pullNumber, // must extract pullNumber to satisfy the ts gods
-      });
+      const pullNumbers = Array.isArray(options.pullNumber)
+        ? options.pullNumber
+        : [options.pullNumber];
+
+      spinner.text = `Loading pull request #${pullNumbers
+        .map((pullNumber) => `#${pullNumber}`)
+        .join(', ')}`;
+
+      const commits = await Promise.all(
+        pullNumbers.map((pullNumber) =>
+          fetchCommitByPullNumber({ ...options, pullNumber })
+        )
+      );
 
       // add styles to make it look like a prompt question
       spinner.stopAndPersist(
         getOraPersistsOption(
           'Select pull request',
-          getFirstLine(commit.sourceCommit.message)
+          commits
+            .map((commit) => getFirstLine(commit.sourceCommit.message))
+            .join(', ')
         )
       );
 
-      return [commit];
+      return commits;
     }
 
     if (!options.interactive && !options.ls) {

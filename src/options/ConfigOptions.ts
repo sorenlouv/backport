@@ -54,7 +54,7 @@ type Options = Partial<{
   publishStatusCommentOnAbort: boolean;
   publishStatusCommentOnFailure: boolean;
   publishStatusCommentOnSuccess: boolean;
-  pullNumber: number;
+  pullNumber: number | number[];
   repoForkOwner: string;
   repoName: string;
   repoOwner: string;
