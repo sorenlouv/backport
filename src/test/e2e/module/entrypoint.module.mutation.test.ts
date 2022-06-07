@@ -64,13 +64,15 @@ describe('entrypoint.module', () => {
         commits: [
           {
             author: { email: 'sorenlouv@gmail.com', name: 'Søren Louv-Jansen' },
-            expectedTargetPullRequests: [],
+            pullRequestStates: [],
             sourceBranch: 'master',
             sourceCommit: {
               committedDate: '2020-08-15T10:37:41Z',
               message: 'Add ❤️ emoji',
               sha: COMMIT_SHA_1,
+              branchLabelMapping: undefined,
             },
+            suggestedTargetBranches: [],
             sourcePullRequest: undefined,
           },
         ],
@@ -177,18 +179,21 @@ describe('entrypoint.module', () => {
         commits: [
           {
             author: { email: 'sorenlouv@gmail.com', name: 'Søren Louv-Jansen' },
-            expectedTargetPullRequests: [],
+            pullRequestStates: [],
             sourceBranch: 'master',
             sourceCommit: {
               committedDate: '2020-08-15T10:37:41Z',
               message: 'Add ❤️ emoji',
               sha: COMMIT_SHA_1,
+              branchLabelMapping: undefined,
             },
+            suggestedTargetBranches: [],
             sourcePullRequest: undefined,
           },
           {
             author: { email: 'sorenlouv@gmail.com', name: 'Søren Louv-Jansen' },
-            expectedTargetPullRequests: [],
+            suggestedTargetBranches: [],
+            pullRequestStates: [],
             sourceBranch: 'master',
             sourceCommit: {
               committedDate: '2020-08-15T10:44:04Z',
@@ -310,13 +315,15 @@ describe('entrypoint.module', () => {
         commits: [
           {
             author: { email: 'sorenlouv@gmail.com', name: 'Søren Louv-Jansen' },
-            expectedTargetPullRequests: [],
+            pullRequestStates: [],
             sourceBranch: 'master',
             sourceCommit: {
               committedDate: '2020-08-15T10:37:41Z',
               message: 'Add ❤️ emoji',
               sha: COMMIT_SHA_1,
+              branchLabelMapping: undefined,
             },
+            suggestedTargetBranches: [],
             sourcePullRequest: undefined,
           },
         ],

@@ -305,12 +305,14 @@ describe('getCommentBody', () => {
                         message: 'New Zealand commit message',
                       },
                     },
+                    suggestedTargetBranches: [],
                     sourceCommit: {
+                      branchLabelMapping: {},
                       committedDate: '',
                       sha: '',
                       message: 'New Zealand commit message',
                     },
-                    expectedTargetPullRequests: [],
+                    pullRequestStates: [],
                   },
                 },
                 {
@@ -329,12 +331,14 @@ describe('getCommentBody', () => {
                         message: 'Australia commit',
                       },
                     },
+                    suggestedTargetBranches: [],
                     sourceCommit: {
+                      branchLabelMapping: {},
                       committedDate: '',
                       sha: '',
                       message: 'Australia commit',
                     },
-                    expectedTargetPullRequests: [],
+                    pullRequestStates: [],
                   },
                 },
               ],
@@ -363,7 +367,7 @@ describe('getCommentBody', () => {
         |:------:|:------:|:------|
         |✅|7.x|[<img src=\\"https://img.shields.io/github/pulls/detail/state/elastic/kibana/55\\">](url-to-pr-55)|
         |❌|7.1|**Backport failed because of merge conflicts**<br><br>You might need to backport the following PRs to 7.1:<br> - [New Zealand commit message](url-to-pr-5)<br> - [Australia commit](url-to-pr-44)|
-        |❌|7.2|**Backport failed because of merge conflicts**|
+        |❌|7.2|Backport failed because of merge conflicts|
 
         Note: Successful backport PRs will be merged automatically after passing CI.
 

@@ -46,7 +46,13 @@ describe('fetchCommitBySha', () => {
   it('should return single commit with pull request', async () => {
     const expectedCommit: Commit = {
       author: { email: 'sorenlouv@gmail.com', name: 'Søren Louv-Jansen' },
+      suggestedTargetBranches: [],
       sourceCommit: {
+        branchLabelMapping: {
+          '^v(\\d+).(\\d+).\\d+$': '$1.$2',
+          '^v7.9.0$': '7.x',
+          '^v8.0.0$': 'master',
+        },
         committedDate: '2020-07-07T20:40:28Z',
         message: '[APM] Add API tests (#70740)',
         sha: 'cb6fbc0e1b406675724181a3e9f59459b5f8f892',
@@ -60,9 +66,11 @@ describe('fetchCommitBySha', () => {
         },
       },
       sourceBranch: 'master',
-      expectedTargetPullRequests: [
+      pullRequestStates: [
         {
           branch: '7.x',
+          label: 'v7.9.0',
+          isSourceBranch: false,
           state: 'MERGED',
           number: 71014,
           url: 'https://github.com/elastic/kibana/pull/71014',

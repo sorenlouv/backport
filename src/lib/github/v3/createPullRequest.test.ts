@@ -21,13 +21,15 @@ describe('getPullRequestBody', () => {
               },
             },
 
+            suggestedTargetBranches: [],
             sourceCommit: {
+              branchLabelMapping: {},
               committedDate: '2020',
               sha: 'abcdefghi',
               message: 'My commit message (#55)',
             },
 
-            expectedTargetPullRequests: [],
+            pullRequestStates: [],
             sourceBranch: 'master',
           },
         ],
@@ -57,14 +59,16 @@ describe('getPullRequestBody', () => {
               email: 'soren.louv@elastic.co',
               name: 'Søren Louv-Jansen',
             },
+            suggestedTargetBranches: [],
             sourceCommit: {
+              branchLabelMapping: {},
               committedDate: '',
               sha: 'abcdefghijklmw',
               message: 'My commit message',
             },
 
             sourceBranch: 'main',
-            expectedTargetPullRequests: [],
+            pullRequestStates: [],
           },
         ],
 
@@ -102,14 +106,16 @@ describe('getPullRequestBody', () => {
               },
             },
 
+            suggestedTargetBranches: [],
             sourceCommit: {
+              branchLabelMapping: {},
               committedDate: '',
               sha: 'abcdefghijklm',
               message: 'My commit message (#55)',
             },
 
             sourceBranch: 'main',
-            expectedTargetPullRequests: [],
+            pullRequestStates: [],
           },
 
           {
@@ -117,14 +123,16 @@ describe('getPullRequestBody', () => {
               email: 'soren.louv@elastic.co',
               name: 'Søren Louv-Jansen',
             },
+            suggestedTargetBranches: [],
             sourceCommit: {
+              branchLabelMapping: {},
               committedDate: '',
               sha: 'qwertyuiop',
               message: 'Another commit message',
             },
 
             sourceBranch: 'main',
-            expectedTargetPullRequests: [],
+            pullRequestStates: [],
           },
         ],
 
@@ -150,7 +158,9 @@ describe('getPullRequestBody', () => {
         options: {} as ValidConfigOptions,
         commits: [
           {
+            suggestedTargetBranches: [],
             sourceCommit: {
+              branchLabelMapping: {},
               committedDate: '2022-02-07T23:53:14Z',
               message: 'Merge strategy: Second commit',
               sha: 'e8df5eaa4db7b94474b48e2320b02d33a830d9fb',
@@ -171,11 +181,13 @@ describe('getPullRequestBody', () => {
             },
 
             sourceBranch: 'main',
-            expectedTargetPullRequests: [],
+            pullRequestStates: [],
           },
 
           {
+            suggestedTargetBranches: [],
             sourceCommit: {
+              branchLabelMapping: {},
               committedDate: '2022-02-07T23:51:59Z',
               message: 'Merge strategy: First commit',
               sha: '5411b1c1144093e422220008f23f2c2b909ed113',
@@ -196,7 +208,7 @@ describe('getPullRequestBody', () => {
             },
 
             sourceBranch: 'main',
-            expectedTargetPullRequests: [],
+            pullRequestStates: [],
           },
         ],
 
@@ -237,26 +249,30 @@ describe('getPullRequestBody', () => {
                 message: 'My commit message (#55)',
               },
             },
+            suggestedTargetBranches: [],
             sourceCommit: {
+              branchLabelMapping: {},
               committedDate: '',
               sha: 'abcdefghijklm',
               message: 'My commit message (#55)',
             },
             sourceBranch: 'main',
-            expectedTargetPullRequests: [],
+            pullRequestStates: [],
           },
           {
             author: {
               email: 'soren.louv@elastic.co',
               name: 'Søren Louv-Jansen',
             },
+            suggestedTargetBranches: [],
             sourceCommit: {
+              branchLabelMapping: {},
               committedDate: '',
               sha: 'qwertyuiop',
               message: 'Another commit message',
             },
             sourceBranch: 'main',
-            expectedTargetPullRequests: [],
+            pullRequestStates: [],
           },
         ],
 
@@ -290,14 +306,16 @@ describe('getPullRequestBody', () => {
               },
             },
 
+            suggestedTargetBranches: [],
             sourceCommit: {
+              branchLabelMapping: {},
               committedDate: '',
               sha: 'abcdefghijklm',
               message: 'My commit message (#55)',
             },
 
             sourceBranch: 'main',
-            expectedTargetPullRequests: [],
+            pullRequestStates: [],
           },
 
           {
@@ -305,14 +323,16 @@ describe('getPullRequestBody', () => {
               email: 'soren.louv@elastic.co',
               name: 'Søren Louv-Jansen',
             },
+            suggestedTargetBranches: [],
             sourceCommit: {
+              branchLabelMapping: {},
               committedDate: '',
               sha: 'qwertyuiop',
               message: 'Another commit message',
             },
 
             sourceBranch: 'main',
-            expectedTargetPullRequests: [],
+            pullRequestStates: [],
           },
         ],
 
@@ -355,12 +375,14 @@ describe('getTitle', () => {
                 message: 'My commit message (#55)',
               },
             },
+            suggestedTargetBranches: [],
             sourceCommit: {
+              branchLabelMapping: {},
               committedDate: '2020',
               sha: 'abcdefghi',
               message: 'My commit message (#55)',
             },
-            expectedTargetPullRequests: [],
+            pullRequestStates: [],
           },
           {
             author: {
@@ -375,13 +397,15 @@ describe('getTitle', () => {
                 message: 'Another commit message (#56)',
               },
             },
+            suggestedTargetBranches: [],
             sourceCommit: {
+              branchLabelMapping: {},
               committedDate: '2020',
               sha: 'jklmnopqr',
               message: 'Another commit message (#56)',
             },
             sourceBranch: 'main',
-            expectedTargetPullRequests: [],
+            pullRequestStates: [],
           },
         ],
         targetBranch: '7.x',
@@ -409,13 +433,15 @@ describe('getTitle', () => {
                 message: 'My commit message (#55)',
               },
             },
+            suggestedTargetBranches: [],
             sourceCommit: {
+              branchLabelMapping: {},
               committedDate: '',
               sha: 'abcdefghi',
               message: 'My commit message (#55)',
             },
             sourceBranch: 'main',
-            expectedTargetPullRequests: [],
+            pullRequestStates: [],
           },
         ],
         targetBranch: '7.x',

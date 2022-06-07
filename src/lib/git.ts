@@ -13,7 +13,7 @@ import {
 import { getRepoPath } from './env';
 import { getShortSha } from './github/commitFormatters';
 import { logger } from './logger';
-import { ExpectedTargetPullRequest } from './sourceCommit/getExpectedTargetPullRequests';
+import { TargetPullRequest } from './sourceCommit/getPullRequestStates';
 import { Commit } from './sourceCommit/parseSourceCommit';
 
 export function getRemoteUrl(
@@ -288,7 +288,7 @@ export async function cherrypick({
 }: {
   options: ValidConfigOptions;
   sha: string;
-  mergedTargetPullRequest?: ExpectedTargetPullRequest;
+  mergedTargetPullRequest?: TargetPullRequest;
   commitAuthor: CommitAuthor;
 }): Promise<{
   conflictingFiles: { absolute: string; relative: string }[];

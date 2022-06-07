@@ -3,18 +3,18 @@ import { ValidConfigOptions } from '../options/options';
 import { getCommitsWithoutBackports } from './getCommitsWithoutBackports';
 import * as git from './git';
 import * as fetchCommitsByAuthorModule from './github/v4/fetchCommits/fetchCommitsByAuthor';
-import { ExpectedTargetPullRequest } from './sourceCommit/getExpectedTargetPullRequests';
+import { TargetPullRequest } from './sourceCommit/getPullRequestStates';
 
 describe('getCommitsWithoutBackports', () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
 
-  describe('expectedTargetPullRequests', () => {
+  describe('pullRequestStates', () => {
     function setupExpectedPullRequests({
-      expectedTargetPullRequests,
+      pullRequestStates,
     }: {
-      expectedTargetPullRequests: ExpectedTargetPullRequest[];
+      pullRequestStates: TargetPullRequest[];
     }) {
       // simulate 1 unbackported commit
       jest
@@ -25,7 +25,9 @@ describe('getCommitsWithoutBackports', () => {
               email: 'soren.louv@elastic.co',
               name: 'Søren Louv-Jansen',
             },
+            suggestedTargetBranches: [],
             sourceCommit: {
+              branchLabelMapping: {},
               committedDate: '10',
               message: 'First commit (#1)',
               sha: 'xyz',
@@ -38,7 +40,7 @@ describe('getCommitsWithoutBackports', () => {
                 sha: 'xyz',
               },
             },
-            expectedTargetPullRequests,
+            pullRequestStates,
             sourceBranch: 'main',
           },
         ]);
@@ -50,12 +52,14 @@ describe('getCommitsWithoutBackports', () => {
         options: {} as ValidConfigOptions,
         commit: {
           author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
+          suggestedTargetBranches: [],
           sourceCommit: {
+            branchLabelMapping: {},
             committedDate: '100',
             message: 'Second commit (#2)',
             sha: 'abc',
           },
-          expectedTargetPullRequests: [],
+          pullRequestStates: [],
           sourceBranch: 'main',
         },
         targetBranch: '7.x',
@@ -65,14 +69,14 @@ describe('getCommitsWithoutBackports', () => {
 
     it('should not unbackported commits if no backports were expected', async () => {
       const commitsWithoutBackports = await setupExpectedPullRequests({
-        expectedTargetPullRequests: [],
+        pullRequestStates: [],
       });
       expect(commitsWithoutBackports.length).toEqual(0);
     });
 
     it('should display as missing if a backport is CLOSED', async () => {
       const commitsWithoutBackports = await setupExpectedPullRequests({
-        expectedTargetPullRequests: [
+        pullRequestStates: [
           {
             state: 'CLOSED',
             branch: '7.x',
@@ -88,7 +92,14 @@ describe('getCommitsWithoutBackports', () => {
 
     it('should display as missing if a backport is NOT_CREATED', async () => {
       const commitsWithoutBackports = await setupExpectedPullRequests({
-        expectedTargetPullRequests: [{ state: 'NOT_CREATED', branch: '7.x' }],
+        pullRequestStates: [
+          {
+            state: 'NOT_CREATED',
+            branch: '7.x',
+            label: 'v7.0.0',
+            isSourceBranch: false,
+          },
+        ],
       });
       expect(stripAnsi(commitsWithoutBackports[0].formatted)).toEqual(
         ' - First commit (#1) (backport missing)\n   https://www.github.com/foo/bar/pull/123'
@@ -97,7 +108,7 @@ describe('getCommitsWithoutBackports', () => {
 
     it('should display as pending if a backport is OPEN', async () => {
       const commitsWithoutBackports = await setupExpectedPullRequests({
-        expectedTargetPullRequests: [
+        pullRequestStates: [
           {
             state: 'OPEN',
             branch: '7.x',
@@ -113,7 +124,7 @@ describe('getCommitsWithoutBackports', () => {
 
     it('should not display commit as unbackported if a backport was MERGED', async () => {
       const commitsWithoutBackports = await setupExpectedPullRequests({
-        expectedTargetPullRequests: [
+        pullRequestStates: [
           {
             state: 'MERGED',
             branch: '7.x',
@@ -143,7 +154,9 @@ describe('getCommitsWithoutBackports', () => {
               email: 'soren.louv@elastic.co',
               name: 'Søren Louv-Jansen',
             },
+            suggestedTargetBranches: [],
             sourceCommit: {
+              branchLabelMapping: {},
               committedDate: offendingCommitDate,
               message: 'First commit (#1)',
               sha: 'xyz',
@@ -157,7 +170,7 @@ describe('getCommitsWithoutBackports', () => {
               },
             },
             sourceBranch: 'main',
-            expectedTargetPullRequests: [
+            pullRequestStates: [
               {
                 state: 'OPEN',
                 branch: '7.x',
@@ -175,7 +188,9 @@ describe('getCommitsWithoutBackports', () => {
         options: {} as ValidConfigOptions,
         commit: {
           author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
+          suggestedTargetBranches: [],
           sourceCommit: {
+            branchLabelMapping: {},
             committedDate: currentCommitDate,
             message: 'Second commit (#2)',
             sha: 'abc',
@@ -189,7 +204,7 @@ describe('getCommitsWithoutBackports', () => {
             },
           },
           sourceBranch: 'main',
-          expectedTargetPullRequests: [],
+          pullRequestStates: [],
         },
         targetBranch: '7.x',
         conflictingFiles: ['/foo/bar/baz.ts'],
@@ -232,7 +247,9 @@ describe('getCommitsWithoutBackports', () => {
               email: 'soren.louv@elastic.co',
               name: 'Søren Louv-Jansen',
             },
+            suggestedTargetBranches: [],
             sourceCommit: {
+              branchLabelMapping: {},
               committedDate: '10',
               message: 'First commit (#1)',
               sha: 'xyz',
@@ -246,7 +263,7 @@ describe('getCommitsWithoutBackports', () => {
               },
             },
             sourceBranch: 'main',
-            expectedTargetPullRequests: [
+            pullRequestStates: [
               {
                 branch: offendingCommitTargetBranch,
                 state: 'OPEN',
@@ -266,7 +283,9 @@ describe('getCommitsWithoutBackports', () => {
         // commit that is being backported
         commit: {
           author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
+          suggestedTargetBranches: [],
           sourceCommit: {
+            branchLabelMapping: {},
             committedDate: '100',
             message: 'Second commit (#2)',
             sha: 'abc',
@@ -279,7 +298,7 @@ describe('getCommitsWithoutBackports', () => {
               sha: 'abc',
             },
           },
-          expectedTargetPullRequests: [],
+          pullRequestStates: [],
           sourceBranch: 'main',
         },
         targetBranch: currentCommitTargetBranch,
@@ -316,12 +335,14 @@ describe('getCommitsWithoutBackports', () => {
               email: 'soren.louv@elastic.co',
               name: 'Søren Louv-Jansen',
             },
+            suggestedTargetBranches: [],
             sourceCommit: {
+              branchLabelMapping: {},
               committedDate: '10',
               sha: 'xyz',
               message: 'First commit (#1)',
             },
-            expectedTargetPullRequests: [],
+            pullRequestStates: [],
             sourceBranch: 'main',
           },
         ]);
@@ -333,7 +354,9 @@ describe('getCommitsWithoutBackports', () => {
         options: {} as ValidConfigOptions,
         commit: {
           author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
+          suggestedTargetBranches: [],
           sourceCommit: {
+            branchLabelMapping: {},
             committedDate: '100',
             message: 'Second commit (#2)',
             sha: 'abc',
@@ -346,7 +369,7 @@ describe('getCommitsWithoutBackports', () => {
               sha: 'abc',
             },
           },
-          expectedTargetPullRequests: [],
+          pullRequestStates: [],
           sourceBranch: 'main',
         },
         targetBranch: '7.x',

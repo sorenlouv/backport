@@ -55,7 +55,13 @@ describe('fetchCommitByPullNumber', () => {
 
       const expectedCommit: Commit = {
         author: { email: 'sorenlouv@gmail.com', name: 'Søren Louv-Jansen' },
+        suggestedTargetBranches: [],
         sourceCommit: {
+          branchLabelMapping: {
+            '^v(\\d+).(\\d+).\\d+$': '$1.$2',
+            '^v7.9.0$': '7.x',
+            '^v8.0.0$': 'master',
+          },
           committedDate: '2020-08-15T12:40:19Z',
           message: 'Add 🍏 emoji (#5)',
           sha: 'ee8c492334cef1ca077a56addb79a26f79821d2f',
@@ -69,26 +75,42 @@ describe('fetchCommitByPullNumber', () => {
           },
         },
         sourceBranch: 'master',
-        expectedTargetPullRequests: [
-          {
-            branch: '7.x',
-            state: 'MERGED',
-            number: 6,
-            url: 'https://github.com/backport-org/backport-e2e/pull/6',
-            mergeCommit: {
-              message: 'Add 🍏 emoji (#5) (#6)',
-              sha: '4bcd876d4ceaa73cf437bfc89b74d1a4e704c0a6',
-            },
-          },
+        pullRequestStates: [
           {
             branch: '7.8',
-            state: 'MERGED',
-            number: 7,
-            url: 'https://github.com/backport-org/backport-e2e/pull/7',
+            isSourceBranch: false,
+            label: 'v7.8.0',
             mergeCommit: {
               message: 'Add 🍏 emoji (#5) (#7)',
               sha: '46cd6f9999effdf894a36dbc7db90e890f4be840',
             },
+            number: 7,
+            state: 'MERGED',
+            url: 'https://github.com/backport-org/backport-e2e/pull/7',
+          },
+          {
+            branch: '7.x',
+            isSourceBranch: false,
+            label: 'v7.9.0',
+            mergeCommit: {
+              message: 'Add 🍏 emoji (#5) (#6)',
+              sha: '4bcd876d4ceaa73cf437bfc89b74d1a4e704c0a6',
+            },
+            number: 6,
+            state: 'MERGED',
+            url: 'https://github.com/backport-org/backport-e2e/pull/6',
+          },
+          {
+            branch: 'master',
+            isSourceBranch: true,
+            label: 'v8.0.0',
+            mergeCommit: {
+              message: 'Add 🍏 emoji (#5)',
+              sha: 'ee8c492334cef1ca077a56addb79a26f79821d2f',
+            },
+            number: 5,
+            state: 'MERGED',
+            url: 'https://github.com/backport-org/backport-e2e/pull/5',
           },
         ],
       };

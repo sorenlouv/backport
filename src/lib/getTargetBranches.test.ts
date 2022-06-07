@@ -32,6 +32,7 @@ describe('getTargetBranches', () => {
         {
           author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
           sourceCommit: {
+            branchLabelMapping: {},
             committedDate: 'aaa',
             message: 'hey',
             sha: 'abcd',
@@ -45,7 +46,8 @@ describe('getTargetBranches', () => {
             },
           },
           sourceBranch: '7.x',
-          expectedTargetPullRequests: [],
+          suggestedTargetBranches: [],
+          pullRequestStates: [],
         },
       ];
 
@@ -98,7 +100,6 @@ describe('getTargetBranches', () => {
       await expect(() => {
         return getTargetBranches(
           {
-            expectedTargetPullRequests: [],
             interactive: false,
           } as unknown as ValidConfigOptions,
           commits
@@ -111,7 +112,8 @@ describe('getTargetBranches', () => {
     it('should return missing backports', async () => {
       const commits = [
         {
-          expectedTargetPullRequests: [
+          suggestedTargetBranches: ['7.x'],
+          pullRequestStates: [
             { branch: '7.2', state: 'MERGED' },
             { branch: '7.1', state: 'OPEN' },
             { branch: '7.x', state: 'NOT_CREATED' },
@@ -127,7 +129,7 @@ describe('getTargetBranches', () => {
     });
   });
 
-  describe('when `expectedTargetPullRequests` is missing a backport to 7.x', () => {
+  describe('when `pullRequestStates` is missing a backport to 7.x', () => {
     let targetBranchChoices: TargetBranchChoice[];
     beforeEach(async () => {
       const options = {
@@ -149,6 +151,7 @@ describe('getTargetBranches', () => {
         {
           author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
           sourceCommit: {
+            branchLabelMapping: {},
             committedDate: 'bbb',
             message: '[backport] Bump to 5.1.3 (#62286)',
             sha: 'my-sha',
@@ -162,7 +165,8 @@ describe('getTargetBranches', () => {
             },
           },
           sourceBranch: 'master',
-          expectedTargetPullRequests: [{ branch: '7.x', state: 'NOT_CREATED' }],
+          suggestedTargetBranches: ['7.x'],
+          pullRequestStates: [],
         },
       ];
 

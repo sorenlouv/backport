@@ -18,6 +18,7 @@ describe('Handle unbackported pull requests', () => {
     const expectedCommit: Commit = {
       author: { email: 'sorenlouv@gmail.com', name: 'Søren Louv-Jansen' },
       sourceCommit: {
+        branchLabelMapping: undefined,
         committedDate: '2021-12-16T00:03:34Z',
         message: 'Change Barca to Braithwaite (#8)',
         sha: '343402a748be2375325b2730fa979bcea5b96ba1',
@@ -30,8 +31,16 @@ describe('Handle unbackported pull requests', () => {
           sha: '343402a748be2375325b2730fa979bcea5b96ba1',
         },
       },
+      suggestedTargetBranches: ['7.x'],
       sourceBranch: 'main',
-      expectedTargetPullRequests: [{ branch: '7.x', state: 'NOT_CREATED' }],
+      pullRequestStates: [
+        {
+          branch: '7.x',
+          label: 'backport-to-7.x',
+          isSourceBranch: false,
+          state: 'NOT_CREATED',
+        },
+      ],
     };
 
     expect(commits[0]).toEqual(expectedCommit);

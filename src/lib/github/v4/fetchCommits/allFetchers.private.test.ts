@@ -76,7 +76,12 @@ describe('allFetchers', () => {
   it('returns correct response for commitByAuthor', async () => {
     const expectedCommit: Commit = {
       author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
+      suggestedTargetBranches: [],
       sourceCommit: {
+        branchLabelMapping: {
+          '^v(\\d+).(\\d+).\\d+$': '$1.$2',
+          '^v8.1.0$': 'main',
+        },
         committedDate: '2021-12-20T14:20:16Z',
         message: '[APM] Add note about synthtrace to APM docs (#121633)',
         sha: 'd421ddcf6157150596581c7885afa3690cec6339',
@@ -90,9 +95,11 @@ describe('allFetchers', () => {
         },
       },
       sourceBranch: 'main',
-      expectedTargetPullRequests: [
+      pullRequestStates: [
         {
           branch: '8.0',
+          label: 'v8.0.0',
+          isSourceBranch: false,
           mergeCommit: {
             message:
               '[APM] Add note about synthtrace to APM docs (#121633) (#121643)\n\nCo-authored-by: Søren Louv-Jansen <soren.louv@elastic.co>',
@@ -101,6 +108,18 @@ describe('allFetchers', () => {
           number: 121643,
           state: 'MERGED',
           url: 'https://github.com/elastic/kibana/pull/121643',
+        },
+        {
+          branch: 'main',
+          label: 'v8.1.0',
+          isSourceBranch: true,
+          mergeCommit: {
+            message: '[APM] Add note about synthtrace to APM docs (#121633)',
+            sha: 'd421ddcf6157150596581c7885afa3690cec6339',
+          },
+          number: 121633,
+          state: 'MERGED',
+          url: 'https://github.com/elastic/kibana/pull/121633',
         },
       ],
     };

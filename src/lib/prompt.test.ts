@@ -4,12 +4,14 @@ import { Commit } from './sourceCommit/parseSourceCommit';
 
 describe('prompt', () => {
   describe('getChoicesForCommitPrompt', () => {
-    it('should display status badges via `expectedTargetPullRequests`', () => {
+    it('should display status badges via `pullRequestStates`', () => {
       const commits: Commit[] = [
         {
           author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
           sourceBranch: 'master',
+          suggestedTargetBranches: [],
           sourceCommit: {
+            branchLabelMapping: {},
             committedDate: '1',
             sha: 'ae9d51b7fe3ee6f30d0d196c782e0dcabb7ac5ff',
             message:
@@ -24,10 +26,28 @@ describe('prompt', () => {
                 '[APM] Remove log-log descriptions from correlation charts (#119700)',
             },
           },
-          expectedTargetPullRequests: [
-            { number: 120178, branch: '8.0', state: 'MERGED' },
-            { number: 120179, branch: '7.16', state: 'MERGED' },
-            { number: 120179, branch: '7.15', state: 'NOT_CREATED' },
+          pullRequestStates: [
+            {
+              number: 120178,
+              branch: '8.0',
+              label: '',
+              isSourceBranch: false,
+              state: 'MERGED',
+            },
+            {
+              number: 120179,
+              branch: '7.16',
+              state: 'MERGED',
+              label: '',
+              isSourceBranch: false,
+            },
+            {
+              number: 120179,
+              branch: '7.15',
+              state: 'NOT_CREATED',
+              label: '',
+              isSourceBranch: false,
+            },
           ],
         },
       ];
@@ -49,7 +69,9 @@ describe('prompt', () => {
         {
           author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
           sourceBranch: 'master',
+          suggestedTargetBranches: [],
           sourceCommit: {
+            branchLabelMapping: {},
             committedDate: '',
             sha: 'b1b491959dab47aeb83c88ee2accb2db46d23793',
             message: '[APM] Prefer service.name for logs correlation (#120694)',
@@ -63,12 +85,14 @@ describe('prompt', () => {
                 '[APM] Prefer service.name for logs correlation (#120694)',
             },
           },
-          expectedTargetPullRequests: [],
+          pullRequestStates: [],
         },
         {
           author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
           sourceBranch: 'master',
+          suggestedTargetBranches: [],
           sourceCommit: {
+            branchLabelMapping: {},
             committedDate: '',
             sha: 'b1bb4a93959f19a653b9cfb207a5c6acb6559482',
             message:
@@ -83,12 +107,14 @@ describe('prompt', () => {
                 '[APM] Disable telemetry in agent config endpoint (#120106)',
             },
           },
-          expectedTargetPullRequests: [],
+          pullRequestStates: [],
         },
         {
           author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
           sourceBranch: 'master',
+          suggestedTargetBranches: [],
           sourceCommit: {
+            branchLabelMapping: {},
             committedDate: '',
             sha: '434f6e6a88faf24dc1ea41f9f726db78e46355a7',
             message:
@@ -103,12 +129,14 @@ describe('prompt', () => {
                 '[APM] Remove index_pattern.json and add custom field formatters (#119915)',
             },
           },
-          expectedTargetPullRequests: [],
+          pullRequestStates: [],
         },
         {
           author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
           sourceBranch: 'master',
+          suggestedTargetBranches: [],
           sourceCommit: {
+            branchLabelMapping: {},
             committedDate: '',
             sha: 'ae9d51b7fe3ee6f30d0d196c782e0dcabb7ac5ff',
             message:
@@ -123,7 +151,7 @@ describe('prompt', () => {
                 '[APM] Remove log-log descriptions from correlation charts (#119700)',
             },
           },
-          expectedTargetPullRequests: [],
+          pullRequestStates: [],
         },
       ];
 

@@ -51,8 +51,12 @@ describe('parseSourceCommit', () => {
     });
   });
 
-  describe('expectedTargetPullRequests', () => {
-    it('uses options.branchLabelMapping when historicalBranchLabelMappings is empty', () => {
+  describe('pullRequestStates', () => {
+    it('uses options.branchLabelMapping when sourceCommit is empty', () => {
+      const branchLabelMapping = {
+        '^v6.4.0$': 'main',
+        '^v(\\d+).(\\d+).\\d+$': '$1.$2',
+      };
       const mockSourceCommit = getMockSourceCommit({
         sourceCommit: {
           message: 'My commit message (#66)',
@@ -82,16 +86,28 @@ describe('parseSourceCommit', () => {
       const commit = parseSourceCommit({
         sourceCommit: mockSourceCommit,
         options: {
-          branchLabelMapping: {
-            '^v6.4.0$': 'main',
-            '^v(\\d+).(\\d+).\\d+$': '$1.$2',
-          },
+          branchLabelMapping,
         } as unknown as ValidConfigOptions,
       });
 
-      expect(commit.expectedTargetPullRequests).toEqual([
+      expect(commit.suggestedTargetBranches).toEqual(['6.1']);
+      expect(commit.pullRequestStates).toEqual([
+        {
+          branch: 'main',
+          label: 'v6.4.0',
+          isSourceBranch: true,
+          mergeCommit: {
+            message: 'My commit message (#66)',
+            sha: 'DO NOT USE: default-source-commit-sha',
+          },
+          number: 55,
+          state: 'MERGED',
+          url: 'https://github.com/elastic/kibana/pull/55',
+        },
         {
           branch: '6.3',
+          label: 'v6.3.0',
+          isSourceBranch: false,
           number: 5678,
           state: 'MERGED',
           url: 'https://github.com/elastic/kibana/pull/5678',
@@ -102,25 +118,36 @@ describe('parseSourceCommit', () => {
         },
         {
           branch: '6.2',
+          label: 'v6.2.0',
+          isSourceBranch: false,
           number: 9876,
           state: 'OPEN',
           url: 'https://github.com/elastic/kibana/pull/9876',
         },
         {
           branch: '6.1',
+          label: 'v6.1.0',
+          isSourceBranch: false,
           state: 'NOT_CREATED',
         },
       ]);
     });
 
-    it('uses the historical branchLabelMapping from 2021-02-02', () => {
+    it('uses the sourceCommit branchLabelMapping where 6.3 is pointing to main', () => {
+      const sourceCommitBranchLabelMapping = {
+        '^v6.3.0$': 'main', // 6.3 is pointing to main
+        '^v(\\d+).(\\d+).\\d+$': '$1.$2',
+      };
+
+      const latestBranchLabelMapping = {
+        '^v6.4.0$': 'main', // 6.4 is pointing to main
+        '^v(\\d+).(\\d+).\\d+$': '$1.$2',
+      };
+
       const mockSourceCommit = getMockSourceCommit({
         sourceCommit: {
           remoteConfig: {
-            branchLabelMapping: {
-              '^v6.3.0$': 'main',
-              '^v(\\d+).(\\d+).\\d+$': '$1.$2',
-            },
+            branchLabelMapping: sourceCommitBranchLabelMapping,
             committedDate: '2021-02-02T00:00:00Z',
           },
           message: 'My commit message (#66)',
@@ -144,22 +171,36 @@ describe('parseSourceCommit', () => {
       const commit = parseSourceCommit({
         sourceCommit: mockSourceCommit,
         options: {
-          branchLabelMapping: {
-            '^v6.4.0$': 'main',
-            '^v(\\d+).(\\d+).\\d+$': '$1.$2',
-          },
+          branchLabelMapping: latestBranchLabelMapping,
         } as unknown as ValidConfigOptions,
       });
 
-      expect(commit.expectedTargetPullRequests).toEqual([
+      expect(commit.suggestedTargetBranches).toEqual(['6.1']);
+      expect(commit.pullRequestStates).toEqual([
+        {
+          branch: 'main',
+          isSourceBranch: true,
+          label: 'v6.3.0',
+          mergeCommit: {
+            message: 'My commit message (#66)',
+            sha: 'DO NOT USE: default-source-commit-sha',
+          },
+          number: 55,
+          state: 'MERGED',
+          url: 'https://github.com/elastic/kibana/pull/55',
+        },
         {
           branch: '6.2',
+          label: 'v6.2.0',
+          isSourceBranch: false,
           number: 9876,
           state: 'OPEN',
           url: 'https://github.com/elastic/kibana/pull/9876',
         },
         {
           branch: '6.1',
+          label: 'v6.1.0',
+          isSourceBranch: false,
           state: 'NOT_CREATED',
         },
       ]);
@@ -167,8 +208,20 @@ describe('parseSourceCommit', () => {
   });
 
   it('returns the correct source commit', () => {
+    const branchLabelMapping = {
+      '^v6.3.0$': '6.x',
+      '^v(\\d+).(\\d+).\\d+$': '$1.$2',
+    };
+
     const mockSourceCommit = getMockSourceCommit({
-      sourceCommit: { message: 'My commit message (#1234)', sha: 'my-sha' },
+      sourceCommit: {
+        remoteConfig: {
+          branchLabelMapping,
+          committedDate: '2021',
+        },
+        message: 'My commit message (#1234)',
+        sha: 'my-sha',
+      },
       sourcePullRequest: {
         number: 1234,
         labels: ['v6.3.0', 'v6.2.0', 'v6.1.0'],
@@ -191,20 +244,17 @@ describe('parseSourceCommit', () => {
 
     const commit = parseSourceCommit({
       sourceCommit: mockSourceCommit,
-      options: {
-        branchLabelMapping: {
-          '^v6.3.0$': '6.x',
-          '^v(\\d+).(\\d+).\\d+$': '$1.$2',
-        },
-      } as unknown as ValidConfigOptions,
+      options: { branchLabelMapping } as unknown as ValidConfigOptions,
     });
 
     const expectedCommit: Commit = {
+      suggestedTargetBranches: ['6.1'],
       author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
       sourceCommit: {
         committedDate: '2021-12-22T00:00:00Z',
         message: 'My commit message (#1234)',
         sha: 'my-sha',
+        branchLabelMapping,
       },
       sourcePullRequest: {
         number: 1234,
@@ -215,9 +265,11 @@ describe('parseSourceCommit', () => {
         },
       },
       sourceBranch: 'source-branch-from-associated-pull-request',
-      expectedTargetPullRequests: [
+      pullRequestStates: [
         {
           branch: '6.x',
+          label: 'v6.3.0',
+          isSourceBranch: false,
           number: 5678,
           state: 'MERGED',
           url: 'https://github.com/elastic/kibana/pull/5678',
@@ -228,12 +280,16 @@ describe('parseSourceCommit', () => {
         },
         {
           branch: '6.2',
+          label: 'v6.2.0',
+          isSourceBranch: false,
           number: 9876,
           state: 'OPEN',
           url: 'https://github.com/elastic/kibana/pull/9876',
         },
         {
           branch: '6.1',
+          label: 'v6.1.0',
+          isSourceBranch: false,
           state: 'NOT_CREATED',
         },
       ],
