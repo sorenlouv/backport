@@ -9,16 +9,13 @@ describe('backport-org/repo-with-changing-branchLabelMapping', () => {
   describe('for commit merged before branchLabelMapping was changed', () => {
     let commit: Commit;
     beforeAll(async () => {
-      const { output } = await runBackportViaCli(
-        [
-          '--repo=backport-org/repo-with-changing-branchLabelMapping',
-          '--no-fork',
-          `--accessToken=${accessToken}`,
-          '--json',
-          '--ls',
-        ],
-        { waitForString: 'Select commit' }
-      );
+      const { output } = await runBackportViaCli([
+        '--repo=backport-org/repo-with-changing-branchLabelMapping',
+        '--no-fork',
+        `--accessToken=${accessToken}`,
+        '--json',
+        '--ls',
+      ]);
 
       commit = JSON.parse(output).commits[1];
     });
