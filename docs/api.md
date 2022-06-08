@@ -26,7 +26,7 @@ Filter commits by pull request number
 Filter commits by commit sha
 
 `options.interactive` _boolean_<br/>
-Enable interactive prompts
+Enable interactive prompts. Default: `true`
 
 `processArgs` _array_<br/>
 Useful for forwarding arguments to backport: `const processArgs = process.argv.slice(2);`
