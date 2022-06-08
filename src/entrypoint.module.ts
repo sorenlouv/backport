@@ -30,11 +30,11 @@ export { fetchRemoteProjectConfig as getRemoteProjectConfig } from './lib/github
 export { getGlobalConfig as getLocalGlobalConfig } from './options/config/globalConfig';
 
 export function backportRun({
-  options,
+  options = {},
   processArgs = [],
   exitCodeOnFailure = true,
 }: {
-  options: ConfigFileOptions;
+  options?: ConfigFileOptions;
 
   // cli args will not automatically be forwarded when backport is consumed as a module
   // It is simple to forward args manually via `process.argv`:
