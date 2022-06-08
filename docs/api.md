@@ -2,7 +2,7 @@
 
 `backport` can be imported as a Node module and interacted with programatically. This can be useful when creating automation around the Backport tool. See for example the [Backport Github Action](https://github.com/sqren/backport-github-action)
 
-### `backportRun`
+### `backportRun(options, processArgs, exitCodeOnFailure)`
 
 Backport a commit programatically. Commits can be selected via `pullNumber` or `sha`.
 
@@ -10,23 +10,29 @@ Backport a commit programatically. Commits can be selected via `pullNumber` or `
 
 All of the options listed on [config-file-options.md](/docs/config-file-options.md) are valid. The most common options are:
 
-`accessToken` _string_ **(Required)**<br/>
+`options.accessToken` _string_ **(Required)**<br/>
 Github access token to authenticate the request
 
-`repoName` _string_ **(Required)**<br/>
+`options.repoName` _string_ **(Required)**<br/>
 Name of repository
 
-`repoOwner` _string_ **(Required)**<br/>
+`options.repoOwner` _string_ **(Required)**<br/>
 Owner of repository (organisation or username)
 
-`pullNumber` _number_<br/>
+`options.pullNumber` _number_<br/>
 Filter commits by pull request number
 
-`sha` _string_<br/>
+`options.sha` _string_<br/>
 Filter commits by commit sha
 
-`interactive` _boolean_<br/>
-Enable interactive prompts
+`options.interactive` _boolean_<br/>
+Enable interactive prompts. Default: `true`
+
+`processArgs` _array_<br/>
+Useful for forwarding arguments to backport: `const processArgs = process.argv.slice(2);`
+
+`exitCodeOnFailure` _boolean_<br/>
+If `true` sets a non-zero exit code on failure. Default: `true`
 
 #### Example
 
