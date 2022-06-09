@@ -52,15 +52,16 @@ describe('interactive error handling', () => {
   });
 
   it(`when given branch is invalid`, async () => {
-    const { output } = await runBackportViaCli([
-      '--branch=foo',
-      '--repo=backport-org/backport-e2e',
-      '--pr=9',
-      `--accessToken=${accessToken}`,
-    ]);
-    expect(output).toMatchInlineSnapshot(
-      `"The branch \\"foo\\" does not exist"`
+    const { output } = await runBackportViaCli(
+      [
+        '--branch=foo',
+        '--repo=backport-org/backport-e2e',
+        '--pr=9',
+        `--accessToken=${accessToken}`,
+      ],
+      { showOra: true }
     );
+    expect(output).toContain('✖ The branch "foo" does not exist');
   });
 
   it(`when encountering conflicts`, async () => {

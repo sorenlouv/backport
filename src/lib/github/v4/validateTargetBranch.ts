@@ -1,27 +1,29 @@
 import gql from 'graphql-tag';
-import { ValidConfigOptions } from '../../../options/options';
 import { BackportError } from '../../BackportError';
+import { ora } from '../../ora';
 import { apiRequestV4 } from './apiRequestV4';
 
 export interface TargetBranchResponse {
   repository: { ref: { id: string } | null };
 }
 
-async function fetchTargetBranch({
+export async function validateTargetBranch({
   accessToken,
   repoName,
   repoOwner,
   branchName,
   githubApiBaseUrlV4 = 'https://api.github.com/graphql',
+  interactive,
 }: {
   accessToken: string;
   repoOwner: string;
   repoName: string;
   branchName: string;
   githubApiBaseUrlV4?: string;
+  interactive: boolean;
 }) {
   const query = gql`
-    query doesBranchExist(
+    query GetBranchId(
       $repoOwner: String!
       $repoName: String!
       $branchName: String!
@@ -34,6 +36,8 @@ async function fetchTargetBranch({
     }
   `;
 
+  const spinner = ora(interactive, '').start();
+
   const res = await apiRequestV4<TargetBranchResponse>({
     githubApiBaseUrlV4,
     accessToken,
@@ -42,25 +46,14 @@ async function fetchTargetBranch({
   });
 
   if (!res.repository.ref) {
-    throw new BackportError(`The branch "${branchName}" does not exist`);
+    spinner.fail(`The branch "${branchName}" does not exist`);
+    throw new BackportError({
+      code: 'invalid-branch-exception',
+      branchName: branchName,
+    });
   }
 
-  return res.repository.ref;
-}
+  spinner.stop();
 
-export async function validateTargetBranches(
-  { accessToken, repoName, repoOwner, githubApiBaseUrlV4 }: ValidConfigOptions,
-  targetBranches: string[]
-) {
-  await Promise.all(
-    targetBranches.map((targetBranch) => {
-      return fetchTargetBranch({
-        accessToken,
-        repoName,
-        repoOwner,
-        branchName: targetBranch,
-        githubApiBaseUrlV4,
-      });
-    })
-  );
+  return;
 }

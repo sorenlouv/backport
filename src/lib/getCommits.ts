@@ -44,7 +44,7 @@ export async function getCommits(options: ValidConfigOptions) {
         ? options.pullNumber
         : [options.pullNumber];
 
-      spinner.text = `Loading pull request #${pullNumbers
+      spinner.text = `Loading pull request ${pullNumbers
         .map((pullNumber) => `#${pullNumber}`)
         .join(', ')}`;
 

@@ -246,13 +246,22 @@ export async function getIsMergeCommit(
   sha: string
 ) {
   const cwd = getRepoPath(options);
-  const res = await spawnPromise(
-    'git',
-    ['rev-list', '-1', '--merges', `${sha}~1..${sha}`],
-    cwd
-  );
+  try {
+    const res = await spawnPromise(
+      'git',
+      ['rev-list', '-1', '--merges', `${sha}~1..${sha}`],
+      cwd
+    );
 
-  return res.stdout !== '';
+    return res.stdout !== '';
+  } catch (e) {
+    const shortSha = getShortSha(sha);
+    logger.info(
+      `Could not determine if ${shortSha} is a merge commit. Will assume it is not`,
+      e
+    );
+    return false;
+  }
 }
 
 export async function getShasInMergeCommit(
