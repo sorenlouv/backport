@@ -20,6 +20,7 @@ export function mockGqlRequest<T>({
 }) {
   const { origin, pathname } = new URL(
     // default to localhost as host to avoid CORS issues
+    // Remember to set `githubApiBaseUrlV4: 'http://localhost/graphql'` in options
     apiBaseUrl ?? 'http://localhost/graphql'
   );
 

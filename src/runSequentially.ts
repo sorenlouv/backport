@@ -75,13 +75,21 @@ export async function runSequentially({
         throw e;
       }
 
-      consoleLog(
-        isHandledError
-          ? e.message
-          : 'An unhandled error occurred while backporting commit. Please see the logs for details'
-      );
-
       logger.error('runSequentially failed', e);
+
+      if (isHandledError) {
+        // don't output anything. Already handled in application
+        if (e.errorContext.code === 'invalid-branch-exception') {
+          return;
+        }
+
+        consoleLog(e.message);
+        return;
+      }
+
+      consoleLog(
+        'An unhandled error occurred while backporting commit. Please see the logs for details'
+      );
     }
   });
 

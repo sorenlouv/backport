@@ -14,6 +14,10 @@ type ErrorContext =
       message: string;
     }
   | {
+      code: 'invalid-branch-exception';
+      branchName: string;
+    }
+  | {
       code: 'no-branches-exception' | 'abort-conflict-resolution-exception';
     };
 
@@ -27,6 +31,8 @@ function getMessage(errorContext: ErrorContext): string {
       return 'There are no branches to backport to. Aborting.';
     case 'abort-conflict-resolution-exception':
       return 'Conflict resolution was aborted by the user';
+    case 'invalid-branch-exception':
+      return `The branch "${errorContext.branchName}" does not exist`;
     case 'message-only-exception':
       return errorContext.message;
   }

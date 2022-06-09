@@ -121,12 +121,13 @@ describe('non interactive (json) error handling', () => {
       `--accessToken=${accessToken}`,
     ]);
 
-    const backportResult = JSON.parse(output) as BackportFailureResponse;
-    expect(backportResult.status).toBe('failure');
-    expect(backportResult.error).toEqual({
+    const backportResult = JSON.parse(output) as BackportSuccessResponse;
+    expect(backportResult.status).toBe('success');
+    //@ts-expect-error
+    expect(backportResult.results[0].error).toEqual({
       name: 'BackportError',
       errorContext: {
-        code: 'message-only-exception',
+        code: 'invalid-branch-exception',
         message: 'The branch "foobar" does not exist',
       },
     });
@@ -141,12 +142,13 @@ describe('non interactive (json) error handling', () => {
       `--accessToken=${accessToken}`,
     ]);
 
-    const backportResult = JSON.parse(output) as BackportFailureResponse;
-    expect(backportResult.status).toBe('failure');
-    expect(backportResult.error).toEqual({
+    const backportResult = JSON.parse(output) as BackportSuccessResponse;
+    expect(backportResult.status).toBe('success');
+    //@ts-expect-error
+    expect(backportResult.results[0].error).toEqual({
       name: 'BackportError',
       errorContext: {
-        code: 'message-only-exception',
+        code: 'invalid-branch-exception',
         message: 'The branch "--foo bar" does not exist',
       },
     });

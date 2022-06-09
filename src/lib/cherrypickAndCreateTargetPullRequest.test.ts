@@ -2,10 +2,11 @@ import os from 'os';
 import nock from 'nock';
 import ora from 'ora';
 import { ValidConfigOptions } from '../options/options';
-import { listenForCallsToNockScope } from '../test/nockHelpers';
+import { listenForCallsToNockScope, mockGqlRequest } from '../test/nockHelpers';
 import { SpyHelper } from '../types/SpyHelper';
 import { cherrypickAndCreateTargetPullRequest } from './cherrypickAndCreateTargetPullRequest';
 import * as childProcess from './child-process-promisified';
+import { TargetBranchResponse } from './github/v4/validateTargetBranch';
 import * as logger from './logger';
 import { Commit } from './sourceCommit/parseSourceCommit';
 
@@ -60,6 +61,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         sourceBranch: 'myDefaultSourceBranch',
         sourcePRLabels: [] as string[],
         targetPRLabels: ['backport'],
+        githubApiBaseUrlV4: 'http://localhost/graphql',
       } as ValidConfigOptions;
 
       const commits: Commit[] = [
@@ -111,10 +113,15 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         },
       ];
 
+      mockGqlRequest<TargetBranchResponse>({
+        name: 'GetBranchId',
+        statusCode: 200,
+        body: { data: { repository: { ref: { id: 'foo' } } } },
+      });
+
       const scope = nock('https://api.github.com')
         .post('/repos/elastic/kibana/pulls')
         .reply(200, { number: 1337, html_url: 'myHtmlUrl' });
-
       createPullRequestCalls = listenForCallsToNockScope(scope);
 
       res = await cherrypickAndCreateTargetPullRequest({
@@ -172,6 +179,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
       expect((ora as any).mock.calls.map((call: any) => call[0].text))
         .toMatchInlineSnapshot(`
         Array [
+          "",
           "Pulling latest changes",
           "Cherry-picking: My original commit message (#1000)",
           "Cherry-picking: My other commit message (#2000)",
@@ -201,6 +209,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         reviewers: [] as string[],
         sourcePRLabels: [] as string[],
         targetPRLabels: ['backport'],
+        githubApiBaseUrlV4: 'http://localhost/graphql',
       } as ValidConfigOptions;
 
       const commits: Commit[] = [
@@ -220,6 +229,12 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
           pullRequestStates: [],
         },
       ];
+
+      mockGqlRequest<TargetBranchResponse>({
+        name: 'GetBranchId',
+        statusCode: 200,
+        body: { data: { repository: { ref: { id: 'foo' } } } },
+      });
 
       const scope = nock('https://api.github.com')
         .post('/repos/elastic/kibana/pulls')
@@ -282,6 +297,12 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         sourcePRLabels: [] as string[],
         targetPRLabels: ['backport'],
       } as ValidConfigOptions;
+
+      mockGqlRequest<TargetBranchResponse>({
+        name: 'GetBranchId',
+        statusCode: 200,
+        body: { data: { repository: { ref: { id: 'foo' } } } },
+      });
 
       const scope = nock('https://api.github.com')
         .post('/repos/elastic/kibana/pulls')

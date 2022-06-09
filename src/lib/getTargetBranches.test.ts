@@ -2,7 +2,6 @@ import { TargetBranchChoice } from '../options/ConfigOptions';
 import { ValidConfigOptions } from '../options/options';
 import { SpyHelper } from '../types/SpyHelper';
 import { getTargetBranches, getTargetBranchChoices } from './getTargetBranches';
-import * as validateTargetBranches from './github/v4/validateTargetBranches';
 import * as prompts from './prompts';
 import { Commit } from './sourceCommit/parseSourceCommit';
 
@@ -70,10 +69,6 @@ describe('getTargetBranches', () => {
     let branches: string[];
 
     beforeEach(async () => {
-      jest
-        .spyOn(validateTargetBranches, 'validateTargetBranches')
-        .mockResolvedValueOnce();
-
       branches = await getTargetBranches(
         {
           targetBranches: ['branchA', 'branchB'],

@@ -36,6 +36,7 @@ import {
 } from './github/v3/createPullRequest';
 import { enablePullRequestAutoMerge } from './github/v4/enablePullRequestAutoMerge';
 import { fetchCommitBySha } from './github/v4/fetchCommits/fetchCommitBySha';
+import { validateTargetBranch } from './github/v4/validateTargetBranch';
 import { consoleLog, logger } from './logger';
 import { ora, Ora } from './ora';
 import { confirmPrompt } from './prompts';
@@ -62,13 +63,12 @@ export async function cherrypickAndCreateTargetPullRequest({
   const repoForkOwner = getRepoForkOwner(options);
   consoleLog(`\n${chalk.bold(`Backporting to ${targetBranch}:`)}`);
 
-  const sourceBranch = getSourceBranchFromCommits(commits);
-
+  await validateTargetBranch({ ...options, branchName: targetBranch });
   const [gitConfigAuthor] = await Promise.all([
     getGitConfigAuthor(options),
     createBackportBranch({
       options,
-      sourceBranch,
+      sourceBranch: getSourceBranchFromCommits(commits),
       targetBranch,
       backportBranch,
     }),

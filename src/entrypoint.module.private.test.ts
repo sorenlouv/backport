@@ -58,7 +58,7 @@ describe('entrypoint.module', () => {
     });
 
     describe('when target branch in branchLabelMapping is invalid', () => {
-      let response: BackportFailureResponse;
+      let response: BackportSuccessResponse;
       beforeAll(async () => {
         response = (await backportRun({
           options: {
@@ -71,14 +71,16 @@ describe('entrypoint.module', () => {
             repoName: 'repo-with-invalid-target-branch-label',
             repoOwner: 'backport-org',
           },
-        })) as BackportFailureResponse;
+        })) as BackportSuccessResponse;
       });
 
-      it('should correct error code', async () => {
-        expect(response.status).toBe('failure');
-        expect(response.error.message).toBe(
-          'The branch "--foo" does not exist'
-        );
+      it('should return handled error', async () => {
+        expect(response.status).toBe('success');
+        // @ts-expect-error
+        expect(response.results[0].error.errorContext).toEqual({
+          code: 'invalid-branch-exception',
+          message: 'The branch "--foo" does not exist',
+        });
       });
     });
 
