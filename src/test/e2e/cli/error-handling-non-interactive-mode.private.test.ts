@@ -128,7 +128,7 @@ describe('non interactive (json) error handling', () => {
       name: 'BackportError',
       errorContext: {
         code: 'invalid-branch-exception',
-        message: 'The branch "foobar" does not exist',
+        branchName: 'foobar',
       },
     });
   });
@@ -149,7 +149,7 @@ describe('non interactive (json) error handling', () => {
       name: 'BackportError',
       errorContext: {
         code: 'invalid-branch-exception',
-        message: 'The branch "--foo bar" does not exist',
+        branchName: '--foo bar',
       },
     });
   });

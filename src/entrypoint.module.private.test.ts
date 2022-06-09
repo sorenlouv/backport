@@ -79,7 +79,7 @@ describe('entrypoint.module', () => {
         // @ts-expect-error
         expect(response.results[0].error.errorContext).toEqual({
           code: 'invalid-branch-exception',
-          message: 'The branch "--foo" does not exist',
+          branchName: '--foo',
         });
       });
     });
