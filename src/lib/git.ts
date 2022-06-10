@@ -491,22 +491,6 @@ export async function getUnstagedFiles(options: ValidConfigOptions) {
   return uniq(files);
 }
 
-export async function getGitConfig({
-  dir,
-  key,
-}: {
-  dir: string;
-  key: 'user.name' | 'user.email';
-}) {
-  try {
-    const cwd = dir;
-    const res = await spawnPromise('git', ['config', key], cwd);
-    return res.stdout.trim();
-  } catch (e) {
-    return;
-  }
-}
-
 // How the commit flows:
 // ${sourceBranch} ->   ${backportBranch}   -> ${targetBranch}
 //     master      ->  backport/7.x/pr-1234 ->      7.x

@@ -265,10 +265,6 @@ describe('setupRepo', () => {
         .spyOn(gitModule, 'getLocalSourceRepoPath')
         .mockResolvedValue('/path/to/source/repo');
 
-      jest
-        .spyOn(gitModule, 'getGitConfig')
-        .mockResolvedValue('email-or-username');
-
       mockGitClone();
 
       await setupRepo({

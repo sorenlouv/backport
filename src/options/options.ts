@@ -90,7 +90,7 @@ export async function getOptions({
   });
 
   const options = {
-    // default author
+    // default author to filter commits by
     author: optionsFromGithub.authenticatedUsername,
 
     // default fork owner
