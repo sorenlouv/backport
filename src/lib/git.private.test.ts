@@ -13,7 +13,6 @@ import {
   commitChanges,
   createBackportBranch,
   getShasInMergeCommit,
-  getGitConfig,
   getGitProjectRootPath,
   getIsCommitInBranch,
   getIsMergeCommit,
@@ -112,38 +111,6 @@ describe('git.private', () => {
       const res = await deleteRemote(options, 'my-remote-foo');
 
       expect(res).toBe(undefined);
-    });
-  });
-
-  describe('getGitConfig', () => {
-    const cwd = getSandboxPath({
-      filename: __filename,
-      specname: 'getGitConfig',
-    });
-
-    beforeEach(async () => {
-      await resetSandbox(cwd);
-      await gitInit(cwd);
-      await childProcess.exec(`git config user.name "John Doe"`, { cwd });
-      await childProcess.exec(`git config user.email "john@jubii.dk"`, { cwd });
-    });
-
-    it('should retrive name', async () => {
-      const name = await getGitConfig({
-        dir: cwd,
-        key: 'user.name',
-      });
-
-      expect(name).toEqual('John Doe');
-    });
-
-    it('should retrive  email', async () => {
-      const email = await getGitConfig({
-        dir: cwd,
-        key: 'user.email',
-      });
-
-      expect(email).toEqual('john@jubii.dk');
     });
   });
 
