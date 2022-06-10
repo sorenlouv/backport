@@ -1,31 +1,13 @@
 import { Commit } from '../entrypoint.module';
 import { ValidConfigOptions } from '../options/options';
-import { getGitConfig, getLocalSourceRepoPath } from './git';
 
-export type GitConfigAuthor = { name?: string; email?: string };
-export async function getGitConfigAuthor(
-  options: ValidConfigOptions
-): Promise<GitConfigAuthor | undefined> {
-  const localRepoPath = await getLocalSourceRepoPath(options);
-  if (!localRepoPath) {
-    return;
-  }
-
-  return {
-    name: await getGitConfig({ dir: localRepoPath, key: 'user.name' }),
-    email: await getGitConfig({ dir: localRepoPath, key: 'user.email' }),
-  };
-}
-
-export type CommitAuthor = Required<GitConfigAuthor>;
+export type CommitAuthor = { name: string; email: string };
 export function getCommitAuthor({
   options,
   commit,
-  gitConfigAuthor,
 }: {
   options: ValidConfigOptions;
   commit: Commit;
-  gitConfigAuthor?: GitConfigAuthor;
 }): CommitAuthor {
   if (options.resetAuthor) {
     return {
@@ -35,8 +17,7 @@ export function getCommitAuthor({
   }
 
   return {
-    name: options.gitAuthorName ?? gitConfigAuthor?.name ?? commit.author.name,
-    email:
-      options.gitAuthorEmail ?? gitConfigAuthor?.email ?? commit.author.email,
+    name: options.gitAuthorName ?? commit.author.name,
+    email: options.gitAuthorEmail ?? commit.author.email,
   };
 }

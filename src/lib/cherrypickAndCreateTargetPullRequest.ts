@@ -2,12 +2,7 @@ import chalk from 'chalk';
 import { isEmpty, difference, flatten } from 'lodash';
 import { ValidConfigOptions } from '../options/options';
 import { BackportError } from './BackportError';
-import {
-  CommitAuthor,
-  getCommitAuthor,
-  getGitConfigAuthor,
-  GitConfigAuthor,
-} from './author';
+import { CommitAuthor, getCommitAuthor } from './author';
 import { spawnPromise } from './child-process-promisified';
 import { getRepoPath } from './env';
 import { getCommitsWithoutBackports } from './getCommitsWithoutBackports';
@@ -64,22 +59,19 @@ export async function cherrypickAndCreateTargetPullRequest({
   consoleLog(`\n${chalk.bold(`Backporting to ${targetBranch}:`)}`);
 
   await validateTargetBranch({ ...options, branchName: targetBranch });
-  const [gitConfigAuthor] = await Promise.all([
-    getGitConfigAuthor(options),
-    createBackportBranch({
-      options,
-      sourceBranch: getSourceBranchFromCommits(commits),
-      targetBranch,
-      backportBranch,
-    }),
-  ]);
+  await createBackportBranch({
+    options,
+    sourceBranch: getSourceBranchFromCommits(commits),
+    targetBranch,
+    backportBranch,
+  });
 
   const commitsFlattened = flatten(
     await Promise.all(commits.map((c) => getMergeCommits(options, c)))
   );
 
   await sequentially(commitsFlattened, (commit) =>
-    waitForCherrypick(options, commit, targetBranch, gitConfigAuthor)
+    waitForCherrypick(options, commit, targetBranch)
   );
 
   if (options.dryRun) {
@@ -198,14 +190,13 @@ function getBackportBranchName(targetBranch: string, commits: Commit[]) {
 async function waitForCherrypick(
   options: ValidConfigOptions,
   commit: Commit,
-  targetBranch: string,
-  gitConfigAuthor?: GitConfigAuthor
+  targetBranch: string
 ) {
   const spinnerText = `Cherry-picking: ${chalk.greenBright(
     getFirstLine(commit.sourceCommit.message)
   )}`;
   const cherrypickSpinner = ora(options.interactive, spinnerText).start();
-  const commitAuthor = getCommitAuthor({ options, commit, gitConfigAuthor });
+  const commitAuthor = getCommitAuthor({ options, commit });
 
   await cherrypickAndHandleConflicts({
     options,

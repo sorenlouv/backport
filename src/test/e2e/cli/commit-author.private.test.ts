@@ -1,5 +1,3 @@
-import fs from 'fs/promises';
-import { ConfigFileOptions } from '../../../entrypoint.module';
 import { exec } from '../../../lib/child-process-promisified';
 import { getDevAccessToken } from '../../private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
@@ -7,114 +5,94 @@ import { runBackportViaCli } from './runBackportViaCli';
 
 const accessToken = getDevAccessToken();
 
+const COMMIT_BY_JOHN_DOE_SHA = 'c3f837226bea3c7a50f2ba16d807fbe846ed3453';
+
 describe('commit author', () => {
   let sourceRepo: string;
   let backportRepo: string;
   beforeEach(async () => {
+    // set dummy git author. This should not have any effect and should never be used
+    await exec(`git config user.name "Peter Kanin"`, { cwd: sourceRepo });
+    await exec(`git config user.email "kanin@zoo.dk"`, { cwd: sourceRepo });
+
     const sandboxPath = getSandboxPath({ filename: __filename });
     await resetSandbox(sandboxPath);
     sourceRepo = `${sandboxPath}/sourceRepo`;
     backportRepo = `${sandboxPath}/backportRepo`;
 
     await exec(
-      `git clone https://github.com/backport-org/commit-author.git ${sourceRepo}`,
+      `git clone https://github.com/backport-org/repo-with-different-commits-authors.git ${sourceRepo}`,
       { cwd: sandboxPath }
     );
-
-    await fs.writeFile(
-      `${sandboxPath}/.backportrc.json`,
-      JSON.stringify({
-        repoName: 'commit-author',
-        repoOwner: 'backport-org',
-      } as ConfigFileOptions)
-    );
   });
 
-  // eslint-disable-next-line jest/no-commented-out-tests
-  // it('use commit author from source commit', async () => {
-  //   await runBackportViaCli(
-  //     [
-  //       `--accessToken=${accessToken}`,
-  //       `--dir=${backportRepo}`,
-  //       '--branch=production',
-  //       '--pr=2',
-  //       '--dry-run',
-  //     ],
-  //     { waitForString: 'Dry run complete', cwd: sourceRepo, showOra: true }
-  //   );
+  describe('when nothing is specified (default)', () => {
+    it('uses commit author from source commit', async () => {
+      await runBackportViaCli(
+        [
+          `--accessToken=${accessToken}`,
+          `--dir=${backportRepo}`,
+          '--branch=production',
+          `--sha=${COMMIT_BY_JOHN_DOE_SHA}`,
+          '--dry-run',
+        ],
+        { cwd: sourceRepo, showOra: true }
+      );
 
-  //   const { authorEmail, authorName } = await getCommitAuthor({
-  //     cwd: backportRepo,
-  //   });
+      const { authorEmail, authorName } = await getCommitAuthor({
+        cwd: backportRepo,
+      });
 
-  //   expect(authorName).toEqual('Sonny Long (demo)');
-  //   expect(authorEmail).toEqual('71195571+sqren-demo@users.noreply.github.com');
-  // });
-
-  it('use commit author from git config in source repo', async () => {
-    await exec(`git config user.name "Peter Kanin"`, { cwd: sourceRepo });
-    await exec(`git config user.email "kanin@zoo.dk"`, { cwd: sourceRepo });
-
-    await runBackportViaCli(
-      [
-        `--accessToken=${accessToken}`,
-        `--dir=${backportRepo}`,
-        '--branch=production',
-        '--pr=2',
-        '--dry-run',
-      ],
-      { cwd: sourceRepo, showOra: true }
-    );
-
-    const { authorEmail, authorName } = await getCommitAuthor({
-      cwd: backportRepo,
+      expect(authorName).toEqual('John Doe');
+      expect(authorEmail).toEqual('john.doe@backport-testing.dk');
     });
-
-    expect(authorName).toEqual('Peter Kanin');
-    expect(authorEmail).toEqual('kanin@zoo.dk');
   });
 
-  it('use commit author from cli args', async () => {
-    await runBackportViaCli(
-      [
-        `--accessToken=${accessToken}`,
-        `--dir=${backportRepo}`,
-        '--branch=production',
-        '--pr=2',
-        '--dry-run',
-        '--gitAuthorName="Donald Duck"',
-        '--gitAuthorEmail=duck@disney.com',
-      ],
-      { cwd: sourceRepo, showOra: true }
-    );
+  describe('when setting author via `--gitAuthor*` cli options', () => {
+    it('respects the settings', async () => {
+      await runBackportViaCli(
+        [
+          `--accessToken=${accessToken}`,
+          `--dir=${backportRepo}`,
+          '--branch=production',
+          `--sha=${COMMIT_BY_JOHN_DOE_SHA}`,
+          '--dry-run',
+          '--gitAuthorName="Donald Duck"',
+          '--gitAuthorEmail=duck@disney.com',
+        ],
+        { cwd: sourceRepo, showOra: true }
+      );
 
-    const { authorEmail, authorName } = await getCommitAuthor({
-      cwd: backportRepo,
+      const { authorEmail, authorName } = await getCommitAuthor({
+        cwd: backportRepo,
+      });
+
+      expect(authorName).toEqual('Donald Duck');
+      expect(authorEmail).toEqual('duck@disney.com');
     });
-
-    expect(authorName).toEqual('Donald Duck');
-    expect(authorEmail).toEqual('duck@disney.com');
   });
 
-  it('use resetAuthor option to set current user as author of commit', async () => {
-    await runBackportViaCli(
-      [
-        `--accessToken=${accessToken}`,
-        `--dir=${backportRepo}`,
-        '--branch=production',
-        '--pr=2',
-        '--dry-run',
-        '--reset-author',
-      ],
-      { cwd: sourceRepo, showOra: true }
-    );
+  describe('when using `--resetAuthor` option', () => {
+    it('sets the current user as author of commit', async () => {
+      await runBackportViaCli(
+        [
+          `--accessToken=${accessToken}`,
+          `--dir=${backportRepo}`,
+          '--branch=production',
+          `--sha=${COMMIT_BY_JOHN_DOE_SHA}`,
+          '--dry-run',
+          '--reset-author',
+        ],
+        { cwd: sourceRepo, showOra: true }
+      );
 
-    const { authorEmail, authorName } = await getCommitAuthor({
-      cwd: backportRepo,
+      const { authorEmail, authorName } = await getCommitAuthor({
+        cwd: backportRepo,
+      });
+
+      expect(authorName).toEqual('sqren');
+      expect(authorEmail).toEqual('sqren@users.noreply.github.com');
     });
-
-    expect(authorName).toEqual('sqren');
-    expect(authorEmail).toEqual('sqren@users.noreply.github.com');
   });
 });
 
