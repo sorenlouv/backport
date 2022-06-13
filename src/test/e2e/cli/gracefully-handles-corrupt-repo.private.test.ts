@@ -59,6 +59,7 @@ describe('gracefully handle corrupted repo', () => {
       - Creating pull request
       ✔ Creating pull request
       - Adding labels: backport
+      ✔ Adding labels: backport
       View pull request: this-is-a-dry-run"
     `);
   });
