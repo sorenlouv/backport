@@ -30,7 +30,7 @@ export async function addLabelsToPullRequest({
   const spinner = ora(interactive, text).start();
 
   if (dryRun) {
-    spinner.stop();
+    spinner.succeed();
     return;
   }
 
