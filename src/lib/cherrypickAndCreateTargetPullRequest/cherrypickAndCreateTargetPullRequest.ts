@@ -23,6 +23,7 @@ import { sequentially } from '../sequentially';
 import { Commit } from '../sourceCommit/parseSourceCommit';
 import { getBackportBranchName } from './getBackportBranchName';
 import { getMergeCommits } from './getMergeCommit';
+import { getTargetPRLabels } from './getTargetPRLabels';
 import { waitForCherrypick } from './waitForCherrypick';
 
 export async function cherrypickAndCreateTargetPullRequest({
@@ -94,10 +95,16 @@ export async function cherrypickAndCreateTargetPullRequest({
 
   // add labels to target pull request
   if (options.targetPRLabels.length > 0) {
+    const labels = getTargetPRLabels({
+      interactive: options.interactive,
+      targetPRLabels: options.targetPRLabels,
+      commits,
+      targetBranch,
+    });
     await addLabelsToPullRequest({
       ...options,
       pullNumber: targetPullRequest.number,
-      labels: options.targetPRLabels,
+      labels,
     });
   }
 
