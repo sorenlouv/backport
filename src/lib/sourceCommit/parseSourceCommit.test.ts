@@ -51,7 +51,7 @@ describe('parseSourceCommit', () => {
     });
   });
 
-  describe('pullRequestStates', () => {
+  describe('targetPullRequestStates', () => {
     it('uses options.branchLabelMapping when sourceCommit is empty', () => {
       const branchLabelMapping = {
         '^v6.4.0$': 'main',
@@ -91,10 +91,11 @@ describe('parseSourceCommit', () => {
       });
 
       expect(commit.suggestedTargetBranches).toEqual(['6.1']);
-      expect(commit.pullRequestStates).toEqual([
+      expect(commit.targetPullRequestStates).toEqual([
         {
           branch: 'main',
           label: 'v6.4.0',
+          labelRegex: '^v6.4.0$',
           isSourceBranch: true,
           mergeCommit: {
             message: 'My commit message (#66)',
@@ -107,6 +108,7 @@ describe('parseSourceCommit', () => {
         {
           branch: '6.3',
           label: 'v6.3.0',
+          labelRegex: '^v(\\d+).(\\d+).\\d+$',
           isSourceBranch: false,
           number: 5678,
           state: 'MERGED',
@@ -119,6 +121,7 @@ describe('parseSourceCommit', () => {
         {
           branch: '6.2',
           label: 'v6.2.0',
+          labelRegex: '^v(\\d+).(\\d+).\\d+$',
           isSourceBranch: false,
           number: 9876,
           state: 'OPEN',
@@ -127,6 +130,7 @@ describe('parseSourceCommit', () => {
         {
           branch: '6.1',
           label: 'v6.1.0',
+          labelRegex: '^v(\\d+).(\\d+).\\d+$',
           isSourceBranch: false,
           state: 'NOT_CREATED',
         },
@@ -176,11 +180,12 @@ describe('parseSourceCommit', () => {
       });
 
       expect(commit.suggestedTargetBranches).toEqual(['6.1']);
-      expect(commit.pullRequestStates).toEqual([
+      expect(commit.targetPullRequestStates).toEqual([
         {
           branch: 'main',
           isSourceBranch: true,
           label: 'v6.3.0',
+          labelRegex: '^v6.3.0$',
           mergeCommit: {
             message: 'My commit message (#66)',
             sha: 'DO NOT USE: default-source-commit-sha',
@@ -192,6 +197,7 @@ describe('parseSourceCommit', () => {
         {
           branch: '6.2',
           label: 'v6.2.0',
+          labelRegex: '^v(\\d+).(\\d+).\\d+$',
           isSourceBranch: false,
           number: 9876,
           state: 'OPEN',
@@ -200,6 +206,7 @@ describe('parseSourceCommit', () => {
         {
           branch: '6.1',
           label: 'v6.1.0',
+          labelRegex: '^v(\\d+).(\\d+).\\d+$',
           isSourceBranch: false,
           state: 'NOT_CREATED',
         },
@@ -265,10 +272,12 @@ describe('parseSourceCommit', () => {
         },
       },
       sourceBranch: 'source-branch-from-associated-pull-request',
-      pullRequestStates: [
+      targetPullRequestStates: [
         {
           branch: '6.x',
           label: 'v6.3.0',
+          labelRegex: '^v6.3.0$',
+
           isSourceBranch: false,
           number: 5678,
           state: 'MERGED',
@@ -281,6 +290,7 @@ describe('parseSourceCommit', () => {
         {
           branch: '6.2',
           label: 'v6.2.0',
+          labelRegex: '^v(\\d+).(\\d+).\\d+$',
           isSourceBranch: false,
           number: 9876,
           state: 'OPEN',
@@ -289,6 +299,7 @@ describe('parseSourceCommit', () => {
         {
           branch: '6.1',
           label: 'v6.1.0',
+          labelRegex: '^v(\\d+).(\\d+).\\d+$',
           isSourceBranch: false,
           state: 'NOT_CREATED',
         },

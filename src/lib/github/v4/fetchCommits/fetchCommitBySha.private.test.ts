@@ -66,10 +66,11 @@ describe('fetchCommitBySha', () => {
         },
       },
       sourceBranch: 'master',
-      pullRequestStates: [
+      targetPullRequestStates: [
         {
           branch: '7.x',
           label: 'v7.9.0',
+          labelRegex: '^v7.9.0$',
           isSourceBranch: false,
           state: 'MERGED',
           number: 71014,

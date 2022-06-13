@@ -62,7 +62,7 @@ function getPrLink(number?: number, url?: string) {
 }
 
 function getDetailedPullStatus(c: Commit) {
-  const items = c.pullRequestStates
+  const items = c.targetPullRequestStates
     .filter(({ isSourceBranch }) => !isSourceBranch)
     .map((pr) => {
       const prLink = getPrLink(pr.number, pr.url);
@@ -80,7 +80,7 @@ function getDetailedPullStatus(c: Commit) {
 }
 
 function getSimplePullStatus(c: Commit) {
-  return c.pullRequestStates
+  return c.targetPullRequestStates
     .filter(({ isSourceBranch }) => !isSourceBranch)
     .map(({ state, branch }) => {
       if (state === 'MERGED') {

@@ -1,20 +1,20 @@
 import stripAnsi from 'strip-ansi';
-import { ValidConfigOptions } from '../options/options';
+import { ValidConfigOptions } from '../../options/options';
+import * as git from '../git';
+import * as fetchCommitsByAuthorModule from '../github/v4/fetchCommits/fetchCommitsByAuthor';
+import { TargetPullRequest } from '../sourceCommit/getPullRequestStates';
 import { getCommitsWithoutBackports } from './getCommitsWithoutBackports';
-import * as git from './git';
-import * as fetchCommitsByAuthorModule from './github/v4/fetchCommits/fetchCommitsByAuthor';
-import { TargetPullRequest } from './sourceCommit/getPullRequestStates';
 
 describe('getCommitsWithoutBackports', () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
 
-  describe('pullRequestStates', () => {
+  describe('targetPullRequestStates', () => {
     function setupExpectedPullRequests({
-      pullRequestStates,
+      targetPullRequestStates,
     }: {
-      pullRequestStates: TargetPullRequest[];
+      targetPullRequestStates: TargetPullRequest[];
     }) {
       // simulate 1 unbackported commit
       jest
@@ -40,7 +40,7 @@ describe('getCommitsWithoutBackports', () => {
                 sha: 'xyz',
               },
             },
-            pullRequestStates,
+            targetPullRequestStates: targetPullRequestStates,
             sourceBranch: 'main',
           },
         ]);
@@ -59,7 +59,7 @@ describe('getCommitsWithoutBackports', () => {
             message: 'Second commit (#2)',
             sha: 'abc',
           },
-          pullRequestStates: [],
+          targetPullRequestStates: [],
           sourceBranch: 'main',
         },
         targetBranch: '7.x',
@@ -69,14 +69,14 @@ describe('getCommitsWithoutBackports', () => {
 
     it('should not unbackported commits if no backports were expected', async () => {
       const commitsWithoutBackports = await setupExpectedPullRequests({
-        pullRequestStates: [],
+        targetPullRequestStates: [],
       });
       expect(commitsWithoutBackports.length).toEqual(0);
     });
 
     it('should display as missing if a backport is CLOSED', async () => {
       const commitsWithoutBackports = await setupExpectedPullRequests({
-        pullRequestStates: [
+        targetPullRequestStates: [
           {
             state: 'CLOSED',
             branch: '7.x',
@@ -92,8 +92,9 @@ describe('getCommitsWithoutBackports', () => {
 
     it('should display as missing if a backport is NOT_CREATED', async () => {
       const commitsWithoutBackports = await setupExpectedPullRequests({
-        pullRequestStates: [
+        targetPullRequestStates: [
           {
+            labelRegex: 'foo tbd',
             state: 'NOT_CREATED',
             branch: '7.x',
             label: 'v7.0.0',
@@ -108,7 +109,7 @@ describe('getCommitsWithoutBackports', () => {
 
     it('should display as pending if a backport is OPEN', async () => {
       const commitsWithoutBackports = await setupExpectedPullRequests({
-        pullRequestStates: [
+        targetPullRequestStates: [
           {
             state: 'OPEN',
             branch: '7.x',
@@ -124,7 +125,7 @@ describe('getCommitsWithoutBackports', () => {
 
     it('should not display commit as unbackported if a backport was MERGED', async () => {
       const commitsWithoutBackports = await setupExpectedPullRequests({
-        pullRequestStates: [
+        targetPullRequestStates: [
           {
             state: 'MERGED',
             branch: '7.x',
@@ -170,7 +171,7 @@ describe('getCommitsWithoutBackports', () => {
               },
             },
             sourceBranch: 'main',
-            pullRequestStates: [
+            targetPullRequestStates: [
               {
                 state: 'OPEN',
                 branch: '7.x',
@@ -204,7 +205,7 @@ describe('getCommitsWithoutBackports', () => {
             },
           },
           sourceBranch: 'main',
-          pullRequestStates: [],
+          targetPullRequestStates: [],
         },
         targetBranch: '7.x',
         conflictingFiles: ['/foo/bar/baz.ts'],
@@ -263,7 +264,7 @@ describe('getCommitsWithoutBackports', () => {
               },
             },
             sourceBranch: 'main',
-            pullRequestStates: [
+            targetPullRequestStates: [
               {
                 branch: offendingCommitTargetBranch,
                 state: 'OPEN',
@@ -298,7 +299,7 @@ describe('getCommitsWithoutBackports', () => {
               sha: 'abc',
             },
           },
-          pullRequestStates: [],
+          targetPullRequestStates: [],
           sourceBranch: 'main',
         },
         targetBranch: currentCommitTargetBranch,
@@ -342,7 +343,7 @@ describe('getCommitsWithoutBackports', () => {
               sha: 'xyz',
               message: 'First commit (#1)',
             },
-            pullRequestStates: [],
+            targetPullRequestStates: [],
             sourceBranch: 'main',
           },
         ]);
@@ -369,7 +370,7 @@ describe('getCommitsWithoutBackports', () => {
               sha: 'abc',
             },
           },
-          pullRequestStates: [],
+          targetPullRequestStates: [],
           sourceBranch: 'main',
         },
         targetBranch: '7.x',

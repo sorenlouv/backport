@@ -23,6 +23,7 @@ type CreatedPullRequest = {
 };
 
 type TargetBranchWithLabel = {
+  labelRegex: string;
   branch: string;
   label: string;
   isSourceBranch: boolean;
@@ -199,10 +200,11 @@ function getTargetBranchesFromLabels(
   const targetBranchesFromLabels = sourcePullRequest.labels.nodes
     .map((label) => label.name)
     .map((label) => {
-      const branch = getTargetBranchFromLabel({ branchLabelMapping, label });
-      if (branch) {
-        const isSourceBranch = branch === sourcePullRequest.baseRefName;
-        return { branch, label, isSourceBranch };
+      const res = getTargetBranchFromLabel({ branchLabelMapping, label });
+      if (res) {
+        const { labelRegex, targetBranch } = res;
+        const isSourceBranch = targetBranch === sourcePullRequest.baseRefName;
+        return { branch: targetBranch, label, labelRegex, isSourceBranch };
       }
     })
     .filter(filterNil);
@@ -218,18 +220,19 @@ function getTargetBranchFromLabel({
   label: string;
 }) {
   // only get first match
-  const result = Object.entries(branchLabelMapping).find(([labelPattern]) => {
-    const regex = new RegExp(labelPattern);
+  const result = Object.entries(branchLabelMapping).find(([labelRegex]) => {
+    const regex = new RegExp(labelRegex);
     const isMatch = label.match(regex) !== null;
     return isMatch;
   });
 
   if (result) {
-    const [labelPattern, targetBranchPattern] = result;
-    const regex = new RegExp(labelPattern);
-    const targetBranch = label.replace(regex, targetBranchPattern);
+    const [labelRegex, targetBranchReplaceValue] = result;
+    const regex = new RegExp(labelRegex);
+    const targetBranch = label.replace(regex, targetBranchReplaceValue);
+
     if (targetBranch) {
-      return targetBranch;
+      return { targetBranch, labelRegex };
     }
   }
 }

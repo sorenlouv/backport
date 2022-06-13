@@ -590,7 +590,7 @@ describe('commitChanges', () => {
       sha: 'abc',
     },
     sourceBranch: 'master',
-    pullRequestStates: [],
+    targetPullRequestStates: [],
   };
 
   it('should return when changes committed successfully', async () => {

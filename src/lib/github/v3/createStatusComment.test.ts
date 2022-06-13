@@ -312,7 +312,7 @@ describe('getCommentBody', () => {
                       sha: '',
                       message: 'New Zealand commit message',
                     },
-                    pullRequestStates: [],
+                    targetPullRequestStates: [],
                   },
                 },
                 {
@@ -338,7 +338,7 @@ describe('getCommentBody', () => {
                       sha: '',
                       message: 'Australia commit',
                     },
-                    pullRequestStates: [],
+                    targetPullRequestStates: [],
                   },
                 },
               ],

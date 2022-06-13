@@ -33,8 +33,9 @@ describe('Handle unbackported pull requests', () => {
       },
       suggestedTargetBranches: ['7.x'],
       sourceBranch: 'main',
-      pullRequestStates: [
+      targetPullRequestStates: [
         {
+          labelRegex: '^backport-to-(.*)$',
           branch: '7.x',
           label: 'backport-to-7.x',
           isSourceBranch: false,

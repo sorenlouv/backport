@@ -31,7 +31,7 @@ describe('backport-org/repo-with-changing-branchLabelMapping', () => {
 
       it('should shows 2 target branches as NOT_CREATED', () => {
         expect(
-          commit.pullRequestStates.map(({ branch, label, state }) => ({
+          commit.targetPullRequestStates.map(({ branch, label, state }) => ({
             branch,
             label,
             state,
@@ -101,7 +101,7 @@ describe('backport-org/repo-with-changing-branchLabelMapping', () => {
 
       it('shows "production" as NOT_CREATED', () => {
         expect(
-          commit.pullRequestStates.map(({ branch, label, state }) => ({
+          commit.targetPullRequestStates.map(({ branch, label, state }) => ({
             branch,
             label,
             state,

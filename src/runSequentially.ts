@@ -1,5 +1,5 @@
 import { BackportError } from './lib/BackportError';
-import { cherrypickAndCreateTargetPullRequest } from './lib/cherrypickAndCreateTargetPullRequest';
+import { cherrypickAndCreateTargetPullRequest } from './lib/cherrypickAndCreateTargetPullRequest/cherrypickAndCreateTargetPullRequest';
 import { logger, consoleLog } from './lib/logger';
 import { sequentially } from './lib/sequentially';
 import { Commit } from './lib/sourceCommit/parseSourceCommit';
@@ -78,12 +78,12 @@ export async function runSequentially({
       logger.error('runSequentially failed', e);
 
       if (isHandledError) {
-        // don't output anything. Already handled in application
-        if (e.errorContext.code === 'invalid-branch-exception') {
-          return;
+        // don't output anything for `code: invalid-branch-exception`.
+        // Outputting is already handled
+        if (e.errorContext.code !== 'invalid-branch-exception') {
+          consoleLog(e.message);
         }
 
-        consoleLog(e.message);
         return;
       }
 

@@ -37,6 +37,11 @@ export async function createPullRequest({
   const { accessToken, githubApiBaseUrlV3 } = options;
   const spinner = ora(options.interactive, `Creating pull request`).start();
 
+  if (options.dryRun) {
+    spinner.succeed();
+    return { didUpdate: false, number: 1337, url: 'this-is-a-dry-run' };
+  }
+
   try {
     const octokit = new Octokit({
       auth: accessToken,

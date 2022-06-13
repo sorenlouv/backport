@@ -10,6 +10,7 @@ export async function addReviewersToPullRequest(
     repoOwner,
     accessToken,
     interactive,
+    dryRun,
   }: ValidConfigOptions,
   pullNumber: number,
   reviewers: string[]
@@ -17,6 +18,11 @@ export async function addReviewersToPullRequest(
   const text = `Adding reviewers: ${reviewers}`;
   logger.info(text);
   const spinner = ora(interactive, text).start();
+
+  if (dryRun) {
+    spinner.stop();
+    return;
+  }
 
   try {
     const octokit = new Octokit({

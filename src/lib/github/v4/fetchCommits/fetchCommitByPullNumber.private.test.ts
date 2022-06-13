@@ -75,11 +75,12 @@ describe('fetchCommitByPullNumber', () => {
           },
         },
         sourceBranch: 'master',
-        pullRequestStates: [
+        targetPullRequestStates: [
           {
             branch: '7.8',
             isSourceBranch: false,
             label: 'v7.8.0',
+            labelRegex: '^v(\\d+).(\\d+).\\d+$',
             mergeCommit: {
               message: 'Add 🍏 emoji (#5) (#7)',
               sha: '46cd6f9999effdf894a36dbc7db90e890f4be840',
@@ -92,6 +93,7 @@ describe('fetchCommitByPullNumber', () => {
             branch: '7.x',
             isSourceBranch: false,
             label: 'v7.9.0',
+            labelRegex: '^v7.9.0$',
             mergeCommit: {
               message: 'Add 🍏 emoji (#5) (#6)',
               sha: '4bcd876d4ceaa73cf437bfc89b74d1a4e704c0a6',
@@ -104,6 +106,7 @@ describe('fetchCommitByPullNumber', () => {
             branch: 'master',
             isSourceBranch: true,
             label: 'v8.0.0',
+            labelRegex: '^v8.0.0$',
             mergeCommit: {
               message: 'Add 🍏 emoji (#5)',
               sha: 'ee8c492334cef1ca077a56addb79a26f79821d2f',

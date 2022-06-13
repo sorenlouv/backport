@@ -1,5 +1,4 @@
 import nock from 'nock';
-import { ValidConfigOptions } from '../../../options/options';
 import { addAssigneesToPullRequest } from './addAssigneesToPullRequest';
 
 describe('addAssigneesToPullRequest', () => {
@@ -13,16 +12,15 @@ describe('addAssigneesToPullRequest', () => {
       })
       .reply(200, 'some response');
 
-    const res = await addAssigneesToPullRequest(
-      {
-        author: 'sqren',
-        repoName: 'kibana',
-        repoOwner: 'elastic',
-        accessToken: 'my-token',
-      } as ValidConfigOptions,
+    const res = await addAssigneesToPullRequest({
+      repoName: 'kibana',
+      repoOwner: 'elastic',
+      accessToken: 'my-token',
+      autoAssign: false,
+      interactive: false,
       pullNumber,
-      assignees
-    );
+      assignees,
+    });
 
     expect(res).toBe(undefined);
     scope.done();

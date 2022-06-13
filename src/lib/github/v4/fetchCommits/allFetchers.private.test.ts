@@ -95,10 +95,11 @@ describe('allFetchers', () => {
         },
       },
       sourceBranch: 'main',
-      pullRequestStates: [
+      targetPullRequestStates: [
         {
           branch: '8.0',
           label: 'v8.0.0',
+          labelRegex: '^v(\\d+).(\\d+).\\d+$',
           isSourceBranch: false,
           mergeCommit: {
             message:
@@ -112,6 +113,7 @@ describe('allFetchers', () => {
         {
           branch: 'main',
           label: 'v8.1.0',
+          labelRegex: '^v8.1.0$',
           isSourceBranch: true,
           mergeCommit: {
             message: '[APM] Add note about synthtrace to APM docs (#121633)',

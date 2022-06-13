@@ -42,7 +42,9 @@ describe('test-that-repo-can-be-cloned', () => {
         ✔ Pulling latest changes
         - Cherry-picking: Beginning of a beautiful repo (#1)
         ✔ Cherry-picking: Beginning of a beautiful repo (#1)
-        ✔ Dry run complete"
+        - Creating pull request
+        ✔ Creating pull request
+        View pull request: this-is-a-dry-run"
       `);
     });
 
@@ -59,7 +61,9 @@ describe('test-that-repo-can-be-cloned', () => {
         ✔ Pulling latest changes
         - Cherry-picking: Beginning of a beautiful repo (#1)
         ✔ Cherry-picking: Beginning of a beautiful repo (#1)
-        ✔ Dry run complete"
+        - Creating pull request
+        ✔ Creating pull request
+        View pull request: this-is-a-dry-run"
       `);
     });
   });

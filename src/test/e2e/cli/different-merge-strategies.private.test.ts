@@ -87,7 +87,9 @@ describe('different-merge-strategies', () => {
         ✔ Cherry-picking: Merge strategy: Seventh of many merges
         - Cherry-picking: Merge strategy: Eighth of many merges
         ✔ Cherry-picking: Merge strategy: Eighth of many merges
-        ✔ Dry run complete"
+        - Creating pull request
+        ✔ Creating pull request
+        View pull request: this-is-a-dry-run"
       `);
     });
 
@@ -224,7 +226,9 @@ describe('different-merge-strategies', () => {
         ✔ Cherry-picking: Merge strategy: Seventh of many merges
         - Cherry-picking: Merge strategy: Eighth of many merges
         ✔ Cherry-picking: Merge strategy: Eighth of many merges
-        ✔ Dry run complete"
+        - Creating pull request
+        ✔ Creating pull request
+        View pull request: this-is-a-dry-run"
       `);
     });
 

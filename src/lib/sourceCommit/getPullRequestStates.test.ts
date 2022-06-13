@@ -70,11 +70,11 @@ describe('getPullRequestStates', () => {
       ],
     });
 
-    const pullRequestStates = getPullRequestStates({
+    const targetPullRequestStates = getPullRequestStates({
       sourceCommit: mockSourceCommit,
       branchLabelMapping: {},
     });
-    expect(pullRequestStates).toEqual([]);
+    expect(targetPullRequestStates).toEqual([]);
   });
 
   it('should return empty when repoOwner does not match', () => {
@@ -92,11 +92,11 @@ describe('getPullRequestStates', () => {
       ],
     });
 
-    const pullRequestStates = getPullRequestStates({
+    const targetPullRequestStates = getPullRequestStates({
       sourceCommit: mockSourceCommit,
       branchLabelMapping: {},
     });
-    expect(pullRequestStates).toEqual([]);
+    expect(targetPullRequestStates).toEqual([]);
   });
 
   it('should return empty when commit messages do not match', () => {
@@ -113,11 +113,11 @@ describe('getPullRequestStates', () => {
       ],
     });
 
-    const pullRequestStates = getPullRequestStates({
+    const targetPullRequestStates = getPullRequestStates({
       sourceCommit: mockSourceCommit,
       branchLabelMapping: {},
     });
-    expect(pullRequestStates).toEqual([]);
+    expect(targetPullRequestStates).toEqual([]);
   });
 
   it('should return a result if commits messages are different but title includes message and number', () => {
@@ -135,11 +135,11 @@ describe('getPullRequestStates', () => {
       ],
     });
 
-    const pullRequestStates = getPullRequestStates({
+    const targetPullRequestStates = getPullRequestStates({
       sourceCommit: mockSourceCommit,
       branchLabelMapping: {},
     });
-    expect(pullRequestStates).toEqual([
+    expect(targetPullRequestStates).toEqual([
       {
         branch: '6.x',
         state: 'MERGED',
@@ -168,11 +168,11 @@ describe('getPullRequestStates', () => {
       ],
     });
 
-    const pullRequestStates = getPullRequestStates({
+    const targetPullRequestStates = getPullRequestStates({
       sourceCommit: mockSourceCommit,
       branchLabelMapping: {},
     });
-    expect(pullRequestStates).toEqual([]);
+    expect(targetPullRequestStates).toEqual([]);
   });
 
   it('should return a result when first line of a multiline commit message matches', () => {
@@ -189,11 +189,11 @@ describe('getPullRequestStates', () => {
       ],
     });
 
-    const pullRequestStates = getPullRequestStates({
+    const targetPullRequestStates = getPullRequestStates({
       sourceCommit: mockSourceCommit,
       branchLabelMapping: {},
     });
-    expect(pullRequestStates).toEqual([
+    expect(targetPullRequestStates).toEqual([
       {
         branch: '6.x',
         state: 'MERGED',
@@ -220,21 +220,23 @@ describe('getPullRequestStates', () => {
       'v8.0.0': 'master',
       '^v(\\d+).(\\d+).\\d+$': '$1.$2',
     };
-    const pullRequestStates = getPullRequestStates({
+    const targetPullRequestStates = getPullRequestStates({
       sourceCommit: mockSourceCommit,
       branchLabelMapping,
     });
-    expect(pullRequestStates).toEqual([
+    expect(targetPullRequestStates).toEqual([
       {
         branch: '7.2',
         label: 'v7.2.0',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
       {
         branch: '7.1',
         label: 'v7.1.0',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
     ]);
@@ -261,15 +263,16 @@ describe('getPullRequestStates', () => {
       'v8.0.0': 'master',
       '^v(\\d+).(\\d+).\\d+$': '$1.$2',
     };
-    const pullRequestStates = getPullRequestStates({
+    const targetPullRequestStates = getPullRequestStates({
       sourceCommit: mockSourceCommit,
       branchLabelMapping,
     });
-    expect(pullRequestStates).toEqual([
+    expect(targetPullRequestStates).toEqual([
       {
         branch: '7.2',
         label: 'v7.2.0',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'MERGED',
         number: 5678,
         url: 'https://github.com/elastic/kibana/pull/5678',
@@ -282,6 +285,7 @@ describe('getPullRequestStates', () => {
         branch: '7.1',
         label: 'v7.1.0',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
     ]);
@@ -326,142 +330,164 @@ describe('getPullRequestStates', () => {
       },
     });
 
-    const pullRequestStates = getPullRequestStates({
+    const targetPullRequestStates = getPullRequestStates({
       sourceCommit: mockSourceCommit,
       branchLabelMapping,
     });
 
-    expect(pullRequestStates).toEqual([
+    expect(targetPullRequestStates).toEqual([
       {
         branch: '5.4',
         label: 'v5.4.3',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
       {
         branch: '5.5',
         label: 'v5.5.3',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
       {
         branch: '5.6',
         label: 'v5.6.16',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
       {
         branch: '6.0',
         label: 'v6.0.1',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
       {
         branch: '6.1',
         label: 'v6.1.4',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
       {
         branch: '6.2',
         label: 'v6.2.5',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
       {
         branch: '6.3',
         label: 'v6.3.3',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
       {
         branch: '6.4',
         label: 'v6.4.4',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
       {
         branch: '6.5',
         label: 'v6.5.5',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
       {
         branch: '6.6',
         label: 'v6.6.3',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
       {
         branch: '6.7',
         label: 'v6.7.2',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
       {
         branch: '6.8',
         label: 'v6.8.4',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
       {
         branch: '7.0',
         label: 'v7.0.2',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
       {
         branch: '7.1',
         label: 'v7.1.2',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
       {
         branch: '7.2',
         label: 'v7.2.2',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
       {
         branch: '7.3',
         label: 'v7.3.3',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
       {
         branch: '7.4',
         label: 'v7.4.1',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
       {
         branch: '7.5',
         label: 'v7.5.0',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
       {
         branch: '7.6',
         label: 'v7.6.0',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
       {
         branch: '7.7',
         label: 'v7.7.0',
         isSourceBranch: false,
+        labelRegex: '^v(\\d+).(\\d+).\\d+$',
         state: 'NOT_CREATED',
       },
       {
         branch: '7.x',
         label: 'v7.8.0',
         isSourceBranch: false,
+        labelRegex: '^v7.8.0$',
         state: 'NOT_CREATED',
       },
       {
         branch: 'master',
         label: 'v8.0.0',
         isSourceBranch: false,
+        labelRegex: 'v8.0.0',
         state: 'NOT_CREATED',
       },
     ]);
@@ -480,22 +506,24 @@ describe('getPullRequestStates', () => {
       },
     });
 
-    const pullRequestStates = getPullRequestStates({
+    const targetPullRequestStates = getPullRequestStates({
       sourceCommit: mockSourceCommit,
       branchLabelMapping,
     });
 
-    expect(pullRequestStates).toEqual([
+    expect(targetPullRequestStates).toEqual([
       {
         branch: 'dev',
         label: 'backport-to-dev',
         isSourceBranch: false,
+        labelRegex: '^backport-to-(.+)$',
         state: 'NOT_CREATED',
       },
       {
         branch: 'v3.1.0',
         label: 'backport-to-v3.1.0',
         isSourceBranch: false,
+        labelRegex: '^backport-to-(.+)$',
         state: 'NOT_CREATED',
       },
     ]);
@@ -515,16 +543,17 @@ describe('getPullRequestStates', () => {
       },
     });
 
-    const pullRequestStates = getPullRequestStates({
+    const targetPullRequestStates = getPullRequestStates({
       sourceCommit: mockSourceCommit,
       branchLabelMapping,
     });
 
-    expect(pullRequestStates).toEqual([
+    expect(targetPullRequestStates).toEqual([
       {
         branch: 'branch-b',
         label: 'label-2',
         isSourceBranch: false,
+        labelRegex: 'label-2',
         state: 'NOT_CREATED',
       },
     ]);
@@ -551,22 +580,24 @@ describe('getPullRequestStates', () => {
       ],
     });
 
-    const pullRequestStates = getPullRequestStates({
+    const targetPullRequestStates = getPullRequestStates({
       sourceCommit: mockSourceCommit,
       branchLabelMapping,
     });
 
-    expect(pullRequestStates).toEqual([
+    expect(targetPullRequestStates).toEqual([
       {
         branch: 'branch-1',
         label: 'label-1',
         isSourceBranch: false,
+        labelRegex: 'label-(\\d+)',
         state: 'NOT_CREATED',
       },
       {
         branch: 'branch-2',
         label: 'label-2',
         isSourceBranch: false,
+        labelRegex: 'label-(\\d+)',
         state: 'NOT_CREATED',
       },
       {
@@ -574,6 +605,7 @@ describe('getPullRequestStates', () => {
         label: 'label-3',
         number: 5678,
         isSourceBranch: false,
+        labelRegex: 'label-(\\d+)',
         state: 'OPEN',
         url: 'https://github.com/elastic/kibana/pull/5678',
       },
@@ -581,6 +613,7 @@ describe('getPullRequestStates', () => {
         branch: 'branch-4',
         label: 'label-4',
         isSourceBranch: false,
+        labelRegex: 'label-(\\d+)',
         state: 'NOT_CREATED',
       },
     ]);
@@ -607,34 +640,38 @@ describe('getPullRequestStates', () => {
       ],
     });
 
-    const pullRequestStates = getPullRequestStates({
+    const targetPullRequestStates = getPullRequestStates({
       sourceCommit: mockSourceCommit,
       branchLabelMapping,
     });
 
-    expect(pullRequestStates).toEqual([
+    expect(targetPullRequestStates).toEqual([
       {
         branch: 'branch-1',
         label: 'label-1',
         isSourceBranch: false,
+        labelRegex: 'label-(\\d+)',
         state: 'NOT_CREATED',
       },
       {
         branch: 'branch-2',
         label: 'label-2',
         isSourceBranch: false,
+        labelRegex: 'label-(\\d+)',
         state: 'NOT_CREATED',
       },
       {
         branch: 'branch-3',
         label: 'label-3',
         isSourceBranch: false,
+        labelRegex: 'label-(\\d+)',
         state: 'NOT_CREATED',
       },
       {
         branch: 'branch-4',
         label: 'label-4',
         isSourceBranch: false,
+        labelRegex: 'label-(\\d+)',
         state: 'NOT_CREATED',
       },
     ]);
@@ -661,28 +698,31 @@ describe('getPullRequestStates', () => {
       ],
     });
 
-    const pullRequestStates = getPullRequestStates({
+    const targetPullRequestStates = getPullRequestStates({
       sourceCommit: mockSourceCommit,
       branchLabelMapping,
     });
 
-    expect(pullRequestStates).toEqual([
+    expect(targetPullRequestStates).toEqual([
       {
         branch: 'branch-1',
         label: 'label-1',
         isSourceBranch: false,
+        labelRegex: 'label-(\\d+)',
         state: 'NOT_CREATED',
       },
       {
         branch: 'branch-2',
         label: 'label-2',
         isSourceBranch: false,
+        labelRegex: 'label-(\\d+)',
         state: 'NOT_CREATED',
       },
       {
         branch: 'branch-3',
         label: 'label-3',
         isSourceBranch: false,
+        labelRegex: 'label-(\\d+)',
         number: 5678,
         state: 'MERGED',
         url: 'https://github.com/elastic/kibana/pull/5678',
@@ -695,6 +735,7 @@ describe('getPullRequestStates', () => {
         branch: 'branch-4',
         label: 'label-4',
         isSourceBranch: false,
+        labelRegex: 'label-(\\d+)',
         state: 'NOT_CREATED',
       },
     ]);

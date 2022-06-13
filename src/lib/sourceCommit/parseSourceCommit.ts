@@ -29,7 +29,7 @@ export interface Commit {
   };
   sourceBranch: string;
   suggestedTargetBranches: string[];
-  pullRequestStates: TargetPullRequest[];
+  targetPullRequestStates: TargetPullRequest[];
 }
 
 export interface SourcePullRequestNode {
@@ -108,7 +108,7 @@ export type SourceCommitWithTargetPullRequest = {
 
 function getSuggestedTargetBranches(
   sourceCommit: SourceCommitWithTargetPullRequest,
-  pullRequestStates: TargetPullRequest[],
+  targetPullRequestStates: TargetPullRequest[],
   branchLabelMapping?: ValidConfigOptions['branchLabelMapping']
 ) {
   const missingPrs = getPullRequestStates({
@@ -116,7 +116,9 @@ function getSuggestedTargetBranches(
     branchLabelMapping,
   }).filter((pr) => pr.state === 'NOT_CREATED' || pr.state === 'CLOSED');
 
-  const mergedPrs = pullRequestStates.filter((pr) => pr.state === 'MERGED');
+  const mergedPrs = targetPullRequestStates.filter(
+    (pr) => pr.state === 'MERGED'
+  );
 
   return differenceBy(missingPrs, mergedPrs, (pr) => pr.label).map(
     (pr) => pr.branch
@@ -141,7 +143,7 @@ export function parseSourceCommit({
 
   const currentBranchLabelMapping = options.branchLabelMapping;
 
-  const pullRequestStates = getPullRequestStates({
+  const targetPullRequestStates = getPullRequestStates({
     sourceCommit,
     branchLabelMapping:
       sourceCommitBranchLabelMapping ?? currentBranchLabelMapping,
@@ -149,7 +151,7 @@ export function parseSourceCommit({
 
   const suggestedTargetBranches = getSuggestedTargetBranches(
     sourceCommit,
-    pullRequestStates,
+    targetPullRequestStates,
     currentBranchLabelMapping
   );
 
@@ -173,7 +175,7 @@ export function parseSourceCommit({
       : undefined,
     sourceBranch: sourcePullRequest?.baseRefName ?? options.sourceBranch,
     suggestedTargetBranches,
-    pullRequestStates,
+    targetPullRequestStates: targetPullRequestStates,
   };
 }
 
