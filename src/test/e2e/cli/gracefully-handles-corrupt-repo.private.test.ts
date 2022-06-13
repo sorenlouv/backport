@@ -56,7 +56,10 @@ describe('gracefully handle corrupted repo', () => {
       ✔ Pulling latest changes
       - Cherry-picking: Bump to 8.0.0
       ✔ Cherry-picking: Bump to 8.0.0
-      ✔ Dry run complete"
+      - Creating pull request
+      ✔ Creating pull request
+      - Adding labels: backport
+      View pull request: this-is-a-dry-run"
     `);
   });
 });

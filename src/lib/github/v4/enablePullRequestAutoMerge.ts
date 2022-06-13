@@ -22,6 +22,11 @@ export async function enablePullRequestAutoMerge(
   logger.info(text);
   const spinner = ora(options.interactive, text).start();
 
+  if (options.dryRun) {
+    spinner.stop();
+    return;
+  }
+
   const pullRequestId = await fetchPullRequestId(
     options,
     targetPullRequestNumber

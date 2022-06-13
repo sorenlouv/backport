@@ -4,7 +4,7 @@ import { Commit } from './sourceCommit/parseSourceCommit';
 
 describe('prompt', () => {
   describe('getChoicesForCommitPrompt', () => {
-    it('should display status badges via `pullRequestStates`', () => {
+    it('should display status badges via `targetPullRequestStates`', () => {
       const commits: Commit[] = [
         {
           author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
@@ -26,8 +26,9 @@ describe('prompt', () => {
                 '[APM] Remove log-log descriptions from correlation charts (#119700)',
             },
           },
-          pullRequestStates: [
+          targetPullRequestStates: [
             {
+              labelRegex: 'foo tbd',
               number: 120178,
               branch: '8.0',
               label: '',
@@ -35,6 +36,7 @@ describe('prompt', () => {
               state: 'MERGED',
             },
             {
+              labelRegex: 'foo tbd',
               number: 120179,
               branch: '7.16',
               state: 'MERGED',
@@ -42,6 +44,7 @@ describe('prompt', () => {
               isSourceBranch: false,
             },
             {
+              labelRegex: 'foo tbd',
               number: 120179,
               branch: '7.15',
               state: 'NOT_CREATED',
@@ -85,7 +88,7 @@ describe('prompt', () => {
                 '[APM] Prefer service.name for logs correlation (#120694)',
             },
           },
-          pullRequestStates: [],
+          targetPullRequestStates: [],
         },
         {
           author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
@@ -107,7 +110,7 @@ describe('prompt', () => {
                 '[APM] Disable telemetry in agent config endpoint (#120106)',
             },
           },
-          pullRequestStates: [],
+          targetPullRequestStates: [],
         },
         {
           author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
@@ -129,7 +132,7 @@ describe('prompt', () => {
                 '[APM] Remove index_pattern.json and add custom field formatters (#119915)',
             },
           },
-          pullRequestStates: [],
+          targetPullRequestStates: [],
         },
         {
           author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
@@ -151,7 +154,7 @@ describe('prompt', () => {
                 '[APM] Remove log-log descriptions from correlation charts (#119700)',
             },
           },
-          pullRequestStates: [],
+          targetPullRequestStates: [],
         },
       ];
 

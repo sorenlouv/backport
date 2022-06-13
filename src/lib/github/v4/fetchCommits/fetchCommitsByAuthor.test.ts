@@ -63,7 +63,7 @@ describe('fetchCommitsByAuthor', () => {
             sha: '2e63475c483f7844b0f2833bc57fdee32095bacb',
             message: 'Add 👻',
           },
-          pullRequestStates: [],
+          targetPullRequestStates: [],
           sourceBranch: 'source-branch-from-options',
         },
         {
@@ -83,7 +83,7 @@ describe('fetchCommitsByAuthor', () => {
               message: 'Add witch (#85)',
             },
           },
-          pullRequestStates: [],
+          targetPullRequestStates: [],
           sourceBranch: 'master',
         },
         {
@@ -105,7 +105,7 @@ describe('fetchCommitsByAuthor', () => {
                 'Add SF mention (#80)\n\n* Add SF mention\r\n\r\n* Add several emojis!',
             },
           },
-          pullRequestStates: [
+          targetPullRequestStates: [
             {
               branch: '6.3',
               state: 'MERGED',
@@ -129,7 +129,7 @@ describe('fetchCommitsByAuthor', () => {
             sha: '3827bbbaf39914eda4f02f6940189844375fd097',
             message: 'Add backport config',
           },
-          pullRequestStates: [],
+          targetPullRequestStates: [],
           sourceBranch: 'source-branch-from-options',
         },
         {
@@ -141,7 +141,7 @@ describe('fetchCommitsByAuthor', () => {
             sha: '5ea0da550ac191029459289d67f99ad7d310812b',
             message: 'Initial commit',
           },
-          pullRequestStates: [],
+          targetPullRequestStates: [],
           sourceBranch: 'source-branch-from-options',
         },
       ];

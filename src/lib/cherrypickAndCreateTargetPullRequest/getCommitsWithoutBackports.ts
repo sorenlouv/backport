@@ -1,9 +1,9 @@
 import chalk from 'chalk';
-import { Commit } from '../entrypoint.module';
-import { ValidConfigOptions } from '../options/options';
-import { getIsCommitInBranch } from './git';
-import { getFirstLine } from './github/commitFormatters';
-import { fetchCommitsByAuthor } from './github/v4/fetchCommits/fetchCommitsByAuthor';
+import { Commit } from '../../entrypoint.module';
+import { ValidConfigOptions } from '../../options/options';
+import { getIsCommitInBranch } from '../git';
+import { getFirstLine } from '../github/commitFormatters';
+import { fetchCommitsByAuthor } from '../github/v4/fetchCommits/fetchCommitsByAuthor';
 
 // when the user is facing a git conflict we should help them understand
 // why the conflict occurs. In many cases it's because one or more commits haven't been backported yet
@@ -51,7 +51,7 @@ export async function getCommitsWithoutBackports({
         }
 
         // only include commit if it has an unmerged PR for the given target branch
-        const hasUnmergedPr = c.pullRequestStates.some(
+        const hasUnmergedPr = c.targetPullRequestStates.some(
           (pr) => pr.branch === targetBranch && pr.state !== 'MERGED'
         );
 
@@ -60,7 +60,7 @@ export async function getCommitsWithoutBackports({
       .slice(0, 10) // limit to max 10 commits
       .map(async (c) => {
         const results = await Promise.all(
-          c.pullRequestStates.map(async (targetPr) => {
+          c.targetPullRequestStates.map(async (targetPr) => {
             if (!targetPr.mergeCommit) {
               return false;
             }
@@ -78,7 +78,7 @@ export async function getCommitsWithoutBackports({
     .filter(({ isCommitInBranch }) => !isCommitInBranch)
     .map(({ c }) => {
       // get pull request for the target branch (if it exists)
-      const pendingBackportPr = c.pullRequestStates.find(
+      const pendingBackportPr = c.targetPullRequestStates.find(
         (pr) => pr.branch === targetBranch && pr.state === 'OPEN'
       );
 

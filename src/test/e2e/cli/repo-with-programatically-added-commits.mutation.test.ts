@@ -54,7 +54,7 @@ describe('Programatically add new commits', () => {
     );
 
     expect(output).toContain(commitMessage);
-    expect(output).toContain('Dry run complete');
+    expect(output).toContain('View pull request: this-is-a-dry-run');
   });
 });
 

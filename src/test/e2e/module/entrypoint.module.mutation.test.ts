@@ -64,7 +64,7 @@ describe('entrypoint.module', () => {
         commits: [
           {
             author: { email: 'sorenlouv@gmail.com', name: 'Søren Louv-Jansen' },
-            pullRequestStates: [],
+            targetPullRequestStates: [],
             sourceBranch: 'master',
             sourceCommit: {
               committedDate: '2020-08-15T10:37:41Z',
@@ -179,7 +179,7 @@ describe('entrypoint.module', () => {
         commits: [
           {
             author: { email: 'sorenlouv@gmail.com', name: 'Søren Louv-Jansen' },
-            pullRequestStates: [],
+            targetPullRequestStates: [],
             sourceBranch: 'master',
             sourceCommit: {
               committedDate: '2020-08-15T10:37:41Z',
@@ -193,7 +193,7 @@ describe('entrypoint.module', () => {
           {
             author: { email: 'sorenlouv@gmail.com', name: 'Søren Louv-Jansen' },
             suggestedTargetBranches: [],
-            pullRequestStates: [],
+            targetPullRequestStates: [],
             sourceBranch: 'master',
             sourceCommit: {
               committedDate: '2020-08-15T10:44:04Z',
@@ -315,7 +315,7 @@ describe('entrypoint.module', () => {
         commits: [
           {
             author: { email: 'sorenlouv@gmail.com', name: 'Søren Louv-Jansen' },
-            pullRequestStates: [],
+            targetPullRequestStates: [],
             sourceBranch: 'master',
             sourceCommit: {
               committedDate: '2020-08-15T10:37:41Z',

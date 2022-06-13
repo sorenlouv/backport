@@ -1,14 +1,17 @@
 import os from 'os';
 import nock from 'nock';
 import ora from 'ora';
-import { ValidConfigOptions } from '../options/options';
-import { listenForCallsToNockScope, mockGqlRequest } from '../test/nockHelpers';
-import { SpyHelper } from '../types/SpyHelper';
+import { ValidConfigOptions } from '../../options/options';
+import {
+  listenForCallsToNockScope,
+  mockGqlRequest,
+} from '../../test/nockHelpers';
+import { SpyHelper } from '../../types/SpyHelper';
+import * as childProcess from '../child-process-promisified';
+import { TargetBranchResponse } from '../github/v4/validateTargetBranch';
+import * as logger from '../logger';
+import { Commit } from '../sourceCommit/parseSourceCommit';
 import { cherrypickAndCreateTargetPullRequest } from './cherrypickAndCreateTargetPullRequest';
-import * as childProcess from './child-process-promisified';
-import { TargetBranchResponse } from './github/v4/validateTargetBranch';
-import * as logger from './logger';
-import { Commit } from './sourceCommit/parseSourceCommit';
 
 describe('cherrypickAndCreateTargetPullRequest', () => {
   let execSpy: SpyHelper<typeof childProcess.spawnPromise>;
@@ -48,10 +51,11 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
       const options = {
         assignees: [] as string[],
         authenticatedUsername: 'sqren_authenticated',
-        gitAuthorName: 'Soren L',
-        gitAuthorEmail: 'soren@louv.dk',
         author: 'sqren',
         fork: true,
+        gitAuthorEmail: 'soren@louv.dk',
+        gitAuthorName: 'Soren L',
+        githubApiBaseUrlV4: 'http://localhost/graphql',
         interactive: true,
         prTitle: '[{targetBranch}] {commitMessages}',
         repoForkOwner: 'sqren',
@@ -61,7 +65,6 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         sourceBranch: 'myDefaultSourceBranch',
         sourcePRLabels: [] as string[],
         targetPRLabels: ['backport'],
-        githubApiBaseUrlV4: 'http://localhost/graphql',
       } as ValidConfigOptions;
 
       const commits: Commit[] = [
@@ -86,7 +89,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
               message: 'My original commit message (#1000)',
             },
           },
-          pullRequestStates: [],
+          targetPullRequestStates: [],
         },
         {
           author: {
@@ -109,7 +112,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
               message: 'My other commit message (#2000)',
             },
           },
-          pullRequestStates: [],
+          targetPullRequestStates: [],
         },
       ];
 
@@ -226,7 +229,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
             message: 'My original commit message',
           },
           sourceBranch: '7.x',
-          pullRequestStates: [],
+          targetPullRequestStates: [],
         },
       ];
 
@@ -326,7 +329,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
               message: 'My original commit message',
             },
             sourceBranch: '7.x',
-            pullRequestStates: [],
+            targetPullRequestStates: [],
           },
         ],
         targetBranch: '6.x',

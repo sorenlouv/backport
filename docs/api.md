@@ -109,7 +109,7 @@ console.log(commits);
     }
   },
   sourceBranch: 'main',
-  pullRequestStates: [
+  targetPullRequestStates: [
     {
       url: 'https://github.com/elastic/kibana/pull/121643',
       number: 121643,

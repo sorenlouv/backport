@@ -46,7 +46,7 @@ describe('getTargetBranches', () => {
           },
           sourceBranch: '7.x',
           suggestedTargetBranches: [],
-          pullRequestStates: [],
+          targetPullRequestStates: [],
         },
       ];
 
@@ -108,7 +108,7 @@ describe('getTargetBranches', () => {
       const commits = [
         {
           suggestedTargetBranches: ['7.x'],
-          pullRequestStates: [
+          targetPullRequestStates: [
             { branch: '7.2', state: 'MERGED' },
             { branch: '7.1', state: 'OPEN' },
             { branch: '7.x', state: 'NOT_CREATED' },
@@ -124,7 +124,7 @@ describe('getTargetBranches', () => {
     });
   });
 
-  describe('when `pullRequestStates` is missing a backport to 7.x', () => {
+  describe('when `targetPullRequestStates` is missing a backport to 7.x', () => {
     let targetBranchChoices: TargetBranchChoice[];
     beforeEach(async () => {
       const options = {
@@ -161,7 +161,7 @@ describe('getTargetBranches', () => {
           },
           sourceBranch: 'master',
           suggestedTargetBranches: ['7.x'],
-          pullRequestStates: [],
+          targetPullRequestStates: [],
         },
       ];
 

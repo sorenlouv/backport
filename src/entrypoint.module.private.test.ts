@@ -132,7 +132,7 @@ describe('entrypoint.module', () => {
               status: 'success',
               didUpdate: false,
               pullRequestNumber: 1337,
-              pullRequestUrl: 'https://localhost/dry-run',
+              pullRequestUrl: 'this-is-a-dry-run',
               targetBranch: '7.x',
             },
           ],
@@ -143,10 +143,11 @@ describe('entrypoint.module', () => {
                 name: 'Søren Louv-Jansen',
               },
               suggestedTargetBranches: ['7.x'],
-              pullRequestStates: [
+              targetPullRequestStates: [
                 {
                   branch: '7.x',
                   label: 'backport-to-7.x',
+                  labelRegex: '^backport-to-(.*)$',
                   isSourceBranch: false,
                   state: 'NOT_CREATED',
                 },
@@ -206,11 +207,12 @@ describe('entrypoint.module', () => {
             },
           },
           sourceBranch: 'master',
-          pullRequestStates: [
+          targetPullRequestStates: [
             {
               branch: '7.11',
               isSourceBranch: false,
               label: 'v7.11.0',
+              labelRegex: '^v(\\d+).(\\d+).\\d+$',
               mergeCommit: {
                 message:
                   '[APM] Fix incorrect table column header (95th instead of avg) (#88188) (#88289)',
@@ -270,12 +272,13 @@ describe('entrypoint.module', () => {
             },
           },
           sourceBranch: 'master',
-          pullRequestStates: [
+          targetPullRequestStates: [
             {
               url: 'https://github.com/elastic/kibana/pull/88289',
               number: 88289,
               branch: '7.11',
               label: 'v7.11.0',
+              labelRegex: '^v(\\d+).(\\d+).\\d+$',
               isSourceBranch: false,
               state: 'MERGED',
               mergeCommit: {
@@ -361,11 +364,32 @@ describe('entrypoint.module', () => {
               "email": "sorenlouv@gmail.com",
               "name": "Søren Louv-Jansen",
             },
-            "pullRequestStates": Array [
+            "sourceBranch": "master",
+            "sourceCommit": Object {
+              "branchLabelMapping": Object {
+                "^v(\\\\d+).(\\\\d+).\\\\d+$": "$1.$2",
+                "^v7.11.0$": "7.x",
+                "^v8.0.0$": "master",
+              },
+              "committedDate": "2020-12-16T15:17:03Z",
+              "message": "[APM] Fix broken link to ML when time range is not set (#85976)",
+              "sha": "744d6809ded7e1055bfda280c351cee3e8c0e3bf",
+            },
+            "sourcePullRequest": Object {
+              "mergeCommit": Object {
+                "message": "[APM] Fix broken link to ML when time range is not set (#85976)",
+                "sha": "744d6809ded7e1055bfda280c351cee3e8c0e3bf",
+              },
+              "number": 85976,
+              "url": "https://github.com/elastic/kibana/pull/85976",
+            },
+            "suggestedTargetBranches": Array [],
+            "targetPullRequestStates": Array [
               Object {
                 "branch": "7.x",
                 "isSourceBranch": false,
                 "label": "v7.11.0",
+                "labelRegex": "^v7.11.0$",
                 "mergeCommit": Object {
                   "message": "[APM] Fix broken link to ML when time range is not set (#85976) (#86227)
 
@@ -387,48 +411,12 @@ describe('entrypoint.module', () => {
                 "url": "https://github.com/elastic/kibana/pull/86228",
               },
             ],
-            "sourceBranch": "master",
-            "sourceCommit": Object {
-              "branchLabelMapping": Object {
-                "^v(\\\\d+).(\\\\d+).\\\\d+$": "$1.$2",
-                "^v7.11.0$": "7.x",
-                "^v8.0.0$": "master",
-              },
-              "committedDate": "2020-12-16T15:17:03Z",
-              "message": "[APM] Fix broken link to ML when time range is not set (#85976)",
-              "sha": "744d6809ded7e1055bfda280c351cee3e8c0e3bf",
-            },
-            "sourcePullRequest": Object {
-              "mergeCommit": Object {
-                "message": "[APM] Fix broken link to ML when time range is not set (#85976)",
-                "sha": "744d6809ded7e1055bfda280c351cee3e8c0e3bf",
-              },
-              "number": 85976,
-              "url": "https://github.com/elastic/kibana/pull/85976",
-            },
-            "suggestedTargetBranches": Array [],
           },
           Object {
             "author": Object {
               "email": "sorenlouv@gmail.com",
               "name": "Søren Louv-Jansen",
             },
-            "pullRequestStates": Array [
-              Object {
-                "branch": "7.x",
-                "isSourceBranch": false,
-                "label": "v7.11.0",
-                "mergeCommit": Object {
-                  "message": "[7.x] [APM] Correlations polish (#85116) (#85940)
-
-        Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>",
-                  "sha": "42b3ecb40c344cd57800b8fa387ae32bad24bfc4",
-                },
-                "number": 85940,
-                "state": "MERGED",
-                "url": "https://github.com/elastic/kibana/pull/85940",
-              },
-            ],
             "sourceBranch": "master",
             "sourceCommit": Object {
               "branchLabelMapping": Object {
@@ -453,26 +441,29 @@ describe('entrypoint.module', () => {
               "url": "https://github.com/elastic/kibana/pull/85116",
             },
             "suggestedTargetBranches": Array [],
+            "targetPullRequestStates": Array [
+              Object {
+                "branch": "7.x",
+                "isSourceBranch": false,
+                "label": "v7.11.0",
+                "labelRegex": "^v7.11.0$",
+                "mergeCommit": Object {
+                  "message": "[7.x] [APM] Correlations polish (#85116) (#85940)
+
+        Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>",
+                  "sha": "42b3ecb40c344cd57800b8fa387ae32bad24bfc4",
+                },
+                "number": 85940,
+                "state": "MERGED",
+                "url": "https://github.com/elastic/kibana/pull/85940",
+              },
+            ],
           },
           Object {
             "author": Object {
               "email": "sorenlouv@gmail.com",
               "name": "Søren Louv-Jansen",
             },
-            "pullRequestStates": Array [
-              Object {
-                "branch": "7.x",
-                "isSourceBranch": false,
-                "label": "v7.11.0",
-                "mergeCommit": Object {
-                  "message": "[7.x] [APM] Improve pointer event hook (#85117) (#85142)",
-                  "sha": "3b72a4f3cc7c0abd0541073e1d0246b85cea3def",
-                },
-                "number": 85142,
-                "state": "MERGED",
-                "url": "https://github.com/elastic/kibana/pull/85142",
-              },
-            ],
             "sourceBranch": "master",
             "sourceCommit": Object {
               "branchLabelMapping": Object {
@@ -493,6 +484,21 @@ describe('entrypoint.module', () => {
               "url": "https://github.com/elastic/kibana/pull/85117",
             },
             "suggestedTargetBranches": Array [],
+            "targetPullRequestStates": Array [
+              Object {
+                "branch": "7.x",
+                "isSourceBranch": false,
+                "label": "v7.11.0",
+                "labelRegex": "^v7.11.0$",
+                "mergeCommit": Object {
+                  "message": "[7.x] [APM] Improve pointer event hook (#85117) (#85142)",
+                  "sha": "3b72a4f3cc7c0abd0541073e1d0246b85cea3def",
+                },
+                "number": 85142,
+                "state": "MERGED",
+                "url": "https://github.com/elastic/kibana/pull/85142",
+              },
+            ],
           },
         ]
       `);

@@ -1,0 +1,134 @@
+import chalk from 'chalk';
+import { flatten } from 'lodash';
+import { ValidConfigOptions } from '../../options/options';
+import {
+  createBackportBranch,
+  deleteBackportBranch,
+  pushBackportBranch,
+  getRepoForkOwner,
+} from '../git';
+import { addAssigneesToPullRequest } from '../github/v3/addAssigneesToPullRequest';
+import { addLabelsToPullRequest } from '../github/v3/addLabelsToPullRequest';
+import { addReviewersToPullRequest } from '../github/v3/addReviewersToPullRequest';
+import {
+  createPullRequest,
+  getTitle,
+  getPullRequestBody,
+  PullRequestPayload,
+} from '../github/v3/createPullRequest';
+import { enablePullRequestAutoMerge } from '../github/v4/enablePullRequestAutoMerge';
+import { validateTargetBranch } from '../github/v4/validateTargetBranch';
+import { consoleLog } from '../logger';
+import { sequentially } from '../sequentially';
+import { Commit } from '../sourceCommit/parseSourceCommit';
+import { getBackportBranchName } from './getBackportBranchName';
+import { getMergeCommits } from './getMergeCommit';
+import { waitForCherrypick } from './waitForCherrypick';
+
+export async function cherrypickAndCreateTargetPullRequest({
+  options,
+  commits,
+  targetBranch,
+}: {
+  options: ValidConfigOptions;
+  commits: Commit[];
+  targetBranch: string;
+}): Promise<{ url: string; number: number; didUpdate: boolean }> {
+  const backportBranch = getBackportBranchName(targetBranch, commits);
+  const repoForkOwner = getRepoForkOwner(options);
+  consoleLog(`\n${chalk.bold(`Backporting to ${targetBranch}:`)}`);
+
+  await validateTargetBranch({ ...options, branchName: targetBranch });
+  await createBackportBranch({
+    options,
+    sourceBranch: getSourceBranchFromCommits(commits),
+    targetBranch,
+    backportBranch,
+  });
+
+  const commitsFlattened = flatten(
+    await Promise.all(commits.map((c) => getMergeCommits(options, c)))
+  );
+
+  await sequentially(commitsFlattened, (commit) =>
+    waitForCherrypick(options, commit, targetBranch)
+  );
+
+  if (!options.dryRun) {
+    await pushBackportBranch({ options, backportBranch });
+    await deleteBackportBranch({ options, backportBranch });
+  }
+
+  const prPayload: PullRequestPayload = {
+    owner: options.repoOwner,
+    repo: options.repoName,
+    title: getTitle({ options, commits, targetBranch }),
+    body: getPullRequestBody({ options, commits, targetBranch }),
+    head: `${repoForkOwner}:${backportBranch}`, // eg. sqren:backport/7.x/pr-75007
+    base: targetBranch, // eg. 7.x
+  };
+
+  const targetPullRequest = await createPullRequest({ options, prPayload });
+
+  // add assignees to target pull request
+  const assignees = options.autoAssign
+    ? [options.authenticatedUsername]
+    : options.assignees;
+
+  if (options.assignees.length > 0) {
+    await addAssigneesToPullRequest({
+      ...options,
+      pullNumber: targetPullRequest.number,
+      assignees,
+    });
+  }
+
+  // add reviewers to target pull request
+  if (options.reviewers.length > 0) {
+    await addReviewersToPullRequest(
+      options,
+      targetPullRequest.number,
+      options.reviewers
+    );
+  }
+
+  // add labels to target pull request
+  if (options.targetPRLabels.length > 0) {
+    await addLabelsToPullRequest({
+      ...options,
+      pullNumber: targetPullRequest.number,
+      labels: options.targetPRLabels,
+    });
+  }
+
+  // make PR auto mergable
+  if (options.autoMerge) {
+    await enablePullRequestAutoMerge(options, targetPullRequest.number);
+  }
+
+  // add labels to source pull requests
+  if (options.sourcePRLabels.length > 0) {
+    const promises = commits.map((commit) => {
+      if (commit.sourcePullRequest) {
+        return addLabelsToPullRequest({
+          ...options,
+          pullNumber: commit.sourcePullRequest.number,
+          labels: options.sourcePRLabels,
+        });
+      }
+    });
+
+    await Promise.all(promises);
+  }
+
+  consoleLog(`View pull request: ${targetPullRequest.url}`);
+
+  return targetPullRequest;
+}
+
+function getSourceBranchFromCommits(commits: Commit[]) {
+  // sourceBranch should be the same for all commits, so picking `sourceBranch` from the first commit should be fine 🤞
+  // this is specifically needed when backporting a PR like `backport --pr 123` and the source PR was merged to a non-default (aka non-master) branch.
+  const { sourceBranch } = commits[0];
+  return sourceBranch;
+}

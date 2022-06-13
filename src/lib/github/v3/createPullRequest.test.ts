@@ -29,7 +29,7 @@ describe('getPullRequestBody', () => {
               message: 'My commit message (#55)',
             },
 
-            pullRequestStates: [],
+            targetPullRequestStates: [],
             sourceBranch: 'master',
           },
         ],
@@ -68,7 +68,7 @@ describe('getPullRequestBody', () => {
             },
 
             sourceBranch: 'main',
-            pullRequestStates: [],
+            targetPullRequestStates: [],
           },
         ],
 
@@ -115,7 +115,7 @@ describe('getPullRequestBody', () => {
             },
 
             sourceBranch: 'main',
-            pullRequestStates: [],
+            targetPullRequestStates: [],
           },
 
           {
@@ -132,7 +132,7 @@ describe('getPullRequestBody', () => {
             },
 
             sourceBranch: 'main',
-            pullRequestStates: [],
+            targetPullRequestStates: [],
           },
         ],
 
@@ -181,7 +181,7 @@ describe('getPullRequestBody', () => {
             },
 
             sourceBranch: 'main',
-            pullRequestStates: [],
+            targetPullRequestStates: [],
           },
 
           {
@@ -208,7 +208,7 @@ describe('getPullRequestBody', () => {
             },
 
             sourceBranch: 'main',
-            pullRequestStates: [],
+            targetPullRequestStates: [],
           },
         ],
 
@@ -257,7 +257,7 @@ describe('getPullRequestBody', () => {
               message: 'My commit message (#55)',
             },
             sourceBranch: 'main',
-            pullRequestStates: [],
+            targetPullRequestStates: [],
           },
           {
             author: {
@@ -272,7 +272,7 @@ describe('getPullRequestBody', () => {
               message: 'Another commit message',
             },
             sourceBranch: 'main',
-            pullRequestStates: [],
+            targetPullRequestStates: [],
           },
         ],
 
@@ -315,7 +315,7 @@ describe('getPullRequestBody', () => {
             },
 
             sourceBranch: 'main',
-            pullRequestStates: [],
+            targetPullRequestStates: [],
           },
 
           {
@@ -332,7 +332,7 @@ describe('getPullRequestBody', () => {
             },
 
             sourceBranch: 'main',
-            pullRequestStates: [],
+            targetPullRequestStates: [],
           },
         ],
 
@@ -382,7 +382,7 @@ describe('getTitle', () => {
               sha: 'abcdefghi',
               message: 'My commit message (#55)',
             },
-            pullRequestStates: [],
+            targetPullRequestStates: [],
           },
           {
             author: {
@@ -405,7 +405,7 @@ describe('getTitle', () => {
               message: 'Another commit message (#56)',
             },
             sourceBranch: 'main',
-            pullRequestStates: [],
+            targetPullRequestStates: [],
           },
         ],
         targetBranch: '7.x',
@@ -441,7 +441,7 @@ describe('getTitle', () => {
               message: 'My commit message (#55)',
             },
             sourceBranch: 'main',
-            pullRequestStates: [],
+            targetPullRequestStates: [],
           },
         ],
         targetBranch: '7.x',
