@@ -1,6 +1,7 @@
 import { uniq } from 'lodash';
 import { Commit } from '../../entrypoint.module';
 import { filterNil } from '../../utils/filterEmpty';
+import { logger } from '../logger';
 
 export function getTargetPRLabels({
   interactive,
@@ -20,6 +21,8 @@ export function getTargetPRLabels({
       );
 
       if (!targetPullRequest?.labelRegex) {
+        logger.info('Missing labelRegex for target pull request');
+
         // remove dynamic labels like `$1` in interactive mode
         return targetPRLabels.filter((l) => {
           return l.match(/\$\d/) === null || !interactive;
