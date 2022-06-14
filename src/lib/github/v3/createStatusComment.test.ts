@@ -298,6 +298,7 @@ describe('getCommentBody', () => {
                     },
                     sourceBranch: 'master',
                     sourcePullRequest: {
+                      labels: [],
                       number: 5,
                       url: 'url-to-pr-5',
                       mergeCommit: {
@@ -324,6 +325,7 @@ describe('getCommentBody', () => {
                     },
                     sourceBranch: 'master',
                     sourcePullRequest: {
+                      labels: [],
                       number: 44,
                       url: 'url-to-pr-44',
                       mergeCommit: {

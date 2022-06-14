@@ -144,6 +144,13 @@ Array [
       "sha": "d421ddcf6157150596581c7885afa3690cec6339",
     },
     "sourcePullRequest": Object {
+      "labels": Array [
+        "Team:apm",
+        "v8.0.0",
+        "release_note:skip",
+        "auto-backport",
+        "v8.1.0",
+      ],
       "mergeCommit": Object {
         "message": "[APM] Add note about synthtrace to APM docs (#121633)",
         "sha": "d421ddcf6157150596581c7885afa3690cec6339",
@@ -199,6 +206,12 @@ Co-authored-by: Søren Louv-Jansen <soren.louv@elastic.co>",
       "sha": "b1b491959dab47aeb83c88ee2accb2db46d23793",
     },
     "sourcePullRequest": Object {
+      "labels": Array [
+        "release_note:enhancement",
+        "Team:apm",
+        "backport:skip",
+        "v8.1.0",
+      ],
       "mergeCommit": Object {
         "message": "[APM] Prefer service.name for logs correlation (#120694)",
         "sha": "b1b491959dab47aeb83c88ee2accb2db46d23793",
@@ -239,6 +252,13 @@ Co-authored-by: Søren Louv-Jansen <soren.louv@elastic.co>",
       "sha": "b1bb4a93959f19a653b9cfb207a5c6acb6559482",
     },
     "sourcePullRequest": Object {
+      "labels": Array [
+        "Team:apm",
+        "v8.0.0",
+        "release_note:skip",
+        "auto-backport",
+        "v8.1.0",
+      ],
       "mergeCommit": Object {
         "message": "[APM] Disable telemetry in agent config endpoint (#120106)",
         "sha": "b1bb4a93959f19a653b9cfb207a5c6acb6559482",
@@ -302,6 +322,13 @@ Co-authored-by: Søren Louv-Jansen <soren.louv@elastic.co>",
       "sha": "434f6e6a88faf24dc1ea41f9f726db78e46355a7",
     },
     "sourcePullRequest": Object {
+      "labels": Array [
+        "Team:apm",
+        "v8.0.0",
+        "release_note:skip",
+        "auto-backport",
+        "v8.1.0",
+      ],
       "mergeCommit": Object {
         "message": "[APM] Remove index_pattern.json and add custom field formatters (#119915)
 
@@ -381,6 +408,13 @@ Co-authored-by: Søren Louv-Jansen <soren.louv@elastic.co>",
       "sha": "ae9d51b7fe3ee6f30d0d196c782e0dcabb7ac5ff",
     },
     "sourcePullRequest": Object {
+      "labels": Array [
+        "Team:apm",
+        "v8.0.0",
+        "release_note:skip",
+        "auto-backport",
+        "v7.16.0",
+      ],
       "mergeCommit": Object {
         "message": "[APM] Remove log-log descriptions from correlation charts (#119700)",
         "sha": "ae9d51b7fe3ee6f30d0d196c782e0dcabb7ac5ff",
@@ -439,6 +473,13 @@ Co-authored-by: Søren Louv-Jansen <soren.louv@elastic.co>",
       "sha": "43253ecafa1365eae45d31dd284d0a0bf273bc4d",
     },
     "sourcePullRequest": Object {
+      "labels": Array [
+        "Team:apm",
+        "v8.0.0",
+        "release_note:skip",
+        "auto-backport",
+        "v8.1.0",
+      ],
       "mergeCommit": Object {
         "message": "[APM] Fix bug in documentation on \`span.destination\` metrics (#119789)",
         "sha": "43253ecafa1365eae45d31dd284d0a0bf273bc4d",
@@ -504,6 +545,13 @@ Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>
       "sha": "b48268dd0c42c9dc1fe310f7c0b3327117d066a5",
     },
     "sourcePullRequest": Object {
+      "labels": Array [
+        "Team:apm",
+        "v8.0.0",
+        "release_note:skip",
+        "auto-backport",
+        "v8.1.0",
+      ],
       "mergeCommit": Object {
         "message": "[APM] Remove projections (#118327)
 
@@ -589,6 +637,13 @@ Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>
       "sha": "e66377790605274d2610f45eed35c9d8febdb7b9",
     },
     "sourcePullRequest": Object {
+      "labels": Array [
+        "Team:apm",
+        "v8.0.0",
+        "release_note:skip",
+        "auto-backport",
+        "v8.1.0",
+      ],
       "mergeCommit": Object {
         "message": "Update query_debugging_in_development_and_production.md (#118491)",
         "sha": "e66377790605274d2610f45eed35c9d8febdb7b9",
@@ -644,6 +699,13 @@ Co-authored-by: Søren Louv-Jansen <soren.louv@elastic.co>",
       "sha": "acc7bd9d97a2147f752942dbcf01d7fb2478234b",
     },
     "sourcePullRequest": Object {
+      "labels": Array [
+        "release_note:fix",
+        "Team:apm",
+        "v8.0.0",
+        "auto-backport",
+        "v8.1.0",
+      ],
       "mergeCommit": Object {
         "message": "[APM] Ignore unavailable indices for ml jobs (#117632)",
         "sha": "acc7bd9d97a2147f752942dbcf01d7fb2478234b",
@@ -699,6 +761,13 @@ Co-authored-by: Søren Louv-Jansen <soren.louv@elastic.co>",
       "sha": "d13ee69bdac1deebfea9f02a29cab0f9a87f2f8e",
     },
     "sourcePullRequest": Object {
+      "labels": Array [
+        "Team:apm",
+        "v8.0.0",
+        "release_note:skip",
+        "auto-backport",
+        "v8.1.0",
+      ],
       "mergeCommit": Object {
         "message": "[APM] Document \`_inspect\` flag (#117635)",
         "sha": "d13ee69bdac1deebfea9f02a29cab0f9a87f2f8e",

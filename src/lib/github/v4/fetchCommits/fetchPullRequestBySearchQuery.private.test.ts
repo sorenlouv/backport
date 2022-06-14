@@ -58,6 +58,7 @@ describe('fetchPullRequestsBySearchQuery', () => {
             sha: 'eebf165c82a4b718d95c11b3877e365b1949ff28',
           },
           sourcePullRequest: {
+            labels: ['v7.8.0'],
             number: 9,
             url: 'https://github.com/backport-org/backport-e2e/pull/9',
             mergeCommit: {
@@ -92,6 +93,7 @@ describe('fetchPullRequestsBySearchQuery', () => {
             sha: 'ee8c492334cef1ca077a56addb79a26f79821d2f',
           },
           sourcePullRequest: {
+            labels: ['v7.8.0', 'v7.9.0', 'v8.0.0'],
             number: 5,
             url: 'https://github.com/backport-org/backport-e2e/pull/5',
             mergeCommit: {

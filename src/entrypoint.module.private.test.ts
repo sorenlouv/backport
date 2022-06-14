@@ -159,6 +159,7 @@ describe('entrypoint.module', () => {
                 sha: '343402a748be2375325b2730fa979bcea5b96ba1',
               },
               sourcePullRequest: {
+                labels: ['backport-to-7.x'],
                 mergeCommit: {
                   message: 'Change Barca to Braithwaite (#8)',
                   sha: '343402a748be2375325b2730fa979bcea5b96ba1',
@@ -198,6 +199,7 @@ describe('entrypoint.module', () => {
             sha: 'd1b348e6213c5ad48653dfaad6eaf4928b2c688b',
           },
           sourcePullRequest: {
+            labels: ['Team:apm', 'release_note:skip', 'v7.11.0'],
             number: 88188,
             url: 'https://github.com/elastic/kibana/pull/88188',
             mergeCommit: {
@@ -263,6 +265,7 @@ describe('entrypoint.module', () => {
             sha: 'd1b348e6213c5ad48653dfaad6eaf4928b2c688b',
           },
           sourcePullRequest: {
+            labels: ['Team:apm', 'release_note:skip', 'v7.11.0'],
             number: 88188,
             url: 'https://github.com/elastic/kibana/pull/88188',
             mergeCommit: {
@@ -376,6 +379,13 @@ describe('entrypoint.module', () => {
               "sha": "744d6809ded7e1055bfda280c351cee3e8c0e3bf",
             },
             "sourcePullRequest": Object {
+              "labels": Array [
+                "release_note:fix",
+                "Team:apm",
+                "apm:test-plan-done",
+                "v7.11.0",
+                "apm:test-plan-7.11.0",
+              ],
               "mergeCommit": Object {
                 "message": "[APM] Fix broken link to ML when time range is not set (#85976)",
                 "sha": "744d6809ded7e1055bfda280c351cee3e8c0e3bf",
@@ -431,6 +441,11 @@ describe('entrypoint.module', () => {
               "sha": "20638a64e2a895d4e4a6597d4a37b5db7003f1e9",
             },
             "sourcePullRequest": Object {
+              "labels": Array [
+                "Team:apm",
+                "release_note:skip",
+                "v7.11.0",
+              ],
               "mergeCommit": Object {
                 "message": "[APM] Correlations polish (#85116)
 
@@ -476,6 +491,11 @@ describe('entrypoint.module', () => {
               "sha": "cee681afb3c5f87371112fab9a7e5dddbafea0a8",
             },
             "sourcePullRequest": Object {
+              "labels": Array [
+                "Team:apm",
+                "release_note:skip",
+                "v7.11.0",
+              ],
               "mergeCommit": Object {
                 "message": "[APM] Improve pointer event hook (#85117)",
                 "sha": "cee681afb3c5f87371112fab9a7e5dddbafea0a8",

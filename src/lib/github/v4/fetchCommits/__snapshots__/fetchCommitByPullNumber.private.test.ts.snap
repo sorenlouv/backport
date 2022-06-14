@@ -121,6 +121,13 @@ Object {
     "sha": "d421ddcf6157150596581c7885afa3690cec6339",
   },
   "sourcePullRequest": Object {
+    "labels": Array [
+      "Team:apm",
+      "v8.0.0",
+      "release_note:skip",
+      "auto-backport",
+      "v8.1.0",
+    ],
     "mergeCommit": Object {
       "message": "[APM] Add note about synthtrace to APM docs (#121633)",
       "sha": "d421ddcf6157150596581c7885afa3690cec6339",

@@ -2,13 +2,14 @@ import gql from 'graphql-tag';
 import { differenceBy } from 'lodash';
 import { ValidConfigOptions } from '../../options/options';
 import {
+  parseRemoteConfig,
   RemoteConfigHistory,
   RemoteConfigHistoryFragment,
 } from '../remoteConfig';
 import {
   TargetPullRequest,
   getPullRequestStates,
-  getSourceCommitBranchLabelMapping,
+  getSourcePullRequest,
 } from './getPullRequestStates';
 
 export interface Commit {
@@ -20,6 +21,7 @@ export interface Commit {
     branchLabelMapping: ValidConfigOptions['branchLabelMapping'];
   };
   sourcePullRequest?: {
+    labels: string[];
     number: number;
     url: string;
     mergeCommit: {
@@ -135,9 +137,7 @@ export function parseSourceCommit({
     sourceBranch: string;
   };
 }): Commit {
-  const sourcePullRequest =
-    sourceCommit.associatedPullRequests.edges?.[0]?.node;
-
+  const sourcePullRequest = getSourcePullRequest(sourceCommit);
   const sourceCommitBranchLabelMapping =
     getSourceCommitBranchLabelMapping(sourceCommit);
 
@@ -165,6 +165,7 @@ export function parseSourceCommit({
     },
     sourcePullRequest: sourcePullRequest
       ? {
+          labels: sourcePullRequest.labels.nodes.map((label) => label.name),
           number: sourcePullRequest.number,
           url: sourcePullRequest.url,
           mergeCommit: {
@@ -266,3 +267,16 @@ export const SourceCommitWithTargetPullRequestFragment = gql`
 
   ${RemoteConfigHistoryFragment}
 `;
+
+function getSourceCommitBranchLabelMapping(
+  sourceCommit: SourceCommitWithTargetPullRequest
+): ValidConfigOptions['branchLabelMapping'] {
+  const sourcePullRequest = getSourcePullRequest(sourceCommit);
+
+  const remoteConfig =
+    sourcePullRequest?.mergeCommit.remoteConfigHistory.edges?.[0]?.remoteConfig;
+
+  if (remoteConfig) {
+    return parseRemoteConfig(remoteConfig)?.branchLabelMapping;
+  }
+}

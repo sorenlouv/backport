@@ -13,6 +13,7 @@ describe('getPullRequestBody', () => {
               name: 'Søren Louv-Jansen',
             },
             sourcePullRequest: {
+              labels: [],
               number: 55,
               url: 'https://github.com/backport-org/different-merge-strategies/pull/55',
               mergeCommit: {
@@ -98,6 +99,7 @@ describe('getPullRequestBody', () => {
               name: 'Søren Louv-Jansen',
             },
             sourcePullRequest: {
+              labels: [],
               number: 55,
               url: 'https://github.com/backport-org/different-merge-strategies/pull/55',
               mergeCommit: {
@@ -171,6 +173,7 @@ describe('getPullRequestBody', () => {
               name: 'Søren Louv-Jansen',
             },
             sourcePullRequest: {
+              labels: [],
               number: 1,
               url: 'https://github.com/backport-org/different-merge-strategies/pull/1',
               mergeCommit: {
@@ -198,6 +201,7 @@ describe('getPullRequestBody', () => {
               name: 'Søren Louv-Jansen',
             },
             sourcePullRequest: {
+              labels: [],
               number: 1,
               url: 'https://github.com/backport-org/different-merge-strategies/pull/1',
               mergeCommit: {
@@ -242,6 +246,7 @@ describe('getPullRequestBody', () => {
               name: 'Søren Louv-Jansen',
             },
             sourcePullRequest: {
+              labels: [],
               number: 55,
               url: 'https://github.com/backport-org/different-merge-strategies/pull/55',
               mergeCommit: {
@@ -298,6 +303,7 @@ describe('getPullRequestBody', () => {
               name: 'Søren Louv-Jansen',
             },
             sourcePullRequest: {
+              labels: [],
               number: 55,
               url: 'https://github.com/backport-org/different-merge-strategies/pull/55',
               mergeCommit: {
@@ -368,6 +374,7 @@ describe('getTitle', () => {
             },
             sourceBranch: 'main',
             sourcePullRequest: {
+              labels: [],
               number: 55,
               url: 'https://github.com/backport-org/different-merge-strategies/pull/55',
               mergeCommit: {
@@ -390,6 +397,7 @@ describe('getTitle', () => {
               name: 'Søren Louv-Jansen',
             },
             sourcePullRequest: {
+              labels: [],
               number: 56,
               url: 'https://github.com/backport-org/different-merge-strategies/pull/56',
               mergeCommit: {
@@ -426,6 +434,7 @@ describe('getTitle', () => {
               name: 'Søren Louv-Jansen',
             },
             sourcePullRequest: {
+              labels: [],
               number: 55,
               url: 'https://github.com/backport-org/different-merge-strategies/pull/55',
               mergeCommit: {

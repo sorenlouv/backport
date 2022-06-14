@@ -2,7 +2,6 @@ import { keyBy, merge, uniqBy, values } from 'lodash';
 import { ValidConfigOptions } from '../../options/options';
 import { filterNil } from '../../utils/filterEmpty';
 import { getFirstLine } from '../github/commitFormatters';
-import { parseRemoteConfig } from '../remoteConfig';
 import {
   SourcePullRequestNode,
   SourceCommitWithTargetPullRequest,
@@ -35,23 +34,10 @@ export type TargetPullRequest =
       state: PullRequestState;
     });
 
-function getSourcePullRequest(
+export function getSourcePullRequest(
   sourceCommit: SourceCommitWithTargetPullRequest
 ): SourcePullRequestNode | undefined {
   return sourceCommit.associatedPullRequests.edges?.[0]?.node;
-}
-
-export function getSourceCommitBranchLabelMapping(
-  sourceCommit: SourceCommitWithTargetPullRequest
-): ValidConfigOptions['branchLabelMapping'] {
-  const sourcePullRequest = getSourcePullRequest(sourceCommit);
-
-  const remoteConfig =
-    sourcePullRequest?.mergeCommit.remoteConfigHistory.edges?.[0]?.remoteConfig;
-
-  if (remoteConfig) {
-    return parseRemoteConfig(remoteConfig)?.branchLabelMapping;
-  }
 }
 
 function mergeByKey<T, K>(
