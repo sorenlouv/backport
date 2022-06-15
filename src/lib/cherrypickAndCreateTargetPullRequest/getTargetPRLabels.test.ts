@@ -14,6 +14,7 @@ const commits: Commit[] = [
       sha: 'd1b348e6213c5ad48653dfaad6eaf4928b2c688b',
     },
     sourcePullRequest: {
+      labels: ['backport-to-7.11'],
       number: 88188,
       url: 'https://github.com/elastic/kibana/pull/88188',
       mergeCommit: {
