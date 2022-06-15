@@ -82,6 +82,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
             message: 'My original commit message (#1000)',
           },
           sourcePullRequest: {
+            labels: [],
             url: 'foo',
             number: 1000,
             mergeCommit: {
@@ -105,6 +106,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
             message: 'My other commit message (#2000)',
           },
           sourcePullRequest: {
+            labels: [],
             url: 'foo',
             number: 2000,
             mergeCommit: {

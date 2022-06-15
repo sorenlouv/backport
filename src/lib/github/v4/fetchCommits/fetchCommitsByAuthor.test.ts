@@ -76,6 +76,7 @@ describe('fetchCommitsByAuthor', () => {
             message: 'Add witch (#85)',
           },
           sourcePullRequest: {
+            labels: ['my-label-b'],
             number: 85,
             url: 'https://github.com/elastic/kibana/pull/85',
             mergeCommit: {
@@ -97,6 +98,7 @@ describe('fetchCommitsByAuthor', () => {
               'Add SF mention (#80)\n\n* Add SF mention\r\n\r\n* Add several emojis!',
           },
           sourcePullRequest: {
+            labels: ['v6.3.0'],
             number: 80,
             url: 'https://github.com/elastic/kibana/pull/80',
             mergeCommit: {

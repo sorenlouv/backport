@@ -37,6 +37,7 @@ describe('getTargetBranches', () => {
             sha: 'abcd',
           },
           sourcePullRequest: {
+            labels: [],
             url: 'foo',
             number: 1337,
             mergeCommit: {
@@ -152,6 +153,7 @@ describe('getTargetBranches', () => {
             sha: 'my-sha',
           },
           sourcePullRequest: {
+            labels: [],
             url: 'foo',
             number: 62286,
             mergeCommit: {

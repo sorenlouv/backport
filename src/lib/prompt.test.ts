@@ -18,6 +18,7 @@ describe('prompt', () => {
               '[APM] Remove log-log descriptions from correlation charts (#119700)',
           },
           sourcePullRequest: {
+            labels: [],
             number: 119700,
             url: 'foo',
             mergeCommit: {
@@ -80,6 +81,7 @@ describe('prompt', () => {
             message: '[APM] Prefer service.name for logs correlation (#120694)',
           },
           sourcePullRequest: {
+            labels: [],
             number: 120694,
             url: 'foo',
             mergeCommit: {
@@ -102,6 +104,7 @@ describe('prompt', () => {
               '[APM] Disable telemetry in agent config endpoint (#120106)',
           },
           sourcePullRequest: {
+            labels: [],
             number: 120106,
             url: 'foo',
             mergeCommit: {
@@ -124,6 +127,7 @@ describe('prompt', () => {
               '[APM] Remove index_pattern.json and add custom field formatters (#119915)',
           },
           sourcePullRequest: {
+            labels: [],
             number: 119915,
             url: 'foo',
             mergeCommit: {
@@ -146,6 +150,7 @@ describe('prompt', () => {
               '[APM] Remove log-log descriptions from correlation charts (#119700)',
           },
           sourcePullRequest: {
+            labels: [],
             number: 119700,
             url: 'foo',
             mergeCommit: {

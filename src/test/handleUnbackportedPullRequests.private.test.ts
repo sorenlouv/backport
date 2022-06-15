@@ -24,6 +24,7 @@ describe('Handle unbackported pull requests', () => {
         sha: '343402a748be2375325b2730fa979bcea5b96ba1',
       },
       sourcePullRequest: {
+        labels: ['backport-to-7.x'],
         number: 8,
         url: 'https://github.com/backport-org/repo-with-conflicts/pull/8',
         mergeCommit: {

@@ -264,6 +264,7 @@ describe('parseSourceCommit', () => {
         branchLabelMapping,
       },
       sourcePullRequest: {
+        labels: ['v6.3.0', 'v6.2.0', 'v6.1.0'],
         number: 1234,
         url: 'https://github.com/elastic/kibana/pull/1234',
         mergeCommit: {

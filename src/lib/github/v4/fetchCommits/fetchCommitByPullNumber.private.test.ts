@@ -67,6 +67,7 @@ describe('fetchCommitByPullNumber', () => {
           sha: 'ee8c492334cef1ca077a56addb79a26f79821d2f',
         },
         sourcePullRequest: {
+          labels: ['v7.8.0', 'v7.9.0', 'v8.0.0'],
           number: 5,
           url: 'https://github.com/backport-org/backport-e2e/pull/5',
           mergeCommit: {

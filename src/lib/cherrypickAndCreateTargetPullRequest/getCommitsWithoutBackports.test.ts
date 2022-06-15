@@ -33,6 +33,7 @@ describe('getCommitsWithoutBackports', () => {
               sha: 'xyz',
             },
             sourcePullRequest: {
+              labels: [],
               url: 'https://www.github.com/foo/bar/pull/123',
               number: 123,
               mergeCommit: {
@@ -163,6 +164,7 @@ describe('getCommitsWithoutBackports', () => {
               sha: 'xyz',
             },
             sourcePullRequest: {
+              labels: [],
               number: 123,
               url: 'https://www.github.com/foo/bar/pull/123',
               mergeCommit: {
@@ -197,6 +199,7 @@ describe('getCommitsWithoutBackports', () => {
             sha: 'abc',
           },
           sourcePullRequest: {
+            labels: [],
             number: 123,
             url: 'https://www.github.com/foo/bar/pull/123',
             mergeCommit: {
@@ -256,6 +259,7 @@ describe('getCommitsWithoutBackports', () => {
               sha: 'xyz',
             },
             sourcePullRequest: {
+              labels: [],
               number: 123,
               url: 'https://www.github.com/foo/bar/pull/123',
               mergeCommit: {
@@ -292,6 +296,7 @@ describe('getCommitsWithoutBackports', () => {
             sha: 'abc',
           },
           sourcePullRequest: {
+            labels: [],
             url: 'https://www.github.com/foo/bar/pull/123',
             number: 123,
             mergeCommit: {
@@ -363,6 +368,7 @@ describe('getCommitsWithoutBackports', () => {
             sha: 'abc',
           },
           sourcePullRequest: {
+            labels: [],
             url: 'https://www.github.com/foo/bar/pull/123',
             number: 123,
             mergeCommit: {

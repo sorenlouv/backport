@@ -90,7 +90,7 @@ async function getRemoteConfigFileOptions(
 ): Promise<ConfigFileOptions | undefined> {
   if (skipRemoteConfig) {
     logger.info(
-      'Skipping remote config: `--skip-remote-config` specified via config file or cli'
+      'Remote config: Skipping. `--skip-remote-config` specified via config file or cli'
     );
     return;
   }
@@ -100,7 +100,7 @@ async function getRemoteConfigFileOptions(
       ?.remoteConfig;
 
   if (!remoteConfig) {
-    logger.info("Skipping remote config: remote config doesn't exist");
+    logger.info("Remote config: Skipping. Remote config doesn't exist");
     return;
   }
 
@@ -113,12 +113,12 @@ async function getRemoteConfigFileOptions(
       ]);
 
     if (isLocalConfigUntracked) {
-      logger.info('Skipping remote config: local config is new');
+      logger.info('Remote config: Skipping. Local config is new');
       return;
     }
 
     if (isLocalConfigModified) {
-      logger.info('Skipping remote config: local config is modified');
+      logger.info('Remote config: Skipping. Local config is modified');
       return;
     }
 
@@ -127,7 +127,7 @@ async function getRemoteConfigFileOptions(
       localCommitDate > Date.parse(remoteConfig.committedDate)
     ) {
       logger.info(
-        `Skipping remote config: local config is newer: ${new Date(
+        `Remote config: Skipping. Local config is newer: ${new Date(
           localCommitDate
         ).toISOString()} > ${remoteConfig.committedDate}`
       );
@@ -135,5 +135,6 @@ async function getRemoteConfigFileOptions(
     }
   }
 
+  logger.info('Remote config: Parsing.');
   return parseRemoteConfig(remoteConfig);
 }

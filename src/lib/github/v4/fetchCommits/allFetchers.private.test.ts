@@ -87,6 +87,13 @@ describe('allFetchers', () => {
         sha: 'd421ddcf6157150596581c7885afa3690cec6339',
       },
       sourcePullRequest: {
+        labels: [
+          'Team:apm',
+          'v8.0.0',
+          'release_note:skip',
+          'auto-backport',
+          'v8.1.0',
+        ],
         number: 121633,
         url: 'https://github.com/elastic/kibana/pull/121633',
         mergeCommit: {
