@@ -3,6 +3,7 @@ import { ora } from '../../../lib/ora';
 import { ValidConfigOptions } from '../../../options/options';
 import { PACKAGE_VERSION } from '../../../utils/packageVersion';
 import { BackportError } from '../../BackportError';
+import { getSourceBranchFromCommits } from '../../getSourceBranchFromCommits';
 import { logger } from '../../logger';
 import { Commit } from '../../sourceCommit/parseSourceCommit';
 import { getFirstLine, getShortSha } from '../commitFormatters';
@@ -110,9 +111,10 @@ export function getPullRequestBody({
     })
     .join('\n');
 
+  const sourceBranch = getSourceBranchFromCommits(commits);
   const defaultPrDescription = `# Backport
 
-This will backport the following commits from \`${commits[0].sourceBranch}\` to \`${targetBranch}\`:
+This will backport the following commits from \`${sourceBranch}\` to \`${targetBranch}\`:
 ${commitMessages}
 
 <!--- Backport version: ${PACKAGE_VERSION} -->
