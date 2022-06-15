@@ -1,6 +1,7 @@
 import { uniq } from 'lodash';
 import { Commit } from '../../entrypoint.module';
 import { filterNil } from '../../utils/filterEmpty';
+import { getSourceBranchFromCommits } from '../getSourceBranchFromCommits';
 import { logger } from '../logger';
 
 export function getTargetPRLabels({
@@ -37,5 +38,11 @@ export function getTargetPRLabels({
     })
     .filter(filterNil);
 
-  return uniq(labels);
+  const sourceBranch = getSourceBranchFromCommits(commits);
+
+  return uniq(labels).map((label) => {
+    return label
+      .replaceAll('{targetBranch}', targetBranch)
+      .replaceAll('{sourceBranch}', sourceBranch);
+  });
 }

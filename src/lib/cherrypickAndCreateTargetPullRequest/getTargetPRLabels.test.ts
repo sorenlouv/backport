@@ -54,6 +54,28 @@ const commits: Commit[] = [
 ];
 
 describe('getTargetPRLabels', () => {
+  describe('replaces template values', () => {
+    it('replaces {targetBranch}', () => {
+      const labels = getTargetPRLabels({
+        interactive: false,
+        commits,
+        targetPRLabels: ['backported-to-{targetBranch}'],
+        targetBranch: '7.x',
+      });
+      expect(labels).toEqual(['backported-to-7.x']);
+    });
+
+    it('replaces {sourceBranch}', () => {
+      const labels = getTargetPRLabels({
+        interactive: false,
+        commits,
+        targetPRLabels: ['backported-from-{sourceBranch}'],
+        targetBranch: '7.x',
+      });
+      expect(labels).toEqual(['backported-from-master']);
+    });
+  });
+
   describe('when label is static', () => {
     describe('and when interactive=false', () => {
       it('adds static label for 7.11', () => {
