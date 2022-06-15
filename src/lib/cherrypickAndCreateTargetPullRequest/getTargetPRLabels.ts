@@ -15,6 +15,7 @@ export function getTargetPRLabels({
   commits: Commit[];
   targetBranch: string;
 }) {
+  const sourceBranch = getSourceBranchFromCommits(commits);
   const labels = commits
     .flatMap((c) => {
       const targetPullRequest = c.targetPullRequestStates.find(
@@ -36,13 +37,12 @@ export function getTargetPRLabels({
         return targetPullRequest.label?.replace(regex, targetPRLabel);
       });
     })
-    .filter(filterNil);
+    .filter(filterNil)
+    .map((label) => {
+      return label
+        .replaceAll('{targetBranch}', targetBranch)
+        .replaceAll('{sourceBranch}', sourceBranch);
+    });
 
-  const sourceBranch = getSourceBranchFromCommits(commits);
-
-  return uniq(labels).map((label) => {
-    return label
-      .replaceAll('{targetBranch}', targetBranch)
-      .replaceAll('{sourceBranch}', sourceBranch);
-  });
+  return uniq(labels);
 }
