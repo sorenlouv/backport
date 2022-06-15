@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { flatten } from 'lodash';
 import { ValidConfigOptions } from '../../options/options';
+import { getSourceBranchFromCommits } from '../getSourceBranchFromCommits';
 import {
   createBackportBranch,
   deleteBackportBranch,
@@ -23,6 +24,7 @@ import { sequentially } from '../sequentially';
 import { Commit } from '../sourceCommit/parseSourceCommit';
 import { getBackportBranchName } from './getBackportBranchName';
 import { getMergeCommits } from './getMergeCommit';
+import { getTargetPRLabels } from './getTargetPRLabels';
 import { waitForCherrypick } from './waitForCherrypick';
 
 export async function cherrypickAndCreateTargetPullRequest({
@@ -94,10 +96,16 @@ export async function cherrypickAndCreateTargetPullRequest({
 
   // add labels to target pull request
   if (options.targetPRLabels.length > 0) {
+    const labels = getTargetPRLabels({
+      interactive: options.interactive,
+      targetPRLabels: options.targetPRLabels,
+      commits,
+      targetBranch,
+    });
     await addLabelsToPullRequest({
       ...options,
       pullNumber: targetPullRequest.number,
-      labels: options.targetPRLabels,
+      labels,
     });
   }
 
@@ -124,11 +132,4 @@ export async function cherrypickAndCreateTargetPullRequest({
   consoleLog(`View pull request: ${targetPullRequest.url}`);
 
   return targetPullRequest;
-}
-
-function getSourceBranchFromCommits(commits: Commit[]) {
-  // sourceBranch should be the same for all commits, so picking `sourceBranch` from the first commit should be fine 🤞
-  // this is specifically needed when backporting a PR like `backport --pr 123` and the source PR was merged to a non-default (aka non-master) branch.
-  const { sourceBranch } = commits[0];
-  return sourceBranch;
 }

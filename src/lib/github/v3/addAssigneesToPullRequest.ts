@@ -34,7 +34,7 @@ export async function addAssigneesToPullRequest({
   const spinner = ora(interactive, text).start();
 
   if (dryRun) {
-    spinner.stop();
+    spinner.succeed();
     return;
   }
 

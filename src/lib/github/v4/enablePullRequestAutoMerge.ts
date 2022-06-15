@@ -23,7 +23,7 @@ export async function enablePullRequestAutoMerge(
   const spinner = ora(options.interactive, text).start();
 
   if (options.dryRun) {
-    spinner.stop();
+    spinner.succeed();
     return;
   }
 
