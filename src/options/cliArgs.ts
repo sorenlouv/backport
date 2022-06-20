@@ -169,6 +169,12 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       type: 'string',
     })
 
+    .option('includePrBodyJson', {
+      description:
+        'Enable adding backport-related data to PR description using hidden JSON. Defaults to false',
+      type: 'boolean',
+    })
+
     .option('nonInteractive', {
       alias: ['json'],
       description: 'Disable interactive prompts and return response as JSON',
