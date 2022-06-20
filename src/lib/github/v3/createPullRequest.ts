@@ -122,10 +122,35 @@ ${commitMessages}
 ### Questions ?
 Please refer to the [Backport tool documentation](https://github.com/sqren/backport)`;
 
-  return (options.prDescription ?? defaultPrDescription)
+  let body = (options.prDescription ?? defaultPrDescription)
     .replaceAll('{targetBranch}', targetBranch)
     .replaceAll('{commitMessages}', commitMessages)
     .replaceAll('{defaultPrDescription}', defaultPrDescription);
+
+  if (options.includePrBodyJson) {
+    const backportInfo = {
+      commits: commits.map((c) => {
+        return {
+          sourcePullRequest: c.sourcePullRequest
+            ? {
+                number: c.sourcePullRequest.number,
+                url: c.sourcePullRequest.url,
+              }
+            : undefined,
+          sourceCommit: {
+            commitedDate: c.sourceCommit.committedDate,
+            sha: c.sourceCommit.sha,
+          },
+          sourceBranch: c.sourceBranch,
+          author: c.author,
+        };
+      }),
+    };
+
+    body += `\n\n<!--BACKPORT ${JSON.stringify(backportInfo)} BACKPORT-->`;
+  }
+
+  return body;
 }
 
 export function getTitle({

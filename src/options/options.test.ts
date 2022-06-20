@@ -220,6 +220,7 @@ describe('getOptions', () => {
       fork: true,
       gitHostname: 'github.com',
       githubApiBaseUrlV4: 'http://localhost/graphql',
+      includePrBodyJson: false,
       interactive: true,
       isRepoPrivate: false,
       maxNumber: 10,

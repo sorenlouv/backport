@@ -359,6 +359,54 @@ describe('getPullRequestBody', () => {
       text to append"
     `);
   });
+
+  it('includes json in the PR body', () => {
+    expect(
+      getPullRequestBody({
+        options: { includePrBodyJson: true } as ValidConfigOptions,
+        commits: [
+          {
+            author: {
+              email: 'soren.louv@elastic.co',
+              name: 'Søren Louv-Jansen',
+            },
+
+            sourcePullRequest: {
+              number: 55,
+              url: 'https://github.com/backport-org/different-merge-strategies/pull/55',
+              mergeCommit: {
+                sha: 'abcdefghi',
+                message: 'My commit message (#55)',
+              },
+            },
+
+            sourceCommit: {
+              committedDate: '2020',
+              sha: 'abcdefghi',
+              message: 'My commit message (#55)',
+            },
+
+            expectedTargetPullRequests: [],
+            sourceBranch: 'master',
+          },
+        ],
+
+        targetBranch: '7.x',
+      })
+    ).toMatchInlineSnapshot(`
+      "# Backport
+
+      This will backport the following commits from \`master\` to \`7.x\`:
+       - [My commit message (#55)](https://github.com/backport-org/different-merge-strategies/pull/55)
+
+      <!--- Backport version: 1.2.3-mocked -->
+
+      ### Questions ?
+      Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
+
+      <!--BACKPORT {\\"commits\\":[{\\"sourcePullRequest\\":{\\"number\\":55,\\"url\\":\\"https://github.com/backport-org/different-merge-strategies/pull/55\\"},\\"sourceCommit\\":{\\"commitedDate\\":\\"2020\\",\\"sha\\":\\"abcdefghi\\"},\\"sourceBranch\\":\\"master\\",\\"author\\":{\\"email\\":\\"soren.louv@elastic.co\\",\\"name\\":\\"Søren Louv-Jansen\\"}}]} BACKPORT-->"
+    `);
+  });
 });
 
 describe('getTitle', () => {

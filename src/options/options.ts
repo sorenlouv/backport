@@ -38,6 +38,7 @@ export const defaultConfigOptions = {
   details: false,
   fork: true,
   gitHostname: 'github.com',
+  includePrBodyJson: false,
   interactive: true,
   maxNumber: 10,
   multipleBranches: true,

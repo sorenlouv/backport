@@ -39,6 +39,7 @@ type Options = Partial<{
   gitHostname: string;
   githubApiBaseUrlV3: string;
   githubApiBaseUrlV4: string;
+  includePrBodyJson: boolean;
   interactive: boolean; // only available via cli and module options (not project or global config)
   logFilePath: string;
   ls: boolean; // only available via cli
