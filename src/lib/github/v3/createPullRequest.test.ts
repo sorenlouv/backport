@@ -1,3 +1,4 @@
+import { Commit } from '../../../entrypoint.module';
 import { ValidConfigOptions } from '../../../options/options';
 import { getPullRequestBody, getTitle } from './createPullRequest';
 
@@ -290,61 +291,32 @@ describe('getPullRequestBody', () => {
     `);
   });
 
-  it('appends text to the default descriptions', () => {
-    expect(
-      getPullRequestBody({
-        options: {
-          prDescription: '{defaultPrDescription}\n\ntext to append',
-        } as ValidConfigOptions,
-        commits: [
-          {
-            author: {
-              email: 'soren.louv@elastic.co',
-              name: 'Søren Louv-Jansen',
-            },
-            sourcePullRequest: {
-              labels: [],
-              number: 55,
-              url: 'https://github.com/backport-org/different-merge-strategies/pull/55',
-              mergeCommit: {
-                sha: 'abcdefghijklm',
-                message: 'My commit message (#55)',
-              },
-            },
+  it('replaces {defaultPrDescription} with the default pr description', () => {
+    const commits = [
+      {
+        sourcePullRequest: {
+          url: 'https://github.com/backport-org/different-merge-strategies/pull/55',
+        },
+        sourceCommit: {
+          sha: 'abcdefghijklm',
+          message: 'My commit message (#55)',
+        },
+        sourceBranch: 'main',
+      },
+      {
+        sourceCommit: {
+          sha: 'qwertyuiop',
+          message: 'Another commit message',
+        },
+      },
+    ] as Commit[];
 
-            suggestedTargetBranches: [],
-            sourceCommit: {
-              branchLabelMapping: {},
-              committedDate: '',
-              sha: 'abcdefghijklm',
-              message: 'My commit message (#55)',
-            },
+    const options = {
+      prDescription: '{defaultPrDescription}\n\ntext to append',
+    } as ValidConfigOptions;
 
-            sourceBranch: 'main',
-            targetPullRequestStates: [],
-          },
-
-          {
-            author: {
-              email: 'soren.louv@elastic.co',
-              name: 'Søren Louv-Jansen',
-            },
-            suggestedTargetBranches: [],
-            sourceCommit: {
-              branchLabelMapping: {},
-              committedDate: '',
-              sha: 'qwertyuiop',
-              message: 'Another commit message',
-            },
-
-            sourceBranch: 'main',
-            targetPullRequestStates: [],
-          },
-        ],
-
-        targetBranch: '7.x',
-      })
-    ).toMatchInlineSnapshot(`
+    expect(getPullRequestBody({ options, commits, targetBranch: '7.x' }))
+      .toMatchInlineSnapshot(`
       "# Backport
 
       This will backport the following commits from \`main\` to \`7.x\`:
@@ -358,6 +330,33 @@ describe('getPullRequestBody', () => {
 
       text to append"
     `);
+  });
+
+  it('replaces {commits} with a stringified commits object', () => {
+    const commits = [
+      {
+        sourceCommit: {
+          sha: 'foo',
+          message: 'My commit message (#55)',
+        },
+      },
+      {
+        sourceCommit: {
+          sha: 'bar',
+          message: 'Another commit message',
+        },
+      },
+    ] as Commit[];
+
+    const options = {
+      prDescription: 'Just output the commits: {commits}',
+    } as ValidConfigOptions;
+
+    expect(
+      getPullRequestBody({ options, commits, targetBranch: '7.x' })
+    ).toMatchInlineSnapshot(
+      `"Just output the commits: [{\\"sourceCommit\\":{\\"sha\\":\\"foo\\",\\"message\\":\\"My commit message (#55)\\"}},{\\"sourceCommit\\":{\\"sha\\":\\"bar\\",\\"message\\":\\"Another commit message\\"}}]"`
+    );
   });
 });
 
