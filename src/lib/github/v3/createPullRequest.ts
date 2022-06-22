@@ -125,7 +125,8 @@ Please refer to the [Backport tool documentation](https://github.com/sqren/backp
   return (options.prDescription ?? defaultPrDescription)
     .replaceAll('{targetBranch}', targetBranch)
     .replaceAll('{commitMessages}', commitMessages)
-    .replaceAll('{defaultPrDescription}', defaultPrDescription);
+    .replaceAll('{defaultPrDescription}', defaultPrDescription)
+    .replaceAll('{commits}', JSON.stringify(commits));
 }
 
 export function getTitle({
