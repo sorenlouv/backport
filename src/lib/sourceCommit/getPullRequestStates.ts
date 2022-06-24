@@ -198,7 +198,7 @@ function getTargetBranchesFromLabels(
   return uniqBy(targetBranchesFromLabels, ({ branch }) => branch);
 }
 
-function getTargetBranchFromLabel({
+export function getTargetBranchFromLabel({
   branchLabelMapping,
   label,
 }: {
