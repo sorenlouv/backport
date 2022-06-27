@@ -23,11 +23,12 @@ export type {
   BackportResponse,
   BackportSuccessResponse,
 } from './backportRun';
+export { getTargetBranchFromLabel } from './lib/sourceCommit/getPullRequestStates';
 export { BackportError } from './lib/BackportError';
 export type { Commit } from './lib/sourceCommit/parseSourceCommit';
 export type { ConfigFileOptions } from './options/ConfigOptions';
-export { fetchRemoteProjectConfig as getRemoteProjectConfig } from './lib/github/v4/fetchRemoteProjectConfig';
 export { getGlobalConfig as getLocalGlobalConfig } from './options/config/globalConfig';
+export { getOptionsFromGithub };
 
 export function backportRun({
   options = {},
