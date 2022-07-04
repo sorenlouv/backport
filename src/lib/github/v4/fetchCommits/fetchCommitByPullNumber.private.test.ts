@@ -2,19 +2,19 @@ import { print } from 'graphql';
 import { getDevAccessToken } from '../../../../test/private/getDevAccessToken';
 import { Commit } from '../../../sourceCommit/parseSourceCommit';
 import * as apiRequestV4Module from '../apiRequestV4';
-import { fetchCommitByPullNumber } from './fetchCommitByPullNumber';
+import { fetchCommitsByPullNumber } from './fetchCommitByPullNumber';
 
 const accessToken = getDevAccessToken();
 
 describe('fetchCommitByPullNumber', () => {
   describe('snapshot request/response', () => {
     let spy: jest.SpyInstance;
-    let commit: Commit;
+    let commits: Commit[];
 
     beforeEach(async () => {
       spy = jest.spyOn(apiRequestV4Module, 'apiRequestV4');
 
-      commit = await fetchCommitByPullNumber({
+      commits = await fetchCommitsByPullNumber({
         repoOwner: 'elastic',
         repoName: 'kibana',
         accessToken,
@@ -31,7 +31,7 @@ describe('fetchCommitByPullNumber', () => {
       }, {});
 
       const queryNames = Object.keys(queries);
-      expect(queryNames).toEqual(['CommitByPullNumber']);
+      expect(queryNames).toEqual(['CommitByPullNumber', 'CommitsBySha']);
 
       queryNames.forEach((name) => {
         expect(queries[name]).toMatchSnapshot(`Query: ${name}`);
@@ -39,12 +39,12 @@ describe('fetchCommitByPullNumber', () => {
     });
 
     it('returns the correct response', async () => {
-      expect(commit).toMatchSnapshot();
+      expect(commits).toMatchSnapshot();
     });
   });
 
   describe('when PR was merged', () => {
-    it('is returned', async () => {
+    it('the pull request response is returned', async () => {
       const options = {
         accessToken,
         pullNumber: 5,
@@ -119,7 +119,7 @@ describe('fetchCommitByPullNumber', () => {
         ],
       };
 
-      expect(await fetchCommitByPullNumber(options)).toEqual(expectedCommit);
+      expect(await fetchCommitsByPullNumber(options)).toEqual([expectedCommit]);
     });
   });
 
@@ -133,7 +133,7 @@ describe('fetchCommitByPullNumber', () => {
         sourceBranch: 'main',
       };
 
-      await expect(fetchCommitByPullNumber(options)).rejects.toThrowError(
+      await expect(fetchCommitsByPullNumber(options)).rejects.toThrowError(
         `The PR #11 is not merged`
       );
     });
@@ -149,7 +149,7 @@ describe('fetchCommitByPullNumber', () => {
         sourceBranch: 'main',
       };
 
-      await expect(fetchCommitByPullNumber(options)).rejects.toThrowError(
+      await expect(fetchCommitsByPullNumber(options)).rejects.toThrowError(
         `Could not resolve to a PullRequest with the number of 9999999999999. (Github API v4)`
       );
     });

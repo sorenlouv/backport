@@ -1,6 +1,6 @@
 import { getDevAccessToken } from '../../../../test/private/getDevAccessToken';
 import { Commit } from '../../../sourceCommit/parseSourceCommit';
-import { fetchCommitByPullNumber } from './fetchCommitByPullNumber';
+import { fetchCommitsByPullNumber } from './fetchCommitByPullNumber';
 import { fetchCommitBySha } from './fetchCommitBySha';
 import { fetchCommitsByAuthor } from './fetchCommitsByAuthor';
 import { fetchPullRequestsBySearchQuery } from './fetchPullRequestsBySearchQuery';
@@ -32,7 +32,7 @@ describe('allFetchers', () => {
       throw new Error('Missing pull number!');
     }
 
-    const commitByPullNumber = await fetchCommitByPullNumber({
+    const commitByPullNumber = await fetchCommitsByPullNumber({
       repoOwner: 'elastic',
       repoName: 'kibana',
       accessToken,
@@ -40,7 +40,7 @@ describe('allFetchers', () => {
       sourceBranch: 'master',
     });
 
-    expect(commitByAuthor).toEqual(commitByPullNumber);
+    expect(commitByAuthor).toEqual(commitByPullNumber[0]);
   });
 
   it('matches commitByAuthor with commitBySha', async () => {

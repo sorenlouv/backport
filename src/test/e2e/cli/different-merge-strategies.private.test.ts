@@ -22,22 +22,26 @@ describe('different-merge-strategies', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "? Select commit (Use arrow keys)
-      ❯ 1. Merge pull request #9 from backport-org/many-merge-commits  
-        2. Merge strategy: Eighth of many merges  
-        3. Merge strategy: Seventh of many merges  
-        4. Merge strategy: Sixth of many merges  
-        5. Merge strategy: Fifth of many merges  
-        6. Merge strategy: Fourth of many merges  
-        7. Merge strategy: Third of many merges  
-        8. Merge strategy: Second of many merges  
-        9. Merge strategy: First of many merges  
-        10.Using squash to merge commits (#3)  
-        11.Rebase strategy: Second commit  
-        12.Rebase strategy: First commit  
-        13.Merge pull request #1 from backport-org/merge-strategy  
-        14.Merge strategy: Second commit  
-        15.Merge strategy: First commit  
-        16.Initial commit"
+      ❯ 1. Downsides with \\"Rebase and merge\\"  
+        2. Add description for \\"Rebase and merge\\"  
+        3. Add \\"Rebase and merge\\" header  
+        4. Create rebase-and-merge.txt  
+        5. Merge pull request #9 from backport-org/many-merge-commits  
+        6. Merge strategy: Eighth of many merges  
+        7. Merge strategy: Seventh of many merges  
+        8. Merge strategy: Sixth of many merges  
+        9. Merge strategy: Fifth of many merges  
+        10.Merge strategy: Fourth of many merges  
+        11.Merge strategy: Third of many merges  
+        12.Merge strategy: Second of many merges  
+        13.Merge strategy: First of many merges  
+        14.Using squash to merge commits (#3)  
+        15.Rebase strategy: Second commit  
+        16.Rebase strategy: First commit  
+        17.Merge pull request #1 from backport-org/merge-strategy  
+        18.Merge strategy: Second commit  
+        19.Merge strategy: First commit  
+        20.Initial commit"
     `);
   });
 
@@ -95,7 +99,7 @@ describe('different-merge-strategies', () => {
 
     it('backports all immediate children of the merge commit', async () => {
       const commits = await listCommits(sandboxPath);
-      expect(commits).toEqual([
+      expect(commits.slice(0, 8)).toEqual([
         'Merge strategy: Eighth of many merges',
         'Merge strategy: Seventh of many merges',
         'Merge strategy: Sixth of many merges',
@@ -104,7 +108,6 @@ describe('different-merge-strategies', () => {
         'Merge strategy: Third of many merges',
         'Merge strategy: Second of many merges',
         'Merge strategy: First of many merges',
-        'Initial commit',
       ]);
     });
   });
@@ -129,10 +132,9 @@ describe('different-merge-strategies', () => {
 
     it('backports all immediate children of the merge commit', async () => {
       const commits = await listCommits(sandboxPath);
-      expect(commits).toEqual([
+      expect(commits.slice(0, 2)).toEqual([
         'Merge strategy: Second commit',
         'Merge strategy: First commit',
-        'Initial commit',
       ]);
     });
   });
@@ -234,7 +236,7 @@ describe('different-merge-strategies', () => {
 
     it('backports all immediate children of the merge commit', async () => {
       const commits = await listCommits(sandboxPath);
-      expect(commits).toEqual([
+      expect(commits.slice(0, 8)).toEqual([
         'Merge strategy: Eighth of many merges',
         'Merge strategy: Seventh of many merges',
         'Merge strategy: Sixth of many merges',
@@ -243,8 +245,48 @@ describe('different-merge-strategies', () => {
         'Merge strategy: Third of many merges',
         'Merge strategy: Second of many merges',
         'Merge strategy: First of many merges',
-        'Create new-file-added-with-many-merge-commits.txt',
-        'Initial commit',
+      ]);
+    });
+  });
+
+  describe('when using "Rebase and Merge" strategy', () => {
+    let sandboxPath: string;
+    let output: string;
+    beforeAll(async () => {
+      sandboxPath = getSandboxPath({ filename: __filename });
+      await resetSandbox(sandboxPath);
+      const res = await runBackportViaCli(
+        [
+          '--branch=7.x',
+          '--repo=backport-org/different-merge-strategies',
+          `--accessToken=${accessToken}`,
+          `--dir=${sandboxPath}`,
+          '--pr=21',
+          '--dry-run',
+        ],
+        { showOra: true }
+      );
+      output = res.output;
+    });
+
+    it('backports all commits', async () => {
+      const commits = await (await listCommits(sandboxPath)).slice(0, 3);
+      expect(commits).toEqual([
+        'Downsides with "Rebase and merge"',
+        'Add description for "Rebase and merge"',
+        'Add "Rebase and merge" header',
+      ]);
+    });
+
+    it('shows every commit in output', async () => {
+      expect(
+        output
+          .split('\n')
+          .filter((line) => line.startsWith('✔ Cherry-picking:'))
+      ).toEqual([
+        '✔ Cherry-picking: Add "Rebase and merge" header',
+        '✔ Cherry-picking: Add description for "Rebase and merge"',
+        '✔ Cherry-picking: Downsides with "Rebase and merge"',
       ]);
     });
   });
