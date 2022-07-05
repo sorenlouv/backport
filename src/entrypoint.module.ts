@@ -1,6 +1,6 @@
 import { backportRun as run } from './backportRun';
 import { BackportResponse } from './backportRun';
-import { fetchCommitByPullNumber } from './lib/github/v4/fetchCommits/fetchCommitByPullNumber';
+import { fetchCommitsByPullNumber } from './lib/github/v4/fetchCommits/fetchCommitByPullNumber';
 import { fetchCommitBySha } from './lib/github/v4/fetchCommits/fetchCommitBySha';
 import { fetchCommitsByAuthor } from './lib/github/v4/fetchCommits/fetchCommitsByAuthor';
 import { fetchPullRequestsBySearchQuery } from './lib/github/v4/fetchCommits/fetchPullRequestsBySearchQuery';
@@ -82,15 +82,17 @@ export async function getCommits(options: {
       ? options.pullNumber
       : [options.pullNumber];
 
-    return Promise.all(
+    const nestedCommits = await Promise.all(
       pullNumbers.map((pullNumber) =>
-        fetchCommitByPullNumber({
+        fetchCommitsByPullNumber({
           ...optionsFromGithub,
           ...options,
           pullNumber,
         })
       )
     );
+
+    return nestedCommits.flat();
   }
 
   if (options.sha) {

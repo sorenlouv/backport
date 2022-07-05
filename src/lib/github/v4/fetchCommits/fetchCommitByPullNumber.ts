@@ -2,15 +2,12 @@ import gql from 'graphql-tag';
 import { ValidConfigOptions } from '../../../../options/options';
 import { BackportError } from '../../../BackportError';
 import { swallowMissingConfigFileException } from '../../../remoteConfig';
-import {
-  Commit,
-  SourceCommitWithTargetPullRequest,
-  SourceCommitWithTargetPullRequestFragment,
-  parseSourceCommit,
-} from '../../../sourceCommit/parseSourceCommit';
+import { Commit } from '../../../sourceCommit/parseSourceCommit';
 import { apiRequestV4 } from '../apiRequestV4';
+import { fetchCommitBySha } from './fetchCommitBySha';
+import { fetchCommitsForRebaseAndMergeStrategy } from './fetchCommitsForRebaseAndMergeStrategy';
 
-export async function fetchCommitByPullNumber(options: {
+export async function fetchCommitsByPullNumber(options: {
   accessToken: string;
   branchLabelMapping?: ValidConfigOptions['branchLabelMapping'];
   githubApiBaseUrlV4?: string;
@@ -18,7 +15,7 @@ export async function fetchCommitByPullNumber(options: {
   repoName: string;
   repoOwner: string;
   sourceBranch: string;
-}): Promise<Commit> {
+}): Promise<Commit[]> {
   const {
     accessToken,
     githubApiBaseUrlV4 = 'https://api.github.com/graphql',
@@ -35,14 +32,28 @@ export async function fetchCommitByPullNumber(options: {
     ) {
       repository(owner: $repoOwner, name: $repoName) {
         pullRequest(number: $pullNumber) {
+          # used to determine if "Rebase and Merge" strategy was used
+          commits {
+            totalCount
+          }
+
           mergeCommit {
-            ...SourceCommitWithTargetPullRequestFragment
+            oid
+
+            # used to determine if "Rebase and Merge" strategy was used
+            committedDate
+            history(first: 2) {
+              edges {
+                node {
+                  message
+                  committedDate
+                }
+              }
+            }
           }
         }
       }
     }
-
-    ${SourceCommitWithTargetPullRequestFragment}
   `;
 
   let res: CommitByPullNumberResponse;
@@ -66,17 +77,50 @@ export async function fetchCommitByPullNumber(options: {
     throw new BackportError(`The PR #${pullNumber} does not exist`);
   }
 
-  const sourceCommit = pullRequestNode.mergeCommit;
-  if (sourceCommit === null) {
+  const { mergeCommit } = pullRequestNode;
+  if (mergeCommit === null) {
     throw new BackportError(`The PR #${pullNumber} is not merged`);
   }
-  return parseSourceCommit({ options, sourceCommit });
+
+  const possiblyRebaseAndMergeStrategy =
+    pullRequestNode.commits.totalCount > 0 &&
+    mergeCommit.history.edges.every(
+      (c) => c.node.committedDate === mergeCommit.committedDate
+    );
+
+  if (possiblyRebaseAndMergeStrategy) {
+    const commits = await fetchCommitsForRebaseAndMergeStrategy(
+      options,
+      pullRequestNode.commits.totalCount
+    );
+    if (commits) {
+      return commits;
+    }
+  }
+
+  const commit = await fetchCommitBySha({ ...options, sha: mergeCommit.oid });
+  return [commit];
 }
 
 interface CommitByPullNumberResponse {
   repository: {
     pullRequest: {
-      mergeCommit: SourceCommitWithTargetPullRequest | null;
+      commits: {
+        totalCount: number;
+      };
+
+      mergeCommit: {
+        oid: string;
+        committedDate: string;
+        history: {
+          edges: {
+            node: {
+              message: string;
+              committedDate: string;
+            };
+          }[];
+        };
+      } | null;
     } | null;
   };
 }

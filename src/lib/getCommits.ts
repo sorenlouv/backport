@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import { ValidConfigOptions } from '../options/options';
 import { BackportError } from './BackportError';
 import { getFirstLine, getShortSha } from './github/commitFormatters';
-import { fetchCommitByPullNumber } from './github/v4/fetchCommits/fetchCommitByPullNumber';
+import { fetchCommitsByPullNumber } from './github/v4/fetchCommits/fetchCommitByPullNumber';
 import { fetchCommitBySha } from './github/v4/fetchCommits/fetchCommitBySha';
 import { fetchCommitsByAuthor } from './github/v4/fetchCommits/fetchCommitsByAuthor';
 import { fetchPullRequestsBySearchQuery } from './github/v4/fetchCommits/fetchPullRequestsBySearchQuery';
@@ -48,11 +48,12 @@ export async function getCommits(options: ValidConfigOptions) {
         .map((pullNumber) => `#${pullNumber}`)
         .join(', ')}`;
 
-      const commits = await Promise.all(
+      const nestedCommits = await Promise.all(
         pullNumbers.map((pullNumber) =>
-          fetchCommitByPullNumber({ ...options, pullNumber })
+          fetchCommitsByPullNumber({ ...options, pullNumber })
         )
       );
+      const commits = nestedCommits.flat();
 
       // add styles to make it look like a prompt question
       spinner.stopAndPersist(
