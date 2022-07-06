@@ -145,7 +145,9 @@ Default: `false`
 
 #### `autoMerge`
 
-Automatically merge the backport pull request when `true`. `false` by default.
+Automatically merge the backport pull request when `true`. 
+
+Default: `false`
 
 ```json
 {
@@ -156,6 +158,7 @@ Automatically merge the backport pull request when `true`. `false` by default.
 #### `autoMergeMethod`
 
 When `autoMerge: true` the backport pull request will be merged with one of the following methods: `merge`, `rebase`, `squash`.
+
 Default: `merge`
 
 ```json
