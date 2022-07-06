@@ -160,7 +160,7 @@ Default: `merge`
 
 ```json
 {
-  "autoMergeMethod": true
+  "autoMergeMethod": "squash"
 }
 ```
 
