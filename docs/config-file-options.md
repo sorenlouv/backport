@@ -134,11 +134,33 @@ To view commits form all users (equivalent to `backport --all`):
 
 #### `autoAssign`
 
-Automatically add the current user as assignee to the target pull request
+Automatically add the current user as assignee to the target pull request.
+Default: `false`
 
 ```json
 {
   "autoAssign": true
+}
+```
+
+#### `autoMerge`
+
+Automatically merge the backport pull request when `true`. `false` by default.
+
+```json
+{
+  "autoMerge": true
+}
+```
+
+#### `autoMergeMethod`
+
+When `autoMerge: true` the backport pull request will be merged with one of the following methods: `merge`, `rebase`, `squash`.
+Default: `merge`
+
+```json
+{
+  "autoMergeMethod": true
 }
 ```
 
