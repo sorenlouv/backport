@@ -150,9 +150,14 @@ describe('enablePullRequestAutoMerge', () => {
   });
 
   it('should not enable auto-merge via rebase because it is disallowed', async () => {
-    await enablePullRequestAutoMerge(
-      { ...options, autoMergeMethod: 'rebase' },
-      pullNumber
+    await expect(
+      async () =>
+        await enablePullRequestAutoMerge(
+          { ...options, autoMergeMethod: 'rebase' },
+          pullNumber
+        )
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"[\\"Merge method rebase merging is not allowed on this repository\\"] (Github API v4)"`
     );
 
     // ensure Github API reflects the change before querying
