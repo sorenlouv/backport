@@ -27,6 +27,10 @@ export async function autoMergeNowOrLater(
         throw e;
       }
 
+      logger.info(
+        `Auto merge: Could not enable auto merge for PR "#${pullNumber}" due to ${e.message}`
+      );
+
       const isMissingStatusChecks = e.githubResponse.data.errors?.some(
         (e) =>
           e.type === 'UNPROCESSABLE' &&
@@ -39,10 +43,6 @@ export async function autoMergeNowOrLater(
       if (!isMissingStatusChecks) {
         throw e;
       }
-
-      logger.info(
-        `Auto merge: Could not enable auto merge for PR "#${pullNumber}" due to ${e.message}`
-      );
 
       try {
         await mergePullRequest(options, pullNumber);
@@ -64,6 +64,7 @@ export async function autoMergeNowOrLater(
 
     spinner.succeed();
   } catch (e) {
+    logger.warn(`Auto merge: An error occurred ${e}`);
     spinner.fail();
   }
 }
