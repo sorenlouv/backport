@@ -46,11 +46,16 @@ Add a [project config](/docs/config-file-options.md#project-config-backportrcjso
 ```js
 // .backportrc.json
 {
+  // Required
   "repoOwner": "elastic",
   "repoName": "kibana",
 
   // the branches available to backport to
   "targetBranchChoices": ["main", "6.3", "6.2", "6.1", "6.0"],
+
+  // Optional: automatically merge backport PR
+  "autoMerge": true,
+  "autoMergeMethod": "squash",
 
   // Optional: Automatically detect which branches a pull request should be backported to based on the pull request labels.
   // In this case, adding the label "backport-to-production" will backport the PR to the "production" branch
@@ -78,9 +83,10 @@ npx backport
 _This will start an interactive prompt. You can use your keyboards arrow keys to choose options, `<space>` to select checkboxes and `<enter>` to proceed._
 
 ## Documentation
- - [Config file options](/docs/config-file-options.md)
- - [CLI options](/docs/cli-options.md)
- - [Module API](/docs/api.md)
+
+- [Config file options](/docs/config-file-options.md)
+- [CLI options](/docs/cli-options.md)
+- [Module API](/docs/api.md)
 
 ### What is backporting?
 
