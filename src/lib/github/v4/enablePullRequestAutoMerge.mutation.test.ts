@@ -13,6 +13,7 @@ import { fetchPullRequestAutoMergeMethod } from './fetchPullRequestAutoMergeMeth
 const TEST_REPO_OWNER = 'backport-org';
 const TEST_REPO_NAME = 'repo-with-auto-merge-enabled';
 const INITIAL_SHA = '70aa879411e95b6662f8ddcb80a944fc4444579f';
+const accessToken = getDevAccessToken();
 
 jest.setTimeout(10_000);
 
@@ -37,9 +38,13 @@ async function closePr(octokit: Octokit, pullNumber: number) {
   });
 }
 
-async function createPr(options: ValidConfigOptions, branchName: string) {
+async function createPr(
+  options: ValidConfigOptions,
+  branchName: string,
+  baseBranch: string
+) {
   const prPayload: PullRequestPayload = {
-    base: '7.x',
+    base: baseBranch,
     head: branchName,
     body: 'testing...',
     owner: TEST_REPO_OWNER,
@@ -80,104 +85,154 @@ async function addCommit(octokit: Octokit) {
   });
 
   const sha = res.data.commit.sha;
+
+  if (!sha) {
+    throw new Error('Missing sha');
+  }
+
   return sha;
 }
 
-// Error: cannot have more than 100 pull requests with the same head_sha
-// TODO: have unique head sha for every test run
-// eslint-disable-next-line jest/no-disabled-tests
 describe('enablePullRequestAutoMerge', () => {
-  let pullNumber: number;
-  let branchName: string;
-  let octokit: Octokit;
-  let options: ValidConfigOptions;
+  describe('create a PR for 7.x which has status checks', () => {
+    let pullNumber: number;
+    let branchName: string;
+    let octokit: Octokit;
+    let options: ValidConfigOptions;
 
-  beforeAll(async () => {
-    const accessToken = getDevAccessToken();
-    const randomString = crypto.randomBytes(4).toString('hex');
-    branchName = `test-${randomString}`;
+    beforeAll(async () => {
+      const randomString = crypto.randomBytes(4).toString('hex');
+      branchName = `test-${randomString}`;
 
-    options = {
-      accessToken,
-      repoOwner: TEST_REPO_OWNER,
-      repoName: TEST_REPO_NAME,
-    } as ValidConfigOptions;
+      options = {
+        accessToken,
+        repoOwner: TEST_REPO_OWNER,
+        repoName: TEST_REPO_NAME,
+      } as ValidConfigOptions;
 
-    octokit = new Octokit({ auth: accessToken });
-    await resetReference(octokit);
+      octokit = new Octokit({ auth: accessToken });
+      await resetReference(octokit);
 
-    const sha = await addCommit(octokit);
-    if (sha) {
+      const sha = await addCommit(octokit);
       await createBranch(octokit, branchName, sha);
-    }
-    pullNumber = await createPr(options, branchName);
+      pullNumber = await createPr(options, branchName, '7.x');
+    });
+
+    // cleanup
+    afterAll(async () => {
+      await closePr(octokit, pullNumber);
+      await deleteBranch(octokit, branchName);
+      await resetReference(octokit);
+    });
+
+    // reset auto-merge state between runs
+    afterEach(async () => {
+      await disablePullRequestAutoMerge(options, pullNumber);
+    });
+
+    it('should initially have auto-merge disabled', async () => {
+      const autoMergeMethod = await fetchPullRequestAutoMergeMethod(
+        options,
+        pullNumber
+      );
+      expect(autoMergeMethod).toBe(undefined);
+    });
+
+    it('should enable auto-merge via merge', async () => {
+      await enablePullRequestAutoMerge(
+        { ...options, autoMergeMethod: 'merge' },
+        pullNumber
+      );
+
+      // ensure Github API reflects the change before querying
+      await sleep(100);
+
+      const autoMergeMethod = await fetchPullRequestAutoMergeMethod(
+        options,
+        pullNumber
+      );
+      expect(autoMergeMethod).toBe('MERGE');
+    });
+
+    it('should not enable auto-merge via rebase because it is disallowed', async () => {
+      await expect(
+        async () =>
+          await enablePullRequestAutoMerge(
+            { ...options, autoMergeMethod: 'rebase' },
+            pullNumber
+          )
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"[\\"Merge method rebase merging is not allowed on this repository\\"] (Github API v4)"`
+      );
+
+      // ensure Github API reflects the change before querying
+      await sleep(100);
+
+      const autoMergeMethod = await fetchPullRequestAutoMergeMethod(
+        options,
+        pullNumber
+      );
+      expect(autoMergeMethod).toBe(undefined);
+    });
+
+    it('should enable auto-merge via squash', async () => {
+      await enablePullRequestAutoMerge(
+        { ...options, autoMergeMethod: 'squash' },
+        pullNumber
+      );
+
+      // ensure Github API reflects the change before querying
+      await sleep(100);
+
+      const autoMergeMethod = await fetchPullRequestAutoMergeMethod(
+        options,
+        pullNumber
+      );
+      expect(autoMergeMethod).toBe('SQUASH');
+    });
   });
 
-  // cleanup
-  afterAll(async () => {
-    await closePr(octokit, pullNumber);
-    await deleteBranch(octokit, branchName);
-    await resetReference(octokit);
-  });
+  describe('create a PR for 6.x which does not have status checks', () => {
+    let pullNumber: number;
+    let branchName: string;
+    let octokit: Octokit;
+    let options: ValidConfigOptions;
 
-  // reset auto-merge state between runs
-  afterEach(async () => {
-    await disablePullRequestAutoMerge(options, pullNumber);
-  });
+    beforeAll(async () => {
+      const randomString = crypto.randomBytes(4).toString('hex');
+      branchName = `test-${randomString}`;
 
-  it('should initially have auto-merge disabled', async () => {
-    const autoMergeMethod = await fetchPullRequestAutoMergeMethod(
-      options,
-      pullNumber
-    );
-    expect(autoMergeMethod).toBe(undefined);
-  });
+      options = {
+        accessToken,
+        repoOwner: TEST_REPO_OWNER,
+        repoName: TEST_REPO_NAME,
+      } as ValidConfigOptions;
 
-  it('should enable auto-merge via merge', async () => {
-    await enablePullRequestAutoMerge(
-      { ...options, autoMergeMethod: 'merge' },
-      pullNumber
-    );
+      octokit = new Octokit({ auth: accessToken });
+      await resetReference(octokit);
 
-    // ensure Github API reflects the change before querying
-    await sleep(100);
+      const sha = await addCommit(octokit);
+      await createBranch(octokit, branchName, sha);
+      pullNumber = await createPr(options, branchName, '6.x');
+    });
 
-    const autoMergeMethod = await fetchPullRequestAutoMergeMethod(
-      options,
-      pullNumber
-    );
-    expect(autoMergeMethod).toBe('MERGE');
-  });
+    // cleanup
+    afterAll(async () => {
+      await closePr(octokit, pullNumber);
+      await deleteBranch(octokit, branchName);
+      await resetReference(octokit);
+    });
 
-  it('should not enable auto-merge via rebase because it is disallowed', async () => {
-    await enablePullRequestAutoMerge(
-      { ...options, autoMergeMethod: 'rebase' },
-      pullNumber
-    );
-
-    // ensure Github API reflects the change before querying
-    await sleep(100);
-
-    const autoMergeMethod = await fetchPullRequestAutoMergeMethod(
-      options,
-      pullNumber
-    );
-    expect(autoMergeMethod).toBe(undefined);
-  });
-
-  it('should enable auto-merge via squash', async () => {
-    await enablePullRequestAutoMerge(
-      { ...options, autoMergeMethod: 'squash' },
-      pullNumber
-    );
-
-    // ensure Github API reflects the change before querying
-    await sleep(100);
-
-    const autoMergeMethod = await fetchPullRequestAutoMergeMethod(
-      options,
-      pullNumber
-    );
-    expect(autoMergeMethod).toBe('SQUASH');
+    it('should not be able to enable auto-merge via merge', async () => {
+      await expect(
+        async () =>
+          await enablePullRequestAutoMerge(
+            { ...options, autoMergeMethod: 'merge' },
+            pullNumber
+          )
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"[\\"Pull request Pull request is in clean status\\"] (Github API v4)"`
+      );
+    });
   });
 });

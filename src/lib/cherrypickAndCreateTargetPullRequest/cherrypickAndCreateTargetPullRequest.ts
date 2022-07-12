@@ -17,11 +17,11 @@ import {
   getPullRequestBody,
   PullRequestPayload,
 } from '../github/v3/createPullRequest';
-import { enablePullRequestAutoMerge } from '../github/v4/enablePullRequestAutoMerge';
 import { validateTargetBranch } from '../github/v4/validateTargetBranch';
 import { consoleLog } from '../logger';
 import { sequentially } from '../sequentially';
 import { Commit } from '../sourceCommit/parseSourceCommit';
+import { autoMergeNowOrLater } from './autoMergeNowOrLater';
 import { getBackportBranchName } from './getBackportBranchName';
 import { getMergeCommits } from './getMergeCommit';
 import { getTargetPRLabels } from './getTargetPRLabels';
@@ -111,7 +111,7 @@ export async function cherrypickAndCreateTargetPullRequest({
 
   // make PR auto mergable
   if (options.autoMerge) {
-    await enablePullRequestAutoMerge(options, targetPullRequest.number);
+    await autoMergeNowOrLater(options, targetPullRequest.number);
   }
 
   // add labels to source pull requests
