@@ -28,15 +28,16 @@ export async function autoMergeNowOrLater(
       }
 
       logger.info(
-        `Auto merge: Could not enable auto merge for PR "#${pullNumber}" due to ${e.message}`
+        `Auto merge: Failed to enable auto merge for PR "#${pullNumber}" due to ${e.message}`
       );
 
       const isMissingStatusChecks = e.githubResponse.data.errors?.some(
         (e) =>
           e.type === 'UNPROCESSABLE' &&
-          e.message.includes(
+          (e.message.includes(
             'Branch does not have required protected branch rules'
-          )
+          ) ||
+            e.message.includes('Pull request is in clean status'))
       );
 
       // if auto merge cannot be enabled due to missing status checks, the PR should be merged immediately
@@ -44,10 +45,12 @@ export async function autoMergeNowOrLater(
         throw e;
       }
 
+      logger.info('Auto merge: Attempting to merge immeidately');
+
       try {
         await mergePullRequest(options, pullNumber);
         spinner.text =
-          'Auto-merge: Pull request was merged without waiting for status checks';
+          'Auto-merge: Pull request was merged immediately without waiting for status checks';
       } catch (e) {
         if (!(e instanceof Error)) {
           throw new Error(`Unknown error: ${e}`);
