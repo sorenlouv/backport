@@ -49,8 +49,7 @@ export async function autoMergeNowOrLater(
 
       try {
         await mergePullRequest(options, pullNumber);
-        spinner.text =
-          'Auto-merge: Pull request was merged immediately without waiting for status checks';
+        spinner.text = 'Auto-merge: Pull request was merged immediately';
       } catch (e) {
         if (!(e instanceof Error)) {
           throw new Error(`Unknown error: ${e}`);

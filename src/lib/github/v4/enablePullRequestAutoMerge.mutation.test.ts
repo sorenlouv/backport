@@ -94,7 +94,7 @@ async function addCommit(octokit: Octokit) {
 }
 
 describe('enablePullRequestAutoMerge', () => {
-  describe('create a PR for 7.x which has status checks', () => {
+  describe('create a PR and enable auto-merge against "approvals-required-branch"', () => {
     let pullNumber: number;
     let branchName: string;
     let octokit: Octokit;
@@ -115,7 +115,11 @@ describe('enablePullRequestAutoMerge', () => {
 
       const sha = await addCommit(octokit);
       await createBranch(octokit, branchName, sha);
-      pullNumber = await createPr(options, branchName, '7.x');
+      pullNumber = await createPr(
+        options,
+        branchName,
+        'approvals-required-branch'
+      );
     });
 
     // cleanup
@@ -192,7 +196,7 @@ describe('enablePullRequestAutoMerge', () => {
     });
   });
 
-  describe('create a PR for 6.x which does not have status checks', () => {
+  describe('create a PR and attempt to enable auto-merge against "no-checks-required-branch"', () => {
     let pullNumber: number;
     let branchName: string;
     let octokit: Octokit;
@@ -213,7 +217,11 @@ describe('enablePullRequestAutoMerge', () => {
 
       const sha = await addCommit(octokit);
       await createBranch(octokit, branchName, sha);
-      pullNumber = await createPr(options, branchName, '6.x');
+      pullNumber = await createPr(
+        options,
+        branchName,
+        'no-checks-required-branch'
+      );
     });
 
     // cleanup
@@ -221,6 +229,76 @@ describe('enablePullRequestAutoMerge', () => {
       await closePr(octokit, pullNumber);
       await deleteBranch(octokit, branchName);
       await resetReference(octokit);
+    });
+
+    it('should not be able to enable auto-merge', async () => {
+      await expect(() =>
+        enablePullRequestAutoMerge(
+          { ...options, autoMergeMethod: 'merge' },
+          pullNumber
+        )
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"[\\"Pull request Pull request is in clean status\\"] (Github API v4)"`
+      );
+    });
+
+    it('should not be able to enable auto-merge via merge', async () => {
+      await expect(
+        async () =>
+          await enablePullRequestAutoMerge(
+            { ...options, autoMergeMethod: 'merge' },
+            pullNumber
+          )
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"[\\"Pull request Pull request is in clean status\\"] (Github API v4)"`
+      );
+    });
+  });
+
+  describe('create a PR and attempt to enable auto-merge against "status-checks-required-branch"', () => {
+    let pullNumber: number;
+    let branchName: string;
+    let octokit: Octokit;
+    let options: ValidConfigOptions;
+
+    beforeAll(async () => {
+      const randomString = crypto.randomBytes(4).toString('hex');
+      branchName = `test-${randomString}`;
+
+      options = {
+        accessToken,
+        repoOwner: TEST_REPO_OWNER,
+        repoName: TEST_REPO_NAME,
+      } as ValidConfigOptions;
+
+      octokit = new Octokit({ auth: accessToken });
+      await resetReference(octokit);
+
+      const sha = await addCommit(octokit);
+      await createBranch(octokit, branchName, sha);
+      pullNumber = await createPr(
+        options,
+        branchName,
+        'status-checks-required-branch'
+      );
+    });
+
+    // cleanup
+    afterAll(async () => {
+      await closePr(octokit, pullNumber);
+      await deleteBranch(octokit, branchName);
+      await resetReference(octokit);
+    });
+
+    it('should not be able to enable auto-merge', async () => {
+      await expect(() =>
+        enablePullRequestAutoMerge(
+          { ...options, autoMergeMethod: 'merge' },
+          pullNumber
+        )
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `"[\\"Pull request Pull request is in clean status\\"] (Github API v4)"`
+      );
     });
 
     it('should not be able to enable auto-merge via merge', async () => {
