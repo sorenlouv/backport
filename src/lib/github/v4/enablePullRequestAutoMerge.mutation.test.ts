@@ -29,7 +29,13 @@ function resetReference(octokit: Octokit) {
   });
 }
 
-async function closePr(octokit: Octokit, pullNumber: number) {
+async function closePr({
+  octokit,
+  pullNumber,
+}: {
+  octokit: Octokit;
+  pullNumber: number;
+}) {
   await octokit.pulls.update({
     owner: TEST_REPO_OWNER,
     repo: TEST_REPO_NAME,
@@ -38,14 +44,18 @@ async function closePr(octokit: Octokit, pullNumber: number) {
   });
 }
 
-async function createPr(
-  options: ValidConfigOptions,
-  branchName: string,
-  baseBranch: string
-) {
+async function createPr({
+  options,
+  headBranch,
+  baseBranch,
+}: {
+  options: ValidConfigOptions;
+  headBranch: string;
+  baseBranch: string;
+}) {
   const prPayload: PullRequestPayload = {
     base: baseBranch,
-    head: branchName,
+    head: headBranch,
     body: 'testing...',
     owner: TEST_REPO_OWNER,
     repo: TEST_REPO_NAME,
@@ -56,7 +66,13 @@ async function createPr(
   return number;
 }
 
-async function deleteBranch(octokit: Octokit, branchName: string) {
+async function deleteBranch({
+  octokit,
+  branchName,
+}: {
+  octokit: Octokit;
+  branchName: string;
+}) {
   await octokit.git.deleteRef({
     owner: TEST_REPO_OWNER,
     repo: TEST_REPO_NAME,
@@ -64,7 +80,15 @@ async function deleteBranch(octokit: Octokit, branchName: string) {
   });
 }
 
-async function createBranch(octokit: Octokit, branchName: string, sha: string) {
+async function createBranch({
+  octokit,
+  branchName,
+  sha,
+}: {
+  octokit: Octokit;
+  branchName: string;
+  sha: string;
+}) {
   await octokit.git.createRef({
     owner: TEST_REPO_OWNER,
     repo: TEST_REPO_NAME,
@@ -114,18 +138,18 @@ describe('enablePullRequestAutoMerge', () => {
       await resetReference(octokit);
 
       const sha = await addCommit(octokit);
-      await createBranch(octokit, branchName, sha);
-      pullNumber = await createPr(
+      await createBranch({ octokit, branchName, sha });
+      pullNumber = await createPr({
         options,
-        branchName,
-        'approvals-required-branch'
-      );
+        headBranch: branchName,
+        baseBranch: 'approvals-required-branch',
+      });
     });
 
     // cleanup
     afterAll(async () => {
-      await closePr(octokit, pullNumber);
-      await deleteBranch(octokit, branchName);
+      await closePr({ octokit, pullNumber });
+      await deleteBranch({ octokit, branchName });
       await resetReference(octokit);
     });
 
@@ -216,18 +240,18 @@ describe('enablePullRequestAutoMerge', () => {
       await resetReference(octokit);
 
       const sha = await addCommit(octokit);
-      await createBranch(octokit, branchName, sha);
-      pullNumber = await createPr(
+      await createBranch({ octokit, branchName, sha });
+      pullNumber = await createPr({
         options,
-        branchName,
-        'no-checks-required-branch'
-      );
+        headBranch: branchName,
+        baseBranch: 'no-checks-required-branch',
+      });
     });
 
     // cleanup
     afterAll(async () => {
-      await closePr(octokit, pullNumber);
-      await deleteBranch(octokit, branchName);
+      await closePr({ octokit, pullNumber });
+      await deleteBranch({ octokit, branchName });
       await resetReference(octokit);
     });
 
@@ -275,18 +299,18 @@ describe('enablePullRequestAutoMerge', () => {
       await resetReference(octokit);
 
       const sha = await addCommit(octokit);
-      await createBranch(octokit, branchName, sha);
-      pullNumber = await createPr(
+      await createBranch({ octokit, branchName, sha });
+      pullNumber = await createPr({
         options,
-        branchName,
-        'status-checks-required-branch'
-      );
+        headBranch: branchName,
+        baseBranch: 'status-checks-required-branch',
+      });
     });
 
     // cleanup
     afterAll(async () => {
-      await closePr(octokit, pullNumber);
-      await deleteBranch(octokit, branchName);
+      await closePr({ octokit, pullNumber });
+      await deleteBranch({ octokit, branchName });
       await resetReference(octokit);
     });
 
