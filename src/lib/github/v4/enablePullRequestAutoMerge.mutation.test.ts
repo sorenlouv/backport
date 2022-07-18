@@ -3,8 +3,12 @@ import { Octokit } from '@octokit/rest';
 import { ValidConfigOptions } from '../../../options/options';
 import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
 import { createPullRequest, PullRequestPayload } from '../v3/createPullRequest';
+import { GithubV4Exception } from './apiRequestV4';
 import { disablePullRequestAutoMerge } from './disablePullRequestAutoMerge';
-import { enablePullRequestAutoMerge } from './enablePullRequestAutoMerge';
+import {
+  enablePullRequestAutoMerge,
+  parseGithubError,
+} from './enablePullRequestAutoMerge';
 import { fetchPullRequestAutoMergeMethod } from './fetchPullRequestAutoMergeMethod';
 
 // The test repo requires auto-merge being enabled in options, as well as all merge types enabled (merge, squash, rebase)
@@ -182,14 +186,24 @@ describe('enablePullRequestAutoMerge', () => {
       expect(autoMergeMethod).toBe('MERGE');
     });
 
-    it('should not enable auto-merge via rebase because it is disallowed', async () => {
-      await expect(
-        async () =>
-          await enablePullRequestAutoMerge(
-            { ...options, autoMergeMethod: 'rebase' },
-            pullNumber
-          )
-      ).rejects.toThrowErrorMatchingInlineSnapshot(
+    it('should fail when enabling auto-merge via rebase because it is disallowed', async () => {
+      let errorMessage;
+      let isMissingStatusChecks;
+
+      try {
+        await enablePullRequestAutoMerge(
+          { ...options, autoMergeMethod: 'rebase' },
+          pullNumber
+        );
+      } catch (e) {
+        const err = e as GithubV4Exception<any>;
+        const res = parseGithubError(err);
+        errorMessage = err.message;
+        isMissingStatusChecks = res.isMissingStatusChecks;
+      }
+
+      expect(isMissingStatusChecks).toBe(false);
+      expect(errorMessage).toMatchInlineSnapshot(
         `"[\\"Merge method rebase merging is not allowed on this repository\\"] (Github API v4)"`
       );
 
@@ -220,7 +234,7 @@ describe('enablePullRequestAutoMerge', () => {
     });
   });
 
-  describe('create a PR and attempt to enable auto-merge against "no-checks-required-branch"', () => {
+  describe('when creating a PR against "no-checks-required-branch"', () => {
     let pullNumber: number;
     let branchName: string;
     let octokit: Octokit;
@@ -255,31 +269,29 @@ describe('enablePullRequestAutoMerge', () => {
       await resetReference(octokit);
     });
 
-    it('should not be able to enable auto-merge', async () => {
-      await expect(() =>
-        enablePullRequestAutoMerge(
+    it('should not be possible to enable auto-merge', async () => {
+      let isMissingStatusChecks;
+      let errorMessage;
+      try {
+        await enablePullRequestAutoMerge(
           { ...options, autoMergeMethod: 'merge' },
           pullNumber
-        )
-      ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"[\\"Pull request Pull request is in clean status\\"] (Github API v4)"`
-      );
-    });
+        );
+      } catch (e) {
+        const err = e as GithubV4Exception<any>;
+        const res = parseGithubError(err);
+        errorMessage = err.message;
+        isMissingStatusChecks = res.isMissingStatusChecks;
+      }
 
-    it('should not be able to enable auto-merge via merge', async () => {
-      await expect(
-        async () =>
-          await enablePullRequestAutoMerge(
-            { ...options, autoMergeMethod: 'merge' },
-            pullNumber
-          )
-      ).rejects.toThrowErrorMatchingInlineSnapshot(
+      expect(errorMessage).toMatchInlineSnapshot(
         `"[\\"Pull request Pull request is in clean status\\"] (Github API v4)"`
       );
+      expect(isMissingStatusChecks).toBe(true);
     });
   });
 
-  describe('create a PR and attempt to enable auto-merge against "status-checks-required-branch"', () => {
+  describe('when createing a PR against "status-checks-required-branch"', () => {
     let pullNumber: number;
     let branchName: string;
     let octokit: Octokit;
@@ -314,27 +326,26 @@ describe('enablePullRequestAutoMerge', () => {
       await resetReference(octokit);
     });
 
-    it('should not be able to enable auto-merge', async () => {
-      await expect(() =>
-        enablePullRequestAutoMerge(
+    it('should not be possible to enable auto-merge', async () => {
+      let isMissingStatusChecks;
+      let errorMessage;
+
+      try {
+        await enablePullRequestAutoMerge(
           { ...options, autoMergeMethod: 'merge' },
           pullNumber
-        )
-      ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `"[\\"Pull request Pull request is in clean status\\"] (Github API v4)"`
-      );
-    });
+        );
+      } catch (e) {
+        const err = e as GithubV4Exception<any>;
+        const res = parseGithubError(err);
+        errorMessage = err.message;
+        isMissingStatusChecks = res.isMissingStatusChecks;
+      }
 
-    it('should not be able to enable auto-merge via merge', async () => {
-      await expect(
-        async () =>
-          await enablePullRequestAutoMerge(
-            { ...options, autoMergeMethod: 'merge' },
-            pullNumber
-          )
-      ).rejects.toThrowErrorMatchingInlineSnapshot(
+      expect(errorMessage).toMatchInlineSnapshot(
         `"[\\"Pull request Pull request is in clean status\\"] (Github API v4)"`
       );
+      expect(isMissingStatusChecks).toBe(true);
     });
   });
 });

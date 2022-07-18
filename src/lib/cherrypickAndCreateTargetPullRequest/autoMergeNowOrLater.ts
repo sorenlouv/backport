@@ -1,7 +1,10 @@
 import { ValidConfigOptions } from '../../options/options';
 import { mergePullRequest } from '../github/v3/mergePullRequest';
 import { GithubV4Exception } from '../github/v4/apiRequestV4';
-import { enablePullRequestAutoMerge } from '../github/v4/enablePullRequestAutoMerge';
+import {
+  enablePullRequestAutoMerge,
+  parseGithubError,
+} from '../github/v4/enablePullRequestAutoMerge';
 import { logger } from '../logger';
 import { ora } from '../ora';
 
@@ -31,37 +34,15 @@ export async function autoMergeNowOrLater(
         `Auto merge: Failed to enable auto merge for PR "#${pullNumber}" due to ${e.message}`
       );
 
-      const isMissingStatusChecks = e.githubResponse.data.errors?.some(
-        (e) =>
-          e.type === 'UNPROCESSABLE' &&
-          (e.message.includes(
-            'Branch does not have required protected branch rules'
-          ) ||
-            e.message.includes('Pull request is in clean status'))
-      );
-
-      // if auto merge cannot be enabled due to missing status checks, the PR should be merged immediately
+      const { isMissingStatusChecks } = parseGithubError(e);
       if (!isMissingStatusChecks) {
         throw e;
       }
 
-      logger.info('Auto merge: Attempting to merge immeidately');
-
-      try {
-        await mergePullRequest(options, pullNumber);
-        spinner.text = 'Auto-merge: Pull request was merged immediately';
-      } catch (e) {
-        if (!(e instanceof Error)) {
-          throw new Error(`Unknown error: ${e}`);
-        }
-
-        logger.error(
-          `Auto merge: Could not merge PR "#${pullNumber}" immediately due to ${e.message}`,
-          e
-        );
-
-        throw e;
-      }
+      // if auto merge cannot be enabled due to missing status checks, the PR should be merged immediately
+      logger.info('Auto merge: Attempting to merge immediately');
+      await mergePullRequest(options, pullNumber);
+      spinner.text = 'Auto-merge: Pull request was merged immediately';
     }
 
     spinner.succeed();
