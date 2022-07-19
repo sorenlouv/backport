@@ -9,7 +9,7 @@ import { consoleLog, initLogger } from './lib/logger';
 import { ora } from './lib/ora';
 import { setupRepo } from './lib/setupRepo';
 import { Commit } from './lib/sourceCommit/parseSourceCommit';
-import { ConfigFileOptions } from './options/ConfigOptions';
+import { ConfigFileOptions } from './options/ConfigOptions'
 import {
   getRuntimeArguments,
   getOptionsFromCliArgs,
