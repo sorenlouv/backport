@@ -37,6 +37,7 @@ type Options = Partial<{
   gitAuthorEmail: string;
   gitAuthorName: string;
   gitHostname: string;
+  githubActionRunId: number;
   githubApiBaseUrlV3: string;
   githubApiBaseUrlV4: string;
   interactive: boolean; // only available via cli and module options (not project or global config)
@@ -61,13 +62,13 @@ type Options = Partial<{
   resetAuthor: boolean;
   reviewers: string[];
   sha: string | string[];
+  signoff: boolean;
   skipRemoteConfig: boolean;
   sourceBranch: string;
   sourcePRLabels: string[];
   targetBranchChoices: TargetBranchChoiceOrString[];
   targetBranches: string[];
   targetPRLabels: string[];
-  signoff: boolean;
 }>;
 
 export type ConfigFileOptions = Options &
