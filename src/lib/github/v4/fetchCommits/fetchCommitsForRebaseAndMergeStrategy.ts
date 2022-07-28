@@ -23,7 +23,7 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
   } = options;
 
   const query = gql`
-    query CommitByPullNumber(
+    query CommitsForRebaseAndMergeStrategy(
       $repoOwner: String!
       $repoName: String!
       $pullNumber: Int!
@@ -31,6 +31,7 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
     ) {
       repository(owner: $repoOwner, name: $repoName) {
         pullRequest(number: $pullNumber) {
+          number
           commits(first: $commitsTotalCount) {
             totalCount
             edges {
@@ -50,6 +51,13 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
                   oid
                   message
                   committedDate
+                  associatedPullRequests(first: 1) {
+                    edges {
+                      node {
+                        number
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -88,13 +96,17 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
     pullRequestNode.mergeCommit.history.edges.reverse();
 
   const didUseRebaseAndMergeStrategy = commitsInBaseBranch.every((c, i) => {
-    const hasIdenticalCommittedDate =
+    const hasSameCommittedDate =
       c.node.committedDate === pullRequestNode.mergeCommit?.committedDate;
 
-    const hasIdenticalCommitMessages =
+    const hasSameCommitMessages =
       c.node.message === commitsInPullRequest[i].node.commit.message;
 
-    return hasIdenticalCommittedDate && hasIdenticalCommitMessages;
+    const hasSamePullNumber =
+      c.node.associatedPullRequests.edges[0].node.number ===
+      pullRequestNode.number;
+
+    return hasSameCommittedDate && hasSameCommitMessages && hasSamePullNumber;
   });
 
   if (didUseRebaseAndMergeStrategy) {
@@ -111,6 +123,7 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
 interface Response {
   repository: {
     pullRequest: {
+      number: number;
       commits: {
         totalCount: number;
         edges: {
@@ -130,6 +143,13 @@ interface Response {
               oid: string;
               message: string;
               committedDate: string;
+              associatedPullRequests: {
+                edges: {
+                  node: {
+                    number: number;
+                  };
+                }[];
+              };
             };
           }[];
         };
