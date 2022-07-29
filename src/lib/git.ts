@@ -176,19 +176,8 @@ export async function getIsCommitInBranch(
     );
     return true;
   } catch (e) {
-    const isSpawnError = e instanceof SpawnError;
-    if (isSpawnError) {
-      const commitNotInBranch = e.context.code === 1 && e.context.stderr === '';
-      const commitNotExist =
-        e.context.code === 128 &&
-        e.context.stderr.includes('Not a valid object name');
-
-      if (commitNotInBranch || commitNotExist) {
-        return false;
-      }
-    }
-
-    throw e;
+    logger.warn('getIsCommitInBranch threw', e);
+    return false;
   }
 }
 
