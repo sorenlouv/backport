@@ -4,8 +4,15 @@ exports[`fetchCommitByPullNumber snapshot request/response makes the right queri
 "query CommitByPullNumber($repoOwner: String!, $repoName: String!, $pullNumber: Int!) {
   repository(owner: $repoOwner, name: $repoName) {
     pullRequest(number: $pullNumber) {
-      commits {
+      commits(last: 1) {
         totalCount
+        edges {
+          node {
+            commit {
+              message
+            }
+          }
+        }
       }
       mergeCommit {
         oid

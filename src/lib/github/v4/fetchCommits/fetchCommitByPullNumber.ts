@@ -33,8 +33,15 @@ export async function fetchCommitsByPullNumber(options: {
       repository(owner: $repoOwner, name: $repoName) {
         pullRequest(number: $pullNumber) {
           # used to determine if "Rebase and Merge" strategy was used
-          commits {
+          commits(last: 1) {
             totalCount
+            edges {
+              node {
+                commit {
+                  message
+                }
+              }
+            }
           }
 
           mergeCommit {
@@ -82,13 +89,16 @@ export async function fetchCommitsByPullNumber(options: {
     throw new BackportError(`The PR #${pullNumber} is not merged`);
   }
 
-  const possiblyRebaseAndMergeStrategy =
+  const lastCommitInPullRequest = pullRequestNode.commits.edges[0].node.commit;
+  const firstCommitInBaseBranch = mergeCommit.history.edges[0].node;
+  const isRebaseAndMergeStrategy =
     pullRequestNode.commits.totalCount > 0 &&
     mergeCommit.history.edges.every(
       (c) => c.node.committedDate === mergeCommit.committedDate
-    );
+    ) &&
+    lastCommitInPullRequest.message === firstCommitInBaseBranch.message;
 
-  if (possiblyRebaseAndMergeStrategy) {
+  if (isRebaseAndMergeStrategy) {
     const commits = await fetchCommitsForRebaseAndMergeStrategy(
       options,
       pullRequestNode.commits.totalCount
@@ -107,6 +117,7 @@ interface CommitByPullNumberResponse {
     pullRequest: {
       commits: {
         totalCount: number;
+        edges: { node: { commit: { message: string } } }[];
       };
 
       mergeCommit: {
