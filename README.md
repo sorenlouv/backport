@@ -58,9 +58,9 @@ Add a [project config](/docs/config-file-options.md#project-config-backportrcjso
   "autoMergeMethod": "squash",
 
   // Optional: Automatically detect which branches a pull request should be backported to based on the pull request labels.
-  // In this case, adding the label "backport-to-production" will backport the PR to the "production" branch
+  // In this case, adding the label "auto-backport-to-production" will backport the PR to the "production" branch
   "branchLabelMapping": {
-    "^backport-to-(.+)$": "$1"
+    "^auto-backport-to-(.+)$": "$1"
   }
 }
 ```
