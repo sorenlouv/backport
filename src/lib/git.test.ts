@@ -290,7 +290,7 @@ describe('createBackportBranch', () => {
         backportBranch,
       })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"The branch \\"4.x\\" is invalid or doesn't exist"`
+      `"The branch "4.x" is invalid or doesn't exist"`
     );
   });
 
@@ -313,7 +313,7 @@ describe('createBackportBranch', () => {
         backportBranch,
       })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"The branch \\"4.x\\" is invalid or doesn't exist"`
+      `"The branch "4.x" is invalid or doesn't exist"`
     );
   });
 
@@ -783,8 +783,8 @@ describe('pushBackportBranch', () => {
 
     await expect(pushBackportBranch({ options, backportBranch })).rejects
       .toThrowErrorMatchingInlineSnapshot(`
-            "Error pushing to https://github.com/the_fork_owner/kibana. Repository does not exist. Either fork the repository (https://github.com/elastic/kibana) or disable fork mode via \\"--no-fork\\".
-            Read more about fork mode in the docs: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#fork"
-          `);
+      "Error pushing to https://github.com/the_fork_owner/kibana. Repository does not exist. Either fork the repository (https://github.com/elastic/kibana) or disable fork mode via "--no-fork".
+      Read more about fork mode in the docs: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#fork"
+    `);
   });
 });

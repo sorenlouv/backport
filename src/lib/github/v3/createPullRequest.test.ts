@@ -355,7 +355,7 @@ describe('getPullRequestBody', () => {
     expect(
       getPullRequestBody({ options, commits, targetBranch: '7.x' })
     ).toMatchInlineSnapshot(
-      `"Just output the commits: [{\\"sourceCommit\\":{\\"sha\\":\\"foo\\",\\"message\\":\\"My commit message (#55)\\"}},{\\"sourceCommit\\":{\\"sha\\":\\"bar\\",\\"message\\":\\"Another commit message\\"}}]"`
+      `"Just output the commits: [{"sourceCommit":{"sha":"foo","message":"My commit message (#55)"}},{"sourceCommit":{"sha":"bar","message":"Another commit message"}}]"`
     );
   });
 });

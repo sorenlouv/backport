@@ -39,14 +39,14 @@ describe('apiRequestV4', () => {
 
     it('should call with correct args', async () => {
       expect(commitsByAuthorCalls).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "query": "query MyQuery {
           viewer {
             login
           }
         }",
-            "variables": Object {
+            "variables": {
               "foo": "bar",
             },
           },

@@ -1,36 +1,36 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`cherrypickAndCreateTargetPullRequest when commit has a pull request reference should make correct git commands 1`] = `
-Array [
-  Array [
+[
+  [
     "git",
-    Array [
+    [
       "reset",
       "--hard",
     ],
     "/myHomeDir/.backport/repositories/elastic/kibana",
   ],
-  Array [
+  [
     "git",
-    Array [
+    [
       "clean",
       "-d",
       "--force",
     ],
     "/myHomeDir/.backport/repositories/elastic/kibana",
   ],
-  Array [
+  [
     "git",
-    Array [
+    [
       "checkout",
       "-B",
       "__backport_tool_tmp",
     ],
     "/myHomeDir/.backport/repositories/elastic/kibana",
   ],
-  Array [
+  [
     "git",
-    Array [
+    [
       "fetch",
       "elastic",
       "6.x:6.x",
@@ -38,9 +38,9 @@ Array [
     ],
     "/myHomeDir/.backport/repositories/elastic/kibana",
   ],
-  Array [
+  [
     "git",
-    Array [
+    [
       "checkout",
       "-B",
       "backport/6.x/pr-1000_pr-2000",
@@ -49,18 +49,18 @@ Array [
     ],
     "/myHomeDir/.backport/repositories/elastic/kibana",
   ],
-  Array [
+  [
     "git",
-    Array [
+    [
       "branch",
       "-D",
       "__backport_tool_tmp",
     ],
     "/myHomeDir/.backport/repositories/elastic/kibana",
   ],
-  Array [
+  [
     "git",
-    Array [
+    [
       "fetch",
       "elastic",
       "7.x:7.x",
@@ -68,9 +68,9 @@ Array [
     ],
     "/myHomeDir/.backport/repositories/elastic/kibana",
   ],
-  Array [
+  [
     "git",
-    Array [
+    [
       "rev-list",
       "-1",
       "--merges",
@@ -78,9 +78,9 @@ Array [
     ],
     "/myHomeDir/.backport/repositories/elastic/kibana",
   ],
-  Array [
+  [
     "git",
-    Array [
+    [
       "rev-list",
       "-1",
       "--merges",
@@ -88,59 +88,59 @@ Array [
     ],
     "/myHomeDir/.backport/repositories/elastic/kibana",
   ],
-  Array [
+  [
     "git",
-    Array [
+    [
       "-c",
-      "user.name=\\"Soren L\\"",
+      "user.name="Soren L"",
       "-c",
-      "user.email=\\"soren@louv.dk\\"",
+      "user.email="soren@louv.dk"",
       "cherry-pick",
       "-x",
       "mySha",
     ],
     "/myHomeDir/.backport/repositories/elastic/kibana",
   ],
-  Array [
+  [
     "git",
-    Array [
+    [
       "-c",
-      "user.name=\\"Soren L\\"",
+      "user.name="Soren L"",
       "-c",
-      "user.email=\\"soren@louv.dk\\"",
+      "user.email="soren@louv.dk"",
       "commit",
       "--no-edit",
     ],
     "/myHomeDir/.backport/repositories/elastic/kibana",
   ],
-  Array [
+  [
     "git",
-    Array [
+    [
       "-c",
-      "user.name=\\"Soren L\\"",
+      "user.name="Soren L"",
       "-c",
-      "user.email=\\"soren@louv.dk\\"",
+      "user.email="soren@louv.dk"",
       "cherry-pick",
       "-x",
       "mySha2",
     ],
     "/myHomeDir/.backport/repositories/elastic/kibana",
   ],
-  Array [
+  [
     "git",
-    Array [
+    [
       "-c",
-      "user.name=\\"Soren L\\"",
+      "user.name="Soren L"",
       "-c",
-      "user.email=\\"soren@louv.dk\\"",
+      "user.email="soren@louv.dk"",
       "commit",
       "--no-edit",
     ],
     "/myHomeDir/.backport/repositories/elastic/kibana",
   ],
-  Array [
+  [
     "git",
-    Array [
+    [
       "push",
       "sqren",
       "backport/6.x/pr-1000_pr-2000:backport/6.x/pr-1000_pr-2000",
@@ -148,25 +148,25 @@ Array [
     ],
     "/myHomeDir/.backport/repositories/elastic/kibana",
   ],
-  Array [
+  [
     "git",
-    Array [
+    [
       "reset",
       "--hard",
     ],
     "/myHomeDir/.backport/repositories/elastic/kibana",
   ],
-  Array [
+  [
     "git",
-    Array [
+    [
       "checkout",
       "myDefaultSourceBranch",
     ],
     "/myHomeDir/.backport/repositories/elastic/kibana",
   ],
-  Array [
+  [
     "git",
-    Array [
+    [
       "branch",
       "--delete",
       "--force",

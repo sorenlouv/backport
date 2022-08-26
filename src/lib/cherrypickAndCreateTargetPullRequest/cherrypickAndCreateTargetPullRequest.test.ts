@@ -141,8 +141,8 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
 
     it('creates the pull request with multiple PR references', () => {
       expect(createPullRequestCalls).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "base": "6.x",
             "body": "# Backport
 
@@ -183,12 +183,12 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
     it('should start the spinner with the correct text', () => {
       expect((ora as any).mock.calls.map((call: any) => call[0].text))
         .toMatchInlineSnapshot(`
-        Array [
+        [
           "",
           "Pulling latest changes",
           "Cherry-picking: My original commit message (#1000)",
           "Cherry-picking: My other commit message (#2000)",
-          "Pushing branch \\"sqren:backport/6.x/pr-1000_pr-2000\\"",
+          "Pushing branch "sqren:backport/6.x/pr-1000_pr-2000"",
           undefined,
           "Creating pull request",
           "Adding labels: backport",
@@ -258,8 +258,8 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
 
     it('creates the pull request with commit reference', () => {
       expect(createPullRequestCalls).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "base": "6.x",
             "body": "# Backport
 
@@ -343,8 +343,8 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
 
     it('creates the pull request with commit reference', () => {
       expect(createPullRequestCalls).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "base": "6.x",
             "body": "# Backport
 

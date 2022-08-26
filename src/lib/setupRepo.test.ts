@@ -107,7 +107,7 @@ describe('setupRepo', () => {
 
       expect(spinnerTextSpy.mock.calls.map((call) => call[0]))
         .toMatchInlineSnapshot(`
-        Array [
+        [
           "0% Cloning repository from github.com (one-time operation)",
           "1% Cloning repository from github.com (one-time operation)",
           "9% Cloning repository from github.com (one-time operation)",

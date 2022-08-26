@@ -43,8 +43,8 @@ describe('entrypoint cli', () => {
             --autoAssign                      Auto assign the target pull request to yourself    [boolean]
             --autoMerge                       Enable auto-merge for created pull requests        [boolean]
             --autoMergeMethod                 Sets auto-merge method when using --auto-merge. Default:
-                                              merge        [string] [choices: \\"merge\\", \\"rebase\\", \\"squash\\"]
-            --cherrypickRef                   Append commit message with \\"(cherry picked from commit...)
+                                              merge        [string] [choices: "merge", "rebase", "squash"]
+            --cherrypickRef                   Append commit message with "(cherry picked from commit...)
                                                                                                  [boolean]
             --projectConfigFile, --config     Path to project config                              [string]
             --globalConfigFile                Path to global config                               [string]
@@ -71,8 +71,8 @@ describe('entrypoint cli', () => {
             --multiple                        Select multiple branches/commits                   [boolean]
             --multipleBranches                Backport to multiple branches                      [boolean]
             --multipleCommits                 Backport multiple commits                          [boolean]
-            --noCherrypickRef                 Do not append commit message with \\"(cherry picked from
-                                              commit...)\\"                                        [boolean]
+            --noCherrypickRef                 Do not append commit message with "(cherry picked from
+                                              commit...)"                                        [boolean]
             --noStatusComment                 Don't publish status comment to Github             [boolean]
             --noVerify                        Bypass the pre-commit and commit-msg hooks         [boolean]
             --noFork                          Create backports in the origin repo                [boolean]
@@ -90,7 +90,7 @@ describe('entrypoint cli', () => {
                                               Defaults to the currently authenticated user        [string]
             --repo                            Repo owner and name                                 [string]
             --sha, --commit                   Commit sha to backport                              [string]
-            --sourceBranch                    Specify a non-default branch (normally \\"master\\") to backport
+            --sourceBranch                    Specify a non-default branch (normally "master") to backport
                                               from                                                [string]
             --sourcePRLabel, --sourcePrLabel  Add labels to the source (original) PR               [array]
         -b, --targetBranch, --branch          Branch(es) to backport to                            [array]

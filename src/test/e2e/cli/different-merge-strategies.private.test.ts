@@ -22,9 +22,9 @@ describe('different-merge-strategies', () => {
 
     expect(output).toMatchInlineSnapshot(`
       "? Select commit (Use arrow keys)
-      ❯ 1. Downsides with \\"Rebase and merge\\"  
-        2. Add description for \\"Rebase and merge\\"  
-        3. Add \\"Rebase and merge\\" header  
+      ❯ 1. Downsides with "Rebase and merge"  
+        2. Add description for "Rebase and merge"  
+        3. Add "Rebase and merge" header  
         4. Create rebase-and-merge.txt  
         5. Merge pull request #9 from backport-org/many-merge-commits  
         6. Merge strategy: Eighth of many merges  
