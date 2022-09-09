@@ -1234,14 +1234,6 @@
     "@typescript-eslint/typescript-estree" "5.32.0"
     debug "^4.3.4"
 
-"@typescript-eslint/scope-manager@5.24.0":
-  version "5.24.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/scope-manager/-/scope-manager-5.24.0.tgz#ac8c4d65064204b596909c204fe9b7e30c3f51b2"
-  integrity sha512-WpMWipcDzGmMzdT7NtTjRXFabx10WleLUGrJpuJLGaxSqpcyq5ACpKSD5VE40h2nz3melQ91aP4Du7lh9FliCA==
-  dependencies:
-    "@typescript-eslint/types" "5.24.0"
-    "@typescript-eslint/visitor-keys" "5.24.0"
-
 "@typescript-eslint/scope-manager@5.32.0":
   version "5.32.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/scope-manager/-/scope-manager-5.32.0.tgz#763386e963a8def470580cc36cf9228864190b95"
@@ -1259,28 +1251,10 @@
     debug "^4.3.4"
     tsutils "^3.21.0"
 
-"@typescript-eslint/types@5.24.0":
-  version "5.24.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-5.24.0.tgz#565ff94a4b89073265e27514dc65225d18aabe6c"
-  integrity sha512-Tpg1c3shTDgTmZd3qdUyd+16r/pGmVaVEbLs+ufuWP0EruVbUiEOmpBBQxBb9a8iPRxi8Rb2oiwOxuZJzSq11A==
-
 "@typescript-eslint/types@5.32.0":
   version "5.32.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-5.32.0.tgz#484273021eeeae87ddb288f39586ef5efeb6dcd8"
   integrity sha512-EBUKs68DOcT/EjGfzywp+f8wG9Zw6gj6BjWu7KV/IYllqKJFPlZlLSYw/PTvVyiRw50t6wVbgv4p9uE2h6sZrQ==
-
-"@typescript-eslint/typescript-estree@5.24.0":
-  version "5.24.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-5.24.0.tgz#30b9cbc1af475b9e02aca34cfe9ba9e1bb820143"
-  integrity sha512-zcor6vQkQmZAQfebSPVwUk/FD+CvnsnlfKXYeQDsWXRF+t7SBPmIfNia/wQxCSeu1h1JIjwV2i9f5/DdSp/uDw==
-  dependencies:
-    "@typescript-eslint/types" "5.24.0"
-    "@typescript-eslint/visitor-keys" "5.24.0"
-    debug "^4.3.4"
-    globby "^11.1.0"
-    is-glob "^4.0.3"
-    semver "^7.3.7"
-    tsutils "^3.21.0"
 
 "@typescript-eslint/typescript-estree@5.32.0":
   version "5.32.0"
@@ -1295,7 +1269,7 @@
     semver "^7.3.7"
     tsutils "^3.21.0"
 
-"@typescript-eslint/utils@5.32.0":
+"@typescript-eslint/utils@5.32.0", "@typescript-eslint/utils@^5.10.0":
   version "5.32.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/utils/-/utils-5.32.0.tgz#eccb6b672b94516f1afc6508d05173c45924840c"
   integrity sha512-W7lYIAI5Zlc5K082dGR27Fczjb3Q57ECcXefKU/f0ajM5ToM0P+N9NmJWip8GmGu/g6QISNT+K6KYB+iSHjXCQ==
@@ -1306,26 +1280,6 @@
     "@typescript-eslint/typescript-estree" "5.32.0"
     eslint-scope "^5.1.1"
     eslint-utils "^3.0.0"
-
-"@typescript-eslint/utils@^5.10.0":
-  version "5.24.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/utils/-/utils-5.24.0.tgz#7a854028040a305ddea129328e45cfb2c6406e75"
-  integrity sha512-K05sbWoeCBJH8KXu6hetBJ+ukG0k2u2KlgD3bN+v+oBKm8adJqVHpSSLHNzqyuv0Lh4GVSAUgZ5lB4icmPmWLw==
-  dependencies:
-    "@types/json-schema" "^7.0.9"
-    "@typescript-eslint/scope-manager" "5.24.0"
-    "@typescript-eslint/types" "5.24.0"
-    "@typescript-eslint/typescript-estree" "5.24.0"
-    eslint-scope "^5.1.1"
-    eslint-utils "^3.0.0"
-
-"@typescript-eslint/visitor-keys@5.24.0":
-  version "5.24.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-5.24.0.tgz#bb3e9a788ccd50c53e03557e4e203599880c3123"
-  integrity sha512-qzGwSXMyMnogcAo+/2fU+jhlPPVMXlIH2PeAonIKjJSoDKl1+lJVvG5Z5Oud36yU0TWK2cs1p/FaSN5J2OUFYA==
-  dependencies:
-    "@typescript-eslint/types" "5.24.0"
-    eslint-visitor-keys "^3.3.0"
 
 "@typescript-eslint/visitor-keys@5.32.0":
   version "5.32.0"
@@ -2182,10 +2136,10 @@ eslint-plugin-import@^2.26.0:
     resolve "^1.22.0"
     tsconfig-paths "^3.14.1"
 
-eslint-plugin-jest@^26.7.0:
-  version "26.7.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-26.7.0.tgz#41d405ac9143e1284a3401282db47ed459436778"
-  integrity sha512-/YNitdfG3o3cC6juZziAdkk6nfJt01jXVfj4AgaYVLs7bupHzRDL5K+eipdzhDXtQsiqaX1TzfwSuRlEgeln1A==
+eslint-plugin-jest@^27.0.2:
+  version "27.0.2"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-27.0.2.tgz#c57e13793fe0e06727a7818ba390844a0abe48c9"
+  integrity sha512-VEZaj19IMxqg/URcHNT4PhfoJJ1EsFurgq0SjMEYprDCq+et9fKkE4jIHnAsFh3mHLPBgAq04YQqkeW3slXs+Q==
   dependencies:
     "@typescript-eslint/utils" "^5.10.0"
 
