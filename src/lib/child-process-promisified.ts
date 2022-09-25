@@ -51,6 +51,9 @@ export async function spawnPromise(
 
     subprocess.on('close', (code) => {
       if (code === 0 || code === null) {
+        logger.verbose(
+          `Spawn success: code=${code} stderr=${stderr} stdout=${stdout}`
+        );
         resolve({ cmdArgs, code, stderr, stdout });
       } else {
         const err = new SpawnError({ cmdArgs, code, stderr, stdout });
