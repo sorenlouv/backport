@@ -104,9 +104,7 @@ describe('fetchCommitBySha', () => {
         sha: 'fc22f59',
         sourceBranch: 'main',
       })
-    ).rejects.toThrowError(
-      'No commit found on branch "main" with sha "fc22f59"'
-    );
+    ).rejects.toThrow('No commit found on branch "main" with sha "fc22f59"');
   });
 
   it('throws if sha is invalid', async () => {
@@ -118,7 +116,7 @@ describe('fetchCommitBySha', () => {
         sha: 'myCommitSha',
         sourceBranch: 'main',
       })
-    ).rejects.toThrowError(
+    ).rejects.toThrow(
       'No commit found on branch "main" with sha "myCommitSha"'
     );
   });

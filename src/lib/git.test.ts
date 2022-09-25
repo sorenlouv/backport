@@ -513,7 +513,7 @@ describe('cherrypick', () => {
         commitAuthor,
       })
     ).rejects
-      .toThrowError(`Cherrypick failed because the selected commit was a merge commit. Please try again by specifying the parent with the \`mainline\` argument:
+      .toThrow(`Cherrypick failed because the selected commit was a merge commit. Please try again by specifying the parent with the \`mainline\` argument:
 
 > backport --mainline
 
@@ -546,7 +546,7 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
         sha: 'abcd',
         commitAuthor,
       })
-    ).rejects.toThrowError(
+    ).rejects.toThrow(
       `Cherrypick failed because the selected commit (abcd) is empty. Did you already backport this commit?`
     );
   });

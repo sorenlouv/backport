@@ -20,9 +20,7 @@ describe('getOptionsFromGithub', () => {
           cwd: process.cwd(),
         };
 
-        await expect(
-          getOptionsFromGithub(combinedOptions)
-        ).rejects.toThrowError(
+        await expect(getOptionsFromGithub(combinedOptions)).rejects.toThrow(
           'Please check your access token and make sure it is valid.\nConfig: /myHomeDir/.backport/config.json'
         );
       });
@@ -107,7 +105,7 @@ describe('getOptionsFromGithub', () => {
 
         await expect(async () => {
           await getOptionsFromGithub(combinedOptions);
-        }).rejects.toThrowError(
+        }).rejects.toThrow(
           'You must delete the branch "backport" to continue. See https://github.com/sqren/backport/issues/155 for details'
         );
       });

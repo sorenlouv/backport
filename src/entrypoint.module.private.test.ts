@@ -532,7 +532,7 @@ describe('entrypoint.module', () => {
           repoOwner: 'elastic',
           maxNumber: 3,
         })
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         'Must supply one of: `pullNumber`, `sha`, `prFilter` or `author`'
       );
     });

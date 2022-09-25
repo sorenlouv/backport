@@ -18,8 +18,8 @@ describe('postinstall', () => {
       .mockResolvedValueOnce(true);
 
     await postinstall();
-    expect(createGlobalConfigAndFolderIfNotExistSpy).toBeCalledTimes(1);
-    expect(logger.consoleLog).toBeCalledWith(
+    expect(createGlobalConfigAndFolderIfNotExistSpy).toHaveBeenCalledTimes(1);
+    expect(logger.consoleLog).toHaveBeenCalledWith(
       'Global config successfully created in /myHomeDir/.backport/config.json'
     );
   });
@@ -31,7 +31,7 @@ describe('postinstall', () => {
       .mockResolvedValueOnce(false);
 
     await postinstall();
-    expect(createGlobalConfigAndFolderIfNotExistSpy).toBeCalledTimes(1);
-    expect(consoleSpy).toBeCalledTimes(0);
+    expect(createGlobalConfigAndFolderIfNotExistSpy).toHaveBeenCalledTimes(1);
+    expect(consoleSpy).toHaveBeenCalledTimes(0);
   });
 });

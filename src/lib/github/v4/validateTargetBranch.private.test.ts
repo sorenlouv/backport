@@ -14,7 +14,7 @@ describe('validateTargetBranch', () => {
 
     await expect(() =>
       validateTargetBranch({ ...options, branchName: 'foo' })
-    ).rejects.toThrowError('The branch "foo" does not exist');
+    ).rejects.toThrow('The branch "foo" does not exist');
   });
 
   it('resolves when branch is valid', async () => {

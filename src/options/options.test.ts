@@ -168,7 +168,7 @@ describe('getOptions', () => {
     mockGithubConfigOptions({ hasBackportBranch: true });
     await expect(
       getOptions({ optionsFromCliArgs: {}, optionsFromModule: {} })
-    ).rejects.toThrowError(
+    ).rejects.toThrow(
       'You must delete the branch "backport" to continue. See https://github.com/sqren/backport/issues/155 for details'
     );
   });
