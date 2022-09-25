@@ -1,4 +1,4 @@
-import { resolve as pathResolve } from 'path';
+import path, { resolve as pathResolve } from 'path';
 import { uniq, isEmpty } from 'lodash';
 import { ora } from '../lib/ora';
 import { ValidConfigOptions } from '../options/options';
@@ -156,7 +156,7 @@ export async function getGitProjectRootPath(dir: string) {
       ['rev-parse', '--show-toplevel'],
       cwd
     );
-    return stdout.trim();
+    return path.normalize(stdout.trim());
   } catch (e) {
     logger.error('An error occurred while retrieving git project root', e);
     return;
