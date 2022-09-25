@@ -89,7 +89,7 @@ describe('config', () => {
           '/path/to/global/config.json',
           'myConfigTemplate'
         )
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         'The .backport folder (/path/to/global/config.json) does not exist.'
       );
     });

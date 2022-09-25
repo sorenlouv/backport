@@ -145,7 +145,7 @@ Default: `false`
 
 #### `autoMerge`
 
-Automatically merge the backport pull request when `true`. 
+Automatically merge the backport pull request when `true`.
 
 Default: `false`
 

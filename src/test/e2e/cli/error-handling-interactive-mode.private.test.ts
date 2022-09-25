@@ -14,18 +14,18 @@ describe('interactive error handling', () => {
       `--accessToken=${accessToken}`,
     ]);
     expect(output).toMatchInlineSnapshot(`
-        "Please specify a target branch: \\"--branch 6.1\\".
+      "Please specify a target branch: "--branch 6.1".
 
-        Read more: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson"
-      `);
+      Read more: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson"
+    `);
   });
 
   it('when supplying invalid argument', async () => {
     const { output } = await runBackportViaCli([`--foo`]);
     expect(output).toMatchInlineSnapshot(`
-        "Unknown argument: foo
-        Run \\"backport --help\\" to see all options"
-      `);
+      "Unknown argument: foo
+      Run "backport --help" to see all options"
+    `);
   });
 
   it('when access token is invalid', async () => {
@@ -47,7 +47,7 @@ describe('interactive error handling', () => {
       `--accessToken=${accessToken}`,
     ]);
     expect(output).toMatchInlineSnapshot(
-      `"The repository \\"foo/bar\\" doesn't exist"`
+      `"The repository "foo/bar" doesn't exist"`
     );
   });
 
@@ -94,7 +94,7 @@ describe('interactive error handling', () => {
       The commit could not be backported due to conflicts
 
       Please fix the conflicts in <BACKPORT_DIR>
-      Hint: Before fixing the conflicts manually you should consider backporting the following pull requests to \\"7.x\\":
+      Hint: Before fixing the conflicts manually you should consider backporting the following pull requests to "7.x":
        - Change Barca to Braithwaite (#8) (backport missing)
          https://github.com/backport-org/repo-with-conflicts/pull/8
 

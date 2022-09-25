@@ -39,14 +39,14 @@ describe('apiRequestV4', () => {
 
     it('should call with correct args', async () => {
       expect(commitsByAuthorCalls).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "query": "query MyQuery {
           viewer {
             login
           }
         }",
-            "variables": Object {
+            "variables": {
               "foo": "bar",
             },
           },
@@ -82,7 +82,7 @@ describe('apiRequestV4', () => {
             foo: 'bar',
           },
         })
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         new BackportError(`some error,some other error (Github API v4)`)
       );
     });
@@ -113,7 +113,7 @@ describe('apiRequestV4', () => {
             foo: 'bar',
           },
         })
-      ).rejects.toThrowError('Request failed with status code 500');
+      ).rejects.toThrow('Request failed with status code 500');
     });
   });
 });

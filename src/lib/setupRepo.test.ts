@@ -43,7 +43,7 @@ describe('setupRepo', () => {
           cwd: '/path/to/source/repo',
           interactive: true,
         } as ValidConfigOptions)
-      ).rejects.toThrowError('Simulated git clone failure');
+      ).rejects.toThrow('Simulated git clone failure');
 
       expect(del).toHaveBeenCalledWith(
         '/myHomeDir/.backport/repositories/elastic/kibana',
@@ -107,7 +107,7 @@ describe('setupRepo', () => {
 
       expect(spinnerTextSpy.mock.calls.map((call) => call[0]))
         .toMatchInlineSnapshot(`
-        Array [
+        [
           "0% Cloning repository from github.com (one-time operation)",
           "1% Cloning repository from github.com (one-time operation)",
           "9% Cloning repository from github.com (one-time operation)",
@@ -299,7 +299,7 @@ describe('setupRepo', () => {
           dir: '/myHomeDir/.backport/repositories/owner/repo',
           interactive: true,
         } as ValidConfigOptions)
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         'Refusing to clone repo into "/myHomeDir/.backport/repositories/owner/repo" when current working directory is "/myHomeDir/.backport/repositories/owner/repo/foo". Please change backport directory via `--dir` option or run backport from another location'
       );
     });

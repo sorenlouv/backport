@@ -290,7 +290,7 @@ describe('createBackportBranch', () => {
         backportBranch,
       })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"The branch \\"4.x\\" is invalid or doesn't exist"`
+      `"The branch "4.x" is invalid or doesn't exist"`
     );
   });
 
@@ -313,7 +313,7 @@ describe('createBackportBranch', () => {
         backportBranch,
       })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"The branch \\"4.x\\" is invalid or doesn't exist"`
+      `"The branch "4.x" is invalid or doesn't exist"`
     );
   });
 
@@ -513,7 +513,7 @@ describe('cherrypick', () => {
         commitAuthor,
       })
     ).rejects
-      .toThrowError(`Cherrypick failed because the selected commit was a merge commit. Please try again by specifying the parent with the \`mainline\` argument:
+      .toThrow(`Cherrypick failed because the selected commit was a merge commit. Please try again by specifying the parent with the \`mainline\` argument:
 
 > backport --mainline
 
@@ -546,7 +546,7 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
         sha: 'abcd',
         commitAuthor,
       })
-    ).rejects.toThrowError(
+    ).rejects.toThrow(
       `Cherrypick failed because the selected commit (abcd) is empty. Did you already backport this commit?`
     );
   });
@@ -783,8 +783,8 @@ describe('pushBackportBranch', () => {
 
     await expect(pushBackportBranch({ options, backportBranch })).rejects
       .toThrowErrorMatchingInlineSnapshot(`
-            "Error pushing to https://github.com/the_fork_owner/kibana. Repository does not exist. Either fork the repository (https://github.com/elastic/kibana) or disable fork mode via \\"--no-fork\\".
-            Read more about fork mode in the docs: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#fork"
-          `);
+      "Error pushing to https://github.com/the_fork_owner/kibana. Repository does not exist. Either fork the repository (https://github.com/elastic/kibana) or disable fork mode via "--no-fork".
+      Read more about fork mode in the docs: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#fork"
+    `);
   });
 });

@@ -16,9 +16,7 @@ describe('throwOnInvalidAccessToken', () => {
           repoName: 'kibana',
           error,
         })
-      ).toThrowError(
-        'Please check your access token and make sure it is valid'
-      );
+      ).toThrow('Please check your access token and make sure it is valid');
     });
 
     it('should handle SSO error', () => {
@@ -61,7 +59,7 @@ describe('throwOnInvalidAccessToken', () => {
           repoName: 'kibana',
           error,
         })
-      ).toThrowError(`The repository "elastic/kibana" doesn't exist`);
+      ).toThrow(`The repository "elastic/kibana" doesn't exist`);
     });
 
     it('should handle insufficient permissions (oauth scopes)', () => {

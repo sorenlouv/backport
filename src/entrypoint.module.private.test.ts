@@ -199,7 +199,7 @@ describe('entrypoint.module', () => {
             sha: 'd1b348e6213c5ad48653dfaad6eaf4928b2c688b',
           },
           sourcePullRequest: {
-            labels: ['Team:apm', 'release_note:skip', 'v7.11.0'],
+            labels: ['Team:APM', 'release_note:skip', 'v7.11.0'],
             number: 88188,
             url: 'https://github.com/elastic/kibana/pull/88188',
             mergeCommit: {
@@ -265,7 +265,7 @@ describe('entrypoint.module', () => {
             sha: 'd1b348e6213c5ad48653dfaad6eaf4928b2c688b',
           },
           sourcePullRequest: {
-            labels: ['Team:apm', 'release_note:skip', 'v7.11.0'],
+            labels: ['Team:APM', 'release_note:skip', 'v7.11.0'],
             number: 88188,
             url: 'https://github.com/elastic/kibana/pull/88188',
             mergeCommit: {
@@ -314,7 +314,7 @@ describe('entrypoint.module', () => {
         repoName: 'kibana',
         repoOwner: 'elastic',
         dateUntil: '2021-06-02',
-        prFilter: 'label:Team:apm base:master',
+        prFilter: 'label:Team:APM base:master',
         maxNumber: 3,
       });
 
@@ -327,23 +327,23 @@ describe('entrypoint.module', () => {
       });
 
       expect(commitMessage).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "branchLabelMapping": undefined,
             "committedDate": "2021-05-28T12:41:42Z",
             "message": "[Observability] Fix typo in readme for new navigation (#100861)",
             "sha": "79945fe0275b2ec9c93747e26154110133ec51fb",
           },
-          Object {
+          {
             "branchLabelMapping": undefined,
             "committedDate": "2021-05-28T19:43:30Z",
             "message": "[APM] Move APM tutorial from apm_oss to x-pack/apm (#100780)",
             "sha": "0bcd78b0e999feb95057f5e6eafdb572b9b2fe39",
           },
-          Object {
+          {
             "branchLabelMapping": undefined,
             "committedDate": "2021-05-18T10:33:16Z",
-            "message": "Migrate from Joi to @kbn/config-schema in \\"home\\" and \\"features\\" plugins (#100201)",
+            "message": "Migrate from Joi to @kbn/config-schema in "home" and "features" plugins (#100201)",
             "sha": "574f6595ad2e5452fa90e6a3111220a599e473c0",
           },
         ]
@@ -361,16 +361,16 @@ describe('entrypoint.module', () => {
       });
 
       expect(commits).toMatchInlineSnapshot(`
-        Array [
-          Object {
-            "author": Object {
+        [
+          {
+            "author": {
               "email": "sorenlouv@gmail.com",
               "name": "Søren Louv-Jansen",
             },
             "sourceBranch": "master",
-            "sourceCommit": Object {
-              "branchLabelMapping": Object {
-                "^v(\\\\d+).(\\\\d+).\\\\d+$": "$1.$2",
+            "sourceCommit": {
+              "branchLabelMapping": {
+                "^v(\\d+).(\\d+).\\d+$": "$1.$2",
                 "^v7.11.0$": "7.x",
                 "^v8.0.0$": "master",
               },
@@ -378,29 +378,29 @@ describe('entrypoint.module', () => {
               "message": "[APM] Fix broken link to ML when time range is not set (#85976)",
               "sha": "744d6809ded7e1055bfda280c351cee3e8c0e3bf",
             },
-            "sourcePullRequest": Object {
-              "labels": Array [
+            "sourcePullRequest": {
+              "labels": [
                 "release_note:fix",
-                "Team:apm",
+                "Team:APM",
                 "apm:test-plan-done",
                 "v7.11.0",
                 "apm:test-plan-7.11.0",
               ],
-              "mergeCommit": Object {
+              "mergeCommit": {
                 "message": "[APM] Fix broken link to ML when time range is not set (#85976)",
                 "sha": "744d6809ded7e1055bfda280c351cee3e8c0e3bf",
               },
               "number": 85976,
               "url": "https://github.com/elastic/kibana/pull/85976",
             },
-            "suggestedTargetBranches": Array [],
-            "targetPullRequestStates": Array [
-              Object {
+            "suggestedTargetBranches": [],
+            "targetPullRequestStates": [
+              {
                 "branch": "7.x",
                 "isSourceBranch": false,
                 "label": "v7.11.0",
                 "labelRegex": "^v7.11.0$",
-                "mergeCommit": Object {
+                "mergeCommit": {
                   "message": "[APM] Fix broken link to ML when time range is not set (#85976) (#86227)
 
         Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>",
@@ -410,9 +410,9 @@ describe('entrypoint.module', () => {
                 "state": "MERGED",
                 "url": "https://github.com/elastic/kibana/pull/86227",
               },
-              Object {
+              {
                 "branch": "7.11",
-                "mergeCommit": Object {
+                "mergeCommit": {
                   "message": "[APM] Fix broken link to ML when time range is not set (#85976) (#86228)",
                   "sha": "c6c0015e01601cd852730d5cd20e1a906cbee900",
                 },
@@ -422,15 +422,15 @@ describe('entrypoint.module', () => {
               },
             ],
           },
-          Object {
-            "author": Object {
+          {
+            "author": {
               "email": "sorenlouv@gmail.com",
               "name": "Søren Louv-Jansen",
             },
             "sourceBranch": "master",
-            "sourceCommit": Object {
-              "branchLabelMapping": Object {
-                "^v(\\\\d+).(\\\\d+).\\\\d+$": "$1.$2",
+            "sourceCommit": {
+              "branchLabelMapping": {
+                "^v(\\d+).(\\d+).\\d+$": "$1.$2",
                 "^v7.11.0$": "7.x",
                 "^v8.0.0$": "master",
               },
@@ -440,13 +440,13 @@ describe('entrypoint.module', () => {
         Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>",
               "sha": "20638a64e2a895d4e4a6597d4a37b5db7003f1e9",
             },
-            "sourcePullRequest": Object {
-              "labels": Array [
-                "Team:apm",
+            "sourcePullRequest": {
+              "labels": [
+                "Team:APM",
                 "release_note:skip",
                 "v7.11.0",
               ],
-              "mergeCommit": Object {
+              "mergeCommit": {
                 "message": "[APM] Correlations polish (#85116)
 
         Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>",
@@ -455,14 +455,14 @@ describe('entrypoint.module', () => {
               "number": 85116,
               "url": "https://github.com/elastic/kibana/pull/85116",
             },
-            "suggestedTargetBranches": Array [],
-            "targetPullRequestStates": Array [
-              Object {
+            "suggestedTargetBranches": [],
+            "targetPullRequestStates": [
+              {
                 "branch": "7.x",
                 "isSourceBranch": false,
                 "label": "v7.11.0",
                 "labelRegex": "^v7.11.0$",
-                "mergeCommit": Object {
+                "mergeCommit": {
                   "message": "[7.x] [APM] Correlations polish (#85116) (#85940)
 
         Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>",
@@ -474,15 +474,15 @@ describe('entrypoint.module', () => {
               },
             ],
           },
-          Object {
-            "author": Object {
+          {
+            "author": {
               "email": "sorenlouv@gmail.com",
               "name": "Søren Louv-Jansen",
             },
             "sourceBranch": "master",
-            "sourceCommit": Object {
-              "branchLabelMapping": Object {
-                "^v(\\\\d+).(\\\\d+).\\\\d+$": "$1.$2",
+            "sourceCommit": {
+              "branchLabelMapping": {
+                "^v(\\d+).(\\d+).\\d+$": "$1.$2",
                 "^v7.11.0$": "7.x",
                 "^v8.0.0$": "master",
               },
@@ -490,27 +490,27 @@ describe('entrypoint.module', () => {
               "message": "[APM] Improve pointer event hook (#85117)",
               "sha": "cee681afb3c5f87371112fab9a7e5dddbafea0a8",
             },
-            "sourcePullRequest": Object {
-              "labels": Array [
-                "Team:apm",
+            "sourcePullRequest": {
+              "labels": [
+                "Team:APM",
                 "release_note:skip",
                 "v7.11.0",
               ],
-              "mergeCommit": Object {
+              "mergeCommit": {
                 "message": "[APM] Improve pointer event hook (#85117)",
                 "sha": "cee681afb3c5f87371112fab9a7e5dddbafea0a8",
               },
               "number": 85117,
               "url": "https://github.com/elastic/kibana/pull/85117",
             },
-            "suggestedTargetBranches": Array [],
-            "targetPullRequestStates": Array [
-              Object {
+            "suggestedTargetBranches": [],
+            "targetPullRequestStates": [
+              {
                 "branch": "7.x",
                 "isSourceBranch": false,
                 "label": "v7.11.0",
                 "labelRegex": "^v7.11.0$",
-                "mergeCommit": Object {
+                "mergeCommit": {
                   "message": "[7.x] [APM] Improve pointer event hook (#85117) (#85142)",
                   "sha": "3b72a4f3cc7c0abd0541073e1d0246b85cea3def",
                 },
@@ -532,7 +532,7 @@ describe('entrypoint.module', () => {
           repoOwner: 'elastic',
           maxNumber: 3,
         })
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         'Must supply one of: `pullNumber`, `sha`, `prFilter` or `author`'
       );
     });

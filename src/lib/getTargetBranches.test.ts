@@ -100,9 +100,7 @@ describe('getTargetBranches', () => {
           } as unknown as ValidConfigOptions,
           commits
         );
-      }).rejects.toThrowError(
-        'There are no branches to backport to. Aborting.'
-      );
+      }).rejects.toThrow('There are no branches to backport to. Aborting.');
     });
 
     it('should return missing backports', async () => {

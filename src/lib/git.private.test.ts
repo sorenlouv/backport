@@ -153,7 +153,7 @@ describe('git.private', () => {
           targetBranch: 'foo',
           backportBranch: 'my-backport-branch',
         });
-      }).rejects.toThrowError('The branch "foo" is invalid or doesn\'t exist');
+      }).rejects.toThrow('The branch "foo" is invalid or doesn\'t exist');
     });
   });
 
@@ -195,9 +195,9 @@ describe('git.private', () => {
           backportBranch: 'my-backport-branch',
         });
       }).rejects.toThrowErrorMatchingInlineSnapshot(`
-              "Error pushing to https://github.com/sqren/repo-with-conflicts. Repository does not exist. Either fork the repository (https://github.com/sqren/repo-with-conflicts) or disable fork mode via \\"--no-fork\\".
-              Read more about fork mode in the docs: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#fork"
-            `);
+        "Error pushing to https://github.com/sqren/repo-with-conflicts. Repository does not exist. Either fork the repository (https://github.com/sqren/repo-with-conflicts) or disable fork mode via "--no-fork".
+        Read more about fork mode in the docs: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#fork"
+      `);
     });
   });
 
@@ -259,7 +259,7 @@ describe('git.private', () => {
           sha: firstSha,
           commitAuthor: { name: 'Soren L', email: 'soren@mail.dk' },
         })
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         `Cherrypick failed because the selected commit (${shortSha}) is empty. Did you already backport this commit?`
       );
     });
@@ -344,7 +344,7 @@ describe('git.private', () => {
 
       expect(async () => {
         return await commitChanges({ commit, commitAuthor, options });
-      }).not.toThrowError();
+      }).not.toThrow();
 
       const message = await getMostRecentCommitMessage(cwd);
       expect(message).toBe('Update my-file-1.txt');
@@ -439,7 +439,7 @@ describe('git.private', () => {
       // file should not exist before clone
       await expect(() =>
         access(`${backportRepo}/my-file.txt`)
-      ).rejects.toThrowError();
+      ).rejects.toThrow();
 
       await cloneRepo(
         { sourcePath: sourceRepo, targetPath: backportRepo },
@@ -447,9 +447,7 @@ describe('git.private', () => {
       );
 
       //file should exist after clone
-      await expect(() =>
-        access(`${backportRepo}/my-file.txt`)
-      ).not.toThrowError();
+      await expect(() => access(`${backportRepo}/my-file.txt`)).not.toThrow();
     });
 
     it('clones a remote repo and continously updates the progress', async () => {
@@ -474,7 +472,7 @@ describe('git.private', () => {
           },
           () => null
         )
-      ).rejects.toThrowError('Git clone failed with exit code: 128');
+      ).rejects.toThrow('Git clone failed with exit code: 128');
     });
   });
 

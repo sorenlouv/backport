@@ -51,11 +51,11 @@ describe('getOptions', () => {
           optionsFromModule: {},
         })
       ).rejects.toThrowErrorMatchingInlineSnapshot(`
-                    "Please update your config file: \\"/myHomeDir/.backport/config.json\\".
-                    It must contain a valid \\"accessToken\\".
+        "Please update your config file: "/myHomeDir/.backport/config.json".
+        It must contain a valid "accessToken".
 
-                    Read more: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson"
-                  `);
+        Read more: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson"
+      `);
     });
 
     it('when `targetBranches`, `targetBranchChoices` and `branchLabelMapping` are all empty', async () => {
@@ -68,10 +68,10 @@ describe('getOptions', () => {
       await expect(() =>
         getOptions({ optionsFromCliArgs: {}, optionsFromModule: {} })
       ).rejects.toThrowErrorMatchingInlineSnapshot(`
-              "Please specify a target branch: \\"--branch 6.1\\".
+        "Please specify a target branch: "--branch 6.1".
 
-              Read more: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson"
-            `);
+        Read more: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson"
+      `);
     });
 
     describe('whe option is an empty string', () => {
@@ -82,7 +82,7 @@ describe('getOptions', () => {
             optionsFromModule: { repoForkOwner: '', author: 'sqren' },
           })
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `"\\"repoForkOwner\\" cannot be empty!"`
+          `""repoForkOwner" cannot be empty!"`
         );
       });
 
@@ -93,7 +93,7 @@ describe('getOptions', () => {
             optionsFromModule: { author: '' },
           })
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `"\\"author\\" cannot be empty!"`
+          `""author" cannot be empty!"`
         );
       });
 
@@ -104,11 +104,11 @@ describe('getOptions', () => {
             optionsFromModule: { accessToken: '' },
           })
         ).rejects.toThrowErrorMatchingInlineSnapshot(`
-                "Please update your config file: \\"/myHomeDir/.backport/config.json\\".
-                It must contain a valid \\"accessToken\\".
+          "Please update your config file: "/myHomeDir/.backport/config.json".
+          It must contain a valid "accessToken".
 
-                Read more: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson"
-              `);
+          Read more: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson"
+        `);
       });
     });
 
@@ -123,10 +123,10 @@ describe('getOptions', () => {
         await expect(() =>
           getOptions({ optionsFromCliArgs: {}, optionsFromModule: {} })
         ).rejects.toThrowErrorMatchingInlineSnapshot(`
-                              "Please specify a repository: \\"--repo elastic/kibana\\".
+          "Please specify a repository: "--repo elastic/kibana".
 
-                              Read more: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson"
-                          `);
+          Read more: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson"
+        `);
       });
 
       it('should get repoName from the remote', async () => {
@@ -168,7 +168,7 @@ describe('getOptions', () => {
     mockGithubConfigOptions({ hasBackportBranch: true });
     await expect(
       getOptions({ optionsFromCliArgs: {}, optionsFromModule: {} })
-    ).rejects.toThrowError(
+    ).rejects.toThrow(
       'You must delete the branch "backport" to continue. See https://github.com/sqren/backport/issues/155 for details'
     );
   });

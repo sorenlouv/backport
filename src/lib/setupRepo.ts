@@ -10,6 +10,7 @@ import {
   getLocalSourceRepoPath,
   getRemoteUrl,
 } from './git';
+import { logger } from './logger';
 import { ora } from './ora';
 
 export async function setupRepo(options: ValidConfigOptions) {
@@ -72,5 +73,6 @@ export async function setupRepo(options: ValidConfigOptions) {
 async function getIsRepoCloned(options: ValidConfigOptions): Promise<boolean> {
   const repoPath = getRepoPath(options);
   const projectRoot = await getGitProjectRootPath(repoPath);
+  logger.debug(`repoPath=${repoPath}, projectRoot=${projectRoot}`);
   return repoPath === projectRoot;
 }
