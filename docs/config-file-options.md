@@ -202,10 +202,6 @@ Automatically detech which branches a pull request should be backported to, base
 
 _Note: backslashes must be escaped._
 
-#### `config-file`
-
-Custom path to project config file (.backportrc.json).
-
 #### `dir`
 
 Clone repository into custom directory
