@@ -58,7 +58,7 @@ describe('fetchCommitBySha', () => {
         sha: 'cb6fbc0e1b406675724181a3e9f59459b5f8f892',
       },
       sourcePullRequest: {
-        labels: ['Team:apm', 'release_note:skip', 'v7.9.0'],
+        labels: ['Team:APM', 'release_note:skip', 'v7.9.0'],
         number: 70740,
         url: 'https://github.com/elastic/kibana/pull/70740',
         mergeCommit: {

@@ -145,7 +145,7 @@ exports[`fetchCommitsByAuthor snapshot request/response returns the correct resp
     },
     "sourcePullRequest": {
       "labels": [
-        "Team:apm",
+        "Team:APM",
         "v8.0.0",
         "release_note:skip",
         "auto-backport",
@@ -208,7 +208,7 @@ Co-authored-by: Søren Louv-Jansen <soren.louv@elastic.co>",
     "sourcePullRequest": {
       "labels": [
         "release_note:enhancement",
-        "Team:apm",
+        "Team:APM",
         "backport:skip",
         "v8.1.0",
       ],
@@ -253,7 +253,7 @@ Co-authored-by: Søren Louv-Jansen <soren.louv@elastic.co>",
     },
     "sourcePullRequest": {
       "labels": [
-        "Team:apm",
+        "Team:APM",
         "v8.0.0",
         "release_note:skip",
         "auto-backport",
@@ -323,7 +323,7 @@ Co-authored-by: Søren Louv-Jansen <soren.louv@elastic.co>",
     },
     "sourcePullRequest": {
       "labels": [
-        "Team:apm",
+        "Team:APM",
         "v8.0.0",
         "release_note:skip",
         "auto-backport",
@@ -409,7 +409,7 @@ Co-authored-by: Søren Louv-Jansen <soren.louv@elastic.co>",
     },
     "sourcePullRequest": {
       "labels": [
-        "Team:apm",
+        "Team:APM",
         "v8.0.0",
         "release_note:skip",
         "auto-backport",
@@ -474,7 +474,7 @@ Co-authored-by: Søren Louv-Jansen <soren.louv@elastic.co>",
     },
     "sourcePullRequest": {
       "labels": [
-        "Team:apm",
+        "Team:APM",
         "v8.0.0",
         "release_note:skip",
         "auto-backport",
@@ -546,7 +546,7 @@ Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>
     },
     "sourcePullRequest": {
       "labels": [
-        "Team:apm",
+        "Team:APM",
         "v8.0.0",
         "release_note:skip",
         "auto-backport",
@@ -638,7 +638,7 @@ Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>
     },
     "sourcePullRequest": {
       "labels": [
-        "Team:apm",
+        "Team:APM",
         "v8.0.0",
         "release_note:skip",
         "auto-backport",
@@ -701,7 +701,7 @@ Co-authored-by: Søren Louv-Jansen <soren.louv@elastic.co>",
     "sourcePullRequest": {
       "labels": [
         "release_note:fix",
-        "Team:apm",
+        "Team:APM",
         "v8.0.0",
         "auto-backport",
         "v8.1.0",
@@ -762,7 +762,7 @@ Co-authored-by: Søren Louv-Jansen <soren.louv@elastic.co>",
     },
     "sourcePullRequest": {
       "labels": [
-        "Team:apm",
+        "Team:APM",
         "v8.0.0",
         "release_note:skip",
         "auto-backport",

@@ -152,7 +152,7 @@ exports[`fetchCommitByPullNumber snapshot request/response returns the correct r
     },
     "sourcePullRequest": {
       "labels": [
-        "Team:apm",
+        "Team:APM",
         "v8.0.0",
         "release_note:skip",
         "auto-backport",

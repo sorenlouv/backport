@@ -199,7 +199,7 @@ describe('entrypoint.module', () => {
             sha: 'd1b348e6213c5ad48653dfaad6eaf4928b2c688b',
           },
           sourcePullRequest: {
-            labels: ['Team:apm', 'release_note:skip', 'v7.11.0'],
+            labels: ['Team:APM', 'release_note:skip', 'v7.11.0'],
             number: 88188,
             url: 'https://github.com/elastic/kibana/pull/88188',
             mergeCommit: {
@@ -265,7 +265,7 @@ describe('entrypoint.module', () => {
             sha: 'd1b348e6213c5ad48653dfaad6eaf4928b2c688b',
           },
           sourcePullRequest: {
-            labels: ['Team:apm', 'release_note:skip', 'v7.11.0'],
+            labels: ['Team:APM', 'release_note:skip', 'v7.11.0'],
             number: 88188,
             url: 'https://github.com/elastic/kibana/pull/88188',
             mergeCommit: {
@@ -314,7 +314,7 @@ describe('entrypoint.module', () => {
         repoName: 'kibana',
         repoOwner: 'elastic',
         dateUntil: '2021-06-02',
-        prFilter: 'label:Team:apm base:master',
+        prFilter: 'label:Team:APM base:master',
         maxNumber: 3,
       });
 
@@ -381,7 +381,7 @@ describe('entrypoint.module', () => {
             "sourcePullRequest": {
               "labels": [
                 "release_note:fix",
-                "Team:apm",
+                "Team:APM",
                 "apm:test-plan-done",
                 "v7.11.0",
                 "apm:test-plan-7.11.0",
@@ -442,7 +442,7 @@ describe('entrypoint.module', () => {
             },
             "sourcePullRequest": {
               "labels": [
-                "Team:apm",
+                "Team:APM",
                 "release_note:skip",
                 "v7.11.0",
               ],
@@ -492,7 +492,7 @@ describe('entrypoint.module', () => {
             },
             "sourcePullRequest": {
               "labels": [
-                "Team:apm",
+                "Team:APM",
                 "release_note:skip",
                 "v7.11.0",
               ],

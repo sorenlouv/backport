@@ -1,7 +1,12 @@
+import type { JestConfigWithTsJest } from 'ts-jest';
+
 // ensure timezone is always in UTC
 process.env.TZ = 'UTC';
 
-module.exports = {
+const baseConfig: JestConfigWithTsJest = {
+  transform: {
+    '^.+\\.ts?$': ['ts-jest', { diagnostics: false }],
+  },
   snapshotSerializers: ['jest-snapshot-serializer-ansi'],
   setupFiles: ['./src/test/setupFiles/automatic-mocks.ts'],
   preset: 'ts-jest',
@@ -12,9 +17,6 @@ module.exports = {
   // exclude "mutation" tests that cannot run on in parallel (like they are on CI) because they mutate shared state
   modulePathIgnorePatterns: ['.*.private.test.ts$', '.*.mutation.test.ts$'],
   moduleFileExtensions: ['ts', 'js', 'json'],
-  globals: {
-    'ts-jest': {
-      diagnostics: false,
-    },
-  },
 };
+
+export default baseConfig;
