@@ -35,7 +35,12 @@ export async function apiRequestV4<DataResponse>({
   variables?: Variables;
 }) {
   const gqlQueryName = getQueryName(query);
-  const span = apm.startSpan(`Query: ${gqlQueryName}`);
+  const span = apm.startSpan(`GraphQL: ${gqlQueryName}`);
+  span?.setType('db', 'grapgql');
+
+  //@ts-expect-error
+  span?.setDbContext({ type: 'graphql', statement: print(query) });
+
   try {
     const response = await axios.post<GithubV4Response<DataResponse>>(
       githubApiBaseUrlV4,
@@ -60,12 +65,11 @@ export async function apiRequestV4<DataResponse>({
     });
 
     span?.setOutcome('success');
-    span?.end();
 
     return response.data.data;
   } catch (e) {
     span?.setOutcome('failure');
-    span?.end();
+
     apm.captureError(e as Error);
 
     if (isAxiosGithubError(e) && e.response) {
@@ -80,6 +84,8 @@ export async function apiRequestV4<DataResponse>({
     }
 
     throw e;
+  } finally {
+    span?.end();
   }
 }
 

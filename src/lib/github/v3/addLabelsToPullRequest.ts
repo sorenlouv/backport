@@ -1,4 +1,5 @@
 import { Octokit } from '@octokit/rest';
+import apm from 'elastic-apm-node';
 import { ora } from '../../../lib/ora';
 import { logger } from '../../logger';
 
@@ -34,6 +35,8 @@ export async function addLabelsToPullRequest({
     return;
   }
 
+  const span = apm.startSpan('REST: Add labels');
+
   try {
     const octokit = new Octokit({
       auth: accessToken,
@@ -52,5 +55,7 @@ export async function addLabelsToPullRequest({
   } catch (e) {
     spinner.fail();
     logger.error(`Could not add labels to PR ${pullNumber}`, e);
+  } finally {
+    span?.end();
   }
 }

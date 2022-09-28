@@ -1,4 +1,5 @@
 import { Octokit } from '@octokit/rest';
+import apm from 'elastic-apm-node';
 import { ora } from '../../../lib/ora';
 import { ValidConfigOptions } from '../../../options/options';
 import { PACKAGE_VERSION } from '../../../utils/packageVersion';
@@ -43,6 +44,8 @@ export async function createPullRequest({
     return { didUpdate: false, number: 1337, url: 'this-is-a-dry-run' };
   }
 
+  const span = apm.startSpan('REST: Create pull request');
+
   try {
     const octokit = new Octokit({
       auth: accessToken,
@@ -78,6 +81,8 @@ export async function createPullRequest({
     } catch (e) {
       logger.error('Could not retrieve existing pull request', e);
       // swallow error
+    } finally {
+      span?.end();
     }
 
     spinner.fail();

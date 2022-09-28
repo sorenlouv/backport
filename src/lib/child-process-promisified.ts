@@ -33,7 +33,7 @@ export async function spawnPromise(
 ): Promise<SpawnPromiseResponse> {
   const fullCmd = getFullCmd(cmd, cmdArgs);
   logger.info(`Running command: "${fullCmd}"`);
-  const span = apm.startSpan(fullCmd);
+  const span = apm.startSpan(`Spawn: "${fullCmd}"`);
 
   const res = new Promise<SpawnPromiseResponse>(function (resolve, reject) {
     const subprocess = childProcess.spawn(cmd, cmdArgs, {

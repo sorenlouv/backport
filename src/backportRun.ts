@@ -6,7 +6,7 @@ import { getCommits } from './lib/getCommits';
 import { getTargetBranches } from './lib/getTargetBranches';
 import { createStatusComment } from './lib/github/v3/createStatusComment';
 import { GithubV4Exception } from './lib/github/v4/apiRequestV4';
-import { consoleLog, initLogger } from './lib/logger';
+import { consoleLog, initLogger, accessTokenReplacer } from './lib/logger';
 import { ora } from './lib/ora';
 import { setupRepo } from './lib/setupRepo';
 import { Commit } from './lib/sourceCommit/parseSourceCommit';
@@ -44,6 +44,8 @@ export type BackportResponse =
   | BackportFailureResponse
   | BackportAbortResponse;
 
+let apmTransaction: apm.Transaction | null;
+
 export async function backportRun({
   processArgs,
   optionsFromModule = {},
@@ -53,6 +55,8 @@ export async function backportRun({
   optionsFromModule?: ConfigFileOptions;
   exitCodeOnFailure: boolean;
 }): Promise<BackportResponse> {
+  apmTransaction = apm.startTransaction('cli backport');
+
   const { interactive, logFilePath } = getRuntimeArguments(
     processArgs,
     optionsFromModule
@@ -84,11 +88,24 @@ export async function backportRun({
 
   try {
     options = await getOptions({ optionsFromCliArgs, optionsFromModule });
+    apmTransaction?.setLabel(
+      'cli-options',
+      JSON.stringify(optionsFromCliArgs, accessTokenReplacer)
+    );
+
+    Object.entries(options).map(([key, value]) => {
+      apmTransaction?.setLabel(
+        `option__${key}`,
+        JSON.stringify(value, accessTokenReplacer)
+      );
+    });
+
     logger.info('Backporting options', options);
     spinner.stop();
 
-    const commitsSpan = apm.startSpan('Get commits');
+    const commitsSpan = apm.startSpan(`Get commits`);
     commits = await getCommits(options);
+    commitsSpan?.setLabel('commit-count', commits.length);
     commitsSpan?.end();
     logger.info('Commits', commits);
 
@@ -98,8 +115,12 @@ export async function backportRun({
 
     const targetBranchesSpan = apm.startSpan('Get target branches');
     const targetBranches = await getTargetBranches(options, commits);
-    logger.info('Target branches', targetBranches);
+    targetBranchesSpan?.setLabel(
+      'target-branches-count',
+      targetBranches.length
+    );
     targetBranchesSpan?.end();
+    logger.info('Target branches', targetBranches);
 
     const setupRepoSpan = apm.startSpan('Setup repository');
     await setupRepo(options);
@@ -195,3 +216,13 @@ function outputError({
     );
   }
 }
+
+process.on('SIGINT', () => {
+  apmTransaction?.end('SIGINT');
+  apm.flush(() => process.exit(1));
+});
+
+process.on('exit', (code) => {
+  apmTransaction?.end(code > 0 ? 'failure' : 'success');
+  apm.flush(() => process.exit(1));
+});

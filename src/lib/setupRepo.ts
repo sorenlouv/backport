@@ -1,4 +1,5 @@
 import del = require('del');
+import apm = require('elastic-apm-node');
 import { ValidConfigOptions } from '../options/options';
 import { BackportError } from './BackportError';
 import { getRepoPath } from './env';
@@ -41,12 +42,15 @@ export async function setupRepo(options: ValidConfigOptions) {
 
       await del(repoPath, { force: true });
 
+      const cloneRepoSpan = apm.startSpan('Get target branches');
       await cloneRepo(
         { sourcePath, targetPath: repoPath },
         (progress: number) => {
           spinner.text = `${progress}% ${spinnerCloneText}`;
         }
       );
+      cloneRepoSpan?.setLabel('local-clone', !!localRepoPath);
+      cloneRepoSpan?.end();
 
       spinner.succeed(`100% ${spinnerCloneText}`);
     } catch (e) {
