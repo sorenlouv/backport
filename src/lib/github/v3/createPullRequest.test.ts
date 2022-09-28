@@ -1,4 +1,4 @@
-import { Commit } from '../../../entrypoint.module';
+import { Commit } from '../../../entrypoint.api';
 import { ValidConfigOptions } from '../../../options/options';
 import { getPullRequestBody, getTitle } from './createPullRequest';
 

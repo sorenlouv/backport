@@ -1,4 +1,4 @@
-import { Commit } from '../../entrypoint.module';
+import { Commit } from '../../entrypoint.api';
 import { getTargetPRLabels } from './getTargetPRLabels';
 
 const commits: Commit[] = [

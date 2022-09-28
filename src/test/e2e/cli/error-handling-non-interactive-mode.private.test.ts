@@ -5,7 +5,7 @@ import {
   BackportFailureResponse,
   BackportSuccessResponse,
 } from '../../../backportRun';
-import { ConfigFileOptions } from '../../../entrypoint.module';
+import { ConfigFileOptions } from '../../../entrypoint.api';
 import { getDevAccessToken } from '../../private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
 import { runBackportViaCli } from './runBackportViaCli';

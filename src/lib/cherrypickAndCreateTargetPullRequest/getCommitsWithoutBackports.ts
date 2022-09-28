@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { Commit } from '../../entrypoint.module';
+import { Commit } from '../../entrypoint.api';
 import { ValidConfigOptions } from '../../options/options';
 import { getIsCommitInBranch } from '../git';
 import { getFirstLine } from '../github/commitFormatters';

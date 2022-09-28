@@ -15,8 +15,8 @@
     "branching"
   ],
   "version": "8.9.4",
-  "main": "./dist/entrypoint.module.js",
-  "types": "dist/entrypoint.module.d.ts",
+  "main": "./dist/entrypoint.api.js",
+  "types": "dist/entrypoint.api.d.ts",
   "bin": {
     "backport": "./bin/backport"
   },

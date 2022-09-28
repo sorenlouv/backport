@@ -1,5 +1,5 @@
 import { uniq } from 'lodash';
-import { Commit } from '../../entrypoint.module';
+import { Commit } from '../../entrypoint.api';
 import { filterNil } from '../../utils/filterEmpty';
 import { getSourceBranchFromCommits } from '../getSourceBranchFromCommits';
 import { logger } from '../logger';

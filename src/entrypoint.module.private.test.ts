@@ -2,7 +2,7 @@ import {
   BackportFailureResponse,
   BackportSuccessResponse,
 } from './backportRun';
-import { backportRun, Commit, getCommits } from './entrypoint.module';
+import { backportRun, Commit, getCommits } from './entrypoint.api';
 import { getFirstLine } from './lib/github/commitFormatters';
 import { getDevAccessToken } from './test/private/getDevAccessToken';
 

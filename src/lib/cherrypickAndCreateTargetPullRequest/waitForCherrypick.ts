@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { difference, isEmpty } from 'lodash';
-import { BackportError, Commit } from '../../entrypoint.module';
+import { BackportError, Commit } from '../../entrypoint.api';
 import { Ora, ora } from '../../lib/ora';
 import { ValidConfigOptions } from '../../options/options';
 import { CommitAuthor, getCommitAuthor } from '../author';

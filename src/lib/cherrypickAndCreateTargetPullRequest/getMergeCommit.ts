@@ -1,4 +1,4 @@
-import { Commit } from '../../entrypoint.module';
+import { Commit } from '../../entrypoint.api';
 import { ValidConfigOptions } from '../../options/options';
 import { getIsMergeCommit, getShasInMergeCommit } from '../git';
 import { fetchCommitBySha } from '../github/v4/fetchCommits/fetchCommitBySha';
