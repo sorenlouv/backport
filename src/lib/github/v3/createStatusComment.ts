@@ -17,6 +17,7 @@ export async function createStatusComment({
   const { githubApiBaseUrlV3, repoName, repoOwner, accessToken } = options;
 
   const span = apm.startSpan('REST: Create status comment');
+  span?.setType('external', 'http');
 
   try {
     const octokit = new Octokit({

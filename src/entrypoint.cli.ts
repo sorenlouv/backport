@@ -1,5 +1,6 @@
+import './lib/apm';
+import apm from 'elastic-apm-node';
 import { backportRun } from './backportRun';
-import { apm } from './lib/apm';
 import { getRuntimeArguments } from './options/cliArgs';
 const processArgs = process.argv.slice(2);
 

@@ -140,9 +140,8 @@ export async function backportRun({
       commits,
       results,
     };
-    const statusCommentSpan = apm.startSpan('Create status comment');
+
     await createStatusComment({ options, backportResponse });
-    statusCommentSpan?.end();
 
     return backportResponse;
   } catch (e) {

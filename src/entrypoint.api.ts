@@ -1,3 +1,4 @@
+import './lib/apm';
 import apm from 'elastic-apm-node';
 import { backportRun as run } from './backportRun';
 import { BackportResponse } from './backportRun';
