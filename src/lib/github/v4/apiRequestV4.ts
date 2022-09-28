@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
+import apm from 'elastic-apm-node';
 import { DocumentNode } from 'graphql';
 import { print } from 'graphql/language/printer';
 import { isObject } from 'lodash';
@@ -33,6 +34,8 @@ export async function apiRequestV4<DataResponse>({
   query: DocumentNode;
   variables?: Variables;
 }) {
+  const gqlQueryName = getQueryName(query);
+  const span = apm.startSpan(`Query: ${gqlQueryName}`);
   try {
     const response = await axios.post<GithubV4Response<DataResponse>>(
       githubApiBaseUrlV4,
@@ -56,8 +59,15 @@ export async function apiRequestV4<DataResponse>({
       githubResponse: response,
     });
 
+    span?.setOutcome('success');
+    span?.end();
+
     return response.data.data;
   } catch (e) {
+    span?.setOutcome('failure');
+    span?.end();
+    apm.captureError(e as Error);
+
     if (isAxiosGithubError(e) && e.response) {
       addDebugLogs({
         githubApiBaseUrlV4,

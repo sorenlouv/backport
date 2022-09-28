@@ -1,3 +1,4 @@
+import apm from 'elastic-apm-node';
 import { backportRun as run } from './backportRun';
 import { BackportResponse } from './backportRun';
 import { fetchCommitsByPullNumber } from './lib/github/v4/fetchCommits/fetchCommitByPullNumber';
@@ -30,7 +31,7 @@ export type { ConfigFileOptions } from './options/ConfigOptions';
 export { getGlobalConfig as getLocalGlobalConfig } from './options/config/globalConfig';
 export { getOptionsFromGithub };
 
-export function backportRun({
+export async function backportRun({
   options = {},
   processArgs = [],
   exitCodeOnFailure = true,
@@ -46,11 +47,15 @@ export function backportRun({
   processArgs?: string[];
   exitCodeOnFailure?: boolean;
 }): Promise<BackportResponse> {
-  return run({
+  apm.startTransaction('api backport');
+  const res = await run({
     optionsFromModule: excludeUndefined(options),
     processArgs,
     exitCodeOnFailure,
   });
+
+  apm.endTransaction(res.status);
+  return res;
 }
 
 export async function getCommits(options: {

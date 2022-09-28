@@ -68,6 +68,7 @@
     "dedent": "^0.7.0",
     "del": "^6.1.1",
     "dotenv": "^16.0.2",
+    "elastic-apm-node": "^3.38.0",
     "find-up": "^5.0.0",
     "graphql": "^16.6.0",
     "graphql-tag": "^2.12.6",

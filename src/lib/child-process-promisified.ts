@@ -1,5 +1,6 @@
 import childProcess from 'child_process';
 import { promisify } from 'util';
+import apm from 'elastic-apm-node';
 import { logger } from './logger';
 const execPromisified = promisify(childProcess.exec);
 
@@ -18,20 +19,23 @@ export async function exec(
   return res;
 }
 
-export async function spawnPromise(
-  cmd: string,
-  cmdArgs: string[],
-  cwd: string
-): Promise<{
-  cmdArgs: string[];
+type SpawnPromiseResponse = {
+  cmdArgs: ReadonlyArray<string>;
   code: number | null;
   stderr: string;
   stdout: string;
-}> {
-  const fullCmd = `${cmd} ${cmdArgs.join(' ')}`;
-  logger.info(`Running command: "${fullCmd}"`);
+};
 
-  return new Promise(function (resolve, reject) {
+export async function spawnPromise(
+  cmd: string,
+  cmdArgs: ReadonlyArray<string>,
+  cwd: string
+): Promise<SpawnPromiseResponse> {
+  const fullCmd = getFullCmd(cmd, cmdArgs);
+  logger.info(`Running command: "${fullCmd}"`);
+  const span = apm.startSpan(fullCmd);
+
+  const res = new Promise<SpawnPromiseResponse>(function (resolve, reject) {
     const subprocess = childProcess.spawn(cmd, cmdArgs, {
       cwd,
 
@@ -66,16 +70,37 @@ export async function spawnPromise(
       reject(err);
     });
   });
+
+  res
+    .then(() => span?.setOutcome('success'))
+    .catch(() => span?.setOutcome('failure'))
+    .finally(() => span?.end());
+
+  return res;
 }
 
 export const spawnStream = (cmd: string, cmdArgs: ReadonlyArray<string>) => {
-  return childProcess.spawn(cmd, cmdArgs, {
+  const span = apm.startSpan(getFullCmd(cmd, cmdArgs));
+
+  const res = childProcess.spawn(cmd, cmdArgs, {
     env: { ...process.env, LANG: 'en_US' },
   });
+
+  res.on('close', (code) => {
+    const isSuccess = code === 0 || code === null;
+    span?.setOutcome(isSuccess ? 'success' : 'failure');
+    span?.end();
+  });
+
+  return res;
 };
 
+function getFullCmd(cmd: string, cmdArgs: ReadonlyArray<string>) {
+  return `${cmd} ${cmdArgs.join(' ')}`;
+}
+
 export type SpawnErrorContext = {
-  cmdArgs: string[];
+  cmdArgs: ReadonlyArray<string>;
   code: number;
   stderr: string;
   stdout: string;

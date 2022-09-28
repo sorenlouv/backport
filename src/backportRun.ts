@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import apm from 'elastic-apm-node';
 import { BackportError } from './lib/BackportError';
 import { getLogfilePath } from './lib/env';
 import { getCommits } from './lib/getCommits';
@@ -62,6 +63,7 @@ export async function backportRun({
   try {
     optionsFromCliArgs = getOptionsFromCliArgs(processArgs);
   } catch (e) {
+    apm.captureError(e as Error);
     if (e instanceof Error) {
       consoleLog(e.message);
       consoleLog(`Run "backport --help" to see all options`);
@@ -85,31 +87,42 @@ export async function backportRun({
     logger.info('Backporting options', options);
     spinner.stop();
 
+    const commitsSpan = apm.startSpan('Get commits');
     commits = await getCommits(options);
+    commitsSpan?.end();
     logger.info('Commits', commits);
 
     if (options.ls) {
       return { status: 'success', commits, results: [] } as BackportResponse;
     }
 
+    const targetBranchesSpan = apm.startSpan('Get target branches');
     const targetBranches = await getTargetBranches(options, commits);
     logger.info('Target branches', targetBranches);
+    targetBranchesSpan?.end();
 
+    const setupRepoSpan = apm.startSpan('Setup repository');
     await setupRepo(options);
+    setupRepoSpan?.end();
 
+    const backportCommitsSpan = apm.startSpan('Backport commits');
     const results = await runSequentially({
       options,
       commits,
       targetBranches,
     });
     logger.info('Results', results);
+    backportCommitsSpan?.end();
 
     const backportResponse: BackportResponse = {
       status: 'success',
       commits,
       results,
     };
+    const statusCommentSpan = apm.startSpan('Create status comment');
     await createStatusComment({ options, backportResponse });
+    statusCommentSpan?.end();
+
     return backportResponse;
   } catch (e) {
     spinner.stop();
