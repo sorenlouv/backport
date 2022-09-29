@@ -29,7 +29,7 @@
     "extractPackageVersion": "node -p \"'export const PACKAGE_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" | prettier --parser typescript > src/utils/packageVersion.ts",
     "lint-and-test": "yarn tsc && yarn lint && yarn test-all",
     "lint": "echo \"Running lint\" && eslint './**/*.{ts,js}'",
-    "start": "ts-node --transpile-only ./src/entrypoint.cli.ts",
+    "start": "NODE_ENV=development ts-node --transpile-only ./src/entrypoint.cli.ts",
     "test-all": "jest --config ./jest.config.all.ts",
     "test-mutation": "jest --config ./jest.config.mutation.ts",
     "test-private": "jest --config ./jest.config.private.ts",

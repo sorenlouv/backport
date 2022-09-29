@@ -1,6 +1,8 @@
 import apm from 'elastic-apm-node';
 import { accessTokenReplacer } from './logger';
 
+const environment = process.env.NODE_ENV || 'production';
+
 apm
   .start({
     serviceName: 'backport',
@@ -11,6 +13,7 @@ apm
     captureBody: 'all',
     errorOnAbortedRequests: false,
     logUncaughtExceptions: false,
+    environment,
   })
   .addFilter((payload) => {
     return JSON.parse(JSON.stringify(payload, accessTokenReplacer));
