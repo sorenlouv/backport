@@ -88,7 +88,7 @@ export async function backportRun({
 
   try {
     options = await getOptions({ optionsFromCliArgs, optionsFromModule });
-    apmTransaction?.setLabel('cli-options', JSON.stringify(optionsFromCliArgs));
+    apmTransaction?.setLabel('cli_options', JSON.stringify(optionsFromCliArgs));
     Object.entries(options).map(([key, value]) => {
       apmTransaction?.setLabel(`option__${key}`, JSON.stringify(value));
     });
@@ -98,7 +98,7 @@ export async function backportRun({
 
     const commitsSpan = apm.startSpan(`Get commits`);
     commits = await getCommits(options);
-    commitsSpan?.setLabel('commit-count', commits.length);
+    commitsSpan?.setLabel('commit_count', commits.length);
     commitsSpan?.end();
     logger.info('Commits', commits);
 

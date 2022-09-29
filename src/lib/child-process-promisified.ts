@@ -55,7 +55,7 @@ export async function spawnPromise(
 
     subprocess.on('close', (code) => {
       spawnSpan?.addLabels({
-        statusCode: code,
+        status_code: code,
         stderr: stderr,
         stdout: stdout,
       });
@@ -74,7 +74,7 @@ export async function spawnPromise(
     });
 
     subprocess.on('error', (err) => {
-      spawnSpan?.setLabel('error', err.message);
+      spawnSpan?.setLabel('error_message', err.message);
       spawnSpan?.setOutcome('failure');
       reject(err);
     });
@@ -101,7 +101,7 @@ export const spawnStream = (cmd: string, cmdArgs: ReadonlyArray<string>) => {
 
   res.on('close', (code) => {
     const isSuccess = code === 0 || code === null;
-    spawnSpan?.setLabel('statusCode', code);
+    spawnSpan?.setLabel('status_code', code);
     spawnSpan?.setOutcome(isSuccess ? 'success' : 'failure');
     spawnSpan?.end();
   });

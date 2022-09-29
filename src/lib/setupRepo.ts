@@ -49,7 +49,7 @@ export async function setupRepo(options: ValidConfigOptions) {
           spinner.text = `${progress}% ${spinnerCloneText}`;
         }
       );
-      cloneRepoSpan?.setLabel('local-clone', !!localRepoPath);
+      cloneRepoSpan?.setLabel('local_clone', !!localRepoPath);
       cloneRepoSpan?.end();
 
       spinner.succeed(`100% ${spinnerCloneText}`);
