@@ -31,11 +31,11 @@ export async function spawnPromise(
   cmdArgs: ReadonlyArray<string>,
   cwd: string
 ): Promise<SpawnPromiseResponse> {
+  const spawnSpan = startSpawnSpan(cmd, cmdArgs);
   const fullCmd = getFullCmd(cmd, cmdArgs);
   logger.info(`Running command: "${fullCmd}"`);
-  const span = apm.startSpan(`Spawn: "${fullCmd}"`);
 
-  const res = new Promise<SpawnPromiseResponse>(function (resolve, reject) {
+  return new Promise<SpawnPromiseResponse>(function (resolve, reject) {
     const subprocess = childProcess.spawn(cmd, cmdArgs, {
       cwd,
 
@@ -54,6 +54,13 @@ export async function spawnPromise(
     });
 
     subprocess.on('close', (code) => {
+      spawnSpan?.addLabels({
+        statusCode: code,
+        stderr: stderr,
+        stdout: stdout,
+      });
+      spawnSpan?.setOutcome('success');
+
       if (code === 0 || code === null) {
         logger.verbose(
           `Spawn success: code=${code} stderr=${stderr} stdout=${stdout}`
@@ -67,20 +74,26 @@ export async function spawnPromise(
     });
 
     subprocess.on('error', (err) => {
+      spawnSpan?.setLabel('error', err.message);
+      spawnSpan?.setOutcome('failure');
       reject(err);
     });
+  }).finally(() => {
+    spawnSpan?.end();
   });
+}
 
-  res
-    .then(() => span?.setOutcome('success'))
-    .catch(() => span?.setOutcome('failure'))
-    .finally(() => span?.end());
-
-  return res;
+function startSpawnSpan(cmd: string, cmdArgs: ReadonlyArray<string>) {
+  const span = apm.startSpan(`Spawn: "${cmd}"`);
+  const fullCmd = getFullCmd(cmd, cmdArgs);
+  const firstCmdArg = cmdArgs.filter((cmdArg) => !cmdArg.startsWith('--'))[0];
+  span?.setType('spawn', cmd, firstCmdArg);
+  span?.setLabel(`cmd`, fullCmd);
+  return span;
 }
 
 export const spawnStream = (cmd: string, cmdArgs: ReadonlyArray<string>) => {
-  const span = apm.startSpan(getFullCmd(cmd, cmdArgs));
+  const spawnSpan = startSpawnSpan(cmd, cmdArgs);
 
   const res = childProcess.spawn(cmd, cmdArgs, {
     env: { ...process.env, LANG: 'en_US' },
@@ -88,8 +101,9 @@ export const spawnStream = (cmd: string, cmdArgs: ReadonlyArray<string>) => {
 
   res.on('close', (code) => {
     const isSuccess = code === 0 || code === null;
-    span?.setOutcome(isSuccess ? 'success' : 'failure');
-    span?.end();
+    spawnSpan?.setLabel('statusCode', code);
+    spawnSpan?.setOutcome(isSuccess ? 'success' : 'failure');
+    spawnSpan?.end();
   });
 
   return res;

@@ -64,6 +64,7 @@ export async function runSequentially({
       span?.end();
     } catch (e) {
       span?.setOutcome('failure');
+      span?.setLabel('error-message', (e as Error).message);
       span?.end();
       apm.captureError(e as Error);
 

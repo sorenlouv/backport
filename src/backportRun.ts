@@ -6,7 +6,7 @@ import { getCommits } from './lib/getCommits';
 import { getTargetBranches } from './lib/getTargetBranches';
 import { createStatusComment } from './lib/github/v3/createStatusComment';
 import { GithubV4Exception } from './lib/github/v4/apiRequestV4';
-import { consoleLog, initLogger, accessTokenReplacer } from './lib/logger';
+import { consoleLog, initLogger } from './lib/logger';
 import { ora } from './lib/ora';
 import { setupRepo } from './lib/setupRepo';
 import { Commit } from './lib/sourceCommit/parseSourceCommit';
@@ -88,16 +88,9 @@ export async function backportRun({
 
   try {
     options = await getOptions({ optionsFromCliArgs, optionsFromModule });
-    apmTransaction?.setLabel(
-      'cli-options',
-      JSON.stringify(optionsFromCliArgs, accessTokenReplacer)
-    );
-
+    apmTransaction?.setLabel('cli-options', JSON.stringify(optionsFromCliArgs));
     Object.entries(options).map(([key, value]) => {
-      apmTransaction?.setLabel(
-        `option__${key}`,
-        JSON.stringify(value, accessTokenReplacer)
-      );
+      apmTransaction?.setLabel(`option__${key}`, JSON.stringify(value));
     });
 
     logger.info('Backporting options', options);
@@ -216,12 +209,28 @@ function outputError({
   }
 }
 
-process.on('SIGINT', () => {
-  apmTransaction?.end('SIGINT');
-  apm.flush(() => process.exit(1));
+let didFlush = false;
+
+process.on('exit', () => {
+  if (!didFlush) {
+    didFlush = true;
+    apmTransaction?.end('exit');
+    apm.flush(() => process.exit(1));
+  }
 });
 
-process.on('exit', (code) => {
-  apmTransaction?.end(code > 0 ? 'failure' : 'success');
-  apm.flush(() => process.exit(1));
+process.on('uncaughtException', () => {
+  if (!didFlush) {
+    didFlush = true;
+    apmTransaction?.end('exit');
+    apm.flush(() => process.exit(1));
+  }
+});
+
+process.on('SIGINT', () => {
+  if (!didFlush) {
+    didFlush = true;
+    apmTransaction?.end('SIGINT');
+    apm.flush(() => process.exit(1));
+  }
 });
