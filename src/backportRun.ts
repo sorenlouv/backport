@@ -215,7 +215,7 @@ process.on('exit', () => {
   if (!didFlush) {
     didFlush = true;
     apmTransaction?.end('exit');
-    apm.flush(() => process.exit(1));
+    apm.flush(() => process.exit());
   }
 });
 
@@ -223,7 +223,7 @@ process.on('uncaughtException', () => {
   if (!didFlush) {
     didFlush = true;
     apmTransaction?.end('exit');
-    apm.flush(() => process.exit(1));
+    apm.flush(() => process.exit());
   }
 });
 
@@ -231,6 +231,6 @@ process.on('SIGINT', () => {
   if (!didFlush) {
     didFlush = true;
     apmTransaction?.end('SIGINT');
-    apm.flush(() => process.exit(1));
+    apm.flush(() => process.exit());
   }
 });
