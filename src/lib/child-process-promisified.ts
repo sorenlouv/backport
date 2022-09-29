@@ -86,7 +86,9 @@ export async function spawnPromise(
 function startSpawnSpan(cmd: string, cmdArgs: ReadonlyArray<string>) {
   const span = apm.startSpan(`Spawn: "${cmd}"`);
   const fullCmd = getFullCmd(cmd, cmdArgs);
-  const firstCmdArg = cmdArgs.filter((cmdArg) => !cmdArg.startsWith('--'))[0];
+  const firstCmdArg = cmdArgs.filter(
+    (cmdArg) => !cmdArg.startsWith('--') && cmdArg.startsWith('-')
+  )[0];
   span?.setType('spawn', cmd, firstCmdArg);
   span?.setLabel(`cmd`, fullCmd);
   return span;
