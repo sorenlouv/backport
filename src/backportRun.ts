@@ -89,7 +89,7 @@ export async function backportRun({
   try {
     options = await getOptions({ optionsFromCliArgs, optionsFromModule });
     apmTransaction?.setLabel('cli_options', JSON.stringify(optionsFromCliArgs));
-    Object.entries(options).map(([key, value]) => {
+    Object.entries(options).forEach(([key, value]) => {
       apmTransaction?.setLabel(`option__${key}`, JSON.stringify(value));
     });
 
