@@ -64,7 +64,7 @@
   },
   "dependencies": {
     "@octokit/rest": "^19.0.4",
-    "axios": "^0.27.2",
+    "axios": "^1.1.0",
     "dedent": "^0.7.0",
     "del": "^6.1.1",
     "dotenv": "^16.0.2",
