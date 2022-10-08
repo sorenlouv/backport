@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import apm from 'elastic-apm-node';
 import { BackportError } from './lib/BackportError';
+import { disableApm } from './lib/apm';
 import { getLogfilePath } from './lib/env';
 import { getCommits } from './lib/getCommits';
 import { getTargetBranches } from './lib/getTargetBranches';
@@ -88,6 +89,11 @@ export async function backportRun({
 
   try {
     options = await getOptions({ optionsFromCliArgs, optionsFromModule });
+
+    if (!options.telemetry) {
+      disableApm();
+    }
+
     apmTransaction?.setLabel('cli_options', JSON.stringify(optionsFromCliArgs));
     Object.entries(options).forEach(([key, value]) => {
       apmTransaction?.setLabel(`option__${key}`, JSON.stringify(value));

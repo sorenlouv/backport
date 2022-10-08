@@ -1,4 +1,6 @@
 import apm from 'elastic-apm-node';
+//@ts-expect-error
+import { NoopTransport } from 'elastic-apm-node/lib/noop-transport';
 import { accessTokenReplacer } from './logger';
 
 const environment = process.env.NODE_ENV || 'production';
@@ -15,6 +17,13 @@ apm
     logUncaughtExceptions: false,
     environment,
   })
+  // remove access token
   .addFilter((payload) => {
     return JSON.parse(JSON.stringify(payload, accessTokenReplacer));
   });
+
+export function disableApm() {
+  // hack to disable APM telemetry after loaded config
+  //@ts-expect-error
+  apm._transport = new NoopTransport();
+}

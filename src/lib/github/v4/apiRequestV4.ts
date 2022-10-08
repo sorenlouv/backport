@@ -35,8 +35,12 @@ export async function apiRequestV4<DataResponse>({
   variables?: Variables;
 }) {
   const gqlQueryName = getQueryName(query);
-  const span = apm.startSpan(`GraphQL: ${gqlQueryName}`);
-  span?.setType('external', 'graphql', 'query');
+  const span = apm.startSpan(
+    `GraphQL: ${gqlQueryName}`,
+    'external',
+    'graphql',
+    'query'
+  );
 
   //@ts-expect-error
   span?.setDbContext({ type: 'graphql', statement: print(query) });
