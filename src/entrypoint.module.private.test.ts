@@ -6,6 +6,8 @@ import { backportRun, Commit, getCommits } from './entrypoint.api';
 import { getFirstLine } from './lib/github/commitFormatters';
 import { getDevAccessToken } from './test/private/getDevAccessToken';
 
+jest.setTimeout(10_000);
+
 const accessToken = getDevAccessToken();
 
 jest.unmock('del');
