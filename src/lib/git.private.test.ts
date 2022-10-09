@@ -2,7 +2,7 @@ import { access } from 'fs/promises';
 import fs from 'fs/promises';
 import path from 'path';
 import makeDir from 'make-dir';
-import { Commit } from '../entrypoint.module';
+import { Commit } from '../entrypoint.api';
 import { ValidConfigOptions } from '../options/options';
 import { getDevAccessToken } from '../test/private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from '../test/sandbox';

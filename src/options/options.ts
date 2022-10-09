@@ -36,6 +36,7 @@ export const defaultConfigOptions = {
   dateSince: null,
   dateUntil: null,
   details: false,
+  telemetry: true,
   fork: true,
   gitHostname: 'github.com',
   interactive: true,

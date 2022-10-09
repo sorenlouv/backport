@@ -26,15 +26,15 @@ describe('different-merge-strategies', () => {
         2. Add description for "Rebase and merge"  
         3. Add "Rebase and merge" header  
         4. Create rebase-and-merge.txt  
-        5. Merge pull request #9 from backport-org/many-merge-commits  
-        6. Merge strategy: Eighth of many merges  
-        7. Merge strategy: Seventh of many merges  
-        8. Merge strategy: Sixth of many merges  
-        9. Merge strategy: Fifth of many merges  
-        10.Merge strategy: Fourth of many merges  
-        11.Merge strategy: Third of many merges  
-        12.Merge strategy: Second of many merges  
-        13.Merge strategy: First of many merges  
+        5. Merge pull request #9 from backport-org/many-merge-commits 7.x 
+        6. Merge strategy: Eighth of many merges 7.x 
+        7. Merge strategy: Seventh of many merges 7.x 
+        8. Merge strategy: Sixth of many merges 7.x 
+        9. Merge strategy: Fifth of many merges 7.x 
+        10.Merge strategy: Fourth of many merges 7.x 
+        11.Merge strategy: Third of many merges 7.x 
+        12.Merge strategy: Second of many merges 7.x 
+        13.Merge strategy: First of many merges 7.x 
         14.Using squash to merge commits (#3)  
         15.Rebase strategy: Second commit  
         16.Rebase strategy: First commit  
@@ -61,7 +61,7 @@ describe('different-merge-strategies', () => {
           '--pr=9',
           '--dry-run',
         ],
-        { showOra: true }
+        { showOra: true, timeoutSeconds: 5 }
       );
       output = res.output;
     });

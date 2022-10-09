@@ -1,5 +1,7 @@
 import chalk from 'chalk';
+import apm from 'elastic-apm-node';
 import { BackportError } from './lib/BackportError';
+import { disableApm } from './lib/apm';
 import { getLogfilePath } from './lib/env';
 import { getCommits } from './lib/getCommits';
 import { getTargetBranches } from './lib/getTargetBranches';
@@ -43,6 +45,8 @@ export type BackportResponse =
   | BackportFailureResponse
   | BackportAbortResponse;
 
+let apmTransaction: apm.Transaction | null;
+
 export async function backportRun({
   processArgs,
   optionsFromModule = {},
@@ -52,6 +56,8 @@ export async function backportRun({
   optionsFromModule?: ConfigFileOptions;
   exitCodeOnFailure: boolean;
 }): Promise<BackportResponse> {
+  apmTransaction = apm.startTransaction('cli backport');
+
   const { interactive, logFilePath } = getRuntimeArguments(
     processArgs,
     optionsFromModule
@@ -62,6 +68,7 @@ export async function backportRun({
   try {
     optionsFromCliArgs = getOptionsFromCliArgs(processArgs);
   } catch (e) {
+    apm.captureError(e as Error);
     if (e instanceof Error) {
       consoleLog(e.message);
       consoleLog(`Run "backport --help" to see all options`);
@@ -82,34 +89,59 @@ export async function backportRun({
 
   try {
     options = await getOptions({ optionsFromCliArgs, optionsFromModule });
+
+    if (!options.telemetry) {
+      disableApm();
+    }
+
+    apmTransaction?.setLabel('cli_options', JSON.stringify(optionsFromCliArgs));
+    Object.entries(options).forEach(([key, value]) => {
+      apmTransaction?.setLabel(`option__${key}`, JSON.stringify(value));
+    });
+
     logger.info('Backporting options', options);
     spinner.stop();
 
+    const commitsSpan = apm.startSpan(`Get commits`);
     commits = await getCommits(options);
+    commitsSpan?.setLabel('commit_count', commits.length);
+    commitsSpan?.end();
     logger.info('Commits', commits);
 
     if (options.ls) {
       return { status: 'success', commits, results: [] } as BackportResponse;
     }
 
+    const targetBranchesSpan = apm.startSpan('Get target branches');
     const targetBranches = await getTargetBranches(options, commits);
+    targetBranchesSpan?.setLabel(
+      'target-branches-count',
+      targetBranches.length
+    );
+    targetBranchesSpan?.end();
     logger.info('Target branches', targetBranches);
 
+    const setupRepoSpan = apm.startSpan('Setup repository');
     await setupRepo(options);
+    setupRepoSpan?.end();
 
+    const backportCommitsSpan = apm.startSpan('Backport commits');
     const results = await runSequentially({
       options,
       commits,
       targetBranches,
     });
     logger.info('Results', results);
+    backportCommitsSpan?.end();
 
     const backportResponse: BackportResponse = {
       status: 'success',
       commits,
       results,
     };
+
     await createStatusComment({ options, backportResponse });
+
     return backportResponse;
   } catch (e) {
     spinner.stop();
@@ -182,3 +214,29 @@ function outputError({
     );
   }
 }
+
+let didFlush = false;
+
+process.on('exit', () => {
+  if (!didFlush) {
+    didFlush = true;
+    apmTransaction?.end('exit');
+    apm.flush(() => process.exit());
+  }
+});
+
+process.on('uncaughtException', () => {
+  if (!didFlush) {
+    didFlush = true;
+    apmTransaction?.end('exit');
+    apm.flush(() => process.exit());
+  }
+});
+
+process.on('SIGINT', () => {
+  if (!didFlush) {
+    didFlush = true;
+    apmTransaction?.end('SIGINT');
+    apm.flush(() => process.exit());
+  }
+});

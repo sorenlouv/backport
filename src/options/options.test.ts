@@ -240,6 +240,7 @@ describe('getOptions', () => {
       targetBranchChoices: ['7.9', '8.0'],
       targetBranches: [],
       targetPRLabels: [],
+      telemetry: true,
     });
   });
 

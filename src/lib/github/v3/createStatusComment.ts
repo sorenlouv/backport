@@ -1,4 +1,5 @@
 import { Octokit } from '@octokit/rest';
+import apm from 'elastic-apm-node';
 import { BackportResponse } from '../../../backportRun';
 import { ValidConfigOptions } from '../../../options/options';
 import { PACKAGE_VERSION } from '../../../utils/packageVersion';
@@ -14,6 +15,9 @@ export async function createStatusComment({
   backportResponse: BackportResponse;
 }): Promise<void> {
   const { githubApiBaseUrlV3, repoName, repoOwner, accessToken } = options;
+
+  const span = apm.startSpan('REST: Create status comment');
+  span?.setType('external', 'http');
 
   try {
     const octokit = new Octokit({
@@ -50,6 +54,8 @@ export async function createStatusComment({
     );
   } catch (e) {
     logger.error(`Could not create status comment `, e);
+  } finally {
+    span?.end();
   }
 }
 

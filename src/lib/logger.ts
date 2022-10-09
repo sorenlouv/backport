@@ -46,11 +46,7 @@ function fileTransport({
   return new winston.transports.File({
     filename: getLogfilePath({ logFilePath, logLevel }),
     level: logLevel,
-    format: format.json({
-      replacer: (key, value) => {
-        return typeof value === 'string' ? redactAccessToken(value) : value;
-      },
-    }),
+    format: format.json({ replacer: accessTokenReplacer }),
   });
 }
 
@@ -73,6 +69,10 @@ export function redactAccessToken(str: string) {
   }
 
   return str;
+}
+
+export function accessTokenReplacer(key: string, value: unknown) {
+  return typeof value === 'string' ? redactAccessToken(value) : value;
 }
 
 export type LogLevel = 'error' | 'warn' | 'info' | 'verbose' | 'debug';

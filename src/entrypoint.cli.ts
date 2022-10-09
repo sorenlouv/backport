@@ -1,3 +1,5 @@
+import './lib/apm';
+import apm from 'elastic-apm-node';
 import { backportRun } from './backportRun';
 import { getRuntimeArguments } from './options/cliArgs';
 const processArgs = process.argv.slice(2);
@@ -11,5 +13,7 @@ backportRun({ processArgs, exitCodeOnFailure: true }).then(
       // eslint-disable-next-line no-console
       console.log(JSON.stringify(backportResponse));
     }
+
+    apm.endTransaction(backportResponse.status);
   }
 );

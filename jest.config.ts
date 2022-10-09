@@ -2,6 +2,7 @@ import type { JestConfigWithTsJest } from 'ts-jest';
 
 // ensure timezone is always in UTC
 process.env.TZ = 'UTC';
+process.env.NODE_ENV = 'jest';
 
 const baseConfig: JestConfigWithTsJest = {
   transform: {

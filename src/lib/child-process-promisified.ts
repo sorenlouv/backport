@@ -1,5 +1,6 @@
 import childProcess from 'child_process';
 import { promisify } from 'util';
+import apm from 'elastic-apm-node';
 import { logger } from './logger';
 const execPromisified = promisify(childProcess.exec);
 
@@ -18,20 +19,23 @@ export async function exec(
   return res;
 }
 
-export async function spawnPromise(
-  cmd: string,
-  cmdArgs: string[],
-  cwd: string
-): Promise<{
-  cmdArgs: string[];
+type SpawnPromiseResponse = {
+  cmdArgs: ReadonlyArray<string>;
   code: number | null;
   stderr: string;
   stdout: string;
-}> {
-  const fullCmd = `${cmd} ${cmdArgs.join(' ')}`;
+};
+
+export async function spawnPromise(
+  cmd: string,
+  cmdArgs: ReadonlyArray<string>,
+  cwd: string
+): Promise<SpawnPromiseResponse> {
+  const spawnSpan = startSpawnSpan(cmd, cmdArgs);
+  const fullCmd = getFullCmd(cmd, cmdArgs);
   logger.info(`Running command: "${fullCmd}"`);
 
-  return new Promise(function (resolve, reject) {
+  return new Promise<SpawnPromiseResponse>(function (resolve, reject) {
     const subprocess = childProcess.spawn(cmd, cmdArgs, {
       cwd,
 
@@ -50,6 +54,13 @@ export async function spawnPromise(
     });
 
     subprocess.on('close', (code) => {
+      spawnSpan?.addLabels({
+        status_code: code,
+        stderr: stderr,
+        stdout: stdout,
+      });
+      spawnSpan?.setOutcome('success');
+
       if (code === 0 || code === null) {
         logger.verbose(
           `Spawn success: code=${code} stderr=${stderr} stdout=${stdout}`
@@ -63,19 +74,49 @@ export async function spawnPromise(
     });
 
     subprocess.on('error', (err) => {
+      spawnSpan?.setLabel('error_message', err.message);
+      spawnSpan?.setOutcome('failure');
       reject(err);
     });
+  }).finally(() => {
+    spawnSpan?.end();
   });
 }
 
+function startSpawnSpan(cmd: string, cmdArgs: ReadonlyArray<string>) {
+  const span = apm.startSpan(`Spawn: "${cmd}"`);
+  const fullCmd = getFullCmd(cmd, cmdArgs);
+  const firstCmdArg = cmdArgs.filter(
+    (cmdArg) => !cmdArg.startsWith('--') && !cmdArg.startsWith('-')
+  )[0];
+  span?.setType('spawn', cmd, firstCmdArg);
+  span?.setLabel(`cmd`, fullCmd);
+  return span;
+}
+
 export const spawnStream = (cmd: string, cmdArgs: ReadonlyArray<string>) => {
-  return childProcess.spawn(cmd, cmdArgs, {
+  const spawnSpan = startSpawnSpan(cmd, cmdArgs);
+
+  const res = childProcess.spawn(cmd, cmdArgs, {
     env: { ...process.env, LANG: 'en_US' },
   });
+
+  res.on('close', (code) => {
+    const isSuccess = code === 0 || code === null;
+    spawnSpan?.setLabel('status_code', code);
+    spawnSpan?.setOutcome(isSuccess ? 'success' : 'failure');
+    spawnSpan?.end();
+  });
+
+  return res;
 };
 
+function getFullCmd(cmd: string, cmdArgs: ReadonlyArray<string>) {
+  return `${cmd} ${cmdArgs.join(' ')}`;
+}
+
 export type SpawnErrorContext = {
-  cmdArgs: string[];
+  cmdArgs: ReadonlyArray<string>;
   code: number;
   stderr: string;
   stdout: string;

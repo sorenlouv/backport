@@ -2,6 +2,7 @@ import { URL } from 'url';
 import gql from 'graphql-tag';
 import { disableFragmentWarnings } from 'graphql-tag';
 import nock from 'nock';
+import { getQueryName } from '../lib/github/v4/apiRequestV4';
 
 disableFragmentWarnings();
 
@@ -25,22 +26,13 @@ export function mockGqlRequest<T>({
   );
 
   const scope = nock(origin)
-    .post(pathname, (body) => {
-      return getQueryNameFromString(body.query) === name;
-    })
+    .post(pathname, (body) => getQueryName(gql(body.query)) === name)
     .reply(statusCode, body, headers);
 
   return listenForCallsToNockScope(scope) as {
     query: string;
     variables: string;
   }[];
-}
-
-function getQueryNameFromString(query: string) {
-  const obj = gql(query);
-
-  // @ts-expect-error
-  return obj.definitions[0].name.value;
 }
 
 export function listenForCallsToNockScope(scope: nock.Scope) {

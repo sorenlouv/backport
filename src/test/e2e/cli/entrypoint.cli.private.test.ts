@@ -76,6 +76,7 @@ describe('entrypoint cli', () => {
             --noStatusComment                 Don't publish status comment to Github             [boolean]
             --noVerify                        Bypass the pre-commit and commit-msg hooks         [boolean]
             --noFork                          Create backports in the origin repo                [boolean]
+            --noTelemetry                     Disable telemetry                                  [boolean]
             --onlyMissing                     Only list commits with missing or unmerged backports
                                                                                                  [boolean]
         -p, --path                            Only list commits touching files under the specified path

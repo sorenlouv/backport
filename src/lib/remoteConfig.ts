@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { ConfigFileOptions } from '../entrypoint.module';
+import { ConfigFileOptions } from '../entrypoint.api';
 import { withConfigMigrations } from '../options/config/readConfigFile';
 import { GithubV4Exception } from './github/v4/apiRequestV4';
 import { logger } from './logger';

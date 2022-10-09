@@ -1,4 +1,5 @@
 import { Octokit } from '@octokit/rest';
+import apm from 'elastic-apm-node';
 import { ora } from '../../../lib/ora';
 import { ValidConfigOptions } from '../../../options/options';
 import { logger } from '../../logger';
@@ -24,6 +25,8 @@ export async function addReviewersToPullRequest(
     return;
   }
 
+  const span = apm.startSpan('REST: Request reviewers');
+
   try {
     const octokit = new Octokit({
       auth: accessToken,
@@ -44,5 +47,7 @@ export async function addReviewersToPullRequest(
     const message = e.response?.data?.message;
     spinner.fail(`Adding reviewers. ${message ? message : ''}`);
     logger.error(`Could not add reviewers to PR ${pullNumber}`, e);
+  } finally {
+    span?.end();
   }
 }

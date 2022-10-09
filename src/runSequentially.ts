@@ -1,5 +1,7 @@
+import apm from 'elastic-apm-node';
 import { BackportError } from './lib/BackportError';
 import { cherrypickAndCreateTargetPullRequest } from './lib/cherrypickAndCreateTargetPullRequest/cherrypickAndCreateTargetPullRequest';
+import { getLogfilePath } from './lib/env';
 import { logger, consoleLog } from './lib/logger';
 import { sequentially } from './lib/sequentially';
 import { Commit } from './lib/sourceCommit/parseSourceCommit';
@@ -42,6 +44,7 @@ export async function runSequentially({
 
   await sequentially(targetBranches, async (targetBranch) => {
     logger.info(`Backporting ${JSON.stringify(commits)} to ${targetBranch}`);
+    const span = apm.startSpan('Cherrypick commits to target branch');
     try {
       const { number, url, didUpdate } =
         await cherrypickAndCreateTargetPullRequest({
@@ -57,7 +60,14 @@ export async function runSequentially({
         pullRequestUrl: url,
         pullRequestNumber: number,
       });
+      span?.setOutcome('success');
+      span?.end();
     } catch (e) {
+      span?.setOutcome('failure');
+      span?.setLabel('error_message', (e as Error).message);
+      span?.end();
+      apm.captureError(e as Error);
+
       const isHandledError = e instanceof BackportError;
       if (isHandledError) {
         results.push({
@@ -88,7 +98,9 @@ export async function runSequentially({
       }
 
       consoleLog(
-        'An unhandled error occurred while backporting commit. Please see the logs for details'
+        `An unhandled error occurred while backporting commit. Please see the logs for details: ${getLogfilePath(
+          { logFilePath: options.logFilePath, logLevel: 'info' }
+        )}`
       );
     }
   });

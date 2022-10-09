@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { Commit } from '../../../../entrypoint.module';
+import { Commit } from '../../../../entrypoint.api';
 import { apiRequestV4 } from '../apiRequestV4';
 import { fetchCommitBySha } from './fetchCommitBySha';
 
