@@ -4,8 +4,10 @@ import { backportRun } from './backportRun';
 import { getRuntimeArguments } from './options/cliArgs';
 const processArgs = process.argv.slice(2);
 
+const apmTransaction = apm.startTransaction('CLI: backportRun');
+
 // this is the entrypoint when running from command line
-backportRun({ processArgs, exitCodeOnFailure: true }).then(
+backportRun({ processArgs, exitCodeOnFailure: true, apmTransaction }).then(
   (backportResponse) => {
     const { interactive, ls } = getRuntimeArguments(processArgs);
 

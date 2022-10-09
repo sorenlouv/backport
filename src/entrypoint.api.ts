@@ -48,11 +48,12 @@ export async function backportRun({
   processArgs?: string[];
   exitCodeOnFailure?: boolean;
 }): Promise<BackportResponse> {
-  apm.startTransaction('API: backportRun');
+  const apmTransaction = apm.startTransaction('API: backportRun');
   const res = await run({
     optionsFromModule: excludeUndefined(options),
     processArgs,
     exitCodeOnFailure,
+    apmTransaction,
   });
 
   apm.endTransaction(res.status);
@@ -139,7 +140,7 @@ export async function getCommits(options: {
   });
 }
 
-export async function apmStartTransaction<T>(
+async function apmStartTransaction<T>(
   transactionName: string,
   cb: () => Promise<T>
 ): Promise<T> {

@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import apm from 'elastic-apm-node';
+import apm, { Transaction } from 'elastic-apm-node';
 import { BackportError } from './lib/BackportError';
 import { disableApm } from './lib/apm';
 import { getLogfilePath } from './lib/env';
@@ -45,19 +45,20 @@ export type BackportResponse =
   | BackportFailureResponse
   | BackportAbortResponse;
 
-let apmTransaction: apm.Transaction | null;
+let _apmTransaction: apm.Transaction | null;
 
 export async function backportRun({
   processArgs,
   optionsFromModule = {},
   exitCodeOnFailure,
+  apmTransaction,
 }: {
   processArgs: string[];
   optionsFromModule?: ConfigFileOptions;
   exitCodeOnFailure: boolean;
+  apmTransaction: Transaction | null;
 }): Promise<BackportResponse> {
-  apmTransaction = apm.startTransaction('cli backport');
-
+  _apmTransaction = apmTransaction;
   const { interactive, logFilePath } = getRuntimeArguments(
     processArgs,
     optionsFromModule
@@ -220,7 +221,7 @@ let didFlush = false;
 process.on('exit', () => {
   if (!didFlush) {
     didFlush = true;
-    apmTransaction?.end('exit');
+    _apmTransaction?.end('exit');
     apm.flush(() => process.exit());
   }
 });
@@ -228,7 +229,7 @@ process.on('exit', () => {
 process.on('uncaughtException', () => {
   if (!didFlush) {
     didFlush = true;
-    apmTransaction?.end('exit');
+    _apmTransaction?.end('exit');
     apm.flush(() => process.exit());
   }
 });
@@ -236,7 +237,7 @@ process.on('uncaughtException', () => {
 process.on('SIGINT', () => {
   if (!didFlush) {
     didFlush = true;
-    apmTransaction?.end('SIGINT');
+    _apmTransaction?.end('SIGINT');
     apm.flush(() => process.exit());
   }
 });
