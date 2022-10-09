@@ -3,7 +3,7 @@ import apm from 'elastic-apm-node';
 import { NoopTransport } from 'elastic-apm-node/lib/noop-transport';
 import { accessTokenReplacer } from './logger';
 
-const environment = process.env.NODE_ENV || 'production';
+const environment = process.env.NODE_ENV || 'production-cli';
 
 apm
   .start({
