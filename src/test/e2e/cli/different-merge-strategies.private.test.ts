@@ -61,7 +61,7 @@ describe('different-merge-strategies', () => {
           '--pr=9',
           '--dry-run',
         ],
-        { showOra: true }
+        { showOra: true, timeoutSeconds: 5 }
       );
       output = res.output;
     });
