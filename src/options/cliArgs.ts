@@ -267,6 +267,11 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       conflicts: ['fork', 'repoForkOwner'],
     })
 
+    .option('noTelemetry', {
+      description: 'Disable telemetry',
+      type: 'boolean',
+    })
+
     .option('onlyMissing', {
       description: 'Only list commits with missing or unmerged backports',
       type: 'boolean',
@@ -427,6 +432,7 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
     noVerify,
     verify,
     nonInteractive,
+    noTelemetry,
 
     // array types (should be renamed to plural form)
     assignee,
@@ -476,6 +482,7 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
     publishStatusCommentOnFailure: noStatusComment === true ? false : undefined,
     publishStatusCommentOnAbort: noStatusComment === true ? false : undefined,
     interactive: nonInteractive === true ? false : undefined,
+    telemetry: noTelemetry === true ? false : undefined,
   });
 }
 
