@@ -10,6 +10,7 @@ import {
 } from '../git';
 import { addAssigneesToPullRequest } from '../github/v3/addAssigneesToPullRequest';
 import { addLabelsToPullRequest } from '../github/v3/addLabelsToPullRequest';
+import { addOriginalReviewersToPullRequest } from '../github/v3/addOriginalReviewersToPullRequest';
 import { addReviewersToPullRequest } from '../github/v3/addReviewersToPullRequest';
 import {
   createPullRequest,
@@ -95,6 +96,11 @@ export async function cherrypickAndCreateTargetPullRequest({
       targetPullRequest.number,
       options.reviewers,
     );
+  }
+
+  // add reviewers of the original PRs to the target pull request
+  if (options.addOriginalReviewers && options.pullNumber) {
+    await addOriginalReviewersToPullRequest(options, targetPullRequest.number);
   }
 
   // add labels to target pull request

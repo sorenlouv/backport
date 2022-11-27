@@ -20,6 +20,7 @@ type AutoFixConflictsHandler = ({
 
 type Options = Partial<{
   accessToken: string;
+  addOriginalReviewers: boolean;
   assignees: string[];
   author: string | null;
   autoAssign: boolean;
