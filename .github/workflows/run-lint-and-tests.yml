@@ -1,6 +1,12 @@
 name: run-lint-and-tests
 
 on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch'     
+        required: true
+        default: 'main'
   push:
     branches: [main]
   pull_request:
