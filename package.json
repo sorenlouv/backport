@@ -72,7 +72,7 @@
     "find-up": "^5.0.0",
     "graphql": "^16.6.0",
     "graphql-tag": "^2.12.6",
-    "inquirer": "^8.2.3",
+    "inquirer": "^8.2.5",
     "lodash": "^4.17.21",
     "make-dir": "^3.1.0",
     "ora": "^5.4.1",
@@ -87,7 +87,7 @@
   "devDependencies": {
     "@types/core-js": "^2.5.5",
     "@types/dedent": "^0.7.0",
-    "@types/inquirer": "^9.0.1",
+    "@types/inquirer": "^8.2.6",
     "@types/jest": "^29.5.0",
     "@types/lodash": "^4.14.191",
     "@types/node": "^18.15.5",
