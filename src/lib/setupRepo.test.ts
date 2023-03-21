@@ -1,10 +1,10 @@
 import os from 'os';
 import del from 'del';
 import { ValidConfigOptions } from '../options/options';
-import { getOraMock } from '../test/mocks';
 import { SpyHelper } from '../types/SpyHelper';
 import * as childProcess from './child-process-promisified';
 import * as gitModule from './git';
+import { oraNonInteractiveMode } from './ora';
 import { setupRepo } from './setupRepo';
 
 describe('setupRepo', () => {
@@ -41,7 +41,7 @@ describe('setupRepo', () => {
           repoName: 'kibana',
           repoOwner: 'elastic',
           cwd: '/path/to/source/repo',
-          interactive: true,
+          interactive: false,
         } as ValidConfigOptions)
       ).rejects.toThrow('Simulated git clone failure');
 
@@ -57,9 +57,8 @@ describe('setupRepo', () => {
       let onClose: (code: any, signals?: any) => void;
       let onData: (chunk: any) => void;
 
-      const oraMock = getOraMock();
-      const spinnerTextSpy = jest.spyOn(oraMock, 'text', 'set');
-      const spinnerSuccessSpy = jest.spyOn(oraMock, 'succeed');
+      const spinnerTextSpy = jest.spyOn(oraNonInteractiveMode, 'text', 'set');
+      const spinnerSuccessSpy = jest.spyOn(oraNonInteractiveMode, 'succeed');
 
       jest
         .spyOn(gitModule, 'getLocalSourceRepoPath')
@@ -102,7 +101,7 @@ describe('setupRepo', () => {
         repoOwner: 'elastic',
         gitHostname: 'github.com',
         cwd: '/path/to/source/repo',
-        interactive: true,
+        interactive: false,
       } as ValidConfigOptions);
 
       expect(spinnerTextSpy.mock.calls.map((call) => call[0]))
@@ -226,8 +225,7 @@ describe('setupRepo', () => {
   describe('if repo does not exists locally', () => {
     let spinnerSuccessSpy: jest.SpyInstance;
     beforeEach(async () => {
-      const oraMock = getOraMock();
-      spinnerSuccessSpy = jest.spyOn(oraMock, 'succeed');
+      spinnerSuccessSpy = jest.spyOn(oraNonInteractiveMode, 'succeed');
 
       mockGitClone();
 
@@ -237,7 +235,7 @@ describe('setupRepo', () => {
         repoName: 'kibana',
         repoOwner: 'elastic',
         cwd: '/path/to/source/repo',
-        interactive: true,
+        interactive: false,
       } as ValidConfigOptions);
     });
 
@@ -258,8 +256,7 @@ describe('setupRepo', () => {
   describe('if repo exists locally', () => {
     let spinnerSuccessSpy: jest.SpyInstance;
     beforeEach(async () => {
-      const oraMock = getOraMock();
-      spinnerSuccessSpy = jest.spyOn(oraMock, 'succeed');
+      spinnerSuccessSpy = jest.spyOn(oraNonInteractiveMode, 'succeed');
 
       jest
         .spyOn(gitModule, 'getLocalSourceRepoPath')
@@ -271,7 +268,7 @@ describe('setupRepo', () => {
         repoName: 'kibana',
         repoOwner: 'elastic',
         cwd: '/path/to/source/repo',
-        interactive: true,
+        interactive: false,
       } as ValidConfigOptions);
     });
 
@@ -297,7 +294,7 @@ describe('setupRepo', () => {
           repoOwner: 'elastic',
           cwd: '/myHomeDir/.backport/repositories/owner/repo/foo',
           dir: '/myHomeDir/.backport/repositories/owner/repo',
-          interactive: true,
+          interactive: false,
         } as ValidConfigOptions)
       ).rejects.toThrow(
         'Refusing to clone repo into "/myHomeDir/.backport/repositories/owner/repo" when current working directory is "/myHomeDir/.backport/repositories/owner/repo/foo". Please change backport directory via `--dir` option or run backport from another location'

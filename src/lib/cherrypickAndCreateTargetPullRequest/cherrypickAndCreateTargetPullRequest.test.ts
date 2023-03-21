@@ -1,6 +1,5 @@
 import os from 'os';
 import nock from 'nock';
-import ora from 'ora';
 import { ValidConfigOptions } from '../../options/options';
 import {
   listenForCallsToNockScope,
@@ -10,13 +9,14 @@ import { SpyHelper } from '../../types/SpyHelper';
 import * as childProcess from '../child-process-promisified';
 import { TargetBranchResponse } from '../github/v4/validateTargetBranch';
 import * as logger from '../logger';
+import * as oraModule from '../ora';
 import { Commit } from '../sourceCommit/parseSourceCommit';
 import { cherrypickAndCreateTargetPullRequest } from './cherrypickAndCreateTargetPullRequest';
 
 describe('cherrypickAndCreateTargetPullRequest', () => {
   let execSpy: SpyHelper<typeof childProcess.spawnPromise>;
   let addLabelsScope: ReturnType<typeof nock>;
-  let consoleLogSpy: SpyHelper<typeof logger['consoleLog']>;
+  let consoleLogSpy: SpyHelper<(typeof logger)['consoleLog']>;
 
   beforeEach(() => {
     jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
@@ -46,6 +46,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
   describe('when commit has a pull request reference', () => {
     let res: Awaited<ReturnType<typeof cherrypickAndCreateTargetPullRequest>>;
     let createPullRequestCalls: unknown[];
+    let oraSpy: jest.SpyInstance;
 
     beforeEach(async () => {
       const options = {
@@ -56,7 +57,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         gitAuthorEmail: 'soren@louv.dk',
         gitAuthorName: 'Soren L',
         githubApiBaseUrlV4: 'http://localhost/graphql',
-        interactive: true,
+        interactive: false,
         prTitle: '[{targetBranch}] {commitMessages}',
         repoForkOwner: 'sqren',
         repoName: 'kibana',
@@ -129,6 +130,8 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         .reply(200, { number: 1337, html_url: 'myHtmlUrl' });
       createPullRequestCalls = listenForCallsToNockScope(scope);
 
+      oraSpy = jest.spyOn(oraModule, 'ora');
+
       res = await cherrypickAndCreateTargetPullRequest({
         options,
         commits,
@@ -181,8 +184,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
     });
 
     it('should start the spinner with the correct text', () => {
-      expect((ora as any).mock.calls.map((call: any) => call[0].text))
-        .toMatchInlineSnapshot(`
+      expect(oraSpy.mock.calls.map(([, text]) => text)).toMatchInlineSnapshot(`
         [
           "",
           "Pulling latest changes",
