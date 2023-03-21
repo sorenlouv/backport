@@ -46,14 +46,14 @@ export async function cloneRepo(
 
     subprocess.stderr.on('data', (data: string) => {
       logger.verbose(data.toString());
-      const [, objectReceiveProgress]: RegExpMatchArray =
+      const [, objectReceiveProgress] =
         data.toString().match(/^Receiving objects:\s+(\d+)%/) || [];
 
       if (objectReceiveProgress) {
         progress.objectReceive = parseInt(objectReceiveProgress, 10);
       }
 
-      const [, fileUpdateProgress]: RegExpMatchArray =
+      const [, fileUpdateProgress] =
         data.toString().match(/^Updating files:\s+(\d+)%/) || [];
 
       if (fileUpdateProgress) {

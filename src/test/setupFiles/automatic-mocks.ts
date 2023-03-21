@@ -4,7 +4,6 @@
  */
 
 import * as packageVersionModule from '../../utils/packageVersion';
-import { mockOra } from '../mocks';
 
 /* eslint-disable @typescript-eslint/no-empty-function */
 
@@ -27,8 +26,6 @@ jest.mock('make-dir', () => {
 jest.mock('del', () => {
   return jest.fn(async (path) => `Attempted to delete ${path}`);
 });
-
-mockOra();
 
 jest.mock('../../lib/logger', () => {
   const spy = jest.fn();

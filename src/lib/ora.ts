@@ -1,9 +1,8 @@
 import oraOriginal from 'ora';
 
 /* eslint-disable @typescript-eslint/no-empty-function */
-const oraMock = {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  start: (text?: string) => oraMock,
+export const oraNonInteractiveMode = {
+  start: () => oraNonInteractiveMode,
   succeed: () => {},
   stop: () => {},
   fail: () => {},
@@ -15,7 +14,7 @@ export function ora(
   interactive: boolean | undefined,
   text?: string | undefined
 ): oraOriginal.Ora {
-  return interactive ? oraOriginal({ text }) : oraMock;
+  return interactive ? oraOriginal({ text }) : oraNonInteractiveMode;
 }
 
 export type Ora = oraOriginal.Ora;
