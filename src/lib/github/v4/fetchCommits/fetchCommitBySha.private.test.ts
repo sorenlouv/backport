@@ -89,7 +89,7 @@ describe('fetchCommitBySha', () => {
         repoOwner: 'elastic',
         repoName: 'kibana',
         accessToken,
-        sha: 'cb6fbc0',
+        sha: 'cb6fbc0e',
         sourceBranch: 'master',
       })
     ).toEqual(expectedCommit);
