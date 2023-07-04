@@ -17,8 +17,5 @@
   "editor.codeActionsOnSave": {
     "source.fixAll": true
   },
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "files.associations": {
-    "*.yaml": "home-assistant"
-  }
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
