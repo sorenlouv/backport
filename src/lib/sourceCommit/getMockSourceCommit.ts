@@ -15,6 +15,7 @@ export function getMockSourceCommit({
     commitedDate?: string;
   };
   sourcePullRequest: {
+    title?: string;
     number: number;
     labels?: string[];
     sourceBranch?: string;
@@ -30,8 +31,9 @@ export function getMockSourceCommit({
   }>;
 }): SourceCommitWithTargetPullRequest {
   const defaultTargetPullRequestTitle =
-    'DO NOT USE: Default Pull Request Title';
-  const defaultSourceCommitSha = 'DO NOT USE: default-source-commit-sha';
+    'DO NOT USE: Please specify a title in test!!!';
+
+  const defaultSourceCommitSha = 'DO NOT USE: please specify a sha in test!!!';
 
   const baseMockCommit: SourceCommitWithTargetPullRequest = {
     author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
@@ -81,6 +83,7 @@ export function getMockSourceCommit({
               message: sourceCommit.message,
             },
             url: `https://github.com/elastic/kibana/pull/${sourcePullRequest.number}`,
+            title: sourcePullRequest.title ?? defaultTargetPullRequestTitle,
             labels: {
               nodes: (sourcePullRequest.labels ?? []).map((name) => ({
                 name,

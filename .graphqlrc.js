@@ -4,6 +4,7 @@ const accessToken = process.env.ACCESS_TOKEN;
 
 module.exports = {
   schema: 'github-schema.graphql',
+  documents: ['./**/*.ts'],
   extensions: {
     endpoints: {
       'GitHub API V4': {

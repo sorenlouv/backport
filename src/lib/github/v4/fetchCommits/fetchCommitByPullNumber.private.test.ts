@@ -69,6 +69,7 @@ describe('fetchCommitByPullNumber', () => {
         sourcePullRequest: {
           labels: ['v7.8.0', 'v7.9.0', 'v8.0.0'],
           number: 5,
+          title: 'Add 🍏 emoji',
           url: 'https://github.com/backport-org/backport-e2e/pull/5',
           mergeCommit: {
             message: 'Add 🍏 emoji (#5)',

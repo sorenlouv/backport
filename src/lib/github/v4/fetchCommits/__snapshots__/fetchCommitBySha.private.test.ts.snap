@@ -26,6 +26,7 @@ fragment SourceCommitWithTargetPullRequestFragment on Commit {
   associatedPullRequests(first: 1) {
     edges {
       node {
+        title
         url
         number
         labels(first: 50) {
@@ -131,6 +132,7 @@ exports[`fetchCommitBySha snapshot request/response returns the correct response
       "sha": "d421ddcf6157150596581c7885afa3690cec6339",
     },
     "number": 121633,
+    "title": "[APM] Add note about synthtrace to APM docs",
     "url": "https://github.com/elastic/kibana/pull/121633",
   },
   "suggestedTargetBranches": [],

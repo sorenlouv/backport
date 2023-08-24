@@ -21,6 +21,7 @@ describe('prompt', () => {
             labels: [],
             number: 119700,
             url: 'foo',
+            title: '[APM] Remove log-log descriptions from correlation charts',
             mergeCommit: {
               sha: 'ae9d51b7fe3ee6f30d0d196c782e0dcabb7ac5ff',
               message:
@@ -83,6 +84,7 @@ describe('prompt', () => {
           sourcePullRequest: {
             labels: [],
             number: 120694,
+            title: '[APM] Prefer service.name for logs correlation',
             url: 'foo',
             mergeCommit: {
               sha: 'b1b491959dab47aeb83c88ee2accb2db46d23793',
@@ -107,6 +109,7 @@ describe('prompt', () => {
             labels: [],
             number: 120106,
             url: 'foo',
+            title: '[APM] Disable telemetry in agent config endpoint',
             mergeCommit: {
               sha: 'b1bb4a93959f19a653b9cfb207a5c6acb6559482',
               message:
@@ -129,6 +132,8 @@ describe('prompt', () => {
           sourcePullRequest: {
             labels: [],
             number: 119915,
+            title:
+              '[APM] Remove index_pattern.json and add custom field formatters',
             url: 'foo',
             mergeCommit: {
               sha: '434f6e6a88faf24dc1ea41f9f726db78e46355a7',
@@ -153,6 +158,7 @@ describe('prompt', () => {
             labels: [],
             number: 119700,
             url: 'foo',
+            title: '[APM] Remove log-log descriptions from correlation charts',
             mergeCommit: {
               sha: 'ae9d51b7fe3ee6f30d0d196c782e0dcabb7ac5ff',
               message:

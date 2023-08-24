@@ -60,6 +60,7 @@ describe('fetchCommitBySha', () => {
       sourcePullRequest: {
         labels: ['Team:APM', 'release_note:skip', 'v7.9.0'],
         number: 70740,
+        title: '[APM] Add API tests',
         url: 'https://github.com/elastic/kibana/pull/70740',
         mergeCommit: {
           message: '[APM] Add API tests (#70740)',

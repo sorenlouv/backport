@@ -16,6 +16,7 @@ describe('getPullRequestBody', () => {
             sourcePullRequest: {
               labels: [],
               number: 55,
+              title: 'My PR Title',
               url: 'https://github.com/backport-org/different-merge-strategies/pull/55',
               mergeCommit: {
                 sha: 'abcdefghi',
@@ -102,6 +103,7 @@ describe('getPullRequestBody', () => {
             sourcePullRequest: {
               labels: [],
               number: 55,
+              title: 'My PR Title',
               url: 'https://github.com/backport-org/different-merge-strategies/pull/55',
               mergeCommit: {
                 sha: 'abcdefghijklm',
@@ -176,6 +178,7 @@ describe('getPullRequestBody', () => {
             sourcePullRequest: {
               labels: [],
               number: 1,
+              title: 'My PR Title',
               url: 'https://github.com/backport-org/different-merge-strategies/pull/1',
               mergeCommit: {
                 message:
@@ -204,6 +207,7 @@ describe('getPullRequestBody', () => {
             sourcePullRequest: {
               labels: [],
               number: 1,
+              title: 'My PR Title',
               url: 'https://github.com/backport-org/different-merge-strategies/pull/1',
               mergeCommit: {
                 message:
@@ -238,7 +242,7 @@ describe('getPullRequestBody', () => {
       getPullRequestBody({
         options: {
           prDescription:
-            'Backporting the following to {targetBranch}:\n{commitMessages}',
+            'Backporting the following to {{targetBranch}}:\n{{commitMessages}}',
         } as ValidConfigOptions,
         commits: [
           {
@@ -249,6 +253,7 @@ describe('getPullRequestBody', () => {
             sourcePullRequest: {
               labels: [],
               number: 55,
+              title: 'My PR Title',
               url: 'https://github.com/backport-org/different-merge-strategies/pull/55',
               mergeCommit: {
                 sha: 'abcdefghijklm',
@@ -291,7 +296,7 @@ describe('getPullRequestBody', () => {
     `);
   });
 
-  it('replaces {defaultPrDescription} with the default pr description', () => {
+  it('replaces {{defaultPrDescription}} with the default pr description', () => {
     const commits = [
       {
         sourcePullRequest: {
@@ -312,7 +317,7 @@ describe('getPullRequestBody', () => {
     ] as Commit[];
 
     const options = {
-      prDescription: '{defaultPrDescription}\n\ntext to append',
+      prDescription: '{{defaultPrDescription}}\n\ntext to append',
     } as ValidConfigOptions;
 
     expect(getPullRequestBody({ options, commits, targetBranch: '7.x' }))
@@ -332,7 +337,7 @@ describe('getPullRequestBody', () => {
     `);
   });
 
-  it('replaces {commits} with a stringified commits object', () => {
+  it('replaces {{commitsStringified}} with a stringified commits object', () => {
     const commits = [
       {
         sourceCommit: {
@@ -349,7 +354,7 @@ describe('getPullRequestBody', () => {
     ] as Commit[];
 
     const options = {
-      prDescription: 'Just output the commits: {commits}',
+      prDescription: 'Just output the commits: {{commitsStringified}}',
     } as ValidConfigOptions;
 
     expect(
@@ -357,6 +362,71 @@ describe('getPullRequestBody', () => {
     ).toMatchInlineSnapshot(
       `"Just output the commits: [{"sourceCommit":{"sha":"foo","message":"My commit message (#55)"}},{"sourceCommit":{"sha":"bar","message":"Another commit message"}}]"`
     );
+  });
+
+  it('can render a list of commits', () => {
+    const commits = [
+      {
+        sourceCommit: {
+          sha: 'foo',
+          message: 'My commit message (#55)',
+        },
+      },
+      {
+        sourceCommit: {
+          sha: 'bar',
+          message: 'Another commit message',
+        },
+      },
+    ] as Commit[];
+
+    const options = {
+      prDescription:
+        'Just output the commits:\n\n - {{#each commits}}{{shortSha this.sourceCommit.sha}} {{this.sourceCommit.message}}{{/each}}',
+    } as ValidConfigOptions;
+
+    expect(getPullRequestBody({ options, commits, targetBranch: '7.x' }))
+      .toMatchInlineSnapshot(`
+      "Just output the commits:
+
+       - foo My commit message (#55)bar Another commit message"
+    `);
+  });
+
+  it('can render a message formatted to prodfiler team needs', () => {
+    const commits = [
+      {
+        sourceCommit: {
+          sha: '9e42503a7d0e06e60c575ed2c3b7dc3e5df0dd5c',
+          message: 'My commit message (#55)',
+        },
+        sourcePullRequest: {
+          number: 123,
+          title: 'Original PR title',
+        },
+      },
+      {
+        sourceCommit: {
+          sha: '5ce6c3fb9525426d66a85eba057e1214f5f52995',
+          message: 'Another commit message',
+        },
+      },
+    ] as Commit[];
+
+    const options = {
+      prDescription: `Backport #{{commits.0.sourcePullRequest.number}}: {{commits.0.sourcePullRequest.title}}
+
+{{#each commits}}{{shortSha this.sourceCommit.sha}} {{this.sourceCommit.message}}\n{{/each}}`,
+    } as ValidConfigOptions;
+
+    expect(getPullRequestBody({ options, commits, targetBranch: '7.x' }))
+      .toMatchInlineSnapshot(`
+      "Backport #123: Original PR title
+
+      9e42503a My commit message (#55)
+      5ce6c3fb Another commit message
+      "
+    `);
   });
 });
 
@@ -374,6 +444,7 @@ describe('getTitle', () => {
             sourceBranch: 'main',
             sourcePullRequest: {
               labels: [],
+              title: 'My PR Title',
               number: 55,
               url: 'https://github.com/backport-org/different-merge-strategies/pull/55',
               mergeCommit: {
@@ -398,6 +469,7 @@ describe('getTitle', () => {
             sourcePullRequest: {
               labels: [],
               number: 56,
+              title: 'My PR Title',
               url: 'https://github.com/backport-org/different-merge-strategies/pull/56',
               mergeCommit: {
                 sha: 'jklmnopqr',
@@ -424,7 +496,7 @@ describe('getTitle', () => {
     expect(
       getTitle({
         options: {
-          prTitle: 'Branch: "{targetBranch}". Messages: {commitMessages}',
+          prTitle: 'Branch: "{{targetBranch}}". Messages: {{commitMessages}}',
         } as ValidConfigOptions,
         commits: [
           {
@@ -435,6 +507,7 @@ describe('getTitle', () => {
             sourcePullRequest: {
               labels: [],
               number: 55,
+              title: 'My PR Title',
               url: 'https://github.com/backport-org/different-merge-strategies/pull/55',
               mergeCommit: {
                 sha: 'abcdefghi',

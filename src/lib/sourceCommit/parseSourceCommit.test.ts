@@ -59,10 +59,12 @@ describe('parseSourceCommit', () => {
       };
       const mockSourceCommit = getMockSourceCommit({
         sourceCommit: {
+          sha: 'my sha',
           message: 'My commit message (#66)',
           commitedDate: '2021-03-03T00:00:00Z',
         },
         sourcePullRequest: {
+          title: 'My commit message',
           sourceBranch: 'main',
           number: 55,
           labels: ['v6.4.0', 'v6.3.0', 'v6.2.0', 'v6.1.0'],
@@ -99,7 +101,7 @@ describe('parseSourceCommit', () => {
           isSourceBranch: true,
           mergeCommit: {
             message: 'My commit message (#66)',
-            sha: 'DO NOT USE: default-source-commit-sha',
+            sha: 'my sha',
           },
           number: 55,
           state: 'MERGED',
@@ -150,6 +152,7 @@ describe('parseSourceCommit', () => {
 
       const mockSourceCommit = getMockSourceCommit({
         sourceCommit: {
+          sha: 'my-sha',
           remoteConfig: {
             branchLabelMapping: sourceCommitBranchLabelMapping,
             committedDate: '2021-02-02T00:00:00Z',
@@ -188,7 +191,7 @@ describe('parseSourceCommit', () => {
           labelRegex: '^v6.3.0$',
           mergeCommit: {
             message: 'My commit message (#66)',
-            sha: 'DO NOT USE: default-source-commit-sha',
+            sha: 'my-sha',
           },
           number: 55,
           state: 'MERGED',
@@ -230,6 +233,7 @@ describe('parseSourceCommit', () => {
         sha: 'my-sha',
       },
       sourcePullRequest: {
+        title: 'My commit message',
         number: 1234,
         labels: ['v6.3.0', 'v6.2.0', 'v6.1.0'],
       },
@@ -266,6 +270,7 @@ describe('parseSourceCommit', () => {
       sourcePullRequest: {
         labels: ['v6.3.0', 'v6.2.0', 'v6.1.0'],
         number: 1234,
+        title: 'My commit message',
         url: 'https://github.com/elastic/kibana/pull/1234',
         mergeCommit: {
           message: 'My commit message (#1234)',

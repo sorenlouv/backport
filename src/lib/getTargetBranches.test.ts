@@ -39,6 +39,7 @@ describe('getTargetBranches', () => {
           sourcePullRequest: {
             labels: [],
             url: 'foo',
+            title: 'hey',
             number: 1337,
             mergeCommit: {
               message: 'hey',
@@ -153,6 +154,7 @@ describe('getTargetBranches', () => {
           sourcePullRequest: {
             labels: [],
             url: 'foo',
+            title: '[backport] Bump to 5.1.3',
             number: 62286,
             mergeCommit: {
               message: '[backport] Bump to 5.1.3 (#62286)',

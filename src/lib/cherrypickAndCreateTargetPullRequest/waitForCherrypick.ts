@@ -42,6 +42,7 @@ export async function waitForCherrypick(
   try {
     // Run `git commit` in case conflicts were not manually committed
     await commitChanges({ options, commit, commitAuthor });
+
     cherrypickSpinner.succeed();
   } catch (e) {
     cherrypickSpinner.fail();

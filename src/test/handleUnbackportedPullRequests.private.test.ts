@@ -26,6 +26,7 @@ describe('Handle unbackported pull requests', () => {
       sourcePullRequest: {
         labels: ['backport-to-7.x'],
         number: 8,
+        title: 'Change Barca to Braithwaite',
         url: 'https://github.com/backport-org/repo-with-conflicts/pull/8',
         mergeCommit: {
           message: 'Change Barca to Braithwaite (#8)',

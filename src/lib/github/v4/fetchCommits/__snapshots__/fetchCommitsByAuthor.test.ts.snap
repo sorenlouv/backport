@@ -59,6 +59,7 @@ fragment SourceCommitWithTargetPullRequestFragment on Commit {
   associatedPullRequests(first: 1) {
     edges {
       node {
+        title
         url
         number
         labels(first: 50) {
