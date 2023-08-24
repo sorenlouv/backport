@@ -12,7 +12,7 @@ export const oraNonInteractiveMode = {
 
 export function ora(
   interactive: boolean | undefined,
-  text?: string | undefined
+  text?: string | undefined,
 ): oraOriginal.Ora {
   return interactive ? oraOriginal({ text }) : oraNonInteractiveMode;
 }

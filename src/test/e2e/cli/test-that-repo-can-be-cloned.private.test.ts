@@ -24,7 +24,7 @@ describe('test-that-repo-can-be-cloned', () => {
           '--dry-run',
           `--accessToken=${accessToken}`,
         ],
-        { showOra: true }
+        { showOra: true },
       );
     }
 
@@ -80,7 +80,7 @@ describe('test-that-repo-can-be-cloned', () => {
 
       await exec(
         `git clone https://github.com/backport-org/test-that-repo-can-be-cloned.git ${sourceRepo}`,
-        { cwd: sandboxPath }
+        { cwd: sandboxPath },
       );
     });
 
@@ -93,7 +93,7 @@ describe('test-that-repo-can-be-cloned', () => {
           '--dry-run',
           `--accessToken=${accessToken}`,
         ],
-        { cwd: sourceRepo, showOra: true }
+        { cwd: sourceRepo, showOra: true },
       );
     }
 
@@ -105,9 +105,9 @@ describe('test-that-repo-can-be-cloned', () => {
           haystack: output,
           stringBefore: sourceRepo,
           stringAfter: '<SOURCE_REPO>',
-        })
+        }),
       ).toContain(
-        '✔ 100% Cloning repository from <SOURCE_REPO> (one-time operation)'
+        '✔ 100% Cloning repository from <SOURCE_REPO> (one-time operation)',
       );
     });
   });

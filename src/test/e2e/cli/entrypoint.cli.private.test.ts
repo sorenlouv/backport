@@ -26,7 +26,7 @@ describe('entrypoint cli', () => {
   it('PACKAGE_VERSION should match', async () => {
     // @ts-expect-error
     expect(packageVersion.UNMOCKED_PACKAGE_VERSION).toBe(
-      process.env.npm_package_version
+      process.env.npm_package_version,
     );
   });
 
@@ -111,7 +111,7 @@ describe('entrypoint cli', () => {
     await exec(`git init`, { cwd: sandboxPath });
     await exec(
       `git remote add origin git@github.com:backport-org/backport-e2e.git`,
-      { cwd: sandboxPath }
+      { cwd: sandboxPath },
     );
 
     const { output } = await runBackportViaCli(
@@ -119,7 +119,7 @@ describe('entrypoint cli', () => {
       {
         cwd: sandboxPath,
         waitForString: 'Select commit',
-      }
+      },
     );
 
     expect(output).toMatchInlineSnapshot(`
@@ -146,7 +146,7 @@ describe('entrypoint cli', () => {
         `--accessToken=${accessToken}`,
         '--max-number=6',
       ],
-      { waitForString: 'Select commit' }
+      { waitForString: 'Select commit' },
     );
 
     expect(output).toMatchInlineSnapshot(`
@@ -170,7 +170,7 @@ describe('entrypoint cli', () => {
         '--max-number=6',
         '--source-branch=7.x',
       ],
-      { waitForString: 'Select commit' }
+      { waitForString: 'Select commit' },
     );
 
     expect(output).toMatchInlineSnapshot(`

@@ -94,14 +94,14 @@ export async function fetchCommitsByPullNumber(options: {
   const isRebaseAndMergeStrategy =
     pullRequestNode.commits.totalCount > 0 &&
     mergeCommit.history.edges.every(
-      (c) => c.node.committedDate === mergeCommit.committedDate
+      (c) => c.node.committedDate === mergeCommit.committedDate,
     ) &&
     lastCommitInPullRequest.message === firstCommitInBaseBranch.message;
 
   if (isRebaseAndMergeStrategy) {
     const commits = await fetchCommitsForRebaseAndMergeStrategy(
       options,
-      pullRequestNode.commits.totalCount
+      pullRequestNode.commits.totalCount,
     );
     if (commits) {
       return commits;

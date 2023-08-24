@@ -17,7 +17,7 @@ export function getSandboxPath({
 }) {
   const baseFilename = getFilenameWithoutExtension(filename);
   return resolve(
-    `${SANDBOX_PATH}/${baseFilename}${specname ? `/${specname}` : ''}`
+    `${SANDBOX_PATH}/${baseFilename}${specname ? `/${specname}` : ''}`,
   );
 }
 

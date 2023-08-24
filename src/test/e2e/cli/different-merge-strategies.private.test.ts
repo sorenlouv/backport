@@ -17,7 +17,7 @@ describe('different-merge-strategies', () => {
         `--accessToken=${accessToken}`,
         '-n=20',
       ],
-      { waitForString: 'Select commit', timeoutSeconds: 4 }
+      { waitForString: 'Select commit', timeoutSeconds: 4 },
     );
 
     expect(output).toMatchInlineSnapshot(`
@@ -61,7 +61,7 @@ describe('different-merge-strategies', () => {
           '--pr=9',
           '--dry-run',
         ],
-        { showOra: true, timeoutSeconds: 5 }
+        { showOra: true, timeoutSeconds: 5 },
       );
       output = res.output;
     });
@@ -126,7 +126,7 @@ describe('different-merge-strategies', () => {
           '--pr=1',
           '--dry-run',
         ],
-        { showOra: true }
+        { showOra: true },
       );
     });
 
@@ -160,14 +160,14 @@ describe('different-merge-strategies', () => {
           showOra: true,
           waitForString:
             'Press ENTER when the conflicts are resolved and files are staged',
-        }
+        },
       );
 
       await exec(`git status`, { cwd: sandboxPath });
 
       await fs.writeFile(
         `${sandboxPath}/new-file-added-with-many-merge-commits.txt`,
-        `File added directly to 7.1 to cause merge conflict\nPrevious merge commit didn't have enough commits\n`
+        `File added directly to 7.1 to cause merge conflict\nPrevious merge commit didn't have enough commits\n`,
       );
 
       await exec(`git add -A`, { cwd: sandboxPath });
@@ -264,7 +264,7 @@ describe('different-merge-strategies', () => {
           '--pr=21',
           '--dry-run',
         ],
-        { showOra: true }
+        { showOra: true },
       );
       output = res.output;
     });
@@ -282,7 +282,7 @@ describe('different-merge-strategies', () => {
       expect(
         output
           .split('\n')
-          .filter((line) => line.startsWith('✔ Cherry-picking:'))
+          .filter((line) => line.startsWith('✔ Cherry-picking:')),
       ).toEqual([
         '✔ Cherry-picking: Add "Rebase and merge" header',
         '✔ Cherry-picking: Add description for "Rebase and merge"',

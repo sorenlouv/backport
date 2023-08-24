@@ -7,7 +7,7 @@ describe('excludeUndefined', () => {
         foo: 'foo',
         bar: undefined,
         baz: null,
-      })
+      }),
     ).toEqual({ foo: 'foo', baz: null });
   });
 

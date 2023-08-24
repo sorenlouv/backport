@@ -75,7 +75,7 @@ describe('getLocalConfigFileCommitDate', () => {
     };
     jest.spyOn(childProcess, 'spawnPromise').mockResolvedValue(res);
     expect(await getLocalConfigFileCommitDate({ cwd: 'foo/bar' })).toEqual(
-      1608142239000
+      1608142239000,
     );
   });
 
@@ -83,7 +83,7 @@ describe('getLocalConfigFileCommitDate', () => {
     const res = { stdout: '', stderr: '', code: 0, cmdArgs: [] };
     jest.spyOn(childProcess, 'spawnPromise').mockResolvedValue(res);
     expect(await getLocalConfigFileCommitDate({ cwd: 'foo/bar' })).toEqual(
-      undefined
+      undefined,
     );
   });
 
@@ -98,7 +98,7 @@ describe('getLocalConfigFileCommitDate', () => {
     };
     jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
     expect(await getLocalConfigFileCommitDate({ cwd: 'foo/bar' })).toEqual(
-      undefined
+      undefined,
     );
   });
 });
@@ -132,7 +132,7 @@ describe('isLocalConfigFileUntracked', () => {
     };
     jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
     expect(await isLocalConfigFileUntracked({ cwd: 'foo/bar' })).toEqual(
-      undefined
+      undefined,
     );
   });
 });
@@ -288,9 +288,9 @@ describe('createBackportBranch', () => {
         sourceBranch,
         targetBranch,
         backportBranch,
-      })
+      }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"The branch "4.x" is invalid or doesn't exist"`
+      `"The branch "4.x" is invalid or doesn't exist"`,
     );
   });
 
@@ -311,9 +311,9 @@ describe('createBackportBranch', () => {
         sourceBranch,
         targetBranch,
         backportBranch,
-      })
+      }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"The branch "4.x" is invalid or doesn't exist"`
+      `"The branch "4.x" is invalid or doesn't exist"`,
     );
   });
 
@@ -329,7 +329,7 @@ describe('createBackportBranch', () => {
         sourceBranch,
         targetBranch,
         backportBranch,
-      })
+      }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"just a normal error"`);
   });
 });
@@ -359,7 +359,7 @@ describe('deleteRemote', () => {
     expect.assertions(1);
 
     await expect(
-      deleteRemote(options, remoteName)
+      deleteRemote(options, remoteName),
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"just a normal error"`);
   });
 });
@@ -380,7 +380,7 @@ describe('cherrypick', () => {
         options,
         sha: 'abcd',
         commitAuthor,
-      })
+      }),
     ).toEqual({
       conflictingFiles: [],
       unstagedFiles: [],
@@ -455,7 +455,7 @@ describe('cherrypick', () => {
           cmdArgs: ['cherry-pick', '-x', 'abcd'],
           stdout: '',
           stderr: '',
-        })
+        }),
       )
 
       // mock getConflictingFiles
@@ -466,7 +466,7 @@ describe('cherrypick', () => {
           stdout:
             'conflicting-file.txt:1: leftover conflict marker\nconflicting-file.txt:3: leftover conflict marker\nconflicting-file.txt:5: leftover conflict marker\n',
           stderr: '',
-        })
+        }),
       )
 
       // mock getUnstagedFiles
@@ -477,7 +477,7 @@ describe('cherrypick', () => {
         options,
         sha: 'abcd',
         commitAuthor,
-      })
+      }),
     ).toEqual({
       conflictingFiles: [
         {
@@ -503,7 +503,7 @@ describe('cherrypick', () => {
           stdout: '',
           stderr:
             'error: commit 381c7b604110257437a289b1f1742685eb8d79c5 is a merge but no -m option was given.\nfatal: cherry-pick failed\n',
-        })
+        }),
       );
 
     await expect(
@@ -511,7 +511,7 @@ describe('cherrypick', () => {
         options,
         sha: 'abcd',
         commitAuthor,
-      })
+      }),
     ).rejects
       .toThrow(`Cherrypick failed because the selected commit was a merge commit. Please try again by specifying the parent with the \`mainline\` argument:
 
@@ -537,7 +537,7 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
             'On branch backport/7.x/pr-58692\nYou are currently cherry-picking commit fe6b13b83cc.\n\nnothing to commit, working tree clean\n',
           stderr:
             "The previous cherry-pick is now empty, possibly due to conflict resolution.\nIf you wish to commit it anyway, use:\n\n    git commit --allow-empty\n\nOtherwise, please use 'git cherry-pick --skip'\n",
-        })
+        }),
       );
 
     await expect(
@@ -545,9 +545,9 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
         options,
         sha: 'abcd',
         commitAuthor,
-      })
+      }),
     ).rejects.toThrow(
-      `Cherrypick failed because the selected commit (abcd) is empty. Did you already backport this commit?`
+      `Cherrypick failed because the selected commit (abcd) is empty. Did you already backport this commit?`,
     );
   });
 
@@ -569,7 +569,7 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
         options,
         sha: 'abcd',
         commitAuthor,
-      })
+      }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"non-cherrypick error"`);
   });
 });
@@ -599,7 +599,7 @@ describe('commitChanges', () => {
       .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] });
 
     await expect(await commitChanges({ commit, commitAuthor, options })).toBe(
-      undefined
+      undefined,
     );
   });
 
@@ -614,7 +614,7 @@ describe('commitChanges', () => {
 
     jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
     await expect(await commitChanges({ commit, commitAuthor, options })).toBe(
-      undefined
+      undefined,
     );
   });
 
@@ -682,7 +682,7 @@ describe('commitChanges', () => {
     expect.assertions(1);
 
     await expect(
-      commitChanges({ commit, commitAuthor, options })
+      commitChanges({ commit, commitAuthor, options }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"another error"`);
   });
 });
@@ -710,7 +710,7 @@ describe('addRemote', () => {
         'elastic',
         'https://x-access-token:myAccessToken@github.com/elastic/kibana.git',
       ],
-      '/myHomeDir/.backport/repositories/elastic/kibana'
+      '/myHomeDir/.backport/repositories/elastic/kibana',
     );
   });
 
@@ -728,7 +728,7 @@ describe('addRemote', () => {
         'sqren',
         'https://x-access-token:myAccessToken@github.com/sqren/kibana.git',
       ],
-      '/myHomeDir/.backport/repositories/elastic/kibana'
+      '/myHomeDir/.backport/repositories/elastic/kibana',
     );
   });
 
@@ -738,7 +738,7 @@ describe('addRemote', () => {
       .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] });
     await addRemote(
       { ...options, gitHostname: 'github.my-company.com' },
-      'sqren'
+      'sqren',
     );
 
     return expect(spy).toHaveBeenCalledWith(
@@ -749,7 +749,7 @@ describe('addRemote', () => {
         'sqren',
         'https://x-access-token:myAccessToken@github.my-company.com/sqren/kibana.git',
       ],
-      '/myHomeDir/.backport/repositories/elastic/kibana'
+      '/myHomeDir/.backport/repositories/elastic/kibana',
     );
   });
 });
@@ -778,7 +778,7 @@ describe('pushBackportBranch', () => {
         stdout: '',
         stderr:
           "remote: Repository not found.\nfatal: repository 'https://github.com/sqren/kibana.git/' not found\n",
-      })
+      }),
     );
 
     await expect(pushBackportBranch({ options, backportBranch })).rejects

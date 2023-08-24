@@ -11,7 +11,7 @@ import { Commit } from './sourceCommit/parseSourceCommit';
 
 export async function getTargetBranches(
   options: ValidConfigOptions,
-  commits: Commit[]
+  commits: Commit[],
 ) {
   // target branches already specified (in contrast to letting the user choose from a list)
   if (!isEmpty(options.targetBranches)) {
@@ -35,7 +35,7 @@ export async function getTargetBranches(
   const targetBranchChoices = getTargetBranchChoices(
     options,
     suggestedTargetBranches,
-    sourceBranch
+    sourceBranch,
   );
 
   // render prmompt for selecting target branches
@@ -48,11 +48,11 @@ export async function getTargetBranches(
 export function getTargetBranchChoices(
   options: ValidConfigOptions,
   suggestedTargetBranches: string[],
-  sourceBranch: string
+  sourceBranch: string,
 ) {
   // exclude sourceBranch from targetBranchChoices
   const targetBranchesChoices = getTargetBranchChoicesAsObject(
-    options.targetBranchChoices
+    options.targetBranchChoices,
   ).filter((choice) => choice.name !== sourceBranch);
 
   if (isEmpty(targetBranchesChoices)) {
@@ -73,7 +73,7 @@ export function getTargetBranchChoices(
 // `targetBranchChoices` can either be a string or an object.
 // It must be transformed so it is always treated as an object troughout the application
 function getTargetBranchChoicesAsObject(
-  targetBranchChoices?: TargetBranchChoiceOrString[]
+  targetBranchChoices?: TargetBranchChoiceOrString[],
 ): TargetBranchChoice[] {
   if (!targetBranchChoices) {
     return [];

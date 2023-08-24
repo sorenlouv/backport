@@ -18,7 +18,7 @@ describe('config', () => {
       jest.spyOn(fs, 'readFile').mockResolvedValueOnce(
         JSON.stringify({
           accessToken: 'myAccessToken',
-        })
+        }),
       );
       res = await getGlobalConfig();
     });
@@ -27,7 +27,7 @@ describe('config', () => {
       expect(fs.writeFile).toHaveBeenCalledWith(
         '/myHomeDir/.backport/config.json',
         expect.any(String),
-        { flag: 'wx', mode: 384 }
+        { flag: 'wx', mode: 384 },
       );
     });
 
@@ -38,7 +38,7 @@ describe('config', () => {
     it('should load config', () => {
       expect(fs.readFile).toHaveBeenCalledWith(
         '/myHomeDir/.backport/config.json',
-        'utf8'
+        'utf8',
       );
     });
 
@@ -54,7 +54,7 @@ describe('config', () => {
       jest.spyOn(fs, 'writeFile').mockResolvedValueOnce(undefined);
       const didCreate = await createGlobalConfigIfNotExist(
         '/path/to/globalConfig',
-        'myConfigTemplate'
+        'myConfigTemplate',
       );
 
       expect(didCreate).toEqual(true);
@@ -62,7 +62,7 @@ describe('config', () => {
       expect(fs.writeFile).toHaveBeenCalledWith(
         '/path/to/globalConfig',
         expect.stringContaining('myConfigTemplate'),
-        { flag: 'wx', mode: 384 }
+        { flag: 'wx', mode: 384 },
       );
     });
 
@@ -73,7 +73,7 @@ describe('config', () => {
 
       const didCreate = await createGlobalConfigIfNotExist(
         '/path/to/global/config.json',
-        'myConfigTemplate'
+        'myConfigTemplate',
       );
 
       expect(didCreate).toEqual(false);
@@ -87,10 +87,10 @@ describe('config', () => {
       await expect(() =>
         createGlobalConfigIfNotExist(
           '/path/to/global/config.json',
-          'myConfigTemplate'
-        )
+          'myConfigTemplate',
+        ),
       ).rejects.toThrow(
-        'The .backport folder (/path/to/global/config.json) does not exist.'
+        'The .backport folder (/path/to/global/config.json) does not exist.',
       );
     });
   });

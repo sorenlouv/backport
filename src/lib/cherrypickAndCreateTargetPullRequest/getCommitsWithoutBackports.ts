@@ -52,7 +52,7 @@ export async function getCommitsWithoutBackports({
 
         // only include commit if it has an unmerged PR for the given target branch
         const hasUnmergedPr = c.targetPullRequestStates.some(
-          (pr) => pr.branch === targetBranch && pr.state !== 'MERGED'
+          (pr) => pr.branch === targetBranch && pr.state !== 'MERGED',
         );
 
         return hasUnmergedPr;
@@ -66,12 +66,12 @@ export async function getCommitsWithoutBackports({
             }
 
             return getIsCommitInBranch(options, targetPr.mergeCommit.sha);
-          })
+          }),
         );
 
         const isCommitInBranch = results.some((inBranch) => inBranch === true);
         return { c, isCommitInBranch };
-      })
+      }),
   );
 
   return promises
@@ -79,15 +79,15 @@ export async function getCommitsWithoutBackports({
     .map(({ c }) => {
       // get pull request for the target branch (if it exists)
       const pendingBackportPr = c.targetPullRequestStates.find(
-        (pr) => pr.branch === targetBranch && pr.state === 'OPEN'
+        (pr) => pr.branch === targetBranch && pr.state === 'OPEN',
       );
 
       const formatted = pendingBackportPr
         ? ` - ${getFirstLine(c.sourceCommit.message)} ${chalk.gray(
-            '(backport pending)'
+            '(backport pending)',
           )}\n   ${pendingBackportPr.url}`
         : ` - ${getFirstLine(c.sourceCommit.message)} ${chalk.red(
-            '(backport missing)'
+            '(backport missing)',
           )}\n   ${c.sourcePullRequest?.url}`;
 
       return { formatted, commit: c };

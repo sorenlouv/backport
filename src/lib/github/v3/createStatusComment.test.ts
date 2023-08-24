@@ -39,13 +39,13 @@ describe('createStatusComment', () => {
         commits: [{ sourcePullRequest: { number: 100 } }],
         status: 'failure',
         error: new Error(
-          `Error message containing very secret access token: ${accessToken}.`
+          `Error message containing very secret access token: ${accessToken}.`,
         ),
       } as BackportResponse,
     });
 
     expect(postedCommentBody).toContain(
-      'Error message containing very secret access token: <REDACTED>'
+      'Error message containing very secret access token: <REDACTED>',
     );
 
     scope.done();
@@ -526,7 +526,7 @@ describe('getCommentBody', () => {
             targetBranch: 'main',
             status: 'handled-error',
             error: new BackportError(
-              'The branch "main" is invalid or doesn\'t exist'
+              'The branch "main" is invalid or doesn\'t exist',
             ),
           },
         ],

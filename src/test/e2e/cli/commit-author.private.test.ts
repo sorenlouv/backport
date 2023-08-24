@@ -18,7 +18,7 @@ describe('commit author', () => {
 
     await exec(
       `git clone https://github.com/backport-org/repo-with-different-commits-authors.git ${sourceRepo}`,
-      { cwd: sandboxPath }
+      { cwd: sandboxPath },
     );
 
     // set dummy git author. This should not have any effect and should never be used
@@ -36,7 +36,7 @@ describe('commit author', () => {
           `--sha=${COMMIT_BY_JOHN_DOE_SHA}`,
           '--dry-run',
         ],
-        { cwd: sourceRepo, showOra: true }
+        { cwd: sourceRepo, showOra: true },
       );
 
       const { authorEmail, authorName } = await getCommitAuthor({
@@ -60,7 +60,7 @@ describe('commit author', () => {
           '--gitAuthorName="Donald Duck"',
           '--gitAuthorEmail=duck@disney.com',
         ],
-        { cwd: sourceRepo, showOra: true }
+        { cwd: sourceRepo, showOra: true },
       );
 
       const { authorEmail, authorName } = await getCommitAuthor({
@@ -83,7 +83,7 @@ describe('commit author', () => {
           '--dry-run',
           '--reset-author',
         ],
-        { cwd: sourceRepo, showOra: true }
+        { cwd: sourceRepo, showOra: true },
       );
 
       const { authorEmail, authorName } = await getCommitAuthor({
@@ -99,12 +99,12 @@ describe('commit author', () => {
 async function getCommitAuthor({ cwd }: { cwd: string }) {
   const { stdout: authorName } = await exec(
     'git --no-pager log -1 --format=format:"%cn"',
-    { cwd }
+    { cwd },
   );
 
   const { stdout: authorEmail } = await exec(
     'git --no-pager log -1 --format=format:"%ce"',
-    { cwd }
+    { cwd },
   );
 
   return { authorName, authorEmail };

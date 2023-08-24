@@ -14,7 +14,7 @@ export function getBackportBranchName(targetBranch: string, commits: Commit[]) {
     .map((commit) =>
       commit.sourcePullRequest
         ? `pr-${commit.sourcePullRequest.number}`
-        : `commit-${getShortSha(commit.sourceCommit.sha)}`
+        : `commit-${getShortSha(commit.sourceCommit.sha)}`,
     )
     .join('_')
     .slice(0, 200);

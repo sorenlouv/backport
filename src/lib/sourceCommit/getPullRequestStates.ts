@@ -35,7 +35,7 @@ export type TargetPullRequest =
     });
 
 export function getSourcePullRequest(
-  sourceCommit: SourceCommitWithTargetPullRequest
+  sourceCommit: SourceCommitWithTargetPullRequest,
 ): SourcePullRequestNode | undefined {
   return sourceCommit.associatedPullRequests.edges?.[0]?.node;
 }
@@ -43,7 +43,7 @@ export function getSourcePullRequest(
 function mergeByKey<T, K>(
   obj1: T[],
   obj2: K[],
-  key: string
+  key: string,
 ): Array<(T & Partial<K>) | (K & Partial<T>)> {
   const merged = merge(keyBy(obj1, key), keyBy(obj2, key));
   const a = values(merged);
@@ -74,13 +74,13 @@ export function getPullRequestStates({
 
   const targetBranchesFromLabels = getTargetBranchesFromLabels(
     sourcePullRequest,
-    branchLabelMapping
+    branchLabelMapping,
   );
 
   return mergeByKey(
     targetBranchesFromLabels,
     createdTargetPullRequests,
-    'branch'
+    'branch',
   ).map((res) => {
     if (res.state) {
       return { ...res, state: res.state };
@@ -106,7 +106,7 @@ export function getPullRequestStates({
 }
 
 function getCreatedTargetPullRequests(
-  sourceCommit: SourceCommitWithTargetPullRequest
+  sourceCommit: SourceCommitWithTargetPullRequest,
 ): CreatedPullRequest[] {
   const sourcePullRequest = getSourcePullRequest(sourceCommit);
 
@@ -142,14 +142,14 @@ function getCreatedTargetPullRequests(
 
           const matchingMessage = targetCommitMessage === sourceCommitMessage;
           return matchingRepoName && matchingRepoOwner && matchingMessage;
-        }
+        },
       );
 
       const titleIncludesMessage =
         targetPullRequest.title.includes(sourceCommitMessage);
 
       const titleIncludesNumber = targetPullRequest.title.includes(
-        sourcePullRequest.number.toString()
+        sourcePullRequest.number.toString(),
       );
 
       return didCommitMatch || (titleIncludesMessage && titleIncludesNumber);
@@ -173,7 +173,7 @@ function getCreatedTargetPullRequests(
 
 // narrow TimelineEdge to TimelinePullRequestEdge
 function filterPullRequests(
-  item: TimelineEdge
+  item: TimelineEdge,
 ): item is TimelinePullRequestEdge {
   const { targetPullRequest } = item.node;
   return targetPullRequest.__typename === 'PullRequest';
@@ -181,7 +181,7 @@ function filterPullRequests(
 
 function getTargetBranchesFromLabels(
   sourcePullRequest: SourcePullRequestNode,
-  branchLabelMapping: NonNullable<ValidConfigOptions['branchLabelMapping']>
+  branchLabelMapping: NonNullable<ValidConfigOptions['branchLabelMapping']>,
 ): TargetBranchWithLabel[] {
   const targetBranchesFromLabels = sourcePullRequest.labels.nodes
     .map((label) => label.name)

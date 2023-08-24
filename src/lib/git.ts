@@ -18,14 +18,14 @@ import { Commit } from './sourceCommit/parseSourceCommit';
 
 export function getRemoteUrl(
   { repoName, accessToken, gitHostname = 'github.com' }: ValidConfigOptions,
-  repoOwner: string
+  repoOwner: string,
 ) {
   return `https://x-access-token:${accessToken}@${gitHostname}/${repoOwner}/${repoName}.git`;
 }
 
 export async function cloneRepo(
   { sourcePath, targetPath }: { sourcePath: string; targetPath: string },
-  onProgress: (progress: number) => void
+  onProgress: (progress: number) => void,
 ) {
   logger.info(`Cloning repo from ${sourcePath} to ${targetPath}`);
 
@@ -62,7 +62,7 @@ export async function cloneRepo(
       }
 
       const progressSum = Math.round(
-        progress.fileUpdate * 0.1 + progress.objectReceive * 0.9
+        progress.fileUpdate * 0.1 + progress.objectReceive * 0.9,
       );
 
       if (progressSum > 0) {
@@ -85,7 +85,7 @@ export async function getLocalConfigFileCommitDate({ cwd }: { cwd: string }) {
     const { stdout } = await spawnPromise(
       'git',
       ['--no-pager', 'log', '-1', '--format=%cd', '.backportrc.json'],
-      cwd
+      cwd,
     );
 
     const timestamp = Date.parse(stdout);
@@ -103,7 +103,7 @@ export async function isLocalConfigFileUntracked({ cwd }: { cwd: string }) {
     const { stdout } = await spawnPromise(
       'git',
       ['ls-files', '.backportrc.json', '--exclude-standard', '--others'],
-      cwd
+      cwd,
     );
 
     return !!stdout;
@@ -117,7 +117,7 @@ export async function isLocalConfigFileModified({ cwd }: { cwd: string }) {
     const { stdout } = await spawnPromise(
       'git',
       ['--no-pager', 'diff', 'HEAD', '--name-only', '.backportrc.json'],
-      cwd
+      cwd,
     );
 
     return !!stdout;
@@ -133,7 +133,7 @@ export async function getRepoInfoFromGitRemotes({ cwd }: { cwd: string }) {
       .split('\n')
       .map((line) => {
         const match = line.match(
-          /github.com[/|:](.+?)(.git)? \((fetch|push)\)/
+          /github.com[/|:](.+?)(.git)? \((fetch|push)\)/,
         );
         return match?.[1];
       })
@@ -154,7 +154,7 @@ export async function getGitProjectRootPath(dir: string) {
     const { stdout } = await spawnPromise(
       'git',
       ['rev-parse', '--show-toplevel'],
-      cwd
+      cwd,
     );
     return path.normalize(stdout.trim());
   } catch (e) {
@@ -165,14 +165,14 @@ export async function getGitProjectRootPath(dir: string) {
 
 export async function getIsCommitInBranch(
   options: ValidConfigOptions,
-  commitSha: string
+  commitSha: string,
 ) {
   try {
     const cwd = getRepoPath(options);
     await spawnPromise(
       'git',
       ['merge-base', '--is-ancestor', commitSha, 'HEAD'],
-      cwd
+      cwd,
     );
     return true;
   } catch (e) {
@@ -183,7 +183,7 @@ export async function getIsCommitInBranch(
 
 export async function deleteRemote(
   options: ValidConfigOptions,
-  remoteName: string
+  remoteName: string,
 ) {
   try {
     const cwd = getRepoPath(options);
@@ -206,14 +206,14 @@ export async function deleteRemote(
 
 export async function addRemote(
   options: ValidConfigOptions,
-  remoteName: string
+  remoteName: string,
 ) {
   try {
     const cwd = getRepoPath(options);
     await spawnPromise(
       'git',
       ['remote', 'add', remoteName, getRemoteUrl(options, remoteName)],
-      cwd
+      cwd,
     );
   } catch (e) {
     // note: swallowing error
@@ -226,20 +226,20 @@ export async function fetchBranch(options: ValidConfigOptions, branch: string) {
   await spawnPromise(
     'git',
     ['fetch', options.repoOwner, `${branch}:${branch}`, '--force'],
-    cwd
+    cwd,
   );
 }
 
 export async function getIsMergeCommit(
   options: ValidConfigOptions,
-  sha: string
+  sha: string,
 ) {
   const cwd = getRepoPath(options);
   try {
     const res = await spawnPromise(
       'git',
       ['rev-list', '-1', '--merges', `${sha}~1..${sha}`],
-      cwd
+      cwd,
     );
 
     return res.stdout !== '';
@@ -247,7 +247,7 @@ export async function getIsMergeCommit(
     const shortSha = getShortSha(sha);
     logger.info(
       `Could not determine if ${shortSha} is a merge commit. Will assume it is not`,
-      e
+      e,
     );
     return false;
   }
@@ -255,14 +255,14 @@ export async function getIsMergeCommit(
 
 export async function getShasInMergeCommit(
   options: ValidConfigOptions,
-  sha: string
+  sha: string,
 ) {
   try {
     const cwd = getRepoPath(options);
     const res = await spawnPromise(
       'git',
       ['--no-pager', 'log', `${sha}^1..${sha}^2`, '--pretty=format:%H'],
-      cwd
+      cwd,
     );
 
     return res.stdout.split('\n');
@@ -317,7 +317,7 @@ export async function cherrypick({
       // missing `mainline` option
       if (e.message.includes('is a merge but no -m option was given')) {
         throw new BackportError(
-          'Cherrypick failed because the selected commit was a merge commit. Please try again by specifying the parent with the `mainline` argument:\n\n> backport --mainline\n\nor:\n\n> backport --mainline <parent-number>\n\nOr refer to the git documentation for more information: https://git-scm.com/docs/git-cherry-pick#Documentation/git-cherry-pick.txt---mainlineparent-number'
+          'Cherrypick failed because the selected commit was a merge commit. Please try again by specifying the parent with the `mainline` argument:\n\n> backport --mainline\n\nor:\n\n> backport --mainline <parent-number>\n\nOr refer to the git documentation for more information: https://git-scm.com/docs/git-cherry-pick#Documentation/git-cherry-pick.txt---mainlineparent-number',
         );
       }
 
@@ -330,13 +330,13 @@ export async function cherrypick({
             mergedTargetPullRequest?.url
               ? `It looks like the commit was already backported in ${mergedTargetPullRequest.url}`
               : 'Did you already backport this commit? '
-          }`
+          }`,
         );
       }
 
       if (e.message.includes(`bad object ${sha}`)) {
         throw new BackportError(
-          `Cherrypick failed because commit "${sha}" was not found`
+          `Cherrypick failed because commit "${sha}" was not found`,
         );
       }
 
@@ -381,7 +381,7 @@ async function gitCommit({
       ...(options.noVerify ? ['--no-verify'] : []), // bypass pre-commit and commit-msg hooks
       ...(options.signoff ? ['--signoff'] : []),
     ],
-    cwd
+    cwd,
   );
 }
 
@@ -403,7 +403,7 @@ export async function commitChanges({
       if (e.context.stdout.includes('nothing to commit')) {
         logger.info(
           `Could not run "git commit". Probably because the changes were manually committed`,
-          e
+          e,
         );
         return;
       }
@@ -443,7 +443,7 @@ export async function getConflictingFiles(options: ValidConfigOptions) {
         .split('\n')
         .filter(
           (line: string) =>
-            !!line.trim() && !line.startsWith('+') && !line.startsWith('-')
+            !!line.trim() && !line.startsWith('+') && !line.startsWith('-'),
         )
         .map((line: string) => {
           const posSeparator = line.indexOf(':');
@@ -473,7 +473,7 @@ export async function getUnstagedFiles(options: ValidConfigOptions) {
   const res = await spawnPromise(
     'git',
     ['--no-pager', 'diff', '--name-only'],
-    cwd
+    cwd,
   );
   const files = res.stdout
     .split('\n')
@@ -522,7 +522,7 @@ export async function createBackportBranch({
         `${options.repoOwner}/${targetBranch}`,
         '--no-track',
       ],
-      cwd
+      cwd,
     );
 
     // delete tmp branch (if it still exists)
@@ -546,12 +546,12 @@ export async function createBackportBranch({
         e.context.stderr
           .toLowerCase()
           .includes(
-            `is not a commit and a branch '${backportBranch}' cannot be created from it`
+            `is not a commit and a branch '${backportBranch}' cannot be created from it`,
           );
 
       if (isBranchInvalid) {
         throw new BackportError(
-          `The branch "${targetBranch}" is invalid or doesn't exist`
+          `The branch "${targetBranch}" is invalid or doesn't exist`,
         );
       }
     }
@@ -575,7 +575,7 @@ export async function deleteBackportBranch({
   await spawnPromise(
     'git',
     ['branch', '--delete', '--force', backportBranch],
-    cwd
+    cwd,
   );
 
   spinner.stop();
@@ -598,7 +598,7 @@ export async function pushBackportBranch({
   const repoForkOwner = getRepoForkOwner(options);
   const spinner = ora(
     options.interactive,
-    `Pushing branch "${repoForkOwner}:${backportBranch}"`
+    `Pushing branch "${repoForkOwner}:${backportBranch}"`,
   ).start();
 
   try {
@@ -606,7 +606,7 @@ export async function pushBackportBranch({
     const res = await spawnPromise(
       'git',
       ['push', repoForkOwner, `${backportBranch}:${backportBranch}`, '--force'],
-      cwd
+      cwd,
     );
 
     spinner.succeed();
@@ -619,7 +619,7 @@ export async function pushBackportBranch({
       e.context.stderr.toLowerCase().includes(`repository not found`)
     ) {
       throw new BackportError(
-        `Error pushing to https://github.com/${repoForkOwner}/${options.repoName}. Repository does not exist. Either fork the repository (https://github.com/${options.repoOwner}/${options.repoName}) or disable fork mode via "--no-fork".\nRead more about fork mode in the docs: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#fork`
+        `Error pushing to https://github.com/${repoForkOwner}/${options.repoName}. Repository does not exist. Either fork the repository (https://github.com/${options.repoOwner}/${options.repoName}) or disable fork mode via "--no-fork".\nRead more about fork mode in the docs: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#fork`,
       );
     }
 
@@ -640,7 +640,7 @@ export async function getLocalSourceRepoPath(options: ValidConfigOptions) {
   const hasMatchingGitRemote = remotes.some(
     (remote) =>
       remote.repoName === options.repoName &&
-      remote.repoOwner === options.repoOwner
+      remote.repoOwner === options.repoOwner,
   );
 
   return hasMatchingGitRemote ? getGitProjectRootPath(options.cwd) : undefined;

@@ -165,7 +165,7 @@ describe('enablePullRequestAutoMerge', () => {
     it('should initially have auto-merge disabled', async () => {
       const autoMergeMethod = await fetchPullRequestAutoMergeMethod(
         options,
-        pullNumber
+        pullNumber,
       );
       expect(autoMergeMethod).toBe(undefined);
     });
@@ -173,7 +173,7 @@ describe('enablePullRequestAutoMerge', () => {
     it('should enable auto-merge via merge', async () => {
       await enablePullRequestAutoMerge(
         { ...options, autoMergeMethod: 'merge' },
-        pullNumber
+        pullNumber,
       );
 
       // ensure Github API reflects the change before querying
@@ -181,7 +181,7 @@ describe('enablePullRequestAutoMerge', () => {
 
       const autoMergeMethod = await fetchPullRequestAutoMergeMethod(
         options,
-        pullNumber
+        pullNumber,
       );
       expect(autoMergeMethod).toBe('MERGE');
     });
@@ -193,7 +193,7 @@ describe('enablePullRequestAutoMerge', () => {
       try {
         await enablePullRequestAutoMerge(
           { ...options, autoMergeMethod: 'rebase' },
-          pullNumber
+          pullNumber,
         );
       } catch (e) {
         const err = e as GithubV4Exception<any>;
@@ -204,7 +204,7 @@ describe('enablePullRequestAutoMerge', () => {
 
       expect(isMissingStatusChecks).toBe(false);
       expect(errorMessage).toMatchInlineSnapshot(
-        `"["Merge method rebase merging is not allowed on this repository"] (Github API v4)"`
+        `"["Merge method rebase merging is not allowed on this repository"] (Github API v4)"`,
       );
 
       // ensure Github API reflects the change before querying
@@ -212,7 +212,7 @@ describe('enablePullRequestAutoMerge', () => {
 
       const autoMergeMethod = await fetchPullRequestAutoMergeMethod(
         options,
-        pullNumber
+        pullNumber,
       );
       expect(autoMergeMethod).toBe(undefined);
     });
@@ -220,7 +220,7 @@ describe('enablePullRequestAutoMerge', () => {
     it('should enable auto-merge via squash', async () => {
       await enablePullRequestAutoMerge(
         { ...options, autoMergeMethod: 'squash' },
-        pullNumber
+        pullNumber,
       );
 
       // ensure Github API reflects the change before querying
@@ -228,7 +228,7 @@ describe('enablePullRequestAutoMerge', () => {
 
       const autoMergeMethod = await fetchPullRequestAutoMergeMethod(
         options,
-        pullNumber
+        pullNumber,
       );
       expect(autoMergeMethod).toBe('SQUASH');
     });
@@ -275,7 +275,7 @@ describe('enablePullRequestAutoMerge', () => {
       try {
         await enablePullRequestAutoMerge(
           { ...options, autoMergeMethod: 'merge' },
-          pullNumber
+          pullNumber,
         );
       } catch (e) {
         const err = e as GithubV4Exception<any>;
@@ -285,7 +285,7 @@ describe('enablePullRequestAutoMerge', () => {
       }
 
       expect(errorMessage).toMatchInlineSnapshot(
-        `"["Pull request Pull request is in clean status"] (Github API v4)"`
+        `"["Pull request Pull request is in clean status"] (Github API v4)"`,
       );
       expect(isMissingStatusChecks).toBe(true);
     });
@@ -333,7 +333,7 @@ describe('enablePullRequestAutoMerge', () => {
       try {
         await enablePullRequestAutoMerge(
           { ...options, autoMergeMethod: 'merge' },
-          pullNumber
+          pullNumber,
         );
       } catch (e) {
         const err = e as GithubV4Exception<any>;
@@ -343,7 +343,7 @@ describe('enablePullRequestAutoMerge', () => {
       }
 
       expect(errorMessage).toMatchInlineSnapshot(
-        `"["Pull request Pull request is in clean status"] (Github API v4)"`
+        `"["Pull request Pull request is in clean status"] (Github API v4)"`,
       );
       expect(isMissingStatusChecks).toBe(true);
     });

@@ -14,7 +14,7 @@ describe('getProjectConfig', () => {
             repoName: 'kibana',
             repoOwner: 'elastic',
             branches: ['6.x'],
-          })
+          }),
         );
 
         const projectConfig = await getProjectConfig({
@@ -29,7 +29,7 @@ describe('getProjectConfig', () => {
         jest.spyOn(fs, 'readFile').mockResolvedValueOnce(
           JSON.stringify({
             labels: ['backport'],
-          })
+          }),
         );
 
         const projectConfig = await getProjectConfig({
@@ -44,7 +44,7 @@ describe('getProjectConfig', () => {
         jest.spyOn(fs, 'readFile').mockResolvedValueOnce(
           JSON.stringify({
             upstream: 'elastic/kibana',
-          })
+          }),
         );
 
         const projectConfig = await getProjectConfig({
@@ -64,7 +64,7 @@ describe('getProjectConfig', () => {
             repoOwner: 'elastic',
             targetBranchChoices: ['6.x'],
             targetPRLabels: ['backport'],
-          })
+          }),
         );
 
         projectConfig = await getProjectConfig({
@@ -97,7 +97,7 @@ describe('getProjectConfig', () => {
             repoOwner: 'elastic',
             targetBranchChoices: ['6.x'],
             targetPRLabels: ['backport'],
-          })
+          }),
         );
 
         projectConfig = await getProjectConfig({
@@ -112,7 +112,7 @@ describe('getProjectConfig', () => {
       it('should retrieve config via custom config path', () => {
         expect(spy).toHaveBeenCalledWith(
           '/custom/path/to/project/.backportrc.json',
-          'utf8'
+          'utf8',
         );
       });
 

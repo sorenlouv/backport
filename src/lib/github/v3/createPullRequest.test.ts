@@ -38,7 +38,7 @@ describe('getPullRequestBody', () => {
         ],
 
         targetBranch: '7.x',
-      })
+      }),
     ).toMatchInlineSnapshot(`
       "# Backport
 
@@ -76,7 +76,7 @@ describe('getPullRequestBody', () => {
         ],
 
         targetBranch: '7.x',
-      })
+      }),
     ).toMatchInlineSnapshot(`
       "# Backport
 
@@ -142,7 +142,7 @@ describe('getPullRequestBody', () => {
         ],
 
         targetBranch: '7.x',
-      })
+      }),
     ).toMatchInlineSnapshot(`
       "# Backport
 
@@ -222,7 +222,7 @@ describe('getPullRequestBody', () => {
         ],
 
         targetBranch: '7.x',
-      })
+      }),
     ).toMatchInlineSnapshot(`
       "# Backport
 
@@ -288,7 +288,7 @@ describe('getPullRequestBody', () => {
         ],
 
         targetBranch: '7.x',
-      })
+      }),
     ).toMatchInlineSnapshot(`
       "Backporting the following to 7.x:
        - [My commit message (#55)](https://github.com/backport-org/different-merge-strategies/pull/55)
@@ -358,9 +358,9 @@ describe('getPullRequestBody', () => {
     } as ValidConfigOptions;
 
     expect(
-      getPullRequestBody({ options, commits, targetBranch: '7.x' })
+      getPullRequestBody({ options, commits, targetBranch: '7.x' }),
     ).toMatchInlineSnapshot(
-      `"Just output the commits: [{"sourceCommit":{"sha":"foo","message":"My commit message (#55)"}},{"sourceCommit":{"sha":"bar","message":"Another commit message"}}]"`
+      `"Just output the commits: [{"sourceCommit":{"sha":"foo","message":"My commit message (#55)"}},{"sourceCommit":{"sha":"bar","message":"Another commit message"}}]"`,
     );
   });
 
@@ -488,7 +488,7 @@ describe('getTitle', () => {
           },
         ],
         targetBranch: '7.x',
-      })
+      }),
     ).toEqual('[7.x] My commit message (#55) | Another commit message (#56)');
   });
 
@@ -526,7 +526,7 @@ describe('getTitle', () => {
           },
         ],
         targetBranch: '7.x',
-      })
+      }),
     ).toEqual('Branch: "7.x". Messages: My commit message (#55)');
   });
 });

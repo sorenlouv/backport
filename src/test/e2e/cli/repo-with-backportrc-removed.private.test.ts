@@ -10,7 +10,7 @@ describe('repo-with-backportrc-removed (missing .backportrc.json config file)', 
         '--repo=backport-org/repo-with-backportrc-removed',
         `--accessToken=${accessToken}`,
       ],
-      { waitForString: 'Select commit', timeoutSeconds: 4 }
+      { waitForString: 'Select commit', timeoutSeconds: 4 },
     );
 
     expect(output).toMatchInlineSnapshot(`
@@ -36,7 +36,7 @@ describe('repo-with-backportrc-removed (missing .backportrc.json config file)', 
       ],
       {
         showOra: true,
-      }
+      },
     );
 
     expect(output).toContain('Cherry-picking: Create README.me');
@@ -53,7 +53,7 @@ describe('repo-with-backportrc-removed (missing .backportrc.json config file)', 
       ],
       {
         showOra: true,
-      }
+      },
     );
 
     expect(output).toContain('Cherry-picking: Create README.me');

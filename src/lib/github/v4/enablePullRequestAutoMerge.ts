@@ -9,7 +9,7 @@ interface Response {
 
 export async function enablePullRequestAutoMerge(
   options: ValidConfigOptions,
-  targetPullRequestNumber: number
+  targetPullRequestNumber: number,
 ) {
   const {
     accessToken,
@@ -19,7 +19,7 @@ export async function enablePullRequestAutoMerge(
 
   const pullRequestId = await fetchPullRequestId(
     options,
-    targetPullRequestNumber
+    targetPullRequestNumber,
   );
 
   const query = gql`
@@ -55,9 +55,9 @@ export function parseGithubError(e: GithubV4Exception<any>) {
     (e) =>
       e.type === 'UNPROCESSABLE' &&
       (e.message.includes(
-        'Branch does not have required protected branch rules'
+        'Branch does not have required protected branch rules',
       ) ||
-        e.message.includes('Pull request is in clean status'))
+        e.message.includes('Pull request is in clean status')),
   );
 
   return { isMissingStatusChecks };

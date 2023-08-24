@@ -61,7 +61,7 @@ export async function backportRun({
   _apmTransaction = apmTransaction;
   const { interactive, logFilePath } = getRuntimeArguments(
     processArgs,
-    optionsFromModule
+    optionsFromModule,
   );
   const logger = initLogger({ interactive, logFilePath });
 
@@ -117,7 +117,7 @@ export async function backportRun({
     const targetBranches = await getTargetBranches(options, commits);
     targetBranchesSpan?.setLabel(
       'target-branches-count',
-      targetBranches.length
+      targetBranches.length,
     );
     targetBranchesSpan?.end();
     logger.info('Target branches', targetBranches);
@@ -206,12 +206,12 @@ function outputError({
     consoleLog(chalk.bold('⚠️  Ouch! An unhandled error occured 😿'));
     consoleLog(e.stack ? e.stack : e.message);
     consoleLog(
-      'Please open an issue in https://github.com/sqren/backport/issues or contact me directly on https://twitter.com/sorenlouv'
+      'Please open an issue in https://github.com/sqren/backport/issues or contact me directly on https://twitter.com/sorenlouv',
     );
 
     const infoLogPath = getLogfilePath({ logFilePath, logLevel: 'info' });
     consoleLog(
-      chalk.italic(`For additional details see the logs: ${infoLogPath}`)
+      chalk.italic(`For additional details see the logs: ${infoLogPath}`),
     );
   }
 }

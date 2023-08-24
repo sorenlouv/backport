@@ -92,7 +92,7 @@ describe('fetchCommitBySha', () => {
         accessToken,
         sha: 'cb6fbc0e',
         sourceBranch: 'master',
-      })
+      }),
     ).toEqual(expectedCommit);
   });
 
@@ -104,7 +104,7 @@ describe('fetchCommitBySha', () => {
         accessToken,
         sha: 'fc22f59',
         sourceBranch: 'main',
-      })
+      }),
     ).rejects.toThrow('No commit found on branch "main" with sha "fc22f59"');
   });
 
@@ -116,9 +116,9 @@ describe('fetchCommitBySha', () => {
         accessToken,
         sha: 'myCommitSha',
         sourceBranch: 'main',
-      })
+      }),
     ).rejects.toThrow(
-      'No commit found on branch "main" with sha "myCommitSha"'
+      'No commit found on branch "main" with sha "myCommitSha"',
     );
   });
 });

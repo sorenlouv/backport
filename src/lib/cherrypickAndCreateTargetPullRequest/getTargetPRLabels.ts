@@ -19,7 +19,7 @@ export function getTargetPRLabels({
   const labels = commits
     .flatMap((c) => {
       const targetPullRequest = c.targetPullRequestStates.find(
-        (pr) => pr.branch === targetBranch
+        (pr) => pr.branch === targetBranch,
       );
 
       if (!targetPullRequest?.labelRegex) {

@@ -19,7 +19,7 @@ type RunBackportOptions = {
 
 export function runBackportViaCli(
   backportArgs: string[],
-  runBackportOptions: RunBackportOptions = {}
+  runBackportOptions: RunBackportOptions = {},
 ) {
   const chunks = '';
   const randomString = Math.random().toString(36).slice(2);
@@ -54,11 +54,11 @@ function getPromise(
   proc: ChildProcessWithoutNullStreams,
   runBackportOptions: RunBackportOptions,
   cmdArgs: string[],
-  chunks: string
+  chunks: string,
 ) {
   if (proc.killed) {
     throw new Error(
-      'Process is already killed. Did you forget `keepAlive: true`?'
+      'Process is already killed. Did you forget `keepAlive: true`?',
     );
   }
 
@@ -74,7 +74,7 @@ function getPromise(
     code: number | null;
     keypress: (
       keyCode: KeyCode,
-      runBackportOptions?: RunBackportOptions
+      runBackportOptions?: RunBackportOptions,
     ) => Promise<{ output: string }>;
   }>((resolve, reject) => {
     const postponeTimeout = debounce(
@@ -84,11 +84,11 @@ function getPromise(
         reject(
           waitForString
             ? `Expectation '${waitForString}' not found within ${timeoutSeconds} second in:\n\n${formattedChunks}\n\nCommand: ${cmd}`
-            : `Process did not complete within ${timeoutSeconds} seconds. Received:\n${formattedChunks}\n\nCommand: ${cmd}`
+            : `Process did not complete within ${timeoutSeconds} seconds. Received:\n${formattedChunks}\n\nCommand: ${cmd}`,
         );
       },
       timeoutSeconds * 1000,
-      { maxWait: 10000 }
+      { maxWait: 10000 },
     );
 
     function formatChunk(data: string) {
@@ -97,7 +97,7 @@ function getPromise(
 
     function keypress(
       keyCode: KeyCode,
-      runBackportOptions: RunBackportOptions = {}
+      runBackportOptions: RunBackportOptions = {},
     ) {
       const p = getPromise(proc, runBackportOptions, cmdArgs, chunks);
       proc.stdin.write(keyCodeMap[keyCode]);
@@ -119,8 +119,8 @@ function getPromise(
       if (waitForString) {
         reject(
           `runBackportViaCli exited before finding: ${waitForString}. Output: ${formatChunk(
-            chunks
-          )}`
+            chunks,
+          )}`,
         );
       } else {
         resolve({ output: formatChunk(chunks), code, keypress });

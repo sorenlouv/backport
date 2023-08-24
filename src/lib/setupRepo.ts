@@ -22,7 +22,7 @@ export async function setupRepo(options: ValidConfigOptions) {
   if (!isAlreadyCloned) {
     if (options.cwd.includes(repoPath)) {
       throw new BackportError(
-        `Refusing to clone repo into "${repoPath}" when current working directory is "${options.cwd}". Please change backport directory via \`--dir\` option or run backport from another location`
+        `Refusing to clone repo into "${repoPath}" when current working directory is "${options.cwd}". Please change backport directory via \`--dir\` option or run backport from another location`,
       );
     }
 
@@ -47,7 +47,7 @@ export async function setupRepo(options: ValidConfigOptions) {
         { sourcePath, targetPath: repoPath },
         (progress: number) => {
           spinner.text = `${progress}% ${spinnerCloneText}`;
-        }
+        },
       );
       cloneRepoSpan?.setLabel('local_clone', !!localRepoPath);
       cloneRepoSpan?.end();

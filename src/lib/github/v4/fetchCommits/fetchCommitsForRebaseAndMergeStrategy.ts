@@ -12,7 +12,7 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
     repoOwner: string;
     sourceBranch: string;
   },
-  commitsTotalCount: number
+  commitsTotalCount: number,
 ): Promise<Commit[] | undefined> {
   const {
     accessToken,
@@ -87,7 +87,7 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
 
   if (pullRequestNode.commits.totalCount !== commitsTotalCount) {
     throw new Error(
-      `Specified number of commits is ${commitsTotalCount} whereas the actual number is ${pullRequestNode.commits.totalCount}`
+      `Specified number of commits is ${commitsTotalCount} whereas the actual number is ${pullRequestNode.commits.totalCount}`,
     );
   }
 
@@ -112,8 +112,8 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
   if (didUseRebaseAndMergeStrategy) {
     const commits = await Promise.all(
       commitsInBaseBranch.map((c) =>
-        fetchCommitBySha({ ...options, sha: c.node.oid })
-      )
+        fetchCommitBySha({ ...options, sha: c.node.oid }),
+      ),
     );
 
     return commits;

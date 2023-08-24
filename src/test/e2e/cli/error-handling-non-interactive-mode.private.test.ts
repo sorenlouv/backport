@@ -26,7 +26,7 @@ describe('non interactive (json) error handling', () => {
     // remove absolute path to avoid issues on ci
     const errorMessage = backportResult.errorMessage.replace(
       configFilePath,
-      '<GLOBAL_CONFIG_FILE>'
+      '<GLOBAL_CONFIG_FILE>',
     );
 
     expect(code).toBe(1);
@@ -55,7 +55,7 @@ describe('non interactive (json) error handling', () => {
       name: 'BackportError',
     });
     expect(backportResult.errorMessage).toBe(
-      'There are no branches to backport to. Aborting.'
+      'There are no branches to backport to. Aborting.',
     );
   });
 
@@ -93,7 +93,7 @@ describe('non interactive (json) error handling', () => {
     const backportResult = JSON.parse(output) as BackportFailureResponse;
     expect(backportResult.status).toBe('failure');
     expect(backportResult.errorMessage).toEqual(
-      'The repository "backport-org/backport-e2e-foo" doesn\'t exist'
+      'The repository "backport-org/backport-e2e-foo" doesn\'t exist',
     );
   });
 
@@ -108,7 +108,7 @@ describe('non interactive (json) error handling', () => {
     const backportResult = JSON.parse(output) as BackportFailureResponse;
     expect(backportResult.status).toBe('failure');
     expect(backportResult.errorMessage).toEqual(
-      'No commit found on branch "master" with sha "abcdefg"'
+      'No commit found on branch "master" with sha "abcdefg"',
     );
   });
 
@@ -166,7 +166,7 @@ describe('non interactive (json) error handling', () => {
     const backportResult = JSON.parse(output) as BackportFailureResponse;
     expect(backportResult.status).toEqual('failure');
     expect(backportResult.errorMessage).toEqual(
-      'Could not resolve to a PullRequest with the number of 900. (Github API v4)'
+      'Could not resolve to a PullRequest with the number of 900. (Github API v4)',
     );
   });
 
@@ -183,7 +183,7 @@ describe('non interactive (json) error handling', () => {
     expect(backportResult.status).toEqual('success');
     expect(
       //@ts-expect-error
-      backportResult.results[0].error.errorContext.conflictingFiles
+      backportResult.results[0].error.errorContext.conflictingFiles,
     ).toEqual(['la-liga.md']);
   });
 

@@ -77,7 +77,7 @@ describe('getTargetBranches', () => {
           targetBranchChoices: [],
           multipleBranches: false,
         } as unknown as ValidConfigOptions,
-        []
+        [],
       );
     });
 
@@ -99,7 +99,7 @@ describe('getTargetBranches', () => {
           {
             interactive: false,
           } as unknown as ValidConfigOptions,
-          commits
+          commits,
         );
       }).rejects.toThrow('There are no branches to backport to. Aborting.');
     });
@@ -118,7 +118,7 @@ describe('getTargetBranches', () => {
 
       const targetBranches = await getTargetBranches(
         { interactive: false } as unknown as ValidConfigOptions,
-        commits
+        commits,
       );
       expect(targetBranches).toEqual(['7.x']);
     });
@@ -182,7 +182,7 @@ describe('getTargetBranches', () => {
 
     it('should not list the sourceBranch (master)', async () => {
       expect(targetBranchChoices).not.toContainEqual(
-        expect.objectContaining({ name: 'master' })
+        expect.objectContaining({ name: 'master' }),
       );
     });
 
@@ -214,7 +214,7 @@ describe('getTargetBranchChoices', () => {
     const branches = getTargetBranchChoices(
       options,
       targetBranchesFromLabels,
-      sourceBranch
+      sourceBranch,
     );
 
     expect(branches).toEqual([
@@ -230,7 +230,7 @@ describe('getTargetBranchChoices', () => {
     const branches = getTargetBranchChoices(
       options,
       targetBranchesFromLabels,
-      sourceBranch
+      sourceBranch,
     );
 
     expect(branches).toEqual([

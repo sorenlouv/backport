@@ -74,9 +74,8 @@ export async function getOptions({
     optionsFromCliArgs,
   });
 
-  const { accessToken, repoName, repoOwner } = await getRequiredOptions(
-    combined
-  );
+  const { accessToken, repoName, repoOwner } =
+    await getRequiredOptions(combined);
 
   // update logger
   setAccessToken(accessToken);
@@ -131,7 +130,7 @@ async function getRequiredOptions(combined: OptionsFromConfigAndCli) {
   if (!accessToken) {
     const globalConfigPath = getGlobalConfigPath(globalConfigFile);
     throw new BackportError(
-      `Please update your config file: "${globalConfigPath}".\nIt must contain a valid "accessToken".\n\nRead more: ${GLOBAL_CONFIG_DOCS_LINK}`
+      `Please update your config file: "${globalConfigPath}".\nIt must contain a valid "accessToken".\n\nRead more: ${GLOBAL_CONFIG_DOCS_LINK}`,
     );
   }
 
@@ -144,7 +143,7 @@ async function getRequiredOptions(combined: OptionsFromConfigAndCli) {
 
   if (!gitRemote.repoName || !gitRemote.repoOwner) {
     throw new BackportError(
-      `Please specify a repository: "--repo elastic/kibana".\n\nRead more: ${PROJECT_CONFIG_DOCS_LINK}`
+      `Please specify a repository: "--repo elastic/kibana".\n\nRead more: ${PROJECT_CONFIG_DOCS_LINK}`,
     );
   }
 
@@ -157,7 +156,7 @@ async function getRequiredOptions(combined: OptionsFromConfigAndCli) {
 
 function throwForRequiredOptions(
   options: (OptionsFromConfigAndCli | OptionsFromGithub) &
-    Awaited<ReturnType<typeof getRequiredOptions>>
+    Awaited<ReturnType<typeof getRequiredOptions>>,
 ) {
   // ensure `targetBranches` or `targetBranchChoices` are given
   if (
@@ -167,7 +166,7 @@ function throwForRequiredOptions(
     isEmpty(options.branchLabelMapping)
   ) {
     throw new BackportError(
-      `Please specify a target branch: "--branch 6.1".\n\nRead more: ${PROJECT_CONFIG_DOCS_LINK}`
+      `Please specify a target branch: "--branch 6.1".\n\nRead more: ${PROJECT_CONFIG_DOCS_LINK}`,
     );
   }
 

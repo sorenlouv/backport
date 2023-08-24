@@ -15,7 +15,7 @@ describe('throwOnInvalidAccessToken', () => {
           repoOwner: 'elastic',
           repoName: 'kibana',
           error,
-        })
+        }),
       ).toThrow('Please check your access token and make sure it is valid');
     });
 
@@ -35,7 +35,7 @@ describe('throwOnInvalidAccessToken', () => {
           repoOwner: 'elastic',
           repoName: 'kibana',
           error,
-        })
+        }),
       ).toThrowErrorMatchingSnapshot();
     });
 
@@ -58,7 +58,7 @@ describe('throwOnInvalidAccessToken', () => {
           repoOwner: 'elastic',
           repoName: 'kibana',
           error,
-        })
+        }),
       ).toThrow(`The repository "elastic/kibana" doesn't exist`);
     });
 
@@ -81,7 +81,7 @@ describe('throwOnInvalidAccessToken', () => {
           repoOwner: 'elastic',
           repoName: 'kibana',
           error,
-        })
+        }),
       ).toThrowErrorMatchingSnapshot();
     });
 
@@ -98,7 +98,7 @@ describe('throwOnInvalidAccessToken', () => {
           repoOwner: 'elastic',
           repoName: 'kibana',
           error,
-        })
+        }),
       ).toBe(undefined);
     });
   });

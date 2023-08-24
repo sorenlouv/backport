@@ -10,7 +10,7 @@ import { ora } from '../ora';
 
 export async function autoMergeNowOrLater(
   options: ValidConfigOptions,
-  pullNumber: number
+  pullNumber: number,
 ) {
   const text = `Auto-merge: Enabling via "${options.autoMergeMethod}"`;
   logger.info(text);
@@ -31,7 +31,7 @@ export async function autoMergeNowOrLater(
       }
 
       logger.info(
-        `Auto merge: Failed to enable auto merge for PR "#${pullNumber}" due to ${e.message}`
+        `Auto merge: Failed to enable auto merge for PR "#${pullNumber}" due to ${e.message}`,
       );
 
       const { isMissingStatusChecks } = parseGithubError(e);

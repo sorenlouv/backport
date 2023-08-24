@@ -61,7 +61,7 @@ describe('fetchCommitsByAuthor', () => {
 
     const getCommitMessages = (commits: Commit[]) => {
       return commits.map((c) =>
-        c.sourceCommit.message.replace(/(\r\n|\n|\r)/gm, '')
+        c.sourceCommit.message.replace(/(\r\n|\n|\r)/gm, ''),
       );
     };
 
@@ -149,7 +149,7 @@ describe('fetchCommitsByAuthor', () => {
 
     it('returns related OPEN PRs', async () => {
       const commitWithOpenPR = res.find(
-        (commit) => commit.sourcePullRequest?.number === 9
+        (commit) => commit.sourcePullRequest?.number === 9,
       );
       expect(commitWithOpenPR?.targetPullRequestStates).toEqual([
         {
@@ -166,7 +166,7 @@ describe('fetchCommitsByAuthor', () => {
 
     it('returns related MERGED PRs', async () => {
       const commitWithMergedPRs = res.find(
-        (commit) => commit.sourcePullRequest?.number === 5
+        (commit) => commit.sourcePullRequest?.number === 5,
       );
       expect(commitWithMergedPRs?.targetPullRequestStates).toEqual([
         {
@@ -213,7 +213,7 @@ describe('fetchCommitsByAuthor', () => {
 
     it('returns missing pull requests', async () => {
       const commitWithoutPRs = res.find(
-        (commit) => commit.sourcePullRequest?.number === 8
+        (commit) => commit.sourcePullRequest?.number === 8,
       );
       expect(commitWithoutPRs?.targetPullRequestStates).toEqual([
         {

@@ -50,7 +50,7 @@ export async function createStatusComment({
           issue_number: commit.sourcePullRequest.number,
           body: redactAccessToken(body),
         });
-      })
+      }),
     );
   } catch (e) {
     logger.error(`Could not create status comment `, e);
@@ -152,9 +152,8 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
       ) {
         const unmergedBackports =
           result.error.errorContext.commitsWithoutBackports.map((c) => {
-            return ` - [${getFirstLine(c.commit.sourceCommit.message)}](${
-              c.commit.sourcePullRequest?.url
-            })`;
+            return ` - [${getFirstLine(c.commit.sourceCommit.message)}](${c
+              .commit.sourcePullRequest?.url})`;
           });
 
         const unmergedBackportsSection =
@@ -190,7 +189,7 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
     : '';
 
   const didAnyBackportsSucceed = backportResponse.results.some(
-    (r) => r.status === 'success'
+    (r) => r.status === 'success',
   );
 
   let header = '';

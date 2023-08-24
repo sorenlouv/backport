@@ -65,14 +65,14 @@ export async function getOptionsFromGithub(options: {
   // it is not possible to have a branch named "backport"
   if (res.repository.illegalBackportBranch) {
     throw new BackportError(
-      'You must delete the branch "backport" to continue. See https://github.com/sqren/backport/issues/155 for details'
+      'You must delete the branch "backport" to continue. See https://github.com/sqren/backport/issues/155 for details',
     );
   }
 
   const remoteConfig = await getRemoteConfigFileOptions(
     res,
     options.cwd,
-    options.skipRemoteConfig
+    options.skipRemoteConfig,
   );
 
   return {
@@ -86,11 +86,11 @@ export async function getOptionsFromGithub(options: {
 async function getRemoteConfigFileOptions(
   res: GithubConfigOptionsResponse,
   cwd?: string,
-  skipRemoteConfig?: boolean
+  skipRemoteConfig?: boolean,
 ): Promise<ConfigFileOptions | undefined> {
   if (skipRemoteConfig) {
     logger.info(
-      'Remote config: Skipping. `--skip-remote-config` specified via config file or cli'
+      'Remote config: Skipping. `--skip-remote-config` specified via config file or cli',
     );
     return;
   }
@@ -128,8 +128,8 @@ async function getRemoteConfigFileOptions(
     ) {
       logger.info(
         `Remote config: Skipping. Local config is newer: ${new Date(
-          localCommitDate
-        ).toISOString()} > ${remoteConfig.committedDate}`
+          localCommitDate,
+        ).toISOString()} > ${remoteConfig.committedDate}`,
       );
       return;
     }

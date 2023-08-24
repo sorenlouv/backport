@@ -49,11 +49,11 @@ export async function cherrypickAndCreateTargetPullRequest({
   });
 
   const commitsFlattened = flatten(
-    await Promise.all(commits.map((c) => getMergeCommits(options, c)))
+    await Promise.all(commits.map((c) => getMergeCommits(options, c))),
   );
 
   await sequentially(commitsFlattened, (commit) =>
-    waitForCherrypick(options, commit, targetBranch)
+    waitForCherrypick(options, commit, targetBranch),
   );
 
   if (!options.dryRun) {
@@ -90,7 +90,7 @@ export async function cherrypickAndCreateTargetPullRequest({
     await addReviewersToPullRequest(
       options,
       targetPullRequest.number,
-      options.reviewers
+      options.reviewers,
     );
   }
 

@@ -10,7 +10,7 @@ interface PullRequestResponse {
 
 export async function fetchPullRequestId(
   options: ValidConfigOptions,
-  pullNumber: number
+  pullNumber: number,
 ) {
   const { accessToken, githubApiBaseUrlV4, repoName, repoOwner } = options;
 

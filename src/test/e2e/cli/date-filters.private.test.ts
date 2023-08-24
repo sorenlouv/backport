@@ -14,7 +14,7 @@ describe('date filters (dateSince, dateUntil)', () => {
         '--since=2020-08-15T10:00:00.000Z',
         '--until=2020-08-15T10:30:00.000Z',
       ],
-      { waitForString: 'Select commit' }
+      { waitForString: 'Select commit' },
     );
 
     expect(output).toMatchInlineSnapshot(`
@@ -36,7 +36,7 @@ describe('date filters (dateSince, dateUntil)', () => {
         '--since=2021-09-20',
         '--until=2021-10-01',
       ],
-      { waitForString: 'Select commit' }
+      { waitForString: 'Select commit' },
     );
 
     const { output: outputFromPrFilter } = await runBackportViaCli(
@@ -49,7 +49,7 @@ describe('date filters (dateSince, dateUntil)', () => {
         '--until=2021-10-01',
         '--source-branch=master',
       ],
-      { waitForString: 'Select commit' }
+      { waitForString: 'Select commit' },
     );
     expect(output).toMatchInlineSnapshot(`
       "? Select commit (Use arrow keys)

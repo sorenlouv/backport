@@ -43,7 +43,7 @@ export interface RemoteConfigHistory {
 export function parseRemoteConfig(remoteConfig: RemoteConfig) {
   try {
     return withConfigMigrations(
-      JSON.parse(remoteConfig.file.object.text)
+      JSON.parse(remoteConfig.file.object.text),
     ) as ConfigFileOptions;
   } catch (e) {
     logger.info('Parsing remote config failed', e);
@@ -52,7 +52,7 @@ export function parseRemoteConfig(remoteConfig: RemoteConfig) {
 }
 
 export function swallowMissingConfigFileException<T>(
-  error: GithubV4Exception<T> | unknown
+  error: GithubV4Exception<T> | unknown,
 ) {
   if (!(error instanceof GithubV4Exception)) {
     throw error;

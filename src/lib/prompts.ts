@@ -102,7 +102,7 @@ function getSimplePullStatus(c: Commit) {
 
 export function getChoicesForCommitPrompt(
   commits: Commit[],
-  showDetails: boolean
+  showDetails: boolean,
 ) {
   return commits.map((c, i) => {
     const leadingWhitespace = repeat(' ', 2 - (i + 1).toString().length);
@@ -124,7 +124,7 @@ export function getChoicesForCommitPrompt(
 
     const short = c.sourcePullRequest
       ? `#${c.sourcePullRequest.number} (${getShortSha(
-          c.sourcePullRequest.mergeCommit.sha
+          c.sourcePullRequest.mergeCommit.sha,
         )})`
       : getShortSha(c.sourceCommit.sha);
 

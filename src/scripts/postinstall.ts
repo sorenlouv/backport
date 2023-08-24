@@ -5,9 +5,8 @@ import { createGlobalConfigAndFolderIfNotExist } from '../options/config/globalC
 export async function postinstall() {
   try {
     const globalConfigPath = getGlobalConfigPath(undefined);
-    const didCreate = await createGlobalConfigAndFolderIfNotExist(
-      globalConfigPath
-    );
+    const didCreate =
+      await createGlobalConfigAndFolderIfNotExist(globalConfigPath);
     if (didCreate) {
       consoleLog(`Global config successfully created in ${globalConfigPath}`);
     }

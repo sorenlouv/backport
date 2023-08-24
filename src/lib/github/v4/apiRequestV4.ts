@@ -39,7 +39,7 @@ export async function apiRequestV4<DataResponse>({
     `GraphQL: ${gqlQueryName}`,
     'external',
     'graphql',
-    'query'
+    'query',
   );
 
   //@ts-expect-error
@@ -54,7 +54,7 @@ export async function apiRequestV4<DataResponse>({
           'Content-Type': 'application/json',
           Authorization: `bearer ${accessToken}`,
         },
-      }
+      },
     );
 
     if (response.data.errors) {
@@ -94,7 +94,7 @@ export async function apiRequestV4<DataResponse>({
 }
 
 function isAxiosGithubError(
-  e: unknown
+  e: unknown,
 ): e is AxiosError<GithubV4Response<unknown>, any> {
   return (
     axios.isAxiosError(e) &&
@@ -113,7 +113,7 @@ export class GithubV4Exception<DataResponse> extends Error {
 
   constructor(
     githubResponse: AxiosGithubResponse<DataResponse>,
-    errorMessage?: string
+    errorMessage?: string,
   ) {
     const githubMessage = githubResponse.data.errors
       ?.map((error) => error.message)
@@ -153,7 +153,7 @@ function addDebugLogs({
   logger.info(
     `POST ${githubApiBaseUrlV4} (name:${gqlQueryName}, status: ${
       githubResponse.status
-    }${didThrow ? ', EXCEPTION THROWN' : ''})`
+    }${didThrow ? ', EXCEPTION THROWN' : ''})`,
   );
 
   logger.verbose(`Query: ${print(query)}`);

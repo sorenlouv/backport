@@ -81,9 +81,9 @@ describe('apiRequestV4', () => {
           variables: {
             foo: 'bar',
           },
-        })
+        }),
       ).rejects.toThrow(
-        new BackportError(`some error,some other error (Github API v4)`)
+        new BackportError(`some error,some other error (Github API v4)`),
       );
     });
   });
@@ -112,7 +112,7 @@ describe('apiRequestV4', () => {
           variables: {
             foo: 'bar',
           },
-        })
+        }),
       ).rejects.toThrow('Request failed with status code 500');
     });
   });

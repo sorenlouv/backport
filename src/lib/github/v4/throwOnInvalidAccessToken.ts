@@ -28,7 +28,7 @@ export function throwOnInvalidAccessToken({
     case 200: {
       const repoNotFound = error.githubResponse.data.errors?.some(
         (error) =>
-          error.type === 'NOT_FOUND' && error.path?.join('.') === 'repository'
+          error.type === 'NOT_FOUND' && error.path?.join('.') === 'repository',
       );
 
       const grantedScopes =
@@ -39,24 +39,24 @@ export function throwOnInvalidAccessToken({
 
       if (repoNotFound) {
         const hasRequiredScopes = isEmpty(
-          difference(requiredScopes.split(','), grantedScopes.split(','))
+          difference(requiredScopes.split(','), grantedScopes.split(',')),
         );
 
         // user does not have permission to the repo
         if (!hasRequiredScopes) {
           throw new BackportError(
-            `You do not have access to the repository "${repoOwner}/${repoName}". Please make sure your access token has the required scopes.\n\nRequired scopes: ${requiredScopes}\nAccess token scopes: ${grantedScopes}`
+            `You do not have access to the repository "${repoOwner}/${repoName}". Please make sure your access token has the required scopes.\n\nRequired scopes: ${requiredScopes}\nAccess token scopes: ${grantedScopes}`,
           );
         }
 
         // repo does not exist
         throw new BackportError(
-          `The repository "${repoOwner}/${repoName}" doesn't exist`
+          `The repository "${repoOwner}/${repoName}" doesn't exist`,
         );
       }
 
       const repoAccessForbidden = error.githubResponse.data.errors?.some(
-        (error) => error.type === 'FORBIDDEN'
+        (error) => error.type === 'FORBIDDEN',
       );
 
       const ssoAuthUrl = getSSOAuthUrl(ssoHeader);
@@ -64,7 +64,7 @@ export function throwOnInvalidAccessToken({
       // user does not have permissions
       if (repoAccessForbidden && ssoAuthUrl) {
         throw new BackportError(
-          `Please follow the link to authorize your personal access token with SSO:\n\n${ssoAuthUrl}`
+          `Please follow the link to authorize your personal access token with SSO:\n\n${ssoAuthUrl}`,
         );
       }
       break;
@@ -73,8 +73,8 @@ export function throwOnInvalidAccessToken({
     case 401:
       throw new BackportError(
         `Please check your access token and make sure it is valid.\nConfig: ${getGlobalConfigPath(
-          globalConfigFile
-        )}`
+          globalConfigFile,
+        )}`,
       );
 
     default:

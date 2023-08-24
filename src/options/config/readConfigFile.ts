@@ -5,7 +5,7 @@ import { excludeUndefined } from '../../utils/excludeUndefined';
 import { ConfigFileOptions } from '../ConfigOptions';
 
 export async function readConfigFile(
-  filepath: string
+  filepath: string,
 ): Promise<ConfigFileOptions> {
   const fileContents = await readFile(filepath, 'utf8');
   const configWithoutComments = stripJsonComments(fileContents);
@@ -14,7 +14,7 @@ export async function readConfigFile(
     return withConfigMigrations(JSON.parse(configWithoutComments));
   } catch (e) {
     throw new BackportError(
-      `"${filepath}" contains invalid JSON:\n\n${fileContents}`
+      `"${filepath}" contains invalid JSON:\n\n${fileContents}`,
     );
   }
 }
@@ -44,7 +44,7 @@ export function withConfigMigrations({
 
 function parseUpstream(
   upstream: string | undefined,
-  config: ConfigFileOptions
+  config: ConfigFileOptions,
 ) {
   if (upstream) {
     const [repoOwner, repoName] = upstream.split('/');
