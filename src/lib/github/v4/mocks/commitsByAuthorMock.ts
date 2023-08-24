@@ -41,6 +41,7 @@ export const commitsByAuthorMock: CommitByAuthorResponse = {
                   edges: [
                     {
                       node: {
+                        title: 'Derive Queries Panel',
                         url: 'https://github.com/elastic/kibana/pull/85',
                         baseRefName: 'master',
                         labels: {
@@ -79,6 +80,7 @@ export const commitsByAuthorMock: CommitByAuthorResponse = {
                   edges: [
                     {
                       node: {
+                        title: 'Creating own query',
                         url: 'https://github.com/elastic/kibana/pull/80',
                         labels: {
                           nodes: [{ name: 'v6.3.0' }],

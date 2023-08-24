@@ -95,6 +95,7 @@ describe('allFetchers', () => {
           'v8.1.0',
         ],
         number: 121633,
+        title: '[APM] Add note about synthtrace to APM docs',
         url: 'https://github.com/elastic/kibana/pull/121633',
         mergeCommit: {
           message: '[APM] Add note about synthtrace to APM docs (#121633)',

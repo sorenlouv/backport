@@ -1,5 +1,6 @@
 import { Octokit } from '@octokit/rest';
 import apm from 'elastic-apm-node';
+import Handlebars from 'handlebars';
 import { ora } from '../../../lib/ora';
 import { ValidConfigOptions } from '../../../options/options';
 import { PACKAGE_VERSION } from '../../../utils/packageVersion';
@@ -117,21 +118,30 @@ export function getPullRequestBody({
     .join('\n');
 
   const sourceBranch = getSourceBranchFromCommits(commits);
-  const defaultPrDescription = `# Backport
 
-This will backport the following commits from \`${sourceBranch}\` to \`${targetBranch}\`:
-${commitMessages}
+  const defaultPrDescription =
+    '# Backport\n\n' +
+    'This will backport the following commits from `{{sourceBranch}}` to `{{targetBranch}}`:\n' +
+    '{{commitMessages}}\n\n' +
+    '<!--- Backport version: {{PACKAGE_VERSION}} -->\n\n' +
+    '### Questions ?\n' +
+    'Please refer to the [Backport tool documentation](https://github.com/sqren/backport)';
 
-<!--- Backport version: ${PACKAGE_VERSION} -->
+  const customPrDescription = options.prDescription
+    ?.replaceAll('{{defaultPrDescription}}', defaultPrDescription)
+    ?.replaceAll('{{commitsStringified}}', JSON.stringify(commits));
 
-### Questions ?
-Please refer to the [Backport tool documentation](https://github.com/sqren/backport)`;
+  const template = Handlebars.compile(
+    customPrDescription ?? defaultPrDescription
+  );
 
-  return (options.prDescription ?? defaultPrDescription)
-    .replaceAll('{targetBranch}', targetBranch)
-    .replaceAll('{commitMessages}', commitMessages)
-    .replaceAll('{defaultPrDescription}', defaultPrDescription)
-    .replaceAll('{commits}', JSON.stringify(commits));
+  return template({
+    sourceBranch,
+    targetBranch,
+    commitMessages,
+    PACKAGE_VERSION,
+    commits,
+  });
 }
 
 export function getTitle({
@@ -143,14 +153,21 @@ export function getTitle({
   commits: Commit[];
   targetBranch: string;
 }) {
+  const sourceBranch = getSourceBranchFromCommits(commits);
   const commitMessages = commits
     .map((c) => getFirstLine(c.sourceCommit.message))
     .join(' | ');
 
-  const defaultPrTitle = '[{targetBranch}] {commitMessages}';
+  const defaultPrTitle = '[{{targetBranch}}] {{commitMessages}}';
 
-  return (options.prTitle ?? defaultPrTitle)
-    .replaceAll('{targetBranch}', targetBranch)
-    .replaceAll('{commitMessages}', commitMessages)
-    .slice(0, 240);
+  const template = Handlebars.compile(options.prTitle ?? defaultPrTitle);
+
+  return template({
+    sourceBranch,
+    targetBranch,
+    commitMessages,
+    commits,
+  }).slice(0, 240);
 }
+
+Handlebars.registerHelper('shortSha', getShortSha);

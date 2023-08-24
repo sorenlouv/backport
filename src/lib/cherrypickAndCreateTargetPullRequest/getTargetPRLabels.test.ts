@@ -16,6 +16,7 @@ const commits: Commit[] = [
     sourcePullRequest: {
       labels: ['backport-to-7.11'],
       number: 88188,
+      title: 'Fix major bug',
       url: 'https://github.com/elastic/kibana/pull/88188',
       mergeCommit: {
         message: 'Fix major bug (#88188)',
@@ -56,21 +57,21 @@ const commits: Commit[] = [
 
 describe('getTargetPRLabels', () => {
   describe('replaces template values', () => {
-    it('replaces {targetBranch}', () => {
+    it('replaces {{targetBranch}}', () => {
       const labels = getTargetPRLabels({
         interactive: false,
         commits,
-        targetPRLabels: ['backported-to-{targetBranch}'],
+        targetPRLabels: ['backported-to-{{targetBranch}}'],
         targetBranch: '7.x',
       });
       expect(labels).toEqual(['backported-to-7.x']);
     });
 
-    it('replaces {sourceBranch}', () => {
+    it('replaces {{sourceBranch}}', () => {
       const labels = getTargetPRLabels({
         interactive: false,
         commits,
-        targetPRLabels: ['backported-from-{sourceBranch}'],
+        targetPRLabels: ['backported-from-{{sourceBranch}}'],
         targetBranch: '7.x',
       });
       expect(labels).toEqual(['backported-from-master']);

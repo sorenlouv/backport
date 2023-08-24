@@ -330,29 +330,37 @@ Only list commits touching files under the specified path
 Title for the target pull request
 Template values:
 
-- `{targetBranch}`: Branch the backport PR will be targeting
-- `{commitMessages}`: Message of backported commit. For multiple commits the messages will be separated by pipes (`|`).
+- `{{targetBranch}}`: Branch the backport PR will be targeting
+- `{{commitMessages}}`: Message of backported commit. For multiple commits the messages will be separated by pipes (`|`).
 
-Default: `"[{targetBranch}] {commitMessages}"`
+Default: `"[{{targetBranch}}] {{commitMessages}}"`
 
 ```json
 {
-  "prTitle": "{commitMessages} backport for {targetBranch}"
+  "prTitle": "{{commitMessages}} backport for {{targetBranch}}"
 }
 ```
 
 #### `prDescription`
 
-Title for the target pull request
-Template values:
+Description for the target pull request
+The description uses the [handlebars templating engine](https://handlebarsjs.com/guide/#simple-expressions):
 
-- `{targetBranch}`: Branch the backport PR will be targeting
-- `{commitMessages}`: Message of backported commit. For multiple commits the messages will be separated by pipes (`|`).
-- `{defaultPrDescription}`: The default PR description. Using this makes it easy to append and prepend text to the existing description
+- `{{sourceBranch}}`: Branch the commit is coming from (usually `main`)
+- `{{targetBranch}}`: Branch the backport PR will be targeting
+- `{{commitMessages}}`: Message of backported commit. For multiple commits the messages will be separated by new lines (`|`).
+- `{{defaultPrDescription}}`: The default PR description. Using this makes it easy to append and prepend text to the existing description
+- `{{commits}}`: A list of commits ([interface](https://github.com/sqren/backport/blob/9e42503a7d0e06e60c575ed2c3b7dc3e5df0dd5c/src/lib/sourceCommit/parseSourceCommit.ts#L15-L36))
+
+```
+  {{#each commits}}
+    {{shortSha this.sourceCommit.sha}} {{this.sourceCommit.message}}
+  {{/each}}
+```
 
 ```json
 {
-  "prDescription": "Backports the following commits to {targetBranch}:\n{commitMessages}"
+  "prDescription": "Backports the following commits to {{targetBranch}}:\n{{commitMessages}}"
 }
 ```
 

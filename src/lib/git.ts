@@ -358,6 +358,33 @@ export async function cherrypick({
   }
 }
 
+async function gitCommit({
+  options,
+  commitAuthor,
+  message,
+}: {
+  options: ValidConfigOptions;
+  commitAuthor: CommitAuthor;
+  message?: string;
+}) {
+  const cwd = getRepoPath(options);
+
+  return spawnPromise(
+    'git',
+    [
+      `-c`,
+      `user.name="${commitAuthor.name}"`,
+      `-c`,
+      `user.email="${commitAuthor.email}"`,
+      'commit',
+      ...(message ? [`--message=${message}`] : ['--no-edit']),
+      ...(options.noVerify ? ['--no-verify'] : []), // bypass pre-commit and commit-msg hooks
+      ...(options.signoff ? ['--signoff'] : []),
+    ],
+    cwd
+  );
+}
+
 export async function commitChanges({
   options,
   commit,
@@ -367,23 +394,8 @@ export async function commitChanges({
   commit: Commit;
   commitAuthor: CommitAuthor;
 }) {
-  const noVerifyFlag = options.noVerify ? ['--no-verify'] : [];
-  const cwd = getRepoPath(options);
-
   try {
-    await spawnPromise(
-      'git',
-      [
-        `-c`,
-        `user.name="${commitAuthor.name}"`,
-        `-c`,
-        `user.email="${commitAuthor.email}"`,
-        'commit',
-        '--no-edit', // Use the selected commit message without launching an editor.
-        ...noVerifyFlag, // bypass pre-commit and commit-msg hooks
-      ],
-      cwd
-    );
+    await gitCommit({ options, commitAuthor });
   } catch (e) {
     const isSpawnError = e instanceof SpawnError;
 
@@ -401,20 +413,11 @@ export async function commitChanges({
       if (
         e.context.stderr.includes('Aborting commit due to empty commit message')
       ) {
-        await spawnPromise(
-          'git',
-          [
-            `-c`,
-            `user.name="${commitAuthor.name}"`,
-            `-c`,
-            `user.email="${commitAuthor.email}"`,
-            'commit',
-            `--message=${commit.sourceCommit.message}`,
-            ...noVerifyFlag, // bypass pre-commit and commit-msg hooks
-          ],
-          cwd
-        );
-
+        await gitCommit({
+          options,
+          commitAuthor,
+          message: commit.sourceCommit.message,
+        });
         return;
       }
     }

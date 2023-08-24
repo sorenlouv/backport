@@ -21,6 +21,7 @@ export interface Commit {
     branchLabelMapping: ValidConfigOptions['branchLabelMapping'];
   };
   sourcePullRequest?: {
+    title: string;
     labels: string[];
     number: number;
     url: string;
@@ -35,6 +36,7 @@ export interface Commit {
 }
 
 export interface SourcePullRequestNode {
+  title: string;
   baseRefName: string;
   url: string;
   number: number;
@@ -166,6 +168,7 @@ export function parseSourceCommit({
     sourcePullRequest: sourcePullRequest
       ? {
           labels: sourcePullRequest.labels.nodes.map((label) => label.name),
+          title: sourcePullRequest.title,
           number: sourcePullRequest.number,
           url: sourcePullRequest.url,
           mergeCommit: {
@@ -202,6 +205,7 @@ export const SourceCommitWithTargetPullRequestFragment = gql`
     associatedPullRequests(first: 1) {
       edges {
         node {
+          title
           url
           number
           labels(first: 50) {

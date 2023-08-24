@@ -40,8 +40,8 @@ export function getTargetPRLabels({
     .filter(filterNil)
     .map((label) => {
       return label
-        .replaceAll('{targetBranch}', targetBranch)
-        .replaceAll('{sourceBranch}', sourceBranch);
+        .replaceAll('{{targetBranch}}', targetBranch)
+        .replaceAll('{{sourceBranch}}', sourceBranch);
     });
 
   return uniq(labels);

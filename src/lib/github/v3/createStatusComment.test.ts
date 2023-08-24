@@ -301,6 +301,7 @@ describe('getCommentBody', () => {
                       labels: [],
                       number: 5,
                       url: 'url-to-pr-5',
+                      title: 'New Zealand commit message',
                       mergeCommit: {
                         sha: '',
                         message: 'New Zealand commit message',
@@ -327,6 +328,7 @@ describe('getCommentBody', () => {
                     sourcePullRequest: {
                       labels: [],
                       number: 44,
+                      title: 'Australia commit',
                       url: 'url-to-pr-44',
                       mergeCommit: {
                         sha: '',

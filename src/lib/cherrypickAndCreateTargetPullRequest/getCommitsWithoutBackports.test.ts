@@ -36,6 +36,7 @@ describe('getCommitsWithoutBackports', () => {
               labels: [],
               url: 'https://www.github.com/foo/bar/pull/123',
               number: 123,
+              title: 'First commit',
               mergeCommit: {
                 message: 'First commit (#1)',
                 sha: 'xyz',
@@ -166,6 +167,7 @@ describe('getCommitsWithoutBackports', () => {
             sourcePullRequest: {
               labels: [],
               number: 123,
+              title: 'First commit',
               url: 'https://www.github.com/foo/bar/pull/123',
               mergeCommit: {
                 message: 'First commit (#1)',
@@ -201,6 +203,7 @@ describe('getCommitsWithoutBackports', () => {
           sourcePullRequest: {
             labels: [],
             number: 123,
+            title: 'Second commit',
             url: 'https://www.github.com/foo/bar/pull/123',
             mergeCommit: {
               message: 'Second commit (#2)',
@@ -261,6 +264,7 @@ describe('getCommitsWithoutBackports', () => {
             sourcePullRequest: {
               labels: [],
               number: 123,
+              title: 'First commit',
               url: 'https://www.github.com/foo/bar/pull/123',
               mergeCommit: {
                 message: 'First commit (#1)',
@@ -299,6 +303,7 @@ describe('getCommitsWithoutBackports', () => {
             labels: [],
             url: 'https://www.github.com/foo/bar/pull/123',
             number: 123,
+            title: 'Second commit',
             mergeCommit: {
               message: 'Second commit (#2)',
               sha: 'abc',
@@ -371,6 +376,7 @@ describe('getCommitsWithoutBackports', () => {
             labels: [],
             url: 'https://www.github.com/foo/bar/pull/123',
             number: 123,
+            title: 'Second commit',
             mergeCommit: {
               message: 'Second commit (#2)',
               sha: 'abc',

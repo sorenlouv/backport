@@ -167,6 +167,7 @@ describe('entrypoint.module', () => {
                   sha: '343402a748be2375325b2730fa979bcea5b96ba1',
                 },
                 number: 8,
+                title: 'Change Barca to Braithwaite',
                 url: 'https://github.com/backport-org/repo-with-conflicts/pull/8',
               },
             },
@@ -203,6 +204,8 @@ describe('entrypoint.module', () => {
           sourcePullRequest: {
             labels: ['Team:APM', 'release_note:skip', 'v7.11.0'],
             number: 88188,
+            title:
+              '[APM] Fix incorrect table column header (95th instead of avg)',
             url: 'https://github.com/elastic/kibana/pull/88188',
             mergeCommit: {
               message:
@@ -269,6 +272,8 @@ describe('entrypoint.module', () => {
           sourcePullRequest: {
             labels: ['Team:APM', 'release_note:skip', 'v7.11.0'],
             number: 88188,
+            title:
+              '[APM] Fix incorrect table column header (95th instead of avg)',
             url: 'https://github.com/elastic/kibana/pull/88188',
             mergeCommit: {
               message:
@@ -393,6 +398,7 @@ describe('entrypoint.module', () => {
                 "sha": "744d6809ded7e1055bfda280c351cee3e8c0e3bf",
               },
               "number": 85976,
+              "title": "[APM] Fix broken link to ML when time range is not set",
               "url": "https://github.com/elastic/kibana/pull/85976",
             },
             "suggestedTargetBranches": [],
@@ -455,6 +461,7 @@ describe('entrypoint.module', () => {
                 "sha": "20638a64e2a895d4e4a6597d4a37b5db7003f1e9",
               },
               "number": 85116,
+              "title": "[APM] Correlations polish",
               "url": "https://github.com/elastic/kibana/pull/85116",
             },
             "suggestedTargetBranches": [],
@@ -503,6 +510,7 @@ describe('entrypoint.module', () => {
                 "sha": "cee681afb3c5f87371112fab9a7e5dddbafea0a8",
               },
               "number": 85117,
+              "title": "[APM] Improve pointer event hook",
               "url": "https://github.com/elastic/kibana/pull/85117",
             },
             "suggestedTargetBranches": [],
