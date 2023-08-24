@@ -397,7 +397,7 @@ describe('getPullRequestBody', () => {
     const commits = [
       {
         sourceCommit: {
-          sha: 'foo',
+          sha: '9e42503a7d0e06e60c575ed2c3b7dc3e5df0dd5c',
           message: 'My commit message (#55)',
         },
         sourcePullRequest: {
@@ -407,7 +407,7 @@ describe('getPullRequestBody', () => {
       },
       {
         sourceCommit: {
-          sha: 'bar',
+          sha: '5ce6c3fb9525426d66a85eba057e1214f5f52995',
           message: 'Another commit message',
         },
       },
@@ -423,8 +423,8 @@ describe('getPullRequestBody', () => {
       .toMatchInlineSnapshot(`
       "Backport #123: Original PR title
 
-      foo My commit message (#55)
-      bar Another commit message
+      9e42503a My commit message (#55)
+      5ce6c3fb Another commit message
       "
     `);
   });
