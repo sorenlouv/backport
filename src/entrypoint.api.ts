@@ -96,8 +96,8 @@ export async function getCommits(options: {
             ...optionsFromGithub,
             ...options,
             pullNumber,
-          })
-        )
+          }),
+        ),
       );
 
       return nestedCommits.flat();
@@ -108,8 +108,8 @@ export async function getCommits(options: {
 
       return Promise.all(
         shas.map((sha) =>
-          fetchCommitBySha({ ...optionsFromGithub, ...options, sha })
-        )
+          fetchCommitBySha({ ...optionsFromGithub, ...options, sha }),
+        ),
       );
     }
 
@@ -135,14 +135,14 @@ export async function getCommits(options: {
     }
 
     throw new Error(
-      'Must supply one of: `pullNumber`, `sha`, `prFilter` or `author`'
+      'Must supply one of: `pullNumber`, `sha`, `prFilter` or `author`',
     );
   });
 }
 
 async function apmStartTransaction<T>(
   transactionName: string,
-  cb: () => Promise<T>
+  cb: () => Promise<T>,
 ): Promise<T> {
   apm.startTransaction(transactionName);
   try {

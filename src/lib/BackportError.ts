@@ -25,7 +25,7 @@ function getMessage(errorContext: ErrorContext): string {
   switch (errorContext.code) {
     case 'merge-conflict-exception':
       return `Commit could not be cherrypicked due to conflicts in: ${errorContext.conflictingFiles.join(
-        ','
+        ',',
       )}`;
     case 'no-branches-exception':
       return 'There are no branches to backport to. Aborting.';

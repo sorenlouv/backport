@@ -5,7 +5,7 @@ import { fetchCommitBySha } from '../github/v4/fetchCommits/fetchCommitBySha';
 
 export async function getMergeCommits(
   options: ValidConfigOptions,
-  commit: Commit
+  commit: Commit,
 ): Promise<Commit[]> {
   const { sha } = commit.sourceCommit;
   if (!options.mainline) {
@@ -13,7 +13,7 @@ export async function getMergeCommits(
     if (isMergeCommit) {
       const shas = await getShasInMergeCommit(options, sha);
       return Promise.all(
-        shas.reverse().map((sha) => fetchCommitBySha({ ...options, sha }))
+        shas.reverse().map((sha) => fetchCommitBySha({ ...options, sha })),
       );
     }
   }

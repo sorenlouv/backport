@@ -35,7 +35,7 @@ describe('interactive error handling', () => {
       '--accessToken=some-token',
     ]);
     expect(output).toContain(
-      'Please check your access token and make sure it is valid'
+      'Please check your access token and make sure it is valid',
     );
   });
 
@@ -47,7 +47,7 @@ describe('interactive error handling', () => {
       `--accessToken=${accessToken}`,
     ]);
     expect(output).toMatchInlineSnapshot(
-      `"The repository "foo/bar" doesn't exist"`
+      `"The repository "foo/bar" doesn't exist"`,
     );
   });
 
@@ -59,7 +59,7 @@ describe('interactive error handling', () => {
         '--pr=9',
         `--accessToken=${accessToken}`,
       ],
-      { showOra: true }
+      { showOra: true },
     );
     expect(output).toContain('✖ The branch "foo" does not exist');
   });
@@ -79,7 +79,7 @@ describe('interactive error handling', () => {
       {
         waitForString: 'Press ENTER when the conflicts',
         timeoutSeconds: 5,
-      }
+      },
     );
 
     expect(
@@ -87,7 +87,7 @@ describe('interactive error handling', () => {
         haystack: output,
         stringBefore: backportDir,
         stringAfter: '<BACKPORT_DIR>',
-      })
+      }),
     ).toMatchInlineSnapshot(`
       "Backporting to 7.x:
 

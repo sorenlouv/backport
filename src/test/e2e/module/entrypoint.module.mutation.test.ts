@@ -22,13 +22,13 @@ const AUTHOR = 'sqren';
 // commit 1
 const COMMIT_SHA_1 = '5bf29b7d847ea3dbde9280448f0f62ad0f22d3ad';
 const BRANCH_WITH_ONE_COMMIT = `backport/7.x/commit-${getShortSha(
-  COMMIT_SHA_1
+  COMMIT_SHA_1,
 )}`;
 
 // commit 2
 const COMMIT_SHA_2 = '59d6ff1ca90a4ce210c0a4f0e159214875c19d60';
 const BRANCH_WITH_TWO_COMMITS = `backport/7.x/commit-${getShortSha(
-  COMMIT_SHA_1
+  COMMIT_SHA_1,
 )}_commit-${getShortSha(COMMIT_SHA_2)}`;
 
 describe('entrypoint.module', () => {
@@ -81,7 +81,7 @@ describe('entrypoint.module', () => {
             didUpdate: false,
             pullRequestNumber: expect.any(Number),
             pullRequestUrl: expect.stringContaining(
-              'https://github.com/backport-org/integration-test/pull/'
+              'https://github.com/backport-org/integration-test/pull/',
             ),
             status: 'success',
             targetBranch: '7.x',
@@ -115,7 +115,7 @@ describe('entrypoint.module', () => {
 
     it('pull request: head branch is in fork repo', async () => {
       expect(pullRequestResponse.data.head.label).toEqual(
-        `sqren:${BRANCH_WITH_ONE_COMMIT}`
+        `sqren:${BRANCH_WITH_ONE_COMMIT}`,
       );
     });
 
@@ -208,7 +208,7 @@ describe('entrypoint.module', () => {
             didUpdate: false,
             pullRequestNumber: expect.any(Number),
             pullRequestUrl: expect.stringContaining(
-              'https://github.com/backport-org/integration-test/pull/'
+              'https://github.com/backport-org/integration-test/pull/',
             ),
             status: 'success',
             targetBranch: '7.x',
@@ -224,7 +224,7 @@ describe('entrypoint.module', () => {
 
     it('pull request: title', async () => {
       expect(pullRequestResponse.data.title).toEqual(
-        '[7.x] Add ❤️ emoji | Add family emoji (#2)'
+        '[7.x] Add ❤️ emoji | Add family emoji (#2)',
       );
     });
 
@@ -245,7 +245,7 @@ describe('entrypoint.module', () => {
 
     it('pull request: head branch contains both commits in name', async () => {
       expect(pullRequestResponse.data.head.label).toEqual(
-        `sqren:${BRANCH_WITH_TWO_COMMITS}`
+        `sqren:${BRANCH_WITH_TWO_COMMITS}`,
       );
     });
 
@@ -302,7 +302,7 @@ describe('entrypoint.module', () => {
 
     it('pull request: head branch is in origin (non-fork) repo', async () => {
       expect(pullRequestResponse.data.head.label).toEqual(
-        `backport-org:${BRANCH_WITH_ONE_COMMIT}`
+        `backport-org:${BRANCH_WITH_ONE_COMMIT}`,
       );
     });
 
@@ -332,7 +332,7 @@ describe('entrypoint.module', () => {
             didUpdate: false,
             pullRequestNumber: expect.any(Number),
             pullRequestUrl: expect.stringContaining(
-              'https://github.com/backport-org/integration-test/pull/'
+              'https://github.com/backport-org/integration-test/pull/',
             ),
             status: 'success',
             targetBranch: '7.x',
@@ -448,7 +448,7 @@ async function resetState(accessToken: string) {
           repoName: REPO_NAME,
           branchName: b.name,
         });
-      })
+      }),
   );
 
   const forkBranches = await getBranchesOnGithub({
@@ -468,7 +468,7 @@ async function resetState(accessToken: string) {
           repoName: REPO_NAME,
           branchName: b.name,
         });
-      })
+      }),
   );
 
   await resetSandbox(sandboxPath);

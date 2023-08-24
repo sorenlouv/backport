@@ -6,7 +6,7 @@ const execPromisified = promisify(childProcess.exec);
 
 export async function exec(
   cmd: string,
-  options: childProcess.ExecOptions & { cwd: string }
+  options: childProcess.ExecOptions & { cwd: string },
 ) {
   const res = await execPromisified(cmd, {
     maxBuffer: 100 * 1024 * 1024,
@@ -29,7 +29,7 @@ type SpawnPromiseResponse = {
 export async function spawnPromise(
   cmd: string,
   cmdArgs: ReadonlyArray<string>,
-  cwd: string
+  cwd: string,
 ): Promise<SpawnPromiseResponse> {
   const spawnSpan = startSpawnSpan(cmd, cmdArgs);
   const fullCmd = getFullCmd(cmd, cmdArgs);
@@ -63,7 +63,7 @@ export async function spawnPromise(
 
       if (code === 0 || code === null) {
         logger.verbose(
-          `Spawn success: code=${code} stderr=${stderr} stdout=${stdout}`
+          `Spawn success: code=${code} stderr=${stderr} stdout=${stdout}`,
         );
         resolve({ cmdArgs, code, stderr, stdout });
       } else {
@@ -87,7 +87,7 @@ function startSpawnSpan(cmd: string, cmdArgs: ReadonlyArray<string>) {
   const span = apm.startSpan(`Spawn: "${cmd}"`);
   const fullCmd = getFullCmd(cmd, cmdArgs);
   const firstCmdArg = cmdArgs.filter(
-    (cmdArg) => !cmdArg.startsWith('--') && !cmdArg.startsWith('-')
+    (cmdArg) => !cmdArg.startsWith('--') && !cmdArg.startsWith('-'),
   )[0];
   span?.setType('spawn', cmd, firstCmdArg);
   span?.setLabel(`cmd`, fullCmd);

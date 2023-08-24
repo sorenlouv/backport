@@ -17,5 +17,5 @@ backportRun({ processArgs, exitCodeOnFailure: true, apmTransaction }).then(
     }
 
     apm.endTransaction(backportResponse.status);
-  }
+  },
 );

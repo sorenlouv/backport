@@ -24,7 +24,7 @@ describe('gracefully handle corrupted repo', () => {
       {
         showOra: true,
         timeoutSeconds: 10,
-      }
+      },
     );
 
     // remove all git objects and references
@@ -43,7 +43,7 @@ describe('gracefully handle corrupted repo', () => {
       {
         showOra: true,
         timeoutSeconds: 10,
-      }
+      },
     );
 
     // second run: backport should re-create remotes and branches correctly

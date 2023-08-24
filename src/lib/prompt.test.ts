@@ -58,7 +58,7 @@ describe('prompt', () => {
       ];
 
       const choices = getChoicesForCommitPrompt(commits as any, false).map(
-        ({ name, short }) => ({ name: stripAnsi(name), short })
+        ({ name, short }) => ({ name: stripAnsi(name), short }),
       );
 
       expect(choices).toEqual([
@@ -170,7 +170,7 @@ describe('prompt', () => {
       ];
 
       const choices = getChoicesForCommitPrompt(commits, false).map(
-        ({ name, short }) => ({ name: stripAnsi(name), short })
+        ({ name, short }) => ({ name: stripAnsi(name), short }),
       );
 
       expect(choices).toEqual([

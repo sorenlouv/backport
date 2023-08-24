@@ -14,14 +14,14 @@ describe('fetchRemoteProjectConfig', () => {
       await childProcess.exec(`git init`, execOpts);
       await childProcess.exec(
         `git remote add sqren git@github.com:sqren/kibana.git`,
-        execOpts
+        execOpts,
       );
 
       expect(
         await getRepoOwnerAndNameFromGitRemotes({
           accessToken,
           cwd: sandboxPath,
-        })
+        }),
       ).toEqual({
         repoName: 'kibana',
         repoOwner: 'elastic',
@@ -36,19 +36,19 @@ describe('fetchRemoteProjectConfig', () => {
       await childProcess.exec(`git init`, execOpts);
       await childProcess.exec(
         `git remote add foo git@github.com:foo/kibana.git`,
-        execOpts
+        execOpts,
       );
 
       await childProcess.exec(
         `git remote add bar git@github.com:bar/kibana.git`,
-        execOpts
+        execOpts,
       );
 
       expect(
         await getRepoOwnerAndNameFromGitRemotes({
           accessToken,
           cwd: sandboxPath,
-        })
+        }),
       ).toEqual({});
     });
   });
@@ -63,7 +63,7 @@ describe('fetchRemoteProjectConfig', () => {
         await getRepoOwnerAndNameFromGitRemotes({
           accessToken,
           cwd: sandboxPath,
-        })
+        }),
       ).toEqual({});
     });
   });

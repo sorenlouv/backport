@@ -113,7 +113,7 @@ export type SourceCommitWithTargetPullRequest = {
 function getSuggestedTargetBranches(
   sourceCommit: SourceCommitWithTargetPullRequest,
   targetPullRequestStates: TargetPullRequest[],
-  branchLabelMapping?: ValidConfigOptions['branchLabelMapping']
+  branchLabelMapping?: ValidConfigOptions['branchLabelMapping'],
 ) {
   const missingPrs = getPullRequestStates({
     sourceCommit,
@@ -121,11 +121,11 @@ function getSuggestedTargetBranches(
   }).filter((pr) => pr.state === 'NOT_CREATED' || pr.state === 'CLOSED');
 
   const mergedPrs = targetPullRequestStates.filter(
-    (pr) => pr.state === 'MERGED'
+    (pr) => pr.state === 'MERGED',
   );
 
   return differenceBy(missingPrs, mergedPrs, (pr) => pr.label).map(
-    (pr) => pr.branch
+    (pr) => pr.branch,
   );
 }
 
@@ -154,7 +154,7 @@ export function parseSourceCommit({
   const suggestedTargetBranches = getSuggestedTargetBranches(
     sourceCommit,
     targetPullRequestStates,
-    currentBranchLabelMapping
+    currentBranchLabelMapping,
   );
 
   return {
@@ -273,7 +273,7 @@ export const SourceCommitWithTargetPullRequestFragment = gql`
 `;
 
 function getSourceCommitBranchLabelMapping(
-  sourceCommit: SourceCommitWithTargetPullRequest
+  sourceCommit: SourceCommitWithTargetPullRequest,
 ): ValidConfigOptions['branchLabelMapping'] {
   const sourcePullRequest = getSourcePullRequest(sourceCommit);
 

@@ -396,7 +396,7 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
     .help()
 
     .epilogue(
-      'For bugs, feature requests or questions: https://github.com/sqren/backport/issues\nOr contact me directly: https://twitter.com/sorenlouv'
+      'For bugs, feature requests or questions: https://github.com/sqren/backport/issues\nOr contact me directly: https://twitter.com/sorenlouv',
     )
     // don't kill process upon error
     // and don't log error to console
@@ -488,7 +488,7 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
 
 export function getRuntimeArguments(
   processArgs: string[],
-  optionsFromModule?: ConfigFileOptions
+  optionsFromModule?: ConfigFileOptions,
 ) {
   const { nonInteractive, json, logFilePath, ls } = yargsParser(processArgs);
   const base = { ...defaultConfigOptions, ...optionsFromModule };

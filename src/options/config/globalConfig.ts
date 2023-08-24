@@ -17,7 +17,7 @@ export async function getGlobalConfig({
 }
 
 export async function createGlobalConfigAndFolderIfNotExist(
-  globalConfigPath: string
+  globalConfigPath: string,
 ) {
   // create .backport folder
   await makeDir(getBackportDirPath());
@@ -25,7 +25,7 @@ export async function createGlobalConfigAndFolderIfNotExist(
   const configTemplate = getConfigTemplate();
   const didCreate = await createGlobalConfigIfNotExist(
     globalConfigPath,
-    configTemplate
+    configTemplate,
   );
   await ensureCorrectPermissions(globalConfigPath);
   return didCreate;
@@ -37,7 +37,7 @@ function ensureCorrectPermissions(globalConfigPath: string) {
 
 export async function createGlobalConfigIfNotExist(
   globalConfigPath: string,
-  configTemplate: string
+  configTemplate: string,
 ) {
   try {
     await writeFile(globalConfigPath, configTemplate, {
@@ -57,7 +57,7 @@ export async function createGlobalConfigIfNotExist(
       const FOLDER_NOT_EXISTS = 'ENOENT';
       if (e.code === FOLDER_NOT_EXISTS) {
         throw new BackportError(
-          `The .backport folder (${globalConfigPath}) does not exist. `
+          `The .backport folder (${globalConfigPath}) does not exist. `,
         );
       }
 

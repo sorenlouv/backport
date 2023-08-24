@@ -13,7 +13,7 @@ describe('validateTargetBranch', () => {
     } as ValidConfigOptions;
 
     await expect(() =>
-      validateTargetBranch({ ...options, branchName: 'foo' })
+      validateTargetBranch({ ...options, branchName: 'foo' }),
     ).rejects.toThrow('The branch "foo" does not exist');
   });
 
@@ -25,7 +25,7 @@ describe('validateTargetBranch', () => {
     } as ValidConfigOptions;
 
     expect(
-      await validateTargetBranch({ ...options, branchName: 'production' })
+      await validateTargetBranch({ ...options, branchName: 'production' }),
     ).toEqual(undefined);
   });
 });

@@ -14,7 +14,7 @@ describe('fetchCommitsForRebaseAndMergeStrategy', () => {
         pullNumber: 21,
         sourceBranch: 'main',
       },
-      commitsTotalCount
+      commitsTotalCount,
     );
 
     expect(commits?.length).toBe(3);
@@ -30,7 +30,7 @@ describe('fetchCommitsForRebaseAndMergeStrategy', () => {
         pullNumber: 9,
         sourceBranch: 'main',
       },
-      commitsTotalCount
+      commitsTotalCount,
     );
 
     expect(commits).toBe(undefined);

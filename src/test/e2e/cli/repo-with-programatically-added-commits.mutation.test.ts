@@ -23,7 +23,7 @@ describe('Programatically add new commits', () => {
         `--dir=${sandboxPath}`,
         '--dry-run',
       ],
-      { showOra: true }
+      { showOra: true },
     );
 
     const formattedDate = new Date().toLocaleString('da-DK');
@@ -34,7 +34,7 @@ describe('Programatically add new commits', () => {
         {
           path: `files/${formattedDate}.md`,
           sha: await createBlob(
-            `# Hello\nSome content added @ ${formattedDate}`
+            `# Hello\nSome content added @ ${formattedDate}`,
           ),
         },
       ],
@@ -50,7 +50,7 @@ describe('Programatically add new commits', () => {
         `--dir=${sandboxPath}`,
         '--dry-run',
       ],
-      { showOra: true }
+      { showOra: true },
     );
 
     expect(output).toContain(commitMessage);

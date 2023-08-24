@@ -34,7 +34,7 @@ export async function createPullRequest({
   didUpdate: boolean;
 }> {
   logger.info(
-    `Creating PR with title: "${prPayload.title}". ${prPayload.head} -> ${prPayload.base}`
+    `Creating PR with title: "${prPayload.title}". ${prPayload.head} -> ${prPayload.base}`,
   );
 
   const { accessToken, githubApiBaseUrlV3 } = options;
@@ -89,7 +89,7 @@ export async function createPullRequest({
     spinner.fail();
     throw new BackportError(
       //@ts-expect-error
-      `Could not create pull request: ${getGithubV3ErrorMessage(e)}`
+      `Could not create pull request: ${getGithubV3ErrorMessage(e)}`,
     );
   }
 }
@@ -110,7 +110,7 @@ export function getPullRequestBody({
             c.sourcePullRequest.url
           })`
         : `${getFirstLine(c.sourceCommit.message)} (${getShortSha(
-            c.sourceCommit.sha
+            c.sourceCommit.sha,
           )})`;
 
       return ` - ${message}`;
@@ -132,7 +132,7 @@ export function getPullRequestBody({
     ?.replaceAll('{{commitsStringified}}', JSON.stringify(commits));
 
   const template = Handlebars.compile(
-    customPrDescription ?? defaultPrDescription
+    customPrDescription ?? defaultPrDescription,
   );
 
   return template({

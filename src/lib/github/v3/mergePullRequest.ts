@@ -4,7 +4,7 @@ import { logger } from '../../logger';
 
 export function mergePullRequest(
   options: ValidConfigOptions,
-  pullNumber: number
+  pullNumber: number,
 ) {
   const { accessToken, githubApiBaseUrlV3 } = options;
   const octokit = new Octokit({
@@ -19,6 +19,6 @@ export function mergePullRequest(
       owner: options.repoOwner,
       repo: options.repoName,
       pull_number: pullNumber,
-    }
+    },
   );
 }

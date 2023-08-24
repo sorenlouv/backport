@@ -8,7 +8,7 @@ interface Response {
 
 export async function fetchPullRequestAutoMergeMethod(
   options: ValidConfigOptions,
-  pullNumber: number
+  pullNumber: number,
 ) {
   const { accessToken, githubApiBaseUrlV4, repoName, repoOwner } = options;
 

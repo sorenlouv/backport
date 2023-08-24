@@ -135,7 +135,7 @@ describe('fetchCommitByPullNumber', () => {
       };
 
       await expect(fetchCommitsByPullNumber(options)).rejects.toThrow(
-        `The PR #11 is not merged`
+        `The PR #11 is not merged`,
       );
     });
   });
@@ -151,7 +151,7 @@ describe('fetchCommitByPullNumber', () => {
       };
 
       await expect(fetchCommitsByPullNumber(options)).rejects.toThrow(
-        `Could not resolve to a PullRequest with the number of 9999999999999. (Github API v4)`
+        `Could not resolve to a PullRequest with the number of 9999999999999. (Github API v4)`,
       );
     });
   });

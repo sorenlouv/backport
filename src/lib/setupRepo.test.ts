@@ -42,12 +42,12 @@ describe('setupRepo', () => {
           repoOwner: 'elastic',
           cwd: '/path/to/source/repo',
           interactive: false,
-        } as ValidConfigOptions)
+        } as ValidConfigOptions),
       ).rejects.toThrow('Simulated git clone failure');
 
       expect(del).toHaveBeenCalledWith(
         '/myHomeDir/.backport/repositories/elastic/kibana',
-        { force: true }
+        { force: true },
       );
     });
   });
@@ -120,7 +120,7 @@ describe('setupRepo', () => {
       `);
 
       expect(spinnerSuccessSpy).toHaveBeenCalledWith(
-        '100% Cloning repository from github.com (one-time operation)'
+        '100% Cloning repository from github.com (one-time operation)',
       );
     });
   });
@@ -144,7 +144,7 @@ describe('setupRepo', () => {
     beforeEach(async () => {
       jest.clearAllMocks();
       mockGitProjectRootPath(
-        '/myHomeDir/.backport/repositories/elastic/kibana'
+        '/myHomeDir/.backport/repositories/elastic/kibana',
       );
 
       jest.spyOn(gitModule, 'cloneRepo');
@@ -173,7 +173,7 @@ describe('setupRepo', () => {
         spawnSpy.mock.calls.map(([cmd, cmdArgs, cwd]) => ({
           cmd: `${cmd} ${cmdArgs.join(' ')}`,
           cwd,
-        }))
+        })),
       ).toEqual([
         {
           cmd: 'git rev-parse --show-toplevel',
@@ -241,7 +241,7 @@ describe('setupRepo', () => {
 
     it('should clone it from github.com', async () => {
       expect(spinnerSuccessSpy).toHaveBeenCalledWith(
-        '100% Cloning repository from github.com (one-time operation)'
+        '100% Cloning repository from github.com (one-time operation)',
       );
 
       expect(childProcess.spawnStream).toHaveBeenCalledWith('git', [
@@ -274,7 +274,7 @@ describe('setupRepo', () => {
 
     it('should clone it from local folder', async () => {
       expect(spinnerSuccessSpy).toHaveBeenCalledWith(
-        '100% Cloning repository from /path/to/source/repo (one-time operation)'
+        '100% Cloning repository from /path/to/source/repo (one-time operation)',
       );
 
       expect(childProcess.spawnStream).toHaveBeenCalledWith('git', [
@@ -295,9 +295,9 @@ describe('setupRepo', () => {
           cwd: '/myHomeDir/.backport/repositories/owner/repo/foo',
           dir: '/myHomeDir/.backport/repositories/owner/repo',
           interactive: false,
-        } as ValidConfigOptions)
+        } as ValidConfigOptions),
       ).rejects.toThrow(
-        'Refusing to clone repo into "/myHomeDir/.backport/repositories/owner/repo" when current working directory is "/myHomeDir/.backport/repositories/owner/repo/foo". Please change backport directory via `--dir` option or run backport from another location'
+        'Refusing to clone repo into "/myHomeDir/.backport/repositories/owner/repo" when current working directory is "/myHomeDir/.backport/repositories/owner/repo/foo". Please change backport directory via `--dir` option or run backport from another location',
       );
     });
   });

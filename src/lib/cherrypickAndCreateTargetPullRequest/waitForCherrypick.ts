@@ -21,10 +21,10 @@ import { getCommitsWithoutBackports } from './getCommitsWithoutBackports';
 export async function waitForCherrypick(
   options: ValidConfigOptions,
   commit: Commit,
-  targetBranch: string
+  targetBranch: string,
 ) {
   const spinnerText = `Cherry-picking: ${chalk.greenBright(
-    getFirstLine(commit.sourceCommit.message)
+    getFirstLine(commit.sourceCommit.message),
   )}`;
   const cherrypickSpinner = ora(options.interactive, spinnerText).start();
   const commitAuthor = getCommitAuthor({ options, commit });
@@ -64,7 +64,7 @@ async function cherrypickAndHandleConflicts({
   cherrypickSpinner: Ora;
 }) {
   const mergedTargetPullRequest = commit.targetPullRequestStates.find(
-    (pr) => pr.state === 'MERGED' && pr.branch === targetBranch
+    (pr) => pr.state === 'MERGED' && pr.branch === targetBranch,
   );
 
   let conflictingFiles: ConflictingFiles;
@@ -96,7 +96,7 @@ async function cherrypickAndHandleConflicts({
   if (options.autoFixConflicts) {
     const autoResolveSpinner = ora(
       options.interactive,
-      'Attempting to resolve conflicts automatically'
+      'Attempting to resolve conflicts automatically',
     ).start();
 
     const didAutoFix = await options.autoFixConflicts({
@@ -134,19 +134,19 @@ async function cherrypickAndHandleConflicts({
   }
 
   consoleLog(
-    chalk.bold('\nThe commit could not be backported due to conflicts\n')
+    chalk.bold('\nThe commit could not be backported due to conflicts\n'),
   );
   consoleLog(`Please fix the conflicts in ${repoPath}`);
 
   if (commitsWithoutBackports.length > 0) {
     consoleLog(
       chalk.italic(
-        `Hint: Before fixing the conflicts manually you should consider backporting the following pull requests to "${targetBranch}":`
-      )
+        `Hint: Before fixing the conflicts manually you should consider backporting the following pull requests to "${targetBranch}":`,
+      ),
     );
 
     consoleLog(
-      `${commitsWithoutBackports.map((c) => c.formatted).join('\n')}\n\n`
+      `${commitsWithoutBackports.map((c) => c.formatted).join('\n')}\n\n`,
     );
   }
 
@@ -179,7 +179,7 @@ async function listConflictingAndUnstagedFiles({
   unstagedFiles: string[];
 }): Promise<void> {
   const hasUnstagedFiles = !isEmpty(
-    difference(unstagedFiles, conflictingFiles)
+    difference(unstagedFiles, conflictingFiles),
   );
   const hasConflictingFiles = !isEmpty(conflictingFiles);
 
@@ -197,18 +197,18 @@ async function listConflictingAndUnstagedFiles({
   // show conflict section if there are conflicting files
   const conflictSection = hasConflictingFiles
     ? `Conflicting files:\n${chalk.reset(
-        conflictingFiles.map((file) => ` - ${file}`).join('\n')
+        conflictingFiles.map((file) => ` - ${file}`).join('\n'),
       )}`
     : '';
 
   const unstagedSection = hasUnstagedFiles
     ? `Unstaged files:\n${chalk.reset(
-        unstagedFiles.map((file) => ` - ${file}`).join('\n')
+        unstagedFiles.map((file) => ` - ${file}`).join('\n'),
       )}`
     : '';
 
   const didConfirm = await confirmPrompt(
-    `${header}\n\n${conflictSection}\n${unstagedSection}\n\nPress ENTER when the conflicts are resolved and files are staged`
+    `${header}\n\n${conflictSection}\n${unstagedSection}\n\nPress ENTER when the conflicts are resolved and files are staged`,
   );
 
   if (!didConfirm) {

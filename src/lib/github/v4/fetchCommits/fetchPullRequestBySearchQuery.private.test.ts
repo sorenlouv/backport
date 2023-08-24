@@ -149,7 +149,7 @@ describe('fetchPullRequestsBySearchQuery', () => {
       ];
 
       expect(await fetchPullRequestsBySearchQuery(options)).toEqual(
-        expectedCommits
+        expectedCommits,
       );
     });
   });

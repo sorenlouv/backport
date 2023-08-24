@@ -68,7 +68,7 @@ describe('git.private', () => {
     it('should contain the first commit', async () => {
       const isFirstCommitInBranch = await getIsCommitInBranch(
         { dir: cwd } as ValidConfigOptions,
-        firstSha
+        firstSha,
       );
 
       expect(isFirstCommitInBranch).toEqual(true);
@@ -77,7 +77,7 @@ describe('git.private', () => {
     it('should not contain the second commit', async () => {
       const isSecondCommitInBranch = await getIsCommitInBranch(
         { dir: cwd } as ValidConfigOptions,
-        secondSha
+        secondSha,
       );
 
       expect(isSecondCommitInBranch).toEqual(false);
@@ -86,7 +86,7 @@ describe('git.private', () => {
     it('should not contain a random commit', async () => {
       const isSecondCommitInBranch = await getIsCommitInBranch(
         { dir: cwd } as ValidConfigOptions,
-        'abcdefg'
+        'abcdefg',
       );
 
       expect(isSecondCommitInBranch).toEqual(false);
@@ -124,7 +124,7 @@ describe('git.private', () => {
       await resetSandbox(cwd);
       await gitClone(
         'https://github.com/backport-org/repo-with-conflicts.git',
-        cwd
+        cwd,
       );
     });
 
@@ -167,7 +167,7 @@ describe('git.private', () => {
       await resetSandbox(cwd);
       await gitClone(
         'https://github.com/backport-org/repo-with-conflicts.git',
-        cwd
+        cwd,
       );
       await createBackportBranch({
         options: {
@@ -180,7 +180,7 @@ describe('git.private', () => {
       });
       await childProcess.exec(
         `git remote add sqren https://x-access-token:${accessToken}@github.com/sqren/repo-with-conflicts.git`,
-        { cwd }
+        { cwd },
       );
     });
 
@@ -258,9 +258,9 @@ describe('git.private', () => {
           options: { dir: cwd } as ValidConfigOptions,
           sha: firstSha,
           commitAuthor: { name: 'Soren L', email: 'soren@mail.dk' },
-        })
+        }),
       ).rejects.toThrow(
-        `Cherrypick failed because the selected commit (${shortSha}) is empty. Did you already backport this commit?`
+        `Cherrypick failed because the selected commit (${shortSha}) is empty. Did you already backport this commit?`,
       );
     });
 
@@ -301,7 +301,7 @@ describe('git.private', () => {
       const message = await getMostRecentCommitMessage(cwd);
 
       expect(message).toEqual(
-        `Update bar.md\n\n(cherry picked from commit ${secondSha})`
+        `Update bar.md\n\n(cherry picked from commit ${secondSha})`,
       );
     });
 
@@ -377,7 +377,7 @@ describe('git.private', () => {
 
       await gitClone(
         'https://github.com/backport-org/repo-with-conflicts.git',
-        cwd
+        cwd,
       );
 
       await childProcess.exec('git checkout 7.x', { cwd });
@@ -387,7 +387,7 @@ describe('git.private', () => {
         await childProcess.spawnPromise(
           'git',
           ['cherry-pick', '3a0934d1f646e4a50571cb4b137ad2b08d2e7b18'],
-          cwd
+          cwd,
         );
       } catch (e) {
         // swallow
@@ -427,7 +427,7 @@ describe('git.private', () => {
       await childProcess.spawnPromise(
         'git',
         ['remote', 'add', 'origin', 'git@github.com:elastic/kibana.git'],
-        sourceRepo
+        sourceRepo,
       );
 
       await createAndCommitFile({
@@ -438,12 +438,12 @@ describe('git.private', () => {
 
       // file should not exist before clone
       await expect(() =>
-        access(`${backportRepo}/my-file.txt`)
+        access(`${backportRepo}/my-file.txt`),
       ).rejects.toThrow();
 
       await cloneRepo(
         { sourcePath: sourceRepo, targetPath: backportRepo },
-        () => null
+        () => null,
       );
 
       //file should exist after clone
@@ -457,7 +457,7 @@ describe('git.private', () => {
           sourcePath: 'https://github.com/backport-org/backport-e2e.git',
           targetPath: backportRepo,
         },
-        onProgressSpy
+        onProgressSpy,
       );
 
       expect(onProgressSpy).toHaveBeenCalledWith(expect.any(Number));
@@ -470,8 +470,8 @@ describe('git.private', () => {
             sourcePath: `${sandboxPath}/source-repo-incorrect`,
             targetPath: backportRepo,
           },
-          () => null
-        )
+          () => null,
+        ),
       ).rejects.toThrow('Git clone failed with exit code: 128');
     });
   });
@@ -555,12 +555,12 @@ describe('git.private', () => {
       await childProcess.spawnPromise(
         'git',
         ['remote', 'add', 'sqren', 'git@github.com:sqren/kibana.git'],
-        cwd
+        cwd,
       );
       await childProcess.spawnPromise(
         'git',
         ['remote', 'add', 'elastic', 'git@github.com:elastic/kibana.git'],
-        cwd
+        cwd,
       );
     });
 
@@ -620,7 +620,7 @@ describe('git.private', () => {
       await resetSandbox(cwd);
       await gitClone(
         'https://github.com/backport-org/repo-with-project-config.git',
-        cwd
+        cwd,
       );
     });
 
@@ -652,7 +652,7 @@ describe('git.private', () => {
 
       await gitClone(
         'https://github.com/backport-org/different-merge-strategies.git',
-        cwd
+        cwd,
       );
     });
 
@@ -660,7 +660,7 @@ describe('git.private', () => {
       it('returns true for first merge commit', async () => {
         const res = await getIsMergeCommit(
           { dir: cwd } as ValidConfigOptions,
-          MERGE_COMMIT_HASH_1
+          MERGE_COMMIT_HASH_1,
         );
 
         expect(res).toBe(true);
@@ -669,7 +669,7 @@ describe('git.private', () => {
       it('returns true for second merge commit', async () => {
         const res = await getIsMergeCommit(
           { dir: cwd } as ValidConfigOptions,
-          MERGE_COMMIT_HASH_2
+          MERGE_COMMIT_HASH_2,
         );
 
         expect(res).toBe(true);
@@ -678,7 +678,7 @@ describe('git.private', () => {
       it('returns false for rebased commits', async () => {
         const res = await getIsMergeCommit(
           { dir: cwd } as ValidConfigOptions,
-          REBASE_COMMIT_HASH
+          REBASE_COMMIT_HASH,
         );
 
         expect(res).toBe(false);
@@ -687,7 +687,7 @@ describe('git.private', () => {
       it('returns false for squashed commits', async () => {
         const res = await getIsMergeCommit(
           { dir: cwd } as ValidConfigOptions,
-          SQUASH_COMMIT_HASH
+          SQUASH_COMMIT_HASH,
         );
 
         expect(res).toBe(false);
@@ -698,7 +698,7 @@ describe('git.private', () => {
       it('returns a list of commit hashes - excluding the merge hash itself', async () => {
         const shas = await getShasInMergeCommit(
           { dir: cwd } as ValidConfigOptions,
-          MERGE_COMMIT_HASH_1
+          MERGE_COMMIT_HASH_1,
         );
 
         expect(shas).not.toContain(MERGE_COMMIT_HASH_1);
@@ -718,7 +718,7 @@ describe('git.private', () => {
       it('returns empty for squash commits', async () => {
         const shas = await getShasInMergeCommit(
           { dir: cwd } as ValidConfigOptions,
-          SQUASH_COMMIT_HASH
+          SQUASH_COMMIT_HASH,
         );
 
         expect(shas).toEqual([]);
@@ -740,7 +740,7 @@ async function createAndCommitFile({
   await childProcess.spawnPromise(
     'git',
     ['commit', `--message=Update ${filename}`],
-    cwd
+    cwd,
   );
 
   return getCurrentSha(cwd);
@@ -773,7 +773,7 @@ async function getCurrentSha(cwd: string) {
   const { stdout } = await childProcess.spawnPromise(
     'git',
     ['rev-parse', 'HEAD'],
-    cwd
+    cwd,
   );
   return stdout.trim();
 }
@@ -781,7 +781,7 @@ async function getCurrentSha(cwd: string) {
 async function getCurrentBranchName(cwd: string) {
   const { stdout } = await childProcess.exec(
     'git rev-parse --abbrev-ref HEAD',
-    { cwd }
+    { cwd },
   );
   return stdout.trim();
 }
@@ -791,7 +791,7 @@ async function getMostRecentCommitMessage(cwd: string) {
     const { stdout } = await childProcess.spawnPromise(
       'git',
       ['--no-pager', 'log', '-1', '--pretty=%B'],
-      cwd
+      cwd,
     );
     return stdout.trim();
   } catch (e) {
@@ -806,7 +806,7 @@ async function gitClone(repoUrl: string, cwd: string) {
     return await childProcess.spawnPromise(
       'git',
       ['clone', repoUrl, './'],
-      cwd
+      cwd,
     );
   } catch (e) {
     // eslint-disable-next-line no-console

@@ -4,8 +4,8 @@ describe('getFirstCommitMessageLine', () => {
   it('should only return the first line of the message', () => {
     expect(
       getFirstLine(
-        'My commit message (#1234)\n\n Additional commit message body'
-      )
+        'My commit message (#1234)\n\n Additional commit message body',
+      ),
     ).toEqual('My commit message (#1234)');
   });
 

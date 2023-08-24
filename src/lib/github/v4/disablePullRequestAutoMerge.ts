@@ -9,7 +9,7 @@ interface Response {
 
 export async function disablePullRequestAutoMerge(
   options: ValidConfigOptions,
-  pullNumber: number
+  pullNumber: number,
 ) {
   const { accessToken, githubApiBaseUrlV4 } = options;
   const pullRequestId = await fetchPullRequestId(options, pullNumber);

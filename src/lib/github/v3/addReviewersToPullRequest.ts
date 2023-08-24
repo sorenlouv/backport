@@ -14,7 +14,7 @@ export async function addReviewersToPullRequest(
     dryRun,
   }: ValidConfigOptions,
   pullNumber: number,
-  reviewers: string[]
+  reviewers: string[],
 ) {
   const text = `Adding reviewers: ${reviewers}`;
   logger.info(text);

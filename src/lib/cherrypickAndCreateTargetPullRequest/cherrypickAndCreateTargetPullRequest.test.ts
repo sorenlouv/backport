@@ -181,7 +181,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         Backporting to 6.x:"
       `);
       expect(consoleLogSpy.mock.calls[1][0]).toMatchInlineSnapshot(
-        `"View pull request: myHtmlUrl"`
+        `"View pull request: myHtmlUrl"`,
       );
     });
 

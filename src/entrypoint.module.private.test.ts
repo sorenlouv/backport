@@ -42,19 +42,19 @@ describe('entrypoint.module', () => {
       it('should have correct error code', () => {
         //@ts-expect-error
         expect(response.results[0].error.errorContext.code).toBe(
-          'merge-conflict-exception'
+          'merge-conflict-exception',
         );
 
         //@ts-expect-error
         expect(response.results[0].error.message).toBe(
-          'Commit could not be cherrypicked due to conflicts in: la-liga.md'
+          'Commit could not be cherrypicked due to conflicts in: la-liga.md',
         );
       });
 
       it('contains a list of conflicting files', () => {
         //@ts-expect-error
         expect(response.results[0].error.errorContext.conflictingFiles).toEqual(
-          ['la-liga.md']
+          ['la-liga.md'],
         );
       });
     });
@@ -105,7 +105,7 @@ describe('entrypoint.module', () => {
         //@ts-expect-error
         expect(response.error.errorContext.code).toBe('no-branches-exception');
         expect(response.error.message).toBe(
-          'There are no branches to backport to. Aborting.'
+          'There are no branches to backport to. Aborting.',
         );
       });
     });
@@ -541,9 +541,9 @@ describe('entrypoint.module', () => {
           repoName: 'kibana',
           repoOwner: 'elastic',
           maxNumber: 3,
-        })
+        }),
       ).rejects.toThrow(
-        'Must supply one of: `pullNumber`, `sha`, `prFilter` or `author`'
+        'Must supply one of: `pullNumber`, `sha`, `prFilter` or `author`',
       );
     });
   });

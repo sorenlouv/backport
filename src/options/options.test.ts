@@ -49,7 +49,7 @@ describe('getOptions', () => {
         getOptions({
           optionsFromCliArgs: {},
           optionsFromModule: {},
-        })
+        }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(`
         "Please update your config file: "/myHomeDir/.backport/config.json".
         It must contain a valid "accessToken".
@@ -66,7 +66,7 @@ describe('getOptions', () => {
       });
 
       await expect(() =>
-        getOptions({ optionsFromCliArgs: {}, optionsFromModule: {} })
+        getOptions({ optionsFromCliArgs: {}, optionsFromModule: {} }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(`
         "Please specify a target branch: "--branch 6.1".
 
@@ -80,9 +80,9 @@ describe('getOptions', () => {
           getOptions({
             optionsFromCliArgs: {},
             optionsFromModule: { repoForkOwner: '', author: 'sqren' },
-          })
+          }),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `""repoForkOwner" cannot be empty!"`
+          `""repoForkOwner" cannot be empty!"`,
         );
       });
 
@@ -91,9 +91,9 @@ describe('getOptions', () => {
           getOptions({
             optionsFromCliArgs: {},
             optionsFromModule: { author: '' },
-          })
+          }),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `""author" cannot be empty!"`
+          `""author" cannot be empty!"`,
         );
       });
 
@@ -102,7 +102,7 @@ describe('getOptions', () => {
           getOptions({
             optionsFromCliArgs: {},
             optionsFromModule: { accessToken: '' },
-          })
+          }),
         ).rejects.toThrowErrorMatchingInlineSnapshot(`
           "Please update your config file: "/myHomeDir/.backport/config.json".
           It must contain a valid "accessToken".
@@ -121,7 +121,7 @@ describe('getOptions', () => {
         jest.spyOn(git, 'getRepoInfoFromGitRemotes').mockResolvedValue([]);
 
         await expect(() =>
-          getOptions({ optionsFromCliArgs: {}, optionsFromModule: {} })
+          getOptions({ optionsFromCliArgs: {}, optionsFromModule: {} }),
         ).rejects.toThrowErrorMatchingInlineSnapshot(`
           "Please specify a repository: "--repo elastic/kibana".
 
@@ -167,9 +167,9 @@ describe('getOptions', () => {
   it('should ensure that "backport" branch does not exist', async () => {
     mockGithubConfigOptions({ hasBackportBranch: true });
     await expect(
-      getOptions({ optionsFromCliArgs: {}, optionsFromModule: {} })
+      getOptions({ optionsFromCliArgs: {}, optionsFromModule: {} }),
     ).rejects.toThrow(
-      'You must delete the branch "backport" to continue. See https://github.com/sqren/backport/issues/155 for details'
+      'You must delete the branch "backport" to continue. See https://github.com/sqren/backport/issues/155 for details',
     );
   });
 

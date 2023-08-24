@@ -88,7 +88,7 @@ describe('getCommitsWithoutBackports', () => {
         ],
       });
       expect(stripAnsi(commitsWithoutBackports[0].formatted)).toEqual(
-        ' - First commit (#1) (backport missing)\n   https://www.github.com/foo/bar/pull/123'
+        ' - First commit (#1) (backport missing)\n   https://www.github.com/foo/bar/pull/123',
       );
     });
 
@@ -105,7 +105,7 @@ describe('getCommitsWithoutBackports', () => {
         ],
       });
       expect(stripAnsi(commitsWithoutBackports[0].formatted)).toEqual(
-        ' - First commit (#1) (backport missing)\n   https://www.github.com/foo/bar/pull/123'
+        ' - First commit (#1) (backport missing)\n   https://www.github.com/foo/bar/pull/123',
       );
     });
 
@@ -121,7 +121,7 @@ describe('getCommitsWithoutBackports', () => {
         ],
       });
       expect(stripAnsi(commitsWithoutBackports[0].formatted)).toEqual(
-        ' - First commit (#1) (backport pending)\n   https://www.github.com/foo/bar/pull/456'
+        ' - First commit (#1) (backport pending)\n   https://www.github.com/foo/bar/pull/456',
       );
     });
 
@@ -232,7 +232,7 @@ describe('getCommitsWithoutBackports', () => {
         currentCommitDate: '100',
       });
       expect(stripAnsi(commitsWithoutBackports[0].formatted)).toEqual(
-        ' - First commit (#1) (backport pending)\n   https://www.github.com/foo/bar/pull/456'
+        ' - First commit (#1) (backport pending)\n   https://www.github.com/foo/bar/pull/456',
       );
     });
   });
@@ -323,7 +323,7 @@ describe('getCommitsWithoutBackports', () => {
         currentCommitTargetBranch: '7.x',
       });
       expect(stripAnsi(commitsWithoutBackports[0].formatted)).toEqual(
-        ' - First commit (#1) (backport pending)\n   https://www.github.com/foo/bar/pull/456'
+        ' - First commit (#1) (backport pending)\n   https://www.github.com/foo/bar/pull/456',
       );
     });
 

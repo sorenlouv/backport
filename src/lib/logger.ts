@@ -23,7 +23,7 @@ export function initLogger({
       // Format the metadata object
       format.metadata({
         fillExcept: ['message', 'level', 'timestamp', 'label'],
-      })
+      }),
     ),
     transports: logFilePath
       ? [fileTransport({ logLevel: 'debug', logFilePath })]

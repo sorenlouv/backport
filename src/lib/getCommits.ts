@@ -24,7 +24,7 @@ export async function getCommits(options: ValidConfigOptions) {
       const shas = Array.isArray(options.sha) ? options.sha : [options.sha];
       spinner.text = `Loading commit "${shas.map(getShortSha)}"`;
       const commits = await Promise.all(
-        shas.map((sha) => fetchCommitBySha({ ...options, sha }))
+        shas.map((sha) => fetchCommitBySha({ ...options, sha })),
       );
 
       spinner.stopAndPersist(
@@ -32,8 +32,8 @@ export async function getCommits(options: ValidConfigOptions) {
           'Select commit',
           commits
             .map((commit) => getFirstLine(commit.sourceCommit.message))
-            .join(', ')
-        )
+            .join(', '),
+        ),
       );
 
       return commits;
@@ -50,8 +50,8 @@ export async function getCommits(options: ValidConfigOptions) {
 
       const nestedCommits = await Promise.all(
         pullNumbers.map((pullNumber) =>
-          fetchCommitsByPullNumber({ ...options, pullNumber })
-        )
+          fetchCommitsByPullNumber({ ...options, pullNumber }),
+        ),
       );
       const commits = nestedCommits.flat();
 
@@ -61,8 +61,8 @@ export async function getCommits(options: ValidConfigOptions) {
           'Select pull request',
           commits
             .map((commit) => getFirstLine(commit.sourceCommit.message))
-            .join(', ')
-        )
+            .join(', '),
+        ),
       );
 
       return commits;
@@ -70,7 +70,7 @@ export async function getCommits(options: ValidConfigOptions) {
 
     if (!options.interactive && !options.ls) {
       throw new BackportError(
-        'When "--interactive" is disabled either `--sha` or `--pr` must be specified'
+        'When "--interactive" is disabled either `--sha` or `--pr` must be specified',
       );
     }
 

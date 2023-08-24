@@ -35,7 +35,7 @@ describe('backport-org/repo-with-changing-branchLabelMapping', () => {
             branch,
             label,
             state,
-          }))
+          })),
         ).toEqual([
           { branch: '8.3', label: 'v8.3.0', state: 'NOT_CREATED' },
           { branch: '8.2', label: 'v8.2.0', state: 'NOT_CREATED' },
@@ -51,7 +51,7 @@ describe('backport-org/repo-with-changing-branchLabelMapping', () => {
             '--no-fork',
             `--accessToken=${accessToken}`,
           ],
-          { waitForString: 'Select commit' }
+          { waitForString: 'Select commit' },
         );
 
         expect(output).toContain('Create denmark.txt 8.3, 8.2');
@@ -65,7 +65,7 @@ describe('backport-org/repo-with-changing-branchLabelMapping', () => {
             '--pr=6',
             `--accessToken=${accessToken}`,
           ],
-          { waitForString: 'Select branch' }
+          { waitForString: 'Select branch' },
         );
 
         expect(output).toMatchInlineSnapshot(`
@@ -105,7 +105,7 @@ describe('backport-org/repo-with-changing-branchLabelMapping', () => {
             branch,
             label,
             state,
-          }))
+          })),
         ).toContainEqual({
           branch: 'production',
           label: 'backport-to-production',

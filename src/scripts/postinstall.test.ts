@@ -20,7 +20,7 @@ describe('postinstall', () => {
     await postinstall();
     expect(createGlobalConfigAndFolderIfNotExistSpy).toHaveBeenCalledTimes(1);
     expect(logger.consoleLog).toHaveBeenCalledWith(
-      'Global config successfully created in /myHomeDir/.backport/config.json'
+      'Global config successfully created in /myHomeDir/.backport/config.json',
     );
   });
 

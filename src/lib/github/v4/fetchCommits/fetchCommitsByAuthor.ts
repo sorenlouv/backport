@@ -124,14 +124,14 @@ export async function fetchCommitsByAuthor(options: {
     isEmpty(commitPaths)
       ? [fetchByCommitPath({ options, authorId, commitPath: null })]
       : commitPaths.map((commitPath) =>
-          fetchByCommitPath({ options, authorId, commitPath })
-        )
+          fetchByCommitPath({ options, authorId, commitPath }),
+        ),
   );
 
   // we only need to check if the first item is `null` (if the first is `null` they all are)
   if (responses[0].repository.ref === null) {
     throw new BackportError(
-      `The upstream branch "${sourceBranch}" does not exist. Try specifying a different branch with "--source-branch <your-branch>"`
+      `The upstream branch "${sourceBranch}" does not exist. Try specifying a different branch with "--source-branch <your-branch>"`,
     );
   }
 
@@ -160,7 +160,7 @@ export async function fetchCommitsByAuthor(options: {
   const commitsSorted = orderBy(
     commitsUnique,
     (c) => c.sourceCommit.committedDate,
-    'desc'
+    'desc',
   );
 
   if (options.onlyMissing) {
