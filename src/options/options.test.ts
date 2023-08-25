@@ -211,6 +211,7 @@ describe('getOptions', () => {
       autoMergeMethod: 'merge',
       backportBinary: 'backport',
       cherrypickRef: true,
+      commitConflicts: false,
       commitPaths: [],
       cwd: expect.any(String),
       dateSince: null,

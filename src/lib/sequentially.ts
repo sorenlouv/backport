@@ -1,9 +1,10 @@
-export function sequentially<T>(
+export async function sequentially<T, R>(
   items: T[],
-  handler: (item: T) => Promise<void>,
-) {
-  return items.reduce(async (p, item) => {
-    await p;
-    return handler(item);
-  }, Promise.resolve());
+  handler: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const results: R[] = [];
+  for (const item of items) {
+    results.push(await handler(item));
+  }
+  return results;
 }

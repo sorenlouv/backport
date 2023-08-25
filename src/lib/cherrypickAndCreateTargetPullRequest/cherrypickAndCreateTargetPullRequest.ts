@@ -52,8 +52,11 @@ export async function cherrypickAndCreateTargetPullRequest({
     await Promise.all(commits.map((c) => getMergeCommits(options, c))),
   );
 
-  await sequentially(commitsFlattened, (commit) =>
+  const cherrypickResults = await sequentially(commitsFlattened, (commit) =>
     waitForCherrypick(options, commit, targetBranch),
+  );
+  const hasAnyCommitWithConflicts = cherrypickResults.some(
+    (r) => r.hasCommitsWithConflicts,
   );
 
   if (!options.dryRun) {
@@ -110,7 +113,7 @@ export async function cherrypickAndCreateTargetPullRequest({
   }
 
   // make PR auto mergable
-  if (options.autoMerge) {
+  if (options.autoMerge && hasAnyCommitWithConflicts) {
     await autoMergeNowOrLater(options, targetPullRequest.number);
   }
 

@@ -12,6 +12,7 @@ import {
   ConflictingFiles,
   getConflictingFiles,
   getUnstagedFiles,
+  gitAddAll,
 } from '../git';
 import { getFirstLine } from '../github/commitFormatters';
 import { consoleLog, logger } from '../logger';
@@ -22,14 +23,14 @@ export async function waitForCherrypick(
   options: ValidConfigOptions,
   commit: Commit,
   targetBranch: string,
-) {
+): Promise<{ hasCommitsWithConflicts: boolean }> {
   const spinnerText = `Cherry-picking: ${chalk.greenBright(
     getFirstLine(commit.sourceCommit.message),
   )}`;
   const cherrypickSpinner = ora(options.interactive, spinnerText).start();
   const commitAuthor = getCommitAuthor({ options, commit });
 
-  await cherrypickAndHandleConflicts({
+  const { hasCommitsWithConflicts } = await cherrypickAndHandleConflicts({
     options,
     commit,
     commitAuthor,
@@ -37,13 +38,16 @@ export async function waitForCherrypick(
     cherrypickSpinner,
   });
 
-  // Conflicts should be resolved and files staged at this point
+  // At this point conflict are resolved (or committed if `commitConflicts: true`) and files are staged
+  // Now we just need to commit them (user may already have done this manually)
 
   try {
     // Run `git commit` in case conflicts were not manually committed
     await commitChanges({ options, commit, commitAuthor });
 
     cherrypickSpinner.succeed();
+
+    return { hasCommitsWithConflicts };
   } catch (e) {
     cherrypickSpinner.fail();
     throw e;
@@ -62,7 +66,7 @@ async function cherrypickAndHandleConflicts({
   commitAuthor: CommitAuthor;
   targetBranch: string;
   cherrypickSpinner: Ora;
-}) {
+}): Promise<{ hasCommitsWithConflicts: boolean }> {
   const mergedTargetPullRequest = commit.targetPullRequestStates.find(
     (pr) => pr.state === 'MERGED' && pr.branch === targetBranch,
   );
@@ -81,7 +85,7 @@ async function cherrypickAndHandleConflicts({
 
     // no conflicts encountered
     if (!needsResolving) {
-      return;
+      return { hasCommitsWithConflicts: false };
     }
     // cherrypick failed due to conflicts
     cherrypickSpinner.fail();
@@ -109,9 +113,16 @@ async function cherrypickAndHandleConflicts({
     // conflicts were automatically resolved
     if (didAutoFix) {
       autoResolveSpinner.succeed();
-      return;
+      return { hasCommitsWithConflicts: false };
     }
     autoResolveSpinner.fail();
+  }
+
+  // commits with conflicts should be committed and pushed to the target branch
+  if (!options.interactive && options.commitConflicts) {
+    await gitAddAll({ options });
+    await commitChanges({ options, commit, commitAuthor });
+    return { hasCommitsWithConflicts: true };
   }
 
   const conflictingFilesRelative = conflictingFiles
@@ -165,6 +176,8 @@ async function cherrypickAndHandleConflicts({
     conflictingFiles: conflictingFiles.map((f) => f.absolute),
     unstagedFiles,
   });
+
+  return { hasCommitsWithConflicts: false };
 }
 
 async function listConflictingAndUnstagedFiles({

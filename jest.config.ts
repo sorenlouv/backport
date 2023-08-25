@@ -5,6 +5,7 @@ process.env.TZ = 'UTC';
 process.env.NODE_ENV = 'jest';
 
 const baseConfig: JestConfigWithTsJest = {
+  prettierPath: null,
   transform: {
     '^.+\\.ts?$': ['ts-jest', { diagnostics: false }],
   },

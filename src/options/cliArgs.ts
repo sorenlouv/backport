@@ -69,6 +69,12 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       conflicts: ['noCherrypickRef'],
     })
 
+    .option('commitConflicts', {
+      description:
+        'Commit conflicts instead of aborting. Only takes effect in `non-interactive` mode. Defaults to false',
+      type: 'boolean',
+    })
+
     .option('cwd', {
       hidden: true,
       description: 'Path to source repo',
