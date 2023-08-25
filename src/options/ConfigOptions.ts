@@ -28,6 +28,7 @@ type Options = Partial<{
   autoMergeMethod: string;
   backportBinary: string;
   cherrypickRef: boolean;
+  commitConflicts: boolean;
   commitPaths: string[];
   details: boolean;
   dir: string;

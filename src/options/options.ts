@@ -31,6 +31,7 @@ export const defaultConfigOptions = {
   autoMergeMethod: 'merge',
   backportBinary: 'backport',
   cherrypickRef: true,
+  commitConflicts: false,
   commitPaths: [] as Array<string>,
   cwd: process.cwd(),
   dateSince: null,

@@ -358,6 +358,11 @@ export async function cherrypick({
   }
 }
 
+export async function gitAddAll({ options }: { options: ValidConfigOptions }) {
+  const cwd = getRepoPath(options);
+  return spawnPromise('git', ['add', '--all'], cwd);
+}
+
 async function gitCommit({
   options,
   commitAuthor,
