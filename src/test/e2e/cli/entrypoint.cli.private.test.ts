@@ -33,76 +33,78 @@ describe('entrypoint cli', () => {
   it('--help', async () => {
     const { output } = await runBackportViaCli([`--help`]);
     expect(output).toMatchInlineSnapshot(`
-      "entrypoint.cli.ts [args]
+"entrypoint.cli.ts [args]
 
-      Options:
-        -v, --version                         Show version number                                [boolean]
-            --accessToken, --accesstoken      Github access token                                 [string]
-        -a, --all                             List all commits                                   [boolean]
-            --assignee, --assign              Add assignees to the target pull request             [array]
-            --autoAssign                      Auto assign the target pull request to yourself    [boolean]
-            --autoMerge                       Enable auto-merge for created pull requests        [boolean]
-            --autoMergeMethod                 Sets auto-merge method when using --auto-merge. Default:
-                                              merge        [string] [choices: "merge", "rebase", "squash"]
-            --cherrypickRef                   Append commit message with "(cherry picked from commit...)
-                                                                                                 [boolean]
-            --projectConfigFile, --config     Path to project config                              [string]
-            --globalConfigFile                Path to global config                               [string]
-            --dateSince, --since              ISO-8601 date for filtering commits                 [string]
-            --dateUntil, --until              ISO-8601 date for filtering commits                 [string]
-            --dir                             Path to temporary backport repo                     [string]
-            --details                         Show details about each commit                     [boolean]
-            --dryRun                          Run backport locally without pushing to Github     [boolean]
-            --editor                          Editor to be opened during conflict resolution      [string]
-            --skipRemoteConfig                Use local .backportrc.json config instead of loading from
-                                              Github                                             [boolean]
-            --fork                            Create backports in fork or origin repo. Defaults to true
-                                                                                                 [boolean]
-            --gitAuthorName                   Set commit author name                              [string]
-            --gitAuthorEmail                  Set commit author email                             [string]
-            --nonInteractive, --json          Disable interactive prompts and return response as JSON
-                                                                                                 [boolean]
-            --ls                              List commits instead of backporting them           [boolean]
-            --mainline                        Parent id of merge commit. Defaults to 1 when supplied
-                                              without arguments                                   [number]
-        -s, --signoff                         Pass the --signoff option to the cherry-pick command
-                                                                                                 [boolean]
-        -n, --maxNumber, --number             Number of commits to choose from                    [number]
-            --multiple                        Select multiple branches/commits                   [boolean]
-            --multipleBranches                Backport to multiple branches                      [boolean]
-            --multipleCommits                 Backport multiple commits                          [boolean]
-            --noCherrypickRef                 Do not append commit message with "(cherry picked from
-                                              commit...)"                                        [boolean]
-            --noStatusComment                 Don't publish status comment to Github             [boolean]
-            --noVerify                        Bypass the pre-commit and commit-msg hooks         [boolean]
-            --noFork                          Create backports in the origin repo                [boolean]
-            --noTelemetry                     Disable telemetry                                  [boolean]
-            --onlyMissing                     Only list commits with missing or unmerged backports
-                                                                                                 [boolean]
-        -p, --path                            Only list commits touching files under the specified path
-                                                                                                   [array]
-            --prDescription, --description    Description to be added to pull request             [string]
-            --prTitle, --title                Title of pull request                               [string]
-            --prFilter                        Filter source pull requests by a query              [string]
-            --pullNumber, --pr                Pull request to backport                            [number]
-            --resetAuthor                     Set yourself as commit author                      [boolean]
-            --reviewer                        Add reviewer to the target PR                        [array]
-            --repoForkOwner                   The owner of the fork where the backport branch is pushed.
-                                              Defaults to the currently authenticated user        [string]
-            --repo                            Repo owner and name                                 [string]
-            --sha, --commit                   Commit sha to backport                              [string]
-            --sourceBranch                    Specify a non-default branch (normally "master") to backport
-                                              from                                                [string]
-            --sourcePRLabel, --sourcePrLabel  Add labels to the source (original) PR               [array]
-        -b, --targetBranch, --branch          Branch(es) to backport to                            [array]
-            --targetBranchChoice              List branches to backport to                         [array]
-        -l, --targetPRLabel, --label          Add labels to the target (backport) PR               [array]
-            --verify                          Opposite of no-verify                              [boolean]
-            --help                            Show help                                          [boolean]
+Options:
+  -v, --version                         Show version number                                [boolean]
+      --accessToken, --accesstoken      Github access token                                 [string]
+  -a, --all                             List all commits                                   [boolean]
+      --assignee, --assign              Add assignees to the target pull request             [array]
+      --autoAssign                      Auto assign the target pull request to yourself    [boolean]
+      --autoMerge                       Enable auto-merge for created pull requests        [boolean]
+      --autoMergeMethod                 Sets auto-merge method when using --auto-merge. Default:
+                                        merge        [string] [choices: "merge", "rebase", "squash"]
+      --cherrypickRef                   Append commit message with "(cherry picked from commit...)
+                                                                                           [boolean]
+      --commitConflicts                 Commit conflicts instead of aborting. Only takes effect in
+                                        \`non-interactive\` mode. Defaults to false          [boolean]
+      --projectConfigFile, --config     Path to project config                              [string]
+      --globalConfigFile                Path to global config                               [string]
+      --dateSince, --since              ISO-8601 date for filtering commits                 [string]
+      --dateUntil, --until              ISO-8601 date for filtering commits                 [string]
+      --dir                             Path to temporary backport repo                     [string]
+      --details                         Show details about each commit                     [boolean]
+      --dryRun                          Run backport locally without pushing to Github     [boolean]
+      --editor                          Editor to be opened during conflict resolution      [string]
+      --skipRemoteConfig                Use local .backportrc.json config instead of loading from
+                                        Github                                             [boolean]
+      --fork                            Create backports in fork or origin repo. Defaults to true
+                                                                                           [boolean]
+      --gitAuthorName                   Set commit author name                              [string]
+      --gitAuthorEmail                  Set commit author email                             [string]
+      --nonInteractive, --json          Disable interactive prompts and return response as JSON
+                                                                                           [boolean]
+      --ls                              List commits instead of backporting them           [boolean]
+      --mainline                        Parent id of merge commit. Defaults to 1 when supplied
+                                        without arguments                                   [number]
+  -s, --signoff                         Pass the --signoff option to the cherry-pick command
+                                                                                           [boolean]
+  -n, --maxNumber, --number             Number of commits to choose from                    [number]
+      --multiple                        Select multiple branches/commits                   [boolean]
+      --multipleBranches                Backport to multiple branches                      [boolean]
+      --multipleCommits                 Backport multiple commits                          [boolean]
+      --noCherrypickRef                 Do not append commit message with "(cherry picked from
+                                        commit...)"                                        [boolean]
+      --noStatusComment                 Don't publish status comment to Github             [boolean]
+      --noVerify                        Bypass the pre-commit and commit-msg hooks         [boolean]
+      --noFork                          Create backports in the origin repo                [boolean]
+      --noTelemetry                     Disable telemetry                                  [boolean]
+      --onlyMissing                     Only list commits with missing or unmerged backports
+                                                                                           [boolean]
+  -p, --path                            Only list commits touching files under the specified path
+                                                                                             [array]
+      --prDescription, --description    Description to be added to pull request             [string]
+      --prTitle, --title                Title of pull request                               [string]
+      --prFilter                        Filter source pull requests by a query              [string]
+      --pullNumber, --pr                Pull request to backport                            [number]
+      --resetAuthor                     Set yourself as commit author                      [boolean]
+      --reviewer                        Add reviewer to the target PR                        [array]
+      --repoForkOwner                   The owner of the fork where the backport branch is pushed.
+                                        Defaults to the currently authenticated user        [string]
+      --repo                            Repo owner and name                                 [string]
+      --sha, --commit                   Commit sha to backport                              [string]
+      --sourceBranch                    Specify a non-default branch (normally "master") to backport
+                                        from                                                [string]
+      --sourcePRLabel, --sourcePrLabel  Add labels to the source (original) PR               [array]
+  -b, --targetBranch, --branch          Branch(es) to backport to                            [array]
+      --targetBranchChoice              List branches to backport to                         [array]
+  -l, --targetPRLabel, --label          Add labels to the target (backport) PR               [array]
+      --verify                          Opposite of no-verify                              [boolean]
+      --help                            Show help                                          [boolean]
 
-      For bugs, feature requests or questions: https://github.com/sqren/backport/issues
-      Or contact me directly: https://twitter.com/sorenlouv"
-    `);
+For bugs, feature requests or questions: https://github.com/sqren/backport/issues
+Or contact me directly: https://twitter.com/sorenlouv"
+`);
   });
 
   it('lists commits based on .git/config when `repoOwner`/`repoName` is missing', async () => {
