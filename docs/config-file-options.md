@@ -31,12 +31,10 @@ Please select the necessary access scopes:
 
 <img width="971" alt="image" src="https://user-images.githubusercontent.com/7416358/226398066-54cd918e-7d5a-420b-9f84-bb34f9f43dd6.png">
 
-
 **For public repos only**
 ![image](https://user-images.githubusercontent.com/209966/67081207-018ec400-f197-11e9-86aa-4ae4a003fcbd.png)
 
 <img width="971" alt="image" src="https://user-images.githubusercontent.com/7416358/226398088-715a5bab-7ac8-4733-b48c-d94da593ca04.png">
-
 
 #### `editor`
 
@@ -207,6 +205,16 @@ Automatically detech which branches a pull request should be backported to, base
 ```
 
 _Note: backslashes must be escaped._
+
+#### `commitConflicts`
+
+When running backport on CI (aka in non-interactive mode) any commit conflicts will result in the backport being aborted. When `commitConflicts: true` even files with conflicts will be committed and a backport PR created. It is then up to a user to manually resolve the conflict, If auto-merge is enabled, this will be disabled for this PR specifically to avoid merging unresolved conflicts.
+
+```json
+{
+  "commitConflicts": true
+}
+```
 
 #### `dir`
 
