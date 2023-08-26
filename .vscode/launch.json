@@ -18,7 +18,7 @@
       "name": "yarn start (entrypoint.cli.ts)",
       "program": "${workspaceRoot}/src/entrypoint.cli.ts",
       "runtimeArgs": ["-r", "ts-node/register/transpile-only"],
-      "args": ["--no-fork", "--pr=96", "--repo=backport-org/backport-demo"],
+      "args": ["--repo=elastic/kibana"],
       "console": "integratedTerminal"
     },
     {

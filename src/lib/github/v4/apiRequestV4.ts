@@ -23,17 +23,37 @@ export interface GithubV4Response<DataResponse> {
 
 type Variables = Record<string, string | number | null>;
 
-export async function apiRequestV4<DataResponse>({
-  githubApiBaseUrlV4 = 'https://api.github.com/graphql',
-  accessToken,
-  query,
-  variables,
-}: {
+// Define a discriminating type
+type ApiRequestOptions = {
   githubApiBaseUrlV4?: string;
   accessToken: string;
   query: DocumentNode;
   variables?: Variables;
-}) {
+};
+
+// Define the implementation signature
+export async function apiRequestV4<DataResponse>(
+  opts: ApiRequestOptions,
+): Promise<DataResponse>;
+
+// Overload for returning AxiosResponse with fullResponse: true
+// eslint-disable-next-line
+export async function apiRequestV4<DataResponse>(
+  opts: ApiRequestOptions & { fullResponse: true },
+): Promise<AxiosResponse<GithubV4Response<DataResponse>, any>>;
+
+// Define the implementation
+// eslint-disable-next-line
+export async function apiRequestV4<DataResponse>(
+  opts: ApiRequestOptions & { fullResponse?: boolean },
+): Promise<DataResponse | AxiosResponse<GithubV4Response<DataResponse>, any>> {
+  const {
+    githubApiBaseUrlV4 = 'https://api.github.com/graphql',
+    accessToken,
+    query,
+    variables,
+  } = opts;
+
   const gqlQueryName = getQueryName(query);
   const span = apm.startSpan(
     `GraphQL: ${gqlQueryName}`,
@@ -69,6 +89,10 @@ export async function apiRequestV4<DataResponse>({
     });
 
     span?.setOutcome('success');
+
+    if (opts.fullResponse) {
+      return response;
+    }
 
     return response.data.data;
   } catch (e) {
