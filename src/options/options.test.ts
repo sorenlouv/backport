@@ -391,6 +391,51 @@ describe('getOptions', () => {
     });
   });
 
+  describe('access token scopes', () => {
+    it('throw if no scopes are granted', async () => {
+      mockGithubConfigOptions({ headers: { 'x-oauth-scopes': '' } });
+
+      await expect(
+        getOptions({
+          optionsFromCliArgs: {},
+          optionsFromModule: {},
+        }),
+      ).rejects.toThrow(
+        'You must grant the "repo" or "public_repo" scope to your personal access token',
+      );
+    });
+
+    it('should throw if only `public_repo` scope is granted but the repo is private', async () => {
+      mockGithubConfigOptions({
+        isRepoPrivate: true,
+        headers: { 'x-oauth-scopes': 'public_repo' },
+      });
+
+      await expect(
+        getOptions({
+          optionsFromCliArgs: {},
+          optionsFromModule: {},
+        }),
+      ).rejects.toThrow(
+        'You must grant the "repo" scope to your personal access token',
+      );
+    });
+
+    it('should not throw if `public_repo` scope is granted and the repo is public', async () => {
+      mockGithubConfigOptions({
+        isRepoPrivate: false,
+        headers: { 'x-oauth-scopes': 'public_repo' },
+      });
+
+      const options = await getOptions({
+        optionsFromCliArgs: {},
+        optionsFromModule: {},
+      });
+
+      expect(options).toBeDefined();
+    });
+  });
+
   describe('cherrypickRef', () => {
     beforeEach(() => {
       mockGithubConfigOptions({});
@@ -443,11 +488,15 @@ function mockGithubConfigOptions({
   defaultBranchRef = 'DO_NOT_USE-default-branch-name',
   hasBackportBranch,
   hasRemoteConfig,
+  isRepoPrivate = false,
+  headers = { 'x-oauth-scopes': 'repo' },
 }: {
   viewerLogin?: string;
   defaultBranchRef?: string;
   hasBackportBranch?: boolean;
   hasRemoteConfig?: boolean;
+  isRepoPrivate?: boolean;
+  headers?: Record<string, string>;
 }) {
   return mockGqlRequest<GithubConfigOptionsResponse>({
     name: 'GithubConfigOptions',
@@ -458,7 +507,7 @@ function mockGithubConfigOptions({
           login: viewerLogin,
         },
         repository: {
-          isPrivate: false,
+          isPrivate: isRepoPrivate,
           illegalBackportBranch: hasBackportBranch ? { id: 'foo' } : null,
           defaultBranchRef: {
             name: defaultBranchRef,
@@ -489,6 +538,7 @@ function mockGithubConfigOptions({
         },
       },
     },
+    headers,
   });
 }
 

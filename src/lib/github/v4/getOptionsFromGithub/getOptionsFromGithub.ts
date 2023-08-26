@@ -1,3 +1,4 @@
+import { AxiosResponse } from 'axios';
 import { ConfigFileOptions } from '../../../../options/ConfigOptions';
 import { BackportError } from '../../../BackportError';
 import {
@@ -10,7 +11,11 @@ import {
   parseRemoteConfig,
   swallowMissingConfigFileException,
 } from '../../../remoteConfig';
-import { apiRequestV4, GithubV4Exception } from '../apiRequestV4';
+import {
+  apiRequestV4,
+  GithubV4Exception,
+  GithubV4Response,
+} from '../apiRequestV4';
 import { throwOnInvalidAccessToken } from '../throwOnInvalidAccessToken';
 import { GithubConfigOptionsResponse, query } from './query';
 
@@ -39,15 +44,20 @@ export async function getOptionsFromGithub(options: {
     globalConfigFile,
   } = options;
 
-  let res: GithubConfigOptionsResponse;
+  let data: GithubConfigOptionsResponse;
 
   try {
-    res = await apiRequestV4<GithubConfigOptionsResponse>({
+    const res = await apiRequestV4<GithubConfigOptionsResponse>({
       githubApiBaseUrlV4,
       accessToken,
       query,
       variables: { repoOwner, repoName },
+      fullResponse: true,
     });
+
+    throwIfInsufficientPermissions(res);
+
+    data = res.data.data;
   } catch (e) {
     if (!(e instanceof GithubV4Exception)) {
       throw e;
@@ -59,26 +69,26 @@ export async function getOptionsFromGithub(options: {
       repoOwner,
       globalConfigFile,
     });
-    res = swallowMissingConfigFileException<GithubConfigOptionsResponse>(e);
+    data = swallowMissingConfigFileException<GithubConfigOptionsResponse>(e);
   }
 
   // it is not possible to have a branch named "backport"
-  if (res.repository.illegalBackportBranch) {
+  if (data.repository.illegalBackportBranch) {
     throw new BackportError(
       'You must delete the branch "backport" to continue. See https://github.com/sqren/backport/issues/155 for details',
     );
   }
 
   const remoteConfig = await getRemoteConfigFileOptions(
-    res,
+    data,
     options.cwd,
     options.skipRemoteConfig,
   );
 
   return {
-    authenticatedUsername: res.viewer.login,
-    sourceBranch: res.repository.defaultBranchRef.name,
-    isRepoPrivate: res.repository.isPrivate,
+    authenticatedUsername: data.viewer.login,
+    sourceBranch: data.repository.defaultBranchRef.name,
+    isRepoPrivate: data.repository.isPrivate,
     ...remoteConfig,
   };
 }
@@ -137,4 +147,37 @@ async function getRemoteConfigFileOptions(
 
   logger.info('Remote config: Parsing.');
   return parseRemoteConfig(remoteConfig);
+}
+
+function throwIfInsufficientPermissions(
+  res: AxiosResponse<GithubV4Response<GithubConfigOptionsResponse>, any>,
+) {
+  const accessScopesHeader = res.headers['x-oauth-scopes'] as
+    | string
+    | undefined;
+
+  if (accessScopesHeader === undefined) {
+    return;
+  }
+
+  const accessTokenScopes = accessScopesHeader
+    .split(',')
+    .map((scope) => scope.trim());
+
+  const isRepoPrivate = res.data.data.repository.isPrivate;
+
+  if (isRepoPrivate && !accessTokenScopes.includes('repo')) {
+    throw new BackportError(
+      `You must grant the "repo" scope to your personal access token`,
+    );
+  }
+
+  if (
+    !accessTokenScopes.includes('repo') &&
+    !accessTokenScopes.includes('public_repo')
+  ) {
+    throw new BackportError(
+      `You must grant the "repo" or "public_repo" scope to your personal access token`,
+    );
+  }
 }
