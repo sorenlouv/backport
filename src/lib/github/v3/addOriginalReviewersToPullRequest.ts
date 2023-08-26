@@ -1,27 +1,21 @@
 import { Octokit } from '@octokit/rest';
-import { uniq } from 'lodash';
+import { flatten } from 'lodash';
 import { ora } from '../../../lib/ora';
 import { ValidConfigOptions } from '../../../options/options';
+import { filterNil } from '../../../utils/filterEmpty';
 import { logger } from '../../logger';
+import { Commit } from '../../sourceCommit/parseSourceCommit';
 import { addReviewersToPullRequest } from './addReviewersToPullRequest';
 
 export async function addOriginalReviewersToPullRequest(
   options: ValidConfigOptions,
-  pullNumber: number
+  commits: Commit[],
+  pullNumber: number,
 ) {
-  const {
-    githubApiBaseUrlV3,
-    repoName,
-    repoOwner,
-    accessToken,
-    interactive,
-    pullNumber: originalPullNumbers,
-  } = options;
-  const text = `Retriving original reviewers`;
-  const spinnerList = ora(interactive, text).start();
-
-  const reviewers = new Array<string>();
-  let author: string | undefined;
+  const { githubApiBaseUrlV3, repoName, repoOwner, accessToken, interactive } =
+    options;
+  const text = `Retrieving original reviewers`;
+  const spinner = ora(interactive, text).start();
 
   try {
     const octokit = new Octokit({
@@ -30,50 +24,32 @@ export async function addOriginalReviewersToPullRequest(
       log: logger,
     });
 
-    const pullIds = Array.isArray(originalPullNumbers)
-      ? originalPullNumbers
-      : originalPullNumbers
-      ? [originalPullNumbers]
-      : [];
+    const promises = commits
+      .map((commit) => commit.sourcePullRequest?.number)
+      .filter(filterNil)
+      .map(async (pullNumber) => {
+        const reviews = await octokit.pulls.listReviews({
+          owner: repoOwner,
+          repo: repoName,
+          pull_number: pullNumber,
+        });
 
-    const targetPull = await octokit.pulls.get({
-      owner: repoOwner,
-      repo: repoName,
-      pull_number: pullNumber,
-    });
-
-    author = targetPull.data.user?.login;
-
-    for (const pullId of pullIds) {
-      const reviews = await octokit.pulls.listReviews({
-        owner: repoOwner,
-        repo: repoName,
-        pull_number: pullId,
+        return reviews.data
+          .map((review) => review.user?.login)
+          .filter((username) => username !== options.authenticatedUsername)
+          .filter(filterNil);
       });
 
-      const reviewersOfPull = reviews.data
-        .map((review) => review.user?.login)
-        .filter((login) => !!login) as string[];
+    const reviewers = flatten(await Promise.all(promises));
+    await addReviewersToPullRequest(options, pullNumber, reviewers);
 
-      reviewers.push(...reviewersOfPull);
-    }
-    spinnerList.succeed();
+    spinner.succeed();
   } catch (e) {
-    //@ts-expect-error
-    const message = e.response?.data?.message;
-    spinnerList.fail(`Retriving original reviewers. ${message ? message : ''}`);
+    spinner.fail(`Retrieving original reviewers failed`);
     logger.error(
-      `Could retrieve original reviewers of PRs ${originalPullNumbers}`,
-      e
+      `Could mot retrieve original reviewers of PRs ${pullNumber}`,
+      e,
     );
     return;
   }
-
-  const filteredReviewers = reviewers.filter((login) => login !== author);
-
-  if (!filteredReviewers.length) {
-    return;
-  }
-
-  addReviewersToPullRequest(options, pullNumber, uniq(filteredReviewers));
 }

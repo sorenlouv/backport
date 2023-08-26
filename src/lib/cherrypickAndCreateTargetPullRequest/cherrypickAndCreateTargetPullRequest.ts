@@ -99,8 +99,12 @@ export async function cherrypickAndCreateTargetPullRequest({
   }
 
   // add reviewers of the original PRs to the target pull request
-  if (options.addOriginalReviewers && options.pullNumber) {
-    await addOriginalReviewersToPullRequest(options, targetPullRequest.number);
+  if (options.addOriginalReviewers) {
+    await addOriginalReviewersToPullRequest(
+      options,
+      commits,
+      targetPullRequest.number,
+    );
   }
 
   // add labels to target pull request

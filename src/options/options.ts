@@ -26,6 +26,7 @@ export type ValidConfigOptions = Readonly<
 
 export const defaultConfigOptions = {
   assignees: [] as Array<string>,
+  addOriginalReviewers: false,
   autoAssign: false,
   autoMerge: false,
   autoMergeMethod: 'merge',
