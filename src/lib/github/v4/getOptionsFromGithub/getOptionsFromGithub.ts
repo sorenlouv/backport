@@ -152,12 +152,17 @@ async function getRemoteConfigFileOptions(
 function throwIfInsufficientPermissions(
   res: AxiosResponse<GithubV4Response<GithubConfigOptionsResponse>, any>,
 ) {
-  const accessTokenScopes =
-    (res.headers['x-oauth-scopes'] as string | undefined)
-      ?.split(',')
-      ?.map((scope) => scope.trim()) ?? [];
+  const accessScopesHeader = res.headers['x-oauth-scopes'] as
+    | string
+    | undefined;
 
-  console.log(res.headers);
+  if (!accessScopesHeader) {
+    return;
+  }
+
+  const accessTokenScopes = accessScopesHeader
+    .split(',')
+    .map((scope) => scope.trim());
 
   const isRepoPrivate = res.data.data.repository.isPrivate;
 
