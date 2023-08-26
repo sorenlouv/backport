@@ -156,7 +156,7 @@ function throwIfInsufficientPermissions(
     | string
     | undefined;
 
-  if (!accessScopesHeader) {
+  if (accessScopesHeader === undefined) {
     return;
   }
 
