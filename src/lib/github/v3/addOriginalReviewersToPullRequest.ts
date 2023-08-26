@@ -1,5 +1,5 @@
 import { Octokit } from '@octokit/rest';
-import { flatten } from 'lodash';
+import { flatten, uniq } from 'lodash';
 import { ora } from '../../../lib/ora';
 import { ValidConfigOptions } from '../../../options/options';
 import { filterNil } from '../../../utils/filterEmpty';
@@ -39,11 +39,10 @@ export async function addOriginalReviewersToPullRequest(
           .filter((username) => username !== options.authenticatedUsername)
           .filter(filterNil);
       });
-
-    const reviewers = flatten(await Promise.all(promises));
-    await addReviewersToPullRequest(options, pullNumber, reviewers);
-
     spinner.succeed();
+
+    const reviewers = uniq(flatten(await Promise.all(promises)));
+    await addReviewersToPullRequest(options, pullNumber, reviewers);
   } catch (e) {
     spinner.fail(`Retrieving original reviewers failed`);
     logger.error(
