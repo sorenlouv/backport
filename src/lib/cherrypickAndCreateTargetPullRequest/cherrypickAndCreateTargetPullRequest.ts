@@ -17,6 +17,7 @@ import {
   getPullRequestBody,
   PullRequestPayload,
 } from '../github/v3/createPullRequest';
+import { syncSourcePullRequestReviewersToTargetPullRequest } from '../github/v3/syncSourcePullRequestReviewersToTargetPullRequest';
 import { validateTargetBranch } from '../github/v4/validateTargetBranch';
 import { consoleLog } from '../logger';
 import { sequentially } from '../sequentially';
@@ -94,6 +95,15 @@ export async function cherrypickAndCreateTargetPullRequest({
       options,
       targetPullRequest.number,
       options.reviewers,
+    );
+  }
+
+  // add reviewers of the original PRs to the target pull request
+  if (options.addOriginalReviewers) {
+    await syncSourcePullRequestReviewersToTargetPullRequest(
+      options,
+      commits,
+      targetPullRequest.number,
     );
   }
 
