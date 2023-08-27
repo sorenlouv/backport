@@ -10,7 +10,6 @@ import {
 } from '../git';
 import { addAssigneesToPullRequest } from '../github/v3/addAssigneesToPullRequest';
 import { addLabelsToPullRequest } from '../github/v3/addLabelsToPullRequest';
-import { addOriginalReviewersToPullRequest } from '../github/v3/addOriginalReviewersToPullRequest';
 import { addReviewersToPullRequest } from '../github/v3/addReviewersToPullRequest';
 import {
   createPullRequest,
@@ -18,6 +17,7 @@ import {
   getPullRequestBody,
   PullRequestPayload,
 } from '../github/v3/createPullRequest';
+import { syncSourcePullRequestReviewersToTargetPullRequest } from '../github/v3/syncSourcePullRequestReviewersToTargetPullRequest';
 import { validateTargetBranch } from '../github/v4/validateTargetBranch';
 import { consoleLog } from '../logger';
 import { sequentially } from '../sequentially';
@@ -100,7 +100,7 @@ export async function cherrypickAndCreateTargetPullRequest({
 
   // add reviewers of the original PRs to the target pull request
   if (options.addOriginalReviewers) {
-    await addOriginalReviewersToPullRequest(
+    await syncSourcePullRequestReviewersToTargetPullRequest(
       options,
       commits,
       targetPullRequest.number,
