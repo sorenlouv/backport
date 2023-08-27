@@ -204,6 +204,7 @@ describe('getOptions', () => {
     expect(options).toEqual({
       accessToken: 'abc',
       assignees: [],
+      addOriginalReviewers: false,
       authenticatedUsername: 'john.diller',
       author: 'john.diller',
       autoAssign: false,

@@ -89,6 +89,7 @@ Options:
       --pullNumber, --pr                Pull request to backport                            [number]
       --resetAuthor                     Set yourself as commit author                      [boolean]
       --reviewer                        Add reviewer to the target PR                        [array]
+      --addOriginalReviewers            Add reviewers of the original PRs to the target PR [boolean]
       --repoForkOwner                   The owner of the fork where the backport branch is pushed.
                                         Defaults to the currently authenticated user        [string]
       --repo                            Repo owner and name                                 [string]
