@@ -123,7 +123,7 @@ export async function cherrypickAndCreateTargetPullRequest({
   }
 
   // make PR auto mergable
-  if (options.autoMerge && hasAnyCommitWithConflicts) {
+  if (options.autoMerge && !hasAnyCommitWithConflicts) {
     await autoMergeNowOrLater(options, targetPullRequest.number);
   }
 
