@@ -1,7 +1,13 @@
 import winston, { format } from 'winston';
 import { getLogfilePath } from './env';
 
-export let logger: winston.Logger;
+export let logger = winston.createLogger({
+  transports: [
+    fileTransport({ logLevel: 'info' }),
+    fileTransport({ logLevel: 'debug' }),
+  ],
+});
+
 let _accessToken: string | undefined;
 let _interactive: boolean;
 

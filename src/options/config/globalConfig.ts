@@ -6,11 +6,9 @@ import { isErrnoError } from '../../utils/isErrnoError';
 import { ConfigFileOptions } from '../ConfigOptions';
 import { readConfigFile } from './readConfigFile';
 
-export async function getGlobalConfig({
-  globalConfigFile,
-}: {
-  globalConfigFile?: string;
-} = {}): Promise<ConfigFileOptions> {
+export async function getGlobalConfig(
+  globalConfigFile?: string,
+): Promise<ConfigFileOptions> {
   const globalConfigPath = getGlobalConfigPath(globalConfigFile);
   await createGlobalConfigAndFolderIfNotExist(globalConfigPath);
   return readConfigFile(globalConfigPath);

@@ -6,7 +6,7 @@ import { fetchCommitsByPullNumber } from './lib/github/v4/fetchCommits/fetchComm
 import { fetchCommitBySha } from './lib/github/v4/fetchCommits/fetchCommitBySha';
 import { fetchCommitsByAuthor } from './lib/github/v4/fetchCommits/fetchCommitsByAuthor';
 import { fetchPullRequestsBySearchQuery } from './lib/github/v4/fetchCommits/fetchPullRequestsBySearchQuery';
-import { getOptionsFromGithub } from './lib/github/v4/getOptionsFromGithub/getOptionsFromGithub';
+import { getOptionsFromGithub as _getOptionsFromGithub } from './lib/github/v4/getOptionsFromGithub/getOptionsFromGithub';
 import { initLogger } from './lib/logger';
 import type { Commit } from './lib/sourceCommit/parseSourceCommit';
 import { ConfigFileOptions } from './options/ConfigOptions';
@@ -25,12 +25,20 @@ export type {
   BackportResponse,
   BackportSuccessResponse,
 } from './backportRun';
-export { getTargetBranchFromLabel } from './lib/sourceCommit/getPullRequestStates';
-export { BackportError } from './lib/BackportError';
 export type { Commit } from './lib/sourceCommit/parseSourceCommit';
 export type { ConfigFileOptions } from './options/ConfigOptions';
-export { getGlobalConfig as getLocalGlobalConfig } from './options/config/globalConfig';
-export { getOptionsFromGithub };
+export { getTargetBranchFromLabel } from './lib/sourceCommit/getPullRequestStates';
+export { BackportError } from './lib/BackportError';
+export { getGlobalConfig } from './options/config/globalConfig';
+export { getProjectConfig } from './options/config/projectConfig';
+
+// wrap `getOptionsFromGithub` with logger
+export function getOptionsFromGithub(
+  options: Parameters<typeof _getOptionsFromGithub>[0],
+) {
+  initLogger({ interactive: false, accessToken: options.accessToken });
+  return _getOptionsFromGithub(options);
+}
 
 export async function backportRun({
   options = {},
@@ -83,7 +91,7 @@ export async function getCommits(options: {
   return apmStartTransaction('API: getCommits', async () => {
     initLogger({ interactive: false, accessToken: options.accessToken });
 
-    const optionsFromGithub = await getOptionsFromGithub(options);
+    const optionsFromGithub = await _getOptionsFromGithub(options);
 
     if (options.pullNumber) {
       const pullNumbers = Array.isArray(options.pullNumber)

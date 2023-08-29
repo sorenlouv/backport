@@ -26,7 +26,6 @@
     "version": "echo \"Bumping version\" && yarn extractPackageVersion && git add src/utils/packageVersion.ts && yarn tsc",
     "prepare": "husky install",
     "prepublishOnly": "rm -rf ./dist/ && yarn && yarn lint && yarn tsc",
-    "postpublish": "git push && git push origin $(git describe --abbrev=0 --tags)",
     "extractPackageVersion": "node -p \"'export const PACKAGE_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" | prettier --parser typescript > src/utils/packageVersion.ts",
     "lint-and-test": "yarn tsc && yarn lint && yarn test-all",
     "lint": "echo \"Running lint\" && eslint './**/*.{ts,js}'",

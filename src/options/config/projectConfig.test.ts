@@ -17,9 +17,7 @@ describe('getProjectConfig', () => {
           }),
         );
 
-        const projectConfig = await getProjectConfig({
-          projectConfigFile: undefined,
-        });
+        const projectConfig = await getProjectConfig();
         expect(projectConfig?.targetBranchChoices).toEqual(['6.x']);
       });
     });
@@ -32,9 +30,7 @@ describe('getProjectConfig', () => {
           }),
         );
 
-        const projectConfig = await getProjectConfig({
-          projectConfigFile: undefined,
-        });
+        const projectConfig = await getProjectConfig();
         expect(projectConfig?.targetPRLabels).toEqual(['backport']);
       });
     });
@@ -47,9 +43,7 @@ describe('getProjectConfig', () => {
           }),
         );
 
-        const projectConfig = await getProjectConfig({
-          projectConfigFile: undefined,
-        });
+        const projectConfig = await getProjectConfig();
         expect(projectConfig?.repoOwner).toEqual('elastic');
         expect(projectConfig?.repoName).toEqual('kibana');
       });
@@ -67,9 +61,7 @@ describe('getProjectConfig', () => {
           }),
         );
 
-        projectConfig = await getProjectConfig({
-          projectConfigFile: undefined,
-        });
+        projectConfig = await getProjectConfig();
       });
 
       it('should call findUp', () => {
@@ -100,9 +92,9 @@ describe('getProjectConfig', () => {
           }),
         );
 
-        projectConfig = await getProjectConfig({
-          projectConfigFile: '/custom/path/to/project/.backportrc.json',
-        });
+        projectConfig = await getProjectConfig(
+          '/custom/path/to/project/.backportrc.json',
+        );
       });
 
       it('should not call findUp', () => {
@@ -130,9 +122,7 @@ describe('getProjectConfig', () => {
   describe('when projectConfig is empty', () => {
     it('should return empty config', async () => {
       jest.spyOn(fs, 'readFile').mockResolvedValueOnce('{}');
-      const projectConfig = await getProjectConfig({
-        projectConfigFile: undefined,
-      });
+      const projectConfig = await getProjectConfig();
       expect(projectConfig).toEqual({});
     });
   });
@@ -140,9 +130,7 @@ describe('getProjectConfig', () => {
   describe('when projectConfig is missing', () => {
     it('should return empty config', async () => {
       (findUp as any as jest.SpyInstance).mockReturnValueOnce(undefined);
-      const projectConfig = await getProjectConfig({
-        projectConfigFile: undefined,
-      });
+      const projectConfig = await getProjectConfig();
       expect(projectConfig).toEqual(undefined);
     });
   });
