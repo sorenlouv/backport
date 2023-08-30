@@ -338,16 +338,29 @@ Only list commits touching files under the specified path
 Title for the target pull request
 Template values:
 
+- `{{sourceBranch}}`: Branch the commit is coming from (usually `main`)
 - `{{targetBranch}}`: Branch the backport PR will be targeting
 - `{{commitMessages}}`: Message of backported commit. For multiple commits the messages will be separated by pipes (`|`).
+- `{{commits}}`: A list of commits ([interface](https://github.com/sqren/backport/blob/9e42503a7d0e06e60c575ed2c3b7dc3e5df0dd5c/src/lib/sourceCommit/parseSourceCommit.ts#L15-L36))
 
 Default: `"[{{targetBranch}}] {{commitMessages}}"`
+
+**Example: Use original PR title prefixed by branch**
+
+```
+{{targetBranch}} {{commits.0.sourcePullRequest.title}}
+```
+
+
+**Example**
 
 ```json
 {
   "prTitle": "{{commitMessages}} backport for {{targetBranch}}"
 }
 ```
+
+See [source code](https://github.com/sqren/backport/blob/7c998dd05bda06e9979409cc4e63273bad711d11/src/lib/github/v3/createPullRequest.test.ts#L340-L522) for more examples
 
 #### `prDescription`
 
@@ -360,24 +373,23 @@ The description uses the [handlebars templating engine](https://handlebarsjs.com
 - `{{defaultPrDescription}}`: The default PR description. Using this makes it easy to append and prepend text to the existing description
 - `{{commits}}`: A list of commits ([interface](https://github.com/sqren/backport/blob/9e42503a7d0e06e60c575ed2c3b7dc3e5df0dd5c/src/lib/sourceCommit/parseSourceCommit.ts#L15-L36))
 
+**Example: List commits**
+
 ```
   {{#each commits}}
     {{shortSha this.sourceCommit.sha}} {{this.sourceCommit.message}}
   {{/each}}
 ```
 
-```json
-{
-  "prDescription": "Backports the following commits to {{targetBranch}}:\n{{commitMessages}}"
-}
-```
+**Example: append test to default description**
 
-**Example**
 For people who often want to append the same text, they can create a bash alias:
 
 ```sh
 alias backport-skip-ci='backport --pr-description "{defaultPrDescription} [skip-ci]"'
 ```
+
+See [source code](https://github.com/sqren/backport/blob/7c998dd05bda06e9979409cc4e63273bad711d11/src/lib/github/v3/createPullRequest.test.ts#L340-L522) for more examples
 
 #### `prFilter`
 
