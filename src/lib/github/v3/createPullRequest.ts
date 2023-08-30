@@ -136,6 +136,7 @@ export function getPullRequestBody({
   );
 
   return template({
+    sourcePullRequest: commits[0].sourcePullRequest, // assume that all commits are from the same PR
     sourceBranch,
     targetBranch,
     commitMessages,
@@ -162,7 +163,10 @@ export function getTitle({
 
   const template = Handlebars.compile(options.prTitle ?? defaultPrTitle);
 
+  commits[0].author.name;
+
   return template({
+    sourcePullRequest: commits[0].sourcePullRequest, // assume that all commits are from the same PR
     sourceBranch,
     targetBranch,
     commitMessages,

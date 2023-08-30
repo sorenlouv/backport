@@ -431,102 +431,91 @@ describe('getPullRequestBody', () => {
 });
 
 describe('getTitle', () => {
+  const commits = [
+    {
+      author: {
+        email: 'soren.louv@elastic.co',
+        name: 'Søren Louv-Jansen',
+      },
+      sourceBranch: 'main',
+      sourcePullRequest: {
+        labels: [],
+        title: 'My PR Title',
+        number: 55,
+        url: 'https://github.com/backport-org/different-merge-strategies/pull/55',
+        mergeCommit: {
+          sha: 'abcdefghi',
+          message: 'My commit message (#55)',
+        },
+      },
+      suggestedTargetBranches: [],
+      sourceCommit: {
+        branchLabelMapping: {},
+        committedDate: '2020',
+        sha: 'abcdefghi',
+        message: 'My commit message (#55)',
+      },
+      targetPullRequestStates: [],
+    },
+    {
+      author: {
+        email: 'soren.louv@elastic.co',
+        name: 'Søren Louv-Jansen',
+      },
+      sourcePullRequest: {
+        labels: [],
+        number: 56,
+        title: 'My PR Title',
+        url: 'https://github.com/backport-org/different-merge-strategies/pull/56',
+        mergeCommit: {
+          sha: 'jklmnopqr',
+          message: 'Another commit message (#56)',
+        },
+      },
+      suggestedTargetBranches: [],
+      sourceCommit: {
+        branchLabelMapping: {},
+        committedDate: '2020',
+        sha: 'jklmnopqr',
+        message: 'Another commit message (#56)',
+      },
+      sourceBranch: 'main',
+      targetPullRequestStates: [],
+    },
+  ];
+
   it('has the default title', () => {
-    expect(
-      getTitle({
-        options: {} as ValidConfigOptions,
-        commits: [
-          {
-            author: {
-              email: 'soren.louv@elastic.co',
-              name: 'Søren Louv-Jansen',
-            },
-            sourceBranch: 'main',
-            sourcePullRequest: {
-              labels: [],
-              title: 'My PR Title',
-              number: 55,
-              url: 'https://github.com/backport-org/different-merge-strategies/pull/55',
-              mergeCommit: {
-                sha: 'abcdefghi',
-                message: 'My commit message (#55)',
-              },
-            },
-            suggestedTargetBranches: [],
-            sourceCommit: {
-              branchLabelMapping: {},
-              committedDate: '2020',
-              sha: 'abcdefghi',
-              message: 'My commit message (#55)',
-            },
-            targetPullRequestStates: [],
-          },
-          {
-            author: {
-              email: 'soren.louv@elastic.co',
-              name: 'Søren Louv-Jansen',
-            },
-            sourcePullRequest: {
-              labels: [],
-              number: 56,
-              title: 'My PR Title',
-              url: 'https://github.com/backport-org/different-merge-strategies/pull/56',
-              mergeCommit: {
-                sha: 'jklmnopqr',
-                message: 'Another commit message (#56)',
-              },
-            },
-            suggestedTargetBranches: [],
-            sourceCommit: {
-              branchLabelMapping: {},
-              committedDate: '2020',
-              sha: 'jklmnopqr',
-              message: 'Another commit message (#56)',
-            },
-            sourceBranch: 'main',
-            targetPullRequestStates: [],
-          },
-        ],
-        targetBranch: '7.x',
-      }),
-    ).toEqual('[7.x] My commit message (#55) | Another commit message (#56)');
+    const options = {} as ValidConfigOptions;
+    expect(getTitle({ options, commits, targetBranch: '7.x' })).toEqual(
+      '[7.x] My commit message (#55) | Another commit message (#56)',
+    );
   });
 
-  it('replaces template variables in PR title', () => {
-    expect(
-      getTitle({
-        options: {
-          prTitle: 'Branch: "{{targetBranch}}". Messages: {{commitMessages}}',
-        } as ValidConfigOptions,
-        commits: [
-          {
-            author: {
-              email: 'soren.louv@elastic.co',
-              name: 'Søren Louv-Jansen',
-            },
-            sourcePullRequest: {
-              labels: [],
-              number: 55,
-              title: 'My PR Title',
-              url: 'https://github.com/backport-org/different-merge-strategies/pull/55',
-              mergeCommit: {
-                sha: 'abcdefghi',
-                message: 'My commit message (#55)',
-              },
-            },
-            suggestedTargetBranches: [],
-            sourceCommit: {
-              branchLabelMapping: {},
-              committedDate: '',
-              sha: 'abcdefghi',
-              message: 'My commit message (#55)',
-            },
-            sourceBranch: 'main',
-            targetPullRequestStates: [],
-          },
-        ],
-        targetBranch: '7.x',
-      }),
-    ).toEqual('Branch: "7.x". Messages: My commit message (#55)');
+  it('renders title with the original PR title', () => {
+    const options = {
+      prTitle: '[{{targetBranch}}] {{sourcePullRequest.title}}',
+    } as ValidConfigOptions;
+    expect(getTitle({ options, commits, targetBranch: '7.x' })).toEqual(
+      '[7.x] My PR Title',
+    );
+  });
+
+  it('renders title using a specific commit', () => {
+    const options = {
+      prTitle: '[{{targetBranch}}] {{commits.0.sourcePullRequest.title}}',
+    } as ValidConfigOptions;
+    expect(getTitle({ options, commits, targetBranch: '7.x' })).toEqual(
+      '[7.x] My PR Title',
+    );
+  });
+
+  it('renders title using {{commitMessages}}', () => {
+    const options = {
+      prTitle: 'Branch: "{{targetBranch}}". Messages: {{commitMessages}}',
+    } as ValidConfigOptions;
+
+    expect(getTitle({ options, commits, targetBranch: '7.x' })).toEqual(
+      'Branch: "7.x". Messages: My commit message (#55) | Another commit message (#56)',
+    );
   });
 });
