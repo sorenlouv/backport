@@ -11,15 +11,19 @@ import { TargetBranchResponse } from '../github/v4/validateTargetBranch';
 import * as logger from '../logger';
 import * as oraModule from '../ora';
 import { Commit } from '../sourceCommit/parseSourceCommit';
+import * as autoMergeNowOrLater from './autoMergeNowOrLater';
 import { cherrypickAndCreateTargetPullRequest } from './cherrypickAndCreateTargetPullRequest';
 
 describe('cherrypickAndCreateTargetPullRequest', () => {
   let execSpy: SpyHelper<typeof childProcess.spawnPromise>;
   let addLabelsScope: ReturnType<typeof nock>;
   let consoleLogSpy: SpyHelper<(typeof logger)['consoleLog']>;
+  let autoMergeSpy: SpyHelper<typeof autoMergeNowOrLater.autoMergeNowOrLater>;
 
   beforeEach(() => {
     jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
+
+    autoMergeSpy = jest.spyOn(autoMergeNowOrLater, 'autoMergeNowOrLater');
 
     execSpy = jest
       .spyOn(childProcess, 'spawnPromise')
@@ -53,6 +57,8 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         assignees: [] as string[],
         authenticatedUsername: 'sqren_authenticated',
         author: 'sqren',
+        autoMerge: true,
+        autoMergeMethod: 'squash',
         fork: true,
         gitAuthorEmail: 'soren@louv.dk',
         gitAuthorName: 'Soren L',
@@ -166,6 +172,10 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
       `);
     });
 
+    it('calls autoMergeNowOrLater', () => {
+      expect(autoMergeSpy).toHaveBeenCalledWith(expect.any(Object), 1337);
+    });
+
     it('returns the expected response', () => {
       expect(res).toEqual({ didUpdate: false, url: 'myHtmlUrl', number: 1337 });
     });
@@ -187,17 +197,18 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
 
     it('should start the spinner with the correct text', () => {
       expect(oraSpy.mock.calls.map(([, text]) => text)).toMatchInlineSnapshot(`
-        [
-          "",
-          "Pulling latest changes",
-          "Cherry-picking: My original commit message (#1000)",
-          "Cherry-picking: My other commit message (#2000)",
-          "Pushing branch "sqren:backport/6.x/pr-1000_pr-2000"",
-          undefined,
-          "Creating pull request",
-          "Adding labels: backport",
-        ]
-      `);
+[
+  "",
+  "Pulling latest changes",
+  "Cherry-picking: My original commit message (#1000)",
+  "Cherry-picking: My other commit message (#2000)",
+  "Pushing branch "sqren:backport/6.x/pr-1000_pr-2000"",
+  undefined,
+  "Creating pull request",
+  "Adding labels: backport",
+  "Auto-merge: Enabling via "squash"",
+]
+`);
     });
   });
 
