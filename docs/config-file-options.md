@@ -340,6 +340,7 @@ Template values:
 
 - `{{sourceBranch}}`: Branch the commit is coming from (usually `main`)
 - `{{targetBranch}}`: Branch the backport PR will be targeting
+- `{{sourcePullRequest}}`: Original pull request object (see [interface](https://github.com/sqren/backport/blob/9e42503a7d0e06e60c575ed2c3b7dc3e5df0dd5c/src/lib/sourceCommit/parseSourceCommit.ts#L23-L31))
 - `{{commitMessages}}`: Message of backported commit. For multiple commits the messages will be separated by pipes (`|`).
 - `{{commits}}`: A list of commits ([interface](https://github.com/sqren/backport/blob/9e42503a7d0e06e60c575ed2c3b7dc3e5df0dd5c/src/lib/sourceCommit/parseSourceCommit.ts#L15-L36))
 
@@ -348,7 +349,7 @@ Default: `"[{{targetBranch}}] {{commitMessages}}"`
 **Example: Use original PR title prefixed by branch**
 
 ```
-{{targetBranch}} {{commits.0.sourcePullRequest.title}}
+{{targetBranch}} {{sourcePullRequest.title}}
 ```
 
 
@@ -371,7 +372,7 @@ The description uses the [handlebars templating engine](https://handlebarsjs.com
 - `{{targetBranch}}`: Branch the backport PR will be targeting
 - `{{commitMessages}}`: Message of backported commit. For multiple commits the messages will be separated by new lines (`|`).
 - `{{defaultPrDescription}}`: The default PR description. Using this makes it easy to append and prepend text to the existing description
-- `{{commits}}`: A list of commits ([interface](https://github.com/sqren/backport/blob/9e42503a7d0e06e60c575ed2c3b7dc3e5df0dd5c/src/lib/sourceCommit/parseSourceCommit.ts#L15-L36))
+- `{{commits}}`: A list of commit objects (see [commit interface](https://github.com/sqren/backport/blob/9e42503a7d0e06e60c575ed2c3b7dc3e5df0dd5c/src/lib/sourceCommit/parseSourceCommit.ts#L15-L36))
 
 **Example: List commits**
 
