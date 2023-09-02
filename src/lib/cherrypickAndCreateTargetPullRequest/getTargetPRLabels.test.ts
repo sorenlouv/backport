@@ -59,7 +59,7 @@ describe('getTargetPRLabels', () => {
   describe('replaces template values', () => {
     it('replaces {{targetBranch}}', () => {
       const labels = getTargetPRLabels({
-        syncSourcePRLabels: false,
+        copySourcePRLabels: false,
         interactive: false,
         commits,
         targetPRLabels: ['backported-to-{{targetBranch}}'],
@@ -70,7 +70,7 @@ describe('getTargetPRLabels', () => {
 
     it('replaces {{sourceBranch}}', () => {
       const labels = getTargetPRLabels({
-        syncSourcePRLabels: false,
+        copySourcePRLabels: false,
         interactive: false,
         commits,
         targetPRLabels: ['backported-from-{{sourceBranch}}'],
@@ -80,10 +80,10 @@ describe('getTargetPRLabels', () => {
     });
   });
 
-  describe('when syncSourcePRLabels=true', () => {
+  describe('when copySourcePRLabels=true', () => {
     it('adds source PR labels', () => {
       const labels = getTargetPRLabels({
-        syncSourcePRLabels: true,
+        copySourcePRLabels: true,
         interactive: false,
         commits,
         targetPRLabels: ['foobar'],
@@ -97,7 +97,7 @@ describe('getTargetPRLabels', () => {
     describe('and when interactive=false', () => {
       it('adds static label for 7.11', () => {
         const labels = getTargetPRLabels({
-          syncSourcePRLabels: false,
+          copySourcePRLabels: false,
           interactive: false,
           commits,
           targetPRLabels: ['some-static-label'],
@@ -108,7 +108,7 @@ describe('getTargetPRLabels', () => {
 
       it('adds static label for 7.x', () => {
         const labels = getTargetPRLabels({
-          syncSourcePRLabels: false,
+          copySourcePRLabels: false,
           interactive: false,
           commits,
           targetPRLabels: ['some-static-label'],
@@ -121,7 +121,7 @@ describe('getTargetPRLabels', () => {
     describe('and when interactive=true', () => {
       it('adds static label for 7.x', () => {
         const labels = getTargetPRLabels({
-          syncSourcePRLabels: false,
+          copySourcePRLabels: false,
           interactive: true,
           commits,
           targetPRLabels: ['backport'],
@@ -136,7 +136,7 @@ describe('getTargetPRLabels', () => {
     describe('and when interactive=false', () => {
       it('adds dynamic label for 7.11', () => {
         const labels = getTargetPRLabels({
-          syncSourcePRLabels: false,
+          copySourcePRLabels: false,
           interactive: false,
           commits,
           targetPRLabels: ['backport-$1'],
@@ -149,7 +149,7 @@ describe('getTargetPRLabels', () => {
     describe('when interactive=true', () => {
       it('adds dynamic label for 7.11', () => {
         const labels = getTargetPRLabels({
-          syncSourcePRLabels: false,
+          copySourcePRLabels: false,
           interactive: false,
           commits,
           targetPRLabels: ['backport-$1'],
@@ -160,7 +160,7 @@ describe('getTargetPRLabels', () => {
 
       it('does not add dynamic label for 7.x', () => {
         const labels = getTargetPRLabels({
-          syncSourcePRLabels: false,
+          copySourcePRLabels: false,
           interactive: true,
           commits,
           targetPRLabels: ['backport-$1'],
@@ -175,7 +175,7 @@ describe('getTargetPRLabels', () => {
     describe('interactive=false', () => {
       it('adds dynamic and static labels for 7.11', () => {
         const labels = getTargetPRLabels({
-          syncSourcePRLabels: false,
+          copySourcePRLabels: false,
           interactive: false,
           commits,
           targetPRLabels: ['backport-$1', '$1', 'my-static-label'],
@@ -188,7 +188,7 @@ describe('getTargetPRLabels', () => {
     describe('interactive=true', () => {
       it('only add the static labels for 7.x', () => {
         const labels = getTargetPRLabels({
-          syncSourcePRLabels: false,
+          copySourcePRLabels: false,
           interactive: true,
           commits,
           targetPRLabels: ['backport-$1', '$1', 'my-static-label'],

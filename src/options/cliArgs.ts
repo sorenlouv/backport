@@ -373,15 +373,15 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       string: true,
     })
 
-    .option('syncSourcePRLabels', {
+    .option('copySourcePRLabels', {
       description: 'Copy labels from source PR to the target PR',
-      alias: 'syncSourcePrLabels',
+      alias: 'copySourcePrLabels',
       type: 'boolean',
     })
 
-    .option('syncSourcePRReviewers', {
+    .option('copySourcePRReviewers', {
       description: 'Copy reviewers from the source PR to the target PR',
-      alias: ['syncSourcePrReviewers', 'addOriginalReviewers'],
+      alias: ['copySourcePrReviewers', 'addOriginalReviewers'],
       type: 'boolean',
     })
 

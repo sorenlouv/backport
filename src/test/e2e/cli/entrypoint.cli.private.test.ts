@@ -108,10 +108,10 @@ Options:
       --sourceBranch                                  Specify a non-default branch (normally
                                                       "master") to backport from            [string]
       --sourcePRLabel, --sourcePrLabel                Add labels to the source (original) PR [array]
-      --syncSourcePRLabels, --syncSourcePrLabels      Copy labels from source PR to target PR
+      --copySourcePRLabels, --copySourcePrLabels      Copy labels from source PR to the target PR
                                                                                            [boolean]
-      --syncSourcePRReviewers,                        Add reviewers of the original PRs to the
-      --syncSourcePrReviewers,                        target PR
+      --copySourcePRReviewers,                        Copy reviewers from the source PR to the
+      --copySourcePrReviewers,                        target PR
       --addOriginalReviewers                                                               [boolean]
   -b, --targetBranch, --branch                        Branch(es) to backport to              [array]
       --targetBranchChoice                            List branches to backport to           [array]
@@ -119,7 +119,7 @@ Options:
       --verify                                        Opposite of no-verify                [boolean]
       --help                                          Show help                            [boolean]
 
-For bugs, feature requests or questions: https://github.com/"
+For bugs, feature requests or questions: https://github."
 `);
   });
 

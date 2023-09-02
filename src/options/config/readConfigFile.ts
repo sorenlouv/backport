@@ -38,8 +38,8 @@ export function withConfigMigrations({
     repoName,
     repoOwner,
 
-    // `addOriginalReviewers` has been renamed to `syncSourcePRReviewers`
-    syncSourcePRReviewers: config.syncSourcePRReviewers ?? addOriginalReviewers,
+    // `addOriginalReviewers` has been renamed to `copySourcePRReviewers`
+    copySourcePRReviewers: config.copySourcePRReviewers ?? addOriginalReviewers,
 
     // `labels` was renamed `targetPRLabels`
     targetPRLabels: config.targetPRLabels ?? labels,

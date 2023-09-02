@@ -67,8 +67,8 @@ type Options = Partial<{
   skipRemoteConfig: boolean;
   sourceBranch: string;
   sourcePRLabels: string[];
-  syncSourcePRLabels: boolean;
-  syncSourcePRReviewers: boolean;
+  copySourcePRLabels: boolean;
+  copySourcePRReviewers: boolean;
   targetBranchChoices: TargetBranchChoiceOrString[];
   targetBranches: string[];
   targetPRLabels: string[];
@@ -100,7 +100,7 @@ export type ConfigFileOptions = Options &
     labels: string[];
 
     /**
-     * @deprecated Replaced by `syncSourcePRReviewers`
+     * @deprecated Replaced by `copySourcePRReviewers`
      */
     addOriginalReviewers: boolean;
   }>;

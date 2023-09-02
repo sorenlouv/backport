@@ -5,21 +5,38 @@ import { getSourceBranchFromCommits } from '../getSourceBranchFromCommits';
 import { logger } from '../logger';
 
 export function getTargetPRLabels({
-  syncSourcePRLabels,
   interactive,
   targetPRLabels,
   commits,
   targetBranch,
 }: {
-  syncSourcePRLabels: boolean;
   interactive: boolean;
   targetPRLabels: string[];
   commits: Commit[];
   targetBranch: string;
 }) {
-  const sourceBranch = getSourceBranchFromCommits(commits);
-  const nonBackportLabels = getNonBackportLabels(syncSourcePRLabels, commits);
+  const labels = getLabels({
+    commits,
+    targetBranch,
+    targetPRLabels,
+    interactive,
+  });
 
+  return uniq(labels);
+}
+
+function getLabels({
+  commits,
+  targetBranch,
+  targetPRLabels,
+  interactive,
+}: {
+  commits: Commit[];
+  targetBranch: string;
+  targetPRLabels: string[];
+  interactive: boolean;
+}) {
+  const sourceBranch = getSourceBranchFromCommits(commits);
   const labels = commits
     .flatMap((c) => {
       const targetPullRequest = c.targetPullRequestStates.find(
@@ -47,23 +64,6 @@ export function getTargetPRLabels({
         .replaceAll('{{targetBranch}}', targetBranch)
         .replaceAll('{{sourceBranch}}', sourceBranch);
     });
-
-  return uniq([...labels, ...nonBackportLabels]);
-}
-
-function getNonBackportLabels(syncSourcePRLabels: boolean, commits: Commit[]) {
-  const initialCommit = commits[0];
-  if (!syncSourcePRLabels || !initialCommit.sourcePullRequest) {
-    return [];
-  }
-
-  const backportLabels = initialCommit.targetPullRequestStates.map(
-    (pr) => pr.label,
-  );
-
-  const labels = initialCommit.sourcePullRequest.labels.filter(
-    (label) => !backportLabels.includes(label),
-  );
 
   return labels;
 }
