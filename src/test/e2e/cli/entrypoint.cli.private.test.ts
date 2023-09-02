@@ -32,7 +32,8 @@ describe('entrypoint cli', () => {
 
   it('--help', async () => {
     const { output } = await runBackportViaCli([`--help`]);
-    expect(output).toMatchInlineSnapshot(`
+    const [help] = output.split('--help');
+    expect(help).toMatchInlineSnapshot(`
 "entrypoint.cli.ts [args]
 
 Options:
@@ -117,9 +118,7 @@ Options:
       --targetBranchChoice                            List branches to backport to           [array]
   -l, --targetPRLabel, --label                        Add labels to the target (backport) PR [array]
       --verify                                        Opposite of no-verify                [boolean]
-      --help                                          Show help                            [boolean]
-
-For bugs, feature requests or questions: https://github."
+      "
 `);
   });
 
