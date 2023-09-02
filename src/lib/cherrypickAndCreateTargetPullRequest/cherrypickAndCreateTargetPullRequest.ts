@@ -99,7 +99,7 @@ export async function cherrypickAndCreateTargetPullRequest({
   }
 
   // add reviewers of the original PRs to the target pull request
-  if (options.addOriginalReviewers) {
+  if (options.syncSourcePRReviewers) {
     await syncSourcePullRequestReviewersToTargetPullRequest(
       options,
       commits,
@@ -110,6 +110,7 @@ export async function cherrypickAndCreateTargetPullRequest({
   // add labels to target pull request
   if (options.targetPRLabels.length > 0) {
     const labels = getTargetPRLabels({
+      syncSourcePRLabels: options.syncSourcePRLabels,
       interactive: options.interactive,
       targetPRLabels: options.targetPRLabels,
       commits,

@@ -26,7 +26,6 @@ export type ValidConfigOptions = Readonly<
 
 export const defaultConfigOptions = {
   assignees: [] as Array<string>,
-  addOriginalReviewers: false,
   autoAssign: false,
   autoMerge: false,
   autoMergeMethod: 'merge',
@@ -38,7 +37,6 @@ export const defaultConfigOptions = {
   dateSince: null,
   dateUntil: null,
   details: false,
-  telemetry: true,
   fork: true,
   gitHostname: 'github.com',
   interactive: true,
@@ -47,15 +45,18 @@ export const defaultConfigOptions = {
   multipleCommits: false,
   noVerify: true,
   publishStatusCommentOnAbort: false,
-  publishStatusCommentOnSuccess: true,
   publishStatusCommentOnFailure: false,
+  publishStatusCommentOnSuccess: true,
   resetAuthor: false,
   reviewers: [] as Array<string>,
+  signoff: false,
   sourcePRLabels: [] as string[],
+  syncSourcePRLabels: false,
+  syncSourcePRReviewers: false,
   targetBranchChoices: [] as TargetBranchChoiceOrString[],
   targetBranches: [] as string[],
   targetPRLabels: [] as string[],
-  signoff: false,
+  telemetry: true,
 };
 
 export async function getOptions({

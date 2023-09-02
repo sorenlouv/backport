@@ -155,7 +155,7 @@ describe('fetchCommitsByAuthor', () => {
         {
           branch: '7.8',
           label: 'v7.8.0',
-          labelRegex: '^v(\\d+).(\\d+).\\d+$',
+          branchLabelMappingKey: '^v(\\d+).(\\d+).\\d+$',
           isSourceBranch: false,
           state: 'OPEN',
           number: 10,
@@ -172,7 +172,7 @@ describe('fetchCommitsByAuthor', () => {
         {
           branch: '7.8',
           label: 'v7.8.0',
-          labelRegex: '^v(\\d+).(\\d+).\\d+$',
+          branchLabelMappingKey: '^v(\\d+).(\\d+).\\d+$',
           isSourceBranch: false,
           mergeCommit: {
             message: 'Add 🍏 emoji (#5) (#7)',
@@ -185,7 +185,7 @@ describe('fetchCommitsByAuthor', () => {
         {
           branch: '7.x',
           label: 'v7.9.0',
-          labelRegex: '^v7.9.0$',
+          branchLabelMappingKey: '^v7.9.0$',
           isSourceBranch: false,
           mergeCommit: {
             message: 'Add 🍏 emoji (#5) (#6)',
@@ -198,7 +198,7 @@ describe('fetchCommitsByAuthor', () => {
         {
           branch: 'master',
           label: 'v8.0.0',
-          labelRegex: '^v8.0.0$',
+          branchLabelMappingKey: '^v8.0.0$',
           isSourceBranch: true,
           mergeCommit: {
             message: 'Add 🍏 emoji (#5)',
@@ -219,14 +219,14 @@ describe('fetchCommitsByAuthor', () => {
         {
           branch: '7.x',
           label: 'v7.9.0',
-          labelRegex: '^v7.9.0$',
+          branchLabelMappingKey: '^v7.9.0$',
           isSourceBranch: false,
           state: 'NOT_CREATED',
         },
         {
           branch: 'master',
           label: 'v8.0.0',
-          labelRegex: '^v8.0.0$',
+          branchLabelMappingKey: '^v8.0.0$',
           isSourceBranch: true,
           mergeCommit: {
             message: 'Change Ulysses to Gretha (conflict) (#8)',

@@ -14,7 +14,7 @@ const commits: Commit[] = [
       sha: 'd1b348e6213c5ad48653dfaad6eaf4928b2c688b',
     },
     sourcePullRequest: {
-      labels: ['backport-to-7.11'],
+      labels: ['backport-to-7.11', 'feature-abc'],
       number: 88188,
       title: 'Fix major bug',
       url: 'https://github.com/elastic/kibana/pull/88188',
@@ -31,7 +31,7 @@ const commits: Commit[] = [
         number: 88289,
         branch: '7.11',
         label: 'backport-to-7.11',
-        labelRegex: '^backport-to-(.+)$',
+        branchLabelMappingKey: '^backport-to-(.+)$',
         isSourceBranch: false,
         state: 'OPEN',
         mergeCommit: {
@@ -40,7 +40,7 @@ const commits: Commit[] = [
         },
       },
 
-      // PR to 7.x branch was created manually (not via labels) and does not contain labelRegex
+      // PR to 7.x branch was created manually (not via labels) and does not contain branchLabelMappingKey
       {
         url: 'https://github.com/elastic/kibana/pull/88288',
         number: 88288,
@@ -59,6 +59,7 @@ describe('getTargetPRLabels', () => {
   describe('replaces template values', () => {
     it('replaces {{targetBranch}}', () => {
       const labels = getTargetPRLabels({
+        syncSourcePRLabels: false,
         interactive: false,
         commits,
         targetPRLabels: ['backported-to-{{targetBranch}}'],
@@ -69,6 +70,7 @@ describe('getTargetPRLabels', () => {
 
     it('replaces {{sourceBranch}}', () => {
       const labels = getTargetPRLabels({
+        syncSourcePRLabels: false,
         interactive: false,
         commits,
         targetPRLabels: ['backported-from-{{sourceBranch}}'],
@@ -78,10 +80,24 @@ describe('getTargetPRLabels', () => {
     });
   });
 
+  describe('when syncSourcePRLabels=true', () => {
+    it('adds source PR labels', () => {
+      const labels = getTargetPRLabels({
+        syncSourcePRLabels: true,
+        interactive: false,
+        commits,
+        targetPRLabels: ['foobar'],
+        targetBranch: '7.x',
+      });
+      expect(labels).toEqual(['foobar', 'feature-abc']);
+    });
+  });
+
   describe('when label is static', () => {
     describe('and when interactive=false', () => {
       it('adds static label for 7.11', () => {
         const labels = getTargetPRLabels({
+          syncSourcePRLabels: false,
           interactive: false,
           commits,
           targetPRLabels: ['some-static-label'],
@@ -92,6 +108,7 @@ describe('getTargetPRLabels', () => {
 
       it('adds static label for 7.x', () => {
         const labels = getTargetPRLabels({
+          syncSourcePRLabels: false,
           interactive: false,
           commits,
           targetPRLabels: ['some-static-label'],
@@ -104,6 +121,7 @@ describe('getTargetPRLabels', () => {
     describe('and when interactive=true', () => {
       it('adds static label for 7.x', () => {
         const labels = getTargetPRLabels({
+          syncSourcePRLabels: false,
           interactive: true,
           commits,
           targetPRLabels: ['backport'],
@@ -118,6 +136,7 @@ describe('getTargetPRLabels', () => {
     describe('and when interactive=false', () => {
       it('adds dynamic label for 7.11', () => {
         const labels = getTargetPRLabels({
+          syncSourcePRLabels: false,
           interactive: false,
           commits,
           targetPRLabels: ['backport-$1'],
@@ -130,6 +149,7 @@ describe('getTargetPRLabels', () => {
     describe('when interactive=true', () => {
       it('adds dynamic label for 7.11', () => {
         const labels = getTargetPRLabels({
+          syncSourcePRLabels: false,
           interactive: false,
           commits,
           targetPRLabels: ['backport-$1'],
@@ -140,6 +160,7 @@ describe('getTargetPRLabels', () => {
 
       it('does not add dynamic label for 7.x', () => {
         const labels = getTargetPRLabels({
+          syncSourcePRLabels: false,
           interactive: true,
           commits,
           targetPRLabels: ['backport-$1'],
@@ -154,6 +175,7 @@ describe('getTargetPRLabels', () => {
     describe('interactive=false', () => {
       it('adds dynamic and static labels for 7.11', () => {
         const labels = getTargetPRLabels({
+          syncSourcePRLabels: false,
           interactive: false,
           commits,
           targetPRLabels: ['backport-$1', '$1', 'my-static-label'],
@@ -166,6 +188,7 @@ describe('getTargetPRLabels', () => {
     describe('interactive=true', () => {
       it('only add the static labels for 7.x', () => {
         const labels = getTargetPRLabels({
+          syncSourcePRLabels: false,
           interactive: true,
           commits,
           targetPRLabels: ['backport-$1', '$1', 'my-static-label'],

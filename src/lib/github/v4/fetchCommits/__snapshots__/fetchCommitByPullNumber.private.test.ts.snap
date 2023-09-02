@@ -171,9 +171,9 @@ exports[`fetchCommitByPullNumber snapshot request/response returns the correct r
     "targetPullRequestStates": [
       {
         "branch": "8.0",
+        "branchLabelMappingKey": "^v(\\d+).(\\d+).\\d+$",
         "isSourceBranch": false,
         "label": "v8.0.0",
-        "labelRegex": "^v(\\d+).(\\d+).\\d+$",
         "mergeCommit": {
           "message": "[APM] Add note about synthtrace to APM docs (#121633) (#121643)
 
@@ -186,9 +186,9 @@ Co-authored-by: Søren Louv-Jansen <soren.louv@elastic.co>",
       },
       {
         "branch": "main",
+        "branchLabelMappingKey": "^v8.1.0$",
         "isSourceBranch": true,
         "label": "v8.1.0",
-        "labelRegex": "^v8.1.0$",
         "mergeCommit": {
           "message": "[APM] Add note about synthtrace to APM docs (#121633)",
           "sha": "d421ddcf6157150596581c7885afa3690cec6339",

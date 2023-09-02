@@ -326,11 +326,6 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       string: true,
     })
 
-    .option('addOriginalReviewers', {
-      description: 'Add reviewers of the original PRs to the target PR',
-      type: 'boolean',
-    })
-
     .option('repoForkOwner', {
       description:
         'The owner of the fork where the backport branch is pushed. Defaults to the currently authenticated user',
@@ -354,6 +349,7 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
 
     .option('repo', {
       description: 'Repo owner and name',
+      alias: 'upstream',
       type: 'string',
       conflicts: ['repoName', 'repoOwner'],
     })
@@ -375,6 +371,18 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       alias: 'sourcePrLabel',
       type: 'array',
       string: true,
+    })
+
+    .option('syncSourcePRLabels', {
+      description: 'Copy labels from source PR to the target PR',
+      alias: 'syncSourcePrLabels',
+      type: 'boolean',
+    })
+
+    .option('syncSourcePRReviewers', {
+      description: 'Copy reviewers from the source PR to the target PR',
+      alias: ['syncSourcePrReviewers', 'addOriginalReviewers'],
+      type: 'boolean',
     })
 
     .option('targetBranch', {
