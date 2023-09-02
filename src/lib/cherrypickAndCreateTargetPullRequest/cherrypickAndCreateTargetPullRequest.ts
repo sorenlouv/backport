@@ -17,12 +17,13 @@ import {
   getPullRequestBody,
   PullRequestPayload,
 } from '../github/v3/createPullRequest';
-import { syncSourcePullRequestReviewersToTargetPullRequest } from '../github/v3/syncSourcePullRequestReviewersToTargetPullRequest';
 import { validateTargetBranch } from '../github/v4/validateTargetBranch';
 import { consoleLog } from '../logger';
 import { sequentially } from '../sequentially';
 import { Commit } from '../sourceCommit/parseSourceCommit';
 import { autoMergeNowOrLater } from './autoMergeNowOrLater';
+import { copySourcePullRequestLabelsToTargetPullRequest } from './copySourcePullRequestLabels';
+import { copySourcePullRequestReviewersToTargetPullRequest } from './copySourcePullRequestReviewersToTargetPullRequest';
 import { getBackportBranchName } from './getBackportBranchName';
 import { getMergeCommits } from './getMergeCommit';
 import { getTargetPRLabels } from './getTargetPRLabels';
@@ -99,8 +100,8 @@ export async function cherrypickAndCreateTargetPullRequest({
   }
 
   // add reviewers of the original PRs to the target pull request
-  if (options.addOriginalReviewers) {
-    await syncSourcePullRequestReviewersToTargetPullRequest(
+  if (options.copySourcePRReviewers) {
+    await copySourcePullRequestReviewersToTargetPullRequest(
       options,
       commits,
       targetPullRequest.number,
@@ -115,11 +116,20 @@ export async function cherrypickAndCreateTargetPullRequest({
       commits,
       targetBranch,
     });
+
     await addLabelsToPullRequest({
       ...options,
       pullNumber: targetPullRequest.number,
       labels,
     });
+  }
+
+  if (options.copySourcePRLabels) {
+    await copySourcePullRequestLabelsToTargetPullRequest(
+      options,
+      commits,
+      targetPullRequest.number,
+    );
   }
 
   // make PR auto mergable

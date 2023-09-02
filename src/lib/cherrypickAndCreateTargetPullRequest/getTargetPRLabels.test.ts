@@ -14,7 +14,7 @@ const commits: Commit[] = [
       sha: 'd1b348e6213c5ad48653dfaad6eaf4928b2c688b',
     },
     sourcePullRequest: {
-      labels: ['backport-to-7.11'],
+      labels: ['backport-to-7.11', 'feature-abc'],
       number: 88188,
       title: 'Fix major bug',
       url: 'https://github.com/elastic/kibana/pull/88188',
@@ -31,7 +31,7 @@ const commits: Commit[] = [
         number: 88289,
         branch: '7.11',
         label: 'backport-to-7.11',
-        labelRegex: '^backport-to-(.+)$',
+        branchLabelMappingKey: '^backport-to-(.+)$',
         isSourceBranch: false,
         state: 'OPEN',
         mergeCommit: {
@@ -40,7 +40,7 @@ const commits: Commit[] = [
         },
       },
 
-      // PR to 7.x branch was created manually (not via labels) and does not contain labelRegex
+      // PR to 7.x branch was created manually (not via labels) and does not contain branchLabelMappingKey
       {
         url: 'https://github.com/elastic/kibana/pull/88288',
         number: 88288,

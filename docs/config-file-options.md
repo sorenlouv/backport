@@ -352,7 +352,6 @@ Default: `"[{{targetBranch}}] {{commitMessages}}"`
 {{targetBranch}} {{sourcePullRequest.title}}
 ```
 
-
 **Example**
 
 ```json
@@ -467,6 +466,26 @@ Default: master (unless the default branch on Github is changed)
 ```json
 {
   "sourceBranch": "7.x"
+}
+```
+
+#### `copySourcePRReviewers`
+
+Copies all labels from the original (source) pull request to the backport (target) pull request.
+
+```json
+{
+  "copySourcePRReviewers": false
+}
+```
+
+#### `copySourcePRLabels`
+
+Assign the same reviewers to the target pull request that were assigned to the original (source) pull request.
+
+```json
+{
+  "copySourcePRLabels": false
 }
 ```
 

@@ -5,7 +5,7 @@ process.env.TZ = 'UTC';
 process.env.NODE_ENV = 'jest';
 
 const baseConfig: JestConfigWithTsJest = {
-  prettierPath: null,
+  prettierPath: null, // disable prettier until it is supported by jest
   transform: {
     '^.+\\.ts?$': ['ts-jest', { diagnostics: false }],
   },

@@ -15,6 +15,27 @@ export function getTargetPRLabels({
   commits: Commit[];
   targetBranch: string;
 }) {
+  const labels = getLabels({
+    commits,
+    targetBranch,
+    targetPRLabels,
+    interactive,
+  });
+
+  return uniq(labels);
+}
+
+function getLabels({
+  commits,
+  targetBranch,
+  targetPRLabels,
+  interactive,
+}: {
+  commits: Commit[];
+  targetBranch: string;
+  targetPRLabels: string[];
+  interactive: boolean;
+}) {
   const sourceBranch = getSourceBranchFromCommits(commits);
   const labels = commits
     .flatMap((c) => {
@@ -22,8 +43,8 @@ export function getTargetPRLabels({
         (pr) => pr.branch === targetBranch,
       );
 
-      if (!targetPullRequest?.labelRegex) {
-        logger.info('Missing labelRegex for target pull request');
+      if (!targetPullRequest?.branchLabelMappingKey) {
+        logger.info('Missing branchLabelMappingKey for target pull request');
 
         // remove dynamic labels like `$1` in interactive mode
         return targetPRLabels.filter((l) => {
@@ -31,7 +52,7 @@ export function getTargetPRLabels({
         });
       }
 
-      const regex = new RegExp(targetPullRequest.labelRegex);
+      const regex = new RegExp(targetPullRequest.branchLabelMappingKey);
 
       return targetPRLabels.map((targetPRLabel) => {
         return targetPullRequest.label?.replace(regex, targetPRLabel);
@@ -44,5 +65,5 @@ export function getTargetPRLabels({
         .replaceAll('{{sourceBranch}}', sourceBranch);
     });
 
-  return uniq(labels);
+  return labels;
 }

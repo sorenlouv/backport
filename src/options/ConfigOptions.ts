@@ -20,7 +20,6 @@ type AutoFixConflictsHandler = ({
 
 type Options = Partial<{
   accessToken: string;
-  addOriginalReviewers: boolean;
   assignees: string[];
   author: string | null;
   autoAssign: boolean;
@@ -68,6 +67,8 @@ type Options = Partial<{
   skipRemoteConfig: boolean;
   sourceBranch: string;
   sourcePRLabels: string[];
+  copySourcePRLabels: boolean;
+  copySourcePRReviewers: boolean;
   targetBranchChoices: TargetBranchChoiceOrString[];
   targetBranches: string[];
   targetPRLabels: string[];
@@ -97,4 +98,9 @@ export type ConfigFileOptions = Options &
      * @deprecated Replaced by `targetPRLabels`
      */
     labels: string[];
+
+    /**
+     * @deprecated Replaced by `copySourcePRReviewers`
+     */
+    addOriginalReviewers: boolean;
   }>;

@@ -72,7 +72,7 @@ describe('fetchCommitBySha', () => {
         {
           branch: '7.x',
           label: 'v7.9.0',
-          labelRegex: '^v7.9.0$',
+          branchLabelMappingKey: '^v7.9.0$',
           isSourceBranch: false,
           state: 'MERGED',
           number: 71014,

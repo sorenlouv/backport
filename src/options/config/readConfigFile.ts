@@ -23,6 +23,7 @@ export function withConfigMigrations({
   upstream,
   labels,
   branches,
+  addOriginalReviewers,
   ...config
 }: ConfigFileOptions) {
   const { repoName, repoOwner } = parseUpstream(upstream, config);
@@ -36,6 +37,9 @@ export function withConfigMigrations({
     // `upstream` has been renamed to `repoOwner`/`repoName`
     repoName,
     repoOwner,
+
+    // `addOriginalReviewers` has been renamed to `copySourcePRReviewers`
+    copySourcePRReviewers: config.copySourcePRReviewers ?? addOriginalReviewers,
 
     // `labels` was renamed `targetPRLabels`
     targetPRLabels: config.targetPRLabels ?? labels,

@@ -30,7 +30,7 @@ describe('prompt', () => {
           },
           targetPullRequestStates: [
             {
-              labelRegex: 'foo tbd',
+              branchLabelMappingKey: 'foo tbd',
               number: 120178,
               branch: '8.0',
               label: '',
@@ -38,7 +38,7 @@ describe('prompt', () => {
               state: 'MERGED',
             },
             {
-              labelRegex: 'foo tbd',
+              branchLabelMappingKey: 'foo tbd',
               number: 120179,
               branch: '7.16',
               state: 'MERGED',
@@ -46,7 +46,7 @@ describe('prompt', () => {
               isSourceBranch: false,
             },
             {
-              labelRegex: 'foo tbd',
+              branchLabelMappingKey: 'foo tbd',
               number: 120179,
               branch: '7.15',
               state: 'NOT_CREATED',

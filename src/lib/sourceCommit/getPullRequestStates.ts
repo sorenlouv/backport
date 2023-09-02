@@ -22,7 +22,7 @@ type CreatedPullRequest = {
 };
 
 type TargetBranchWithLabel = {
-  labelRegex: string;
+  branchLabelMappingKey: string;
   branch: string;
   label: string;
   isSourceBranch: boolean;
@@ -188,9 +188,14 @@ function getTargetBranchesFromLabels(
     .map((label) => {
       const res = getTargetBranchFromLabel({ branchLabelMapping, label });
       if (res) {
-        const { labelRegex, targetBranch } = res;
+        const { branchLabelMappingKey, targetBranch } = res;
         const isSourceBranch = targetBranch === sourcePullRequest.baseRefName;
-        return { branch: targetBranch, label, labelRegex, isSourceBranch };
+        return {
+          branch: targetBranch,
+          label,
+          branchLabelMappingKey,
+          isSourceBranch,
+        };
       }
     })
     .filter(filterNil);
@@ -206,19 +211,19 @@ export function getTargetBranchFromLabel({
   label: string;
 }) {
   // only get first match
-  const result = Object.entries(branchLabelMapping).find(([labelRegex]) => {
-    const regex = new RegExp(labelRegex);
+  const result = Object.entries(branchLabelMapping).find(([key]) => {
+    const regex = new RegExp(key);
     const isMatch = label.match(regex) !== null;
     return isMatch;
   });
 
   if (result) {
-    const [labelRegex, targetBranchReplaceValue] = result;
-    const regex = new RegExp(labelRegex);
-    const targetBranch = label.replace(regex, targetBranchReplaceValue);
+    const [branchLabelMappingKey, branchLabelMappingValue] = result;
+    const regex = new RegExp(branchLabelMappingKey);
+    const targetBranch = label.replace(regex, branchLabelMappingValue);
 
     if (targetBranch) {
-      return { targetBranch, labelRegex };
+      return { targetBranch, branchLabelMappingKey };
     }
   }
 }

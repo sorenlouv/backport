@@ -96,7 +96,7 @@ describe('getCommitsWithoutBackports', () => {
       const commitsWithoutBackports = await setupExpectedPullRequests({
         targetPullRequestStates: [
           {
-            labelRegex: 'foo tbd',
+            branchLabelMappingKey: 'foo tbd',
             state: 'NOT_CREATED',
             branch: '7.x',
             label: 'v7.0.0',

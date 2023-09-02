@@ -149,7 +149,7 @@ describe('entrypoint.module', () => {
                 {
                   branch: '7.x',
                   label: 'backport-to-7.x',
-                  labelRegex: '^backport-to-(.*)$',
+                  branchLabelMappingKey: '^backport-to-(.*)$',
                   isSourceBranch: false,
                   state: 'NOT_CREATED',
                 },
@@ -219,7 +219,7 @@ describe('entrypoint.module', () => {
               branch: '7.11',
               isSourceBranch: false,
               label: 'v7.11.0',
-              labelRegex: '^v(\\d+).(\\d+).\\d+$',
+              branchLabelMappingKey: '^v(\\d+).(\\d+).\\d+$',
               mergeCommit: {
                 message:
                   '[APM] Fix incorrect table column header (95th instead of avg) (#88188) (#88289)',
@@ -288,7 +288,7 @@ describe('entrypoint.module', () => {
               number: 88289,
               branch: '7.11',
               label: 'v7.11.0',
-              labelRegex: '^v(\\d+).(\\d+).\\d+$',
+              branchLabelMappingKey: '^v(\\d+).(\\d+).\\d+$',
               isSourceBranch: false,
               state: 'MERGED',
               mergeCommit: {
@@ -368,170 +368,170 @@ describe('entrypoint.module', () => {
       });
 
       expect(commits).toMatchInlineSnapshot(`
-        [
-          {
-            "author": {
-              "email": "sorenlouv@gmail.com",
-              "name": "Søren Louv-Jansen",
-            },
-            "sourceBranch": "master",
-            "sourceCommit": {
-              "branchLabelMapping": {
-                "^v(\\d+).(\\d+).\\d+$": "$1.$2",
-                "^v7.11.0$": "7.x",
-                "^v8.0.0$": "master",
-              },
-              "committedDate": "2020-12-16T15:17:03Z",
-              "message": "[APM] Fix broken link to ML when time range is not set (#85976)",
-              "sha": "744d6809ded7e1055bfda280c351cee3e8c0e3bf",
-            },
-            "sourcePullRequest": {
-              "labels": [
-                "release_note:fix",
-                "Team:APM",
-                "apm:test-plan-done",
-                "v7.11.0",
-                "apm:test-plan-7.11.0",
-              ],
-              "mergeCommit": {
-                "message": "[APM] Fix broken link to ML when time range is not set (#85976)",
-                "sha": "744d6809ded7e1055bfda280c351cee3e8c0e3bf",
-              },
-              "number": 85976,
-              "title": "[APM] Fix broken link to ML when time range is not set",
-              "url": "https://github.com/elastic/kibana/pull/85976",
-            },
-            "suggestedTargetBranches": [],
-            "targetPullRequestStates": [
-              {
-                "branch": "7.x",
-                "isSourceBranch": false,
-                "label": "v7.11.0",
-                "labelRegex": "^v7.11.0$",
-                "mergeCommit": {
-                  "message": "[APM] Fix broken link to ML when time range is not set (#85976) (#86227)
+[
+  {
+    "author": {
+      "email": "sorenlouv@gmail.com",
+      "name": "Søren Louv-Jansen",
+    },
+    "sourceBranch": "master",
+    "sourceCommit": {
+      "branchLabelMapping": {
+        "^v(\\d+).(\\d+).\\d+$": "$1.$2",
+        "^v7.11.0$": "7.x",
+        "^v8.0.0$": "master",
+      },
+      "committedDate": "2020-12-16T15:17:03Z",
+      "message": "[APM] Fix broken link to ML when time range is not set (#85976)",
+      "sha": "744d6809ded7e1055bfda280c351cee3e8c0e3bf",
+    },
+    "sourcePullRequest": {
+      "labels": [
+        "release_note:fix",
+        "Team:APM",
+        "apm:test-plan-done",
+        "v7.11.0",
+        "apm:test-plan-7.11.0",
+      ],
+      "mergeCommit": {
+        "message": "[APM] Fix broken link to ML when time range is not set (#85976)",
+        "sha": "744d6809ded7e1055bfda280c351cee3e8c0e3bf",
+      },
+      "number": 85976,
+      "title": "[APM] Fix broken link to ML when time range is not set",
+      "url": "https://github.com/elastic/kibana/pull/85976",
+    },
+    "suggestedTargetBranches": [],
+    "targetPullRequestStates": [
+      {
+        "branch": "7.x",
+        "branchLabelMappingKey": "^v7.11.0$",
+        "isSourceBranch": false,
+        "label": "v7.11.0",
+        "mergeCommit": {
+          "message": "[APM] Fix broken link to ML when time range is not set (#85976) (#86227)
 
-        Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>",
-                  "sha": "2d361f018e0776c237d03b84ca8aa24615d16d99",
-                },
-                "number": 86227,
-                "state": "MERGED",
-                "url": "https://github.com/elastic/kibana/pull/86227",
-              },
-              {
-                "branch": "7.11",
-                "mergeCommit": {
-                  "message": "[APM] Fix broken link to ML when time range is not set (#85976) (#86228)",
-                  "sha": "c6c0015e01601cd852730d5cd20e1a906cbee900",
-                },
-                "number": 86228,
-                "state": "MERGED",
-                "url": "https://github.com/elastic/kibana/pull/86228",
-              },
-            ],
-          },
-          {
-            "author": {
-              "email": "sorenlouv@gmail.com",
-              "name": "Søren Louv-Jansen",
-            },
-            "sourceBranch": "master",
-            "sourceCommit": {
-              "branchLabelMapping": {
-                "^v(\\d+).(\\d+).\\d+$": "$1.$2",
-                "^v7.11.0$": "7.x",
-                "^v8.0.0$": "master",
-              },
-              "committedDate": "2020-12-15T12:15:00Z",
-              "message": "[APM] Correlations polish (#85116)
+Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>",
+          "sha": "2d361f018e0776c237d03b84ca8aa24615d16d99",
+        },
+        "number": 86227,
+        "state": "MERGED",
+        "url": "https://github.com/elastic/kibana/pull/86227",
+      },
+      {
+        "branch": "7.11",
+        "mergeCommit": {
+          "message": "[APM] Fix broken link to ML when time range is not set (#85976) (#86228)",
+          "sha": "c6c0015e01601cd852730d5cd20e1a906cbee900",
+        },
+        "number": 86228,
+        "state": "MERGED",
+        "url": "https://github.com/elastic/kibana/pull/86228",
+      },
+    ],
+  },
+  {
+    "author": {
+      "email": "sorenlouv@gmail.com",
+      "name": "Søren Louv-Jansen",
+    },
+    "sourceBranch": "master",
+    "sourceCommit": {
+      "branchLabelMapping": {
+        "^v(\\d+).(\\d+).\\d+$": "$1.$2",
+        "^v7.11.0$": "7.x",
+        "^v8.0.0$": "master",
+      },
+      "committedDate": "2020-12-15T12:15:00Z",
+      "message": "[APM] Correlations polish (#85116)
 
-        Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>",
-              "sha": "20638a64e2a895d4e4a6597d4a37b5db7003f1e9",
-            },
-            "sourcePullRequest": {
-              "labels": [
-                "Team:APM",
-                "release_note:skip",
-                "v7.11.0",
-              ],
-              "mergeCommit": {
-                "message": "[APM] Correlations polish (#85116)
+Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>",
+      "sha": "20638a64e2a895d4e4a6597d4a37b5db7003f1e9",
+    },
+    "sourcePullRequest": {
+      "labels": [
+        "Team:APM",
+        "release_note:skip",
+        "v7.11.0",
+      ],
+      "mergeCommit": {
+        "message": "[APM] Correlations polish (#85116)
 
-        Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>",
-                "sha": "20638a64e2a895d4e4a6597d4a37b5db7003f1e9",
-              },
-              "number": 85116,
-              "title": "[APM] Correlations polish",
-              "url": "https://github.com/elastic/kibana/pull/85116",
-            },
-            "suggestedTargetBranches": [],
-            "targetPullRequestStates": [
-              {
-                "branch": "7.x",
-                "isSourceBranch": false,
-                "label": "v7.11.0",
-                "labelRegex": "^v7.11.0$",
-                "mergeCommit": {
-                  "message": "[7.x] [APM] Correlations polish (#85116) (#85940)
+Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>",
+        "sha": "20638a64e2a895d4e4a6597d4a37b5db7003f1e9",
+      },
+      "number": 85116,
+      "title": "[APM] Correlations polish",
+      "url": "https://github.com/elastic/kibana/pull/85116",
+    },
+    "suggestedTargetBranches": [],
+    "targetPullRequestStates": [
+      {
+        "branch": "7.x",
+        "branchLabelMappingKey": "^v7.11.0$",
+        "isSourceBranch": false,
+        "label": "v7.11.0",
+        "mergeCommit": {
+          "message": "[7.x] [APM] Correlations polish (#85116) (#85940)
 
-        Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>",
-                  "sha": "42b3ecb40c344cd57800b8fa387ae32bad24bfc4",
-                },
-                "number": 85940,
-                "state": "MERGED",
-                "url": "https://github.com/elastic/kibana/pull/85940",
-              },
-            ],
-          },
-          {
-            "author": {
-              "email": "sorenlouv@gmail.com",
-              "name": "Søren Louv-Jansen",
-            },
-            "sourceBranch": "master",
-            "sourceCommit": {
-              "branchLabelMapping": {
-                "^v(\\d+).(\\d+).\\d+$": "$1.$2",
-                "^v7.11.0$": "7.x",
-                "^v8.0.0$": "master",
-              },
-              "committedDate": "2020-12-07T14:43:58Z",
-              "message": "[APM] Improve pointer event hook (#85117)",
-              "sha": "cee681afb3c5f87371112fab9a7e5dddbafea0a8",
-            },
-            "sourcePullRequest": {
-              "labels": [
-                "Team:APM",
-                "release_note:skip",
-                "v7.11.0",
-              ],
-              "mergeCommit": {
-                "message": "[APM] Improve pointer event hook (#85117)",
-                "sha": "cee681afb3c5f87371112fab9a7e5dddbafea0a8",
-              },
-              "number": 85117,
-              "title": "[APM] Improve pointer event hook",
-              "url": "https://github.com/elastic/kibana/pull/85117",
-            },
-            "suggestedTargetBranches": [],
-            "targetPullRequestStates": [
-              {
-                "branch": "7.x",
-                "isSourceBranch": false,
-                "label": "v7.11.0",
-                "labelRegex": "^v7.11.0$",
-                "mergeCommit": {
-                  "message": "[7.x] [APM] Improve pointer event hook (#85117) (#85142)",
-                  "sha": "3b72a4f3cc7c0abd0541073e1d0246b85cea3def",
-                },
-                "number": 85142,
-                "state": "MERGED",
-                "url": "https://github.com/elastic/kibana/pull/85142",
-              },
-            ],
-          },
-        ]
-      `);
+Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>",
+          "sha": "42b3ecb40c344cd57800b8fa387ae32bad24bfc4",
+        },
+        "number": 85940,
+        "state": "MERGED",
+        "url": "https://github.com/elastic/kibana/pull/85940",
+      },
+    ],
+  },
+  {
+    "author": {
+      "email": "sorenlouv@gmail.com",
+      "name": "Søren Louv-Jansen",
+    },
+    "sourceBranch": "master",
+    "sourceCommit": {
+      "branchLabelMapping": {
+        "^v(\\d+).(\\d+).\\d+$": "$1.$2",
+        "^v7.11.0$": "7.x",
+        "^v8.0.0$": "master",
+      },
+      "committedDate": "2020-12-07T14:43:58Z",
+      "message": "[APM] Improve pointer event hook (#85117)",
+      "sha": "cee681afb3c5f87371112fab9a7e5dddbafea0a8",
+    },
+    "sourcePullRequest": {
+      "labels": [
+        "Team:APM",
+        "release_note:skip",
+        "v7.11.0",
+      ],
+      "mergeCommit": {
+        "message": "[APM] Improve pointer event hook (#85117)",
+        "sha": "cee681afb3c5f87371112fab9a7e5dddbafea0a8",
+      },
+      "number": 85117,
+      "title": "[APM] Improve pointer event hook",
+      "url": "https://github.com/elastic/kibana/pull/85117",
+    },
+    "suggestedTargetBranches": [],
+    "targetPullRequestStates": [
+      {
+        "branch": "7.x",
+        "branchLabelMappingKey": "^v7.11.0$",
+        "isSourceBranch": false,
+        "label": "v7.11.0",
+        "mergeCommit": {
+          "message": "[7.x] [APM] Improve pointer event hook (#85117) (#85142)",
+          "sha": "3b72a4f3cc7c0abd0541073e1d0246b85cea3def",
+        },
+        "number": 85142,
+        "state": "MERGED",
+        "url": "https://github.com/elastic/kibana/pull/85142",
+      },
+    ],
+  },
+]
+`);
     });
 
     it('throws when missing a filter', async () => {

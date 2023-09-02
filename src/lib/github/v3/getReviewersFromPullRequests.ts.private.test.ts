@@ -8,7 +8,7 @@ describe('getReviewersFromPullRequests', () => {
     const reviewers = await getReviewersFromPullRequests({
       options: {
         repoOwner: 'backport-org',
-        repoName: 'commit-author',
+        repoName: 'repo-with-reviewed-pull-requests',
         accessToken,
         authenticatedUsername: 'foobar',
         interactive: true,
@@ -23,7 +23,7 @@ describe('getReviewersFromPullRequests', () => {
     const reviewers = await getReviewersFromPullRequests({
       options: {
         repoOwner: 'backport-org',
-        repoName: 'commit-author',
+        repoName: 'repo-with-reviewed-pull-requests',
         accessToken,
         authenticatedUsername: 'sqren',
         interactive: false,
