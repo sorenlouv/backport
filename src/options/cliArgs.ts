@@ -405,6 +405,11 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       string: true,
     })
 
+    .option('backportBranchName', {
+      description: 'Name template to use for the branch name of the backport',
+      type: 'string',
+    })
+
     // cli-only
     .option('verify', {
       description: `Opposite of no-verify`,

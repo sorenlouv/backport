@@ -1,4 +1,6 @@
+import Handlebars from 'handlebars';
 import { Commit } from '../../entrypoint.api';
+import { ValidConfigOptions } from '../../options/options';
 import { getShortSha } from '../github/commitFormatters';
 
 /*
@@ -9,7 +11,11 @@ import { getShortSha } from '../github/commitFormatters';
  * For a single commit: `backport/7.x/commit-abcdef`
  * For multiple: `backport/7.x/pr-1234_commit-abcdef`
  */
-export function getBackportBranchName(targetBranch: string, commits: Commit[]) {
+export function getBackportBranchName(
+  options: ValidConfigOptions,
+  targetBranch: string,
+  commits: Commit[],
+) {
   const refValues = commits
     .map((commit) =>
       commit.sourcePullRequest
@@ -18,5 +24,14 @@ export function getBackportBranchName(targetBranch: string, commits: Commit[]) {
     )
     .join('_')
     .slice(0, 200);
-  return `backport/${targetBranch}/${refValues}`;
+  const defaultBackportBranchName = 'backport/{{targetBranch}}/{{refValues}}';
+  const template = Handlebars.compile(
+    options.backportBranchName ?? defaultBackportBranchName,
+  );
+
+  return template({
+    sourcePullRequest: commits[0].sourcePullRequest, // assume that all commits are from the same PR
+    targetBranch,
+    refValues,
+  });
 }
