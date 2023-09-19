@@ -31,8 +31,12 @@ describe('entrypoint cli', () => {
   });
 
   it('--help', async () => {
-    const { output } = await runBackportViaCli([`--help`]);
-    const [help] = output.split('--help');
+    const { output } = await runBackportViaCli([`--help`, '--noExitProcess'], {
+      waitForString: 'Or contact me directly',
+    });
+
+    const [help] = output.split('https://twitter.com/sorenlouv');
+
     expect(help).toMatchInlineSnapshot(`
 "entrypoint.cli.ts [args]
 
@@ -118,7 +122,10 @@ Options:
       --targetBranchChoice                            List branches to backport to           [array]
   -l, --targetPRLabel, --label                        Add labels to the target (backport) PR [array]
       --verify                                        Opposite of no-verify                [boolean]
-      "
+      --help                                          Show help                            [boolean]
+
+For bugs, feature requests or questions: https://github.com/sqren/backport/issues
+Or contact me directly: "
 `);
   });
 
