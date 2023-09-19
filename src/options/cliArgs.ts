@@ -413,6 +413,7 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
 
     .alias('version', 'v')
     .help()
+    .exitProcess(!processArgs.includes('--noExitProcess'))
 
     .epilogue(
       'For bugs, feature requests or questions: https://github.com/sqren/backport/issues\nOr contact me directly: https://twitter.com/sorenlouv',
