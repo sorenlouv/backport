@@ -518,3 +518,24 @@ Labels that will be added to the target (backport) pull request. This can be use
   "targetPRLabels": ["backport", "apm-team"]
 }
 ```
+
+#### `backportBranchName`
+
+Branch name to use for the backport PR
+Template values:
+
+- `{{targetBranch}}`: Branch the backport PR will be targeting
+- `{{sourcePullRequest}}`: Original pull request object (see [interface](https://github.com/sqren/backport/blob/9e42503a7d0e06e60c575ed2c3b7dc3e5df0dd5c/src/lib/sourceCommit/parseSourceCommit.ts#L23-L31))
+- `{{refValues}}`: Name representing the original commit/PR, `commit-<hash>` or `pr-<pr number>` respectively.
+
+Default: `backport/{{targetBranch}}/{{refValues}}`
+
+**Example**
+
+```json
+{
+  "backportBranchName": "{{targetBranch}}-{{refValues}}-backport"
+}
+```
+
+See [source code](https://github.com/sqren/backport/blob/main/src/lib/cherrypickAndCreateTargetPullRequest/getBackportBranchName.ts#L14).

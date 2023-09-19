@@ -178,6 +178,7 @@ function throwForRequiredOptions(
     'author',
     'autoMergeMethod',
     'backportBinary',
+    'backportBranchName',
     'dir',
     'editor',
     'gitHostname',

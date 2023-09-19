@@ -27,6 +27,7 @@ type Options = Partial<{
   autoMerge: boolean;
   autoMergeMethod: string;
   backportBinary: string;
+  backportBranchName: string;
   cherrypickRef: boolean;
   commitConflicts: boolean;
   commitPaths: string[];
