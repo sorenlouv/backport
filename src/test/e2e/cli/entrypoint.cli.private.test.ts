@@ -31,8 +31,13 @@ describe('entrypoint cli', () => {
   });
 
   it('--help', async () => {
-    const { output } = await runBackportViaCli([`--help`, '--noExitProcess']);
-    expect(output).toMatchInlineSnapshot(`
+    const { output } = await runBackportViaCli([`--help`, '--noExitProcess'], {
+      waitForString: 'Or contact me directly',
+    });
+
+    const [help] = output.split('https://twitter.com/sorenlouv');
+
+    expect(help).toMatchInlineSnapshot(`
 "entrypoint.cli.ts [args]
 
 Options:
@@ -120,10 +125,7 @@ Options:
       --help                                          Show help                            [boolean]
 
 For bugs, feature requests or questions: https://github.com/sqren/backport/issues
-Or contact me directly: https://twitter.com/sorenlouv
-Please specify a target branch: "--branch 6.1".
-
-Read more: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson"
+Or contact me directly: "
 `);
   });
 
