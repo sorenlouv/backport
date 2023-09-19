@@ -11,11 +11,15 @@ import { getShortSha } from '../github/commitFormatters';
  * For a single commit: `backport/7.x/commit-abcdef`
  * For multiple: `backport/7.x/pr-1234_commit-abcdef`
  */
-export function getBackportBranchName(
-  options: ValidConfigOptions,
-  targetBranch: string,
-  commits: Commit[],
-) {
+export function getBackportBranchName({
+  options,
+  targetBranch,
+  commits,
+}: {
+  options: ValidConfigOptions;
+  targetBranch: string;
+  commits: Commit[];
+}) {
   const refValues = commits
     .map((commit) =>
       commit.sourcePullRequest
