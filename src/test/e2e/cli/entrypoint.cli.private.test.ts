@@ -149,18 +149,20 @@ Or contact me directly: "
     );
 
     expect(output).toMatchInlineSnapshot(`
-      "? Select commit (Use arrow keys)
-      ❯ 1. Add sheep emoji (#9) 7.8 
-        2. Change Ulysses to Gretha (conflict) (#8) 7.x 
-        3. Add 🍏 emoji (#5) 7.8, 7.x 
-        4. Add family emoji (#2) 7.x 
-        5. Add \`backport\` dep  
-        6. Merge pull request #1 from backport-org/add-heart-emoji  
-        7. Add ❤️ emoji  
-        8. Update .backportrc.json  
-        9. Bump to 8.0.0  
-        10.Add package.json"
-    `);
+"repo: backport-org/backport-e2e
+
+? Select commit (Use arrow keys)
+❯ 1. Add sheep emoji (#9) 7.8 
+  2. Change Ulysses to Gretha (conflict) (#8) 7.x 
+  3. Add 🍏 emoji (#5) 7.8, 7.x 
+  4. Add family emoji (#2) 7.x 
+  5. Add \`backport\` dep  
+  6. Merge pull request #1 from backport-org/add-heart-emoji  
+  7. Add ❤️ emoji  
+  8. Update .backportrc.json  
+  9. Bump to 8.0.0  
+  10.Add package.json"
+`);
   });
 
   it(`lists commits from master`, async () => {
@@ -176,14 +178,16 @@ Or contact me directly: "
     );
 
     expect(output).toMatchInlineSnapshot(`
-      "? Select commit (Use arrow keys)
-      ❯ 1. Add sheep emoji (#9) 7.8 
-        2. Change Ulysses to Gretha (conflict) (#8) 7.x 
-        3. Add 🍏 emoji (#5) 7.8, 7.x 
-        4. Add family emoji (#2) 7.x 
-        5. Add \`backport\` dep  
-        6. Merge pull request #1 from backport-org/add-heart-emoji"
-    `);
+"repo: backport-org/backport-e2e • maxNumber: 6
+
+? Select commit (Use arrow keys)
+❯ 1. Add sheep emoji (#9) 7.8 
+  2. Change Ulysses to Gretha (conflict) (#8) 7.x 
+  3. Add 🍏 emoji (#5) 7.8, 7.x 
+  4. Add family emoji (#2) 7.x 
+  5. Add \`backport\` dep  
+  6. Merge pull request #1 from backport-org/add-heart-emoji"
+`);
   });
 
   it(`lists commits from 7.x`, async () => {
@@ -200,13 +204,15 @@ Or contact me directly: "
     );
 
     expect(output).toMatchInlineSnapshot(`
-      "? Select commit (Use arrow keys)
-      ❯ 1. Add 🍏 emoji (#5) (#6)  
-        2. Change Ulysses to Carol  
-        3. Add family emoji (#2) (#4)  
-        4. Update .backportrc.json  
-        5. Branch off: 7.9.0 (7.x)  
-        6. Bump to 8.0.0"
-    `);
+"repo: backport-org/backport-e2e • maxNumber: 6
+
+? Select commit (Use arrow keys)
+❯ 1. Add 🍏 emoji (#5) (#6)  
+  2. Change Ulysses to Carol  
+  3. Add family emoji (#2) (#4)  
+  4. Update .backportrc.json  
+  5. Branch off: 7.9.0 (7.x)  
+  6. Bump to 8.0.0"
+`);
   });
 });
