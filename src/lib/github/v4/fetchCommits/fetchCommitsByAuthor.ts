@@ -11,7 +11,7 @@ import {
   SourceCommitWithTargetPullRequestFragment,
   parseSourceCommit,
 } from '../../../sourceCommit/parseSourceCommit';
-import { apiRequestV4 } from '../apiRequestV4';
+import { GithubV4Exception, apiRequestV4 } from '../apiRequestV4';
 import { fetchAuthorId } from '../fetchAuthorId';
 
 async function fetchByCommitPath({
@@ -92,13 +92,21 @@ async function fetchByCommitPath({
   };
 
   try {
-    return await apiRequestV4<CommitByAuthorResponse>({
+    const res = await apiRequestV4<CommitByAuthorResponse>({
       githubApiBaseUrlV4,
       accessToken,
       query,
       variables,
     });
+    return res.data.data;
   } catch (e) {
+    if (e instanceof GithubV4Exception) {
+      if (e.githubResponse.status === 502 && maxNumber > 50) {
+        throw new BackportError(
+          `The GitHub API returned a 502 error. Try reducing the number of commits to display: "--max-number 20"`,
+        );
+      }
+    }
     return swallowMissingConfigFileException<CommitByAuthorResponse>(e);
   }
 }

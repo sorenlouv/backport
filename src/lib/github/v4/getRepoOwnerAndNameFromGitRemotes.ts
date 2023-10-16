@@ -32,12 +32,14 @@ export async function getRepoOwnerAndNameFromGitRemotes({
       },
     });
 
+    const { data } = res.data;
+
     return {
-      repoName: res.repository.name,
+      repoName: data.repository.name,
       // get the original owner (not the fork owner)
-      repoOwner: res.repository.isFork
-        ? res.repository.parent.owner.login
-        : res.repository.owner.login,
+      repoOwner: data.repository.isFork
+        ? data.repository.parent.owner.login
+        : data.repository.owner.login,
     };
   } catch (e) {
     if (e instanceof GithubV4Exception) {

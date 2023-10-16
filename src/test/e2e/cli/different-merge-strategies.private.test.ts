@@ -21,28 +21,30 @@ describe('different-merge-strategies', () => {
     );
 
     expect(output).toMatchInlineSnapshot(`
-      "? Select commit (Use arrow keys)
-      ❯ 1. Downsides with "Rebase and merge"  
-        2. Add description for "Rebase and merge"  
-        3. Add "Rebase and merge" header  
-        4. Create rebase-and-merge.txt  
-        5. Merge pull request #9 from backport-org/many-merge-commits 7.x 
-        6. Merge strategy: Eighth of many merges 7.x 
-        7. Merge strategy: Seventh of many merges 7.x 
-        8. Merge strategy: Sixth of many merges 7.x 
-        9. Merge strategy: Fifth of many merges 7.x 
-        10.Merge strategy: Fourth of many merges 7.x 
-        11.Merge strategy: Third of many merges 7.x 
-        12.Merge strategy: Second of many merges 7.x 
-        13.Merge strategy: First of many merges 7.x 
-        14.Using squash to merge commits (#3)  
-        15.Rebase strategy: Second commit  
-        16.Rebase strategy: First commit  
-        17.Merge pull request #1 from backport-org/merge-strategy  
-        18.Merge strategy: Second commit  
-        19.Merge strategy: First commit  
-        20.Initial commit"
-    `);
+"repo: backport-org/different-merge-strategies • maxNumber: 20
+
+? Select commit (Use arrow keys)
+❯ 1. Downsides with "Rebase and merge"  
+  2. Add description for "Rebase and merge"  
+  3. Add "Rebase and merge" header  
+  4. Create rebase-and-merge.txt  
+  5. Merge pull request #9 from backport-org/many-merge-commits 7.x 
+  6. Merge strategy: Eighth of many merges 7.x 
+  7. Merge strategy: Seventh of many merges 7.x 
+  8. Merge strategy: Sixth of many merges 7.x 
+  9. Merge strategy: Fifth of many merges 7.x 
+  10.Merge strategy: Fourth of many merges 7.x 
+  11.Merge strategy: Third of many merges 7.x 
+  12.Merge strategy: Second of many merges 7.x 
+  13.Merge strategy: First of many merges 7.x 
+  14.Using squash to merge commits (#3)  
+  15.Rebase strategy: Second commit  
+  16.Rebase strategy: First commit  
+  17.Merge pull request #1 from backport-org/merge-strategy  
+  18.Merge strategy: Second commit  
+  19.Merge strategy: First commit  
+  20.Initial commit"
+`);
   });
 
   describe('when selecting a merge commit with eight commits', () => {
@@ -68,33 +70,35 @@ describe('different-merge-strategies', () => {
 
     it('runs to completion without errors', () => {
       expect(output).toMatchInlineSnapshot(`
-        "- Initializing...
-        ? Select pull request Merge pull request #9 from backport-org/many-merge-commits
-        ✔ 100% Cloning repository from github.com (one-time operation)
+"- Initializing...
+repo: backport-org/different-merge-strategies • pullNumber: 9
 
-        Backporting to 7.x:
-        - Pulling latest changes
-        ✔ Pulling latest changes
-        - Cherry-picking: Merge strategy: First of many merges
-        ✔ Cherry-picking: Merge strategy: First of many merges
-        - Cherry-picking: Merge strategy: Second of many merges
-        ✔ Cherry-picking: Merge strategy: Second of many merges
-        - Cherry-picking: Merge strategy: Third of many merges
-        ✔ Cherry-picking: Merge strategy: Third of many merges
-        - Cherry-picking: Merge strategy: Fourth of many merges
-        ✔ Cherry-picking: Merge strategy: Fourth of many merges
-        - Cherry-picking: Merge strategy: Fifth of many merges
-        ✔ Cherry-picking: Merge strategy: Fifth of many merges
-        - Cherry-picking: Merge strategy: Sixth of many merges
-        ✔ Cherry-picking: Merge strategy: Sixth of many merges
-        - Cherry-picking: Merge strategy: Seventh of many merges
-        ✔ Cherry-picking: Merge strategy: Seventh of many merges
-        - Cherry-picking: Merge strategy: Eighth of many merges
-        ✔ Cherry-picking: Merge strategy: Eighth of many merges
-        - Creating pull request
-        ✔ Creating pull request
-        View pull request: this-is-a-dry-run"
-      `);
+? Select pull request Merge pull request #9 from backport-org/many-merge-commits
+✔ 100% Cloning repository from github.com (one-time operation)
+
+Backporting to 7.x:
+- Pulling latest changes
+✔ Pulling latest changes
+- Cherry-picking: Merge strategy: First of many merges
+✔ Cherry-picking: Merge strategy: First of many merges
+- Cherry-picking: Merge strategy: Second of many merges
+✔ Cherry-picking: Merge strategy: Second of many merges
+- Cherry-picking: Merge strategy: Third of many merges
+✔ Cherry-picking: Merge strategy: Third of many merges
+- Cherry-picking: Merge strategy: Fourth of many merges
+✔ Cherry-picking: Merge strategy: Fourth of many merges
+- Cherry-picking: Merge strategy: Fifth of many merges
+✔ Cherry-picking: Merge strategy: Fifth of many merges
+- Cherry-picking: Merge strategy: Sixth of many merges
+✔ Cherry-picking: Merge strategy: Sixth of many merges
+- Cherry-picking: Merge strategy: Seventh of many merges
+✔ Cherry-picking: Merge strategy: Seventh of many merges
+- Cherry-picking: Merge strategy: Eighth of many merges
+✔ Cherry-picking: Merge strategy: Eighth of many merges
+- Creating pull request
+✔ Creating pull request
+View pull request: this-is-a-dry-run"
+`);
     });
 
     it('backports all immediate children of the merge commit', async () => {
@@ -185,53 +189,55 @@ describe('different-merge-strategies', () => {
 
     it('has the right output', async () => {
       expect(output).toMatchInlineSnapshot(`
-        "- Initializing...
-        ? Select pull request Merge pull request #9 from backport-org/many-merge-commits
-        ✔ 100% Cloning repository from github.com (one-time operation)
+"- Initializing...
+repo: backport-org/different-merge-strategies • pullNumber: 9
 
-        Backporting to 7.1:
-        - Pulling latest changes
-        ✔ Pulling latest changes
-        - Cherry-picking: Merge strategy: First of many merges
-        ✖ Cherry-picking: Merge strategy: First of many merges
+? Select pull request Merge pull request #9 from backport-org/many-merge-commits
+✔ 100% Cloning repository from github.com (one-time operation)
 
-        The commit could not be backported due to conflicts
+Backporting to 7.1:
+- Pulling latest changes
+✔ Pulling latest changes
+- Cherry-picking: Merge strategy: First of many merges
+✖ Cherry-picking: Merge strategy: First of many merges
 
-        Please fix the conflicts in <SANDBOX_PATH>
-        ? Fix the following conflicts manually:
+The commit could not be backported due to conflicts
 
-        Conflicting files:
-         - <SANDBOX_PATH>/new-fi
-        le-added-with-many-merge-commits.txt
+Please fix the conflicts in <SANDBOX_PATH>
+? Fix the following conflicts manually:
 
-
-        Press ENTER when the conflicts are resolved and files are staged (Y/n) ? Fix the following conflicts manually:
-
-        Conflicting files:
-         - <SANDBOX_PATH>/new-fi
-        le-added-with-many-merge-commits.txt
+Conflicting files:
+ - <SANDBOX_PATH>/new-fi
+le-added-with-many-merge-commits.txt
 
 
-        Press ENTER when the conflicts are resolved and files are staged Yes
-        ✔ Cherry-picking: Merge strategy: First of many merges
-        - Cherry-picking: Merge strategy: Second of many merges
-        ✔ Cherry-picking: Merge strategy: Second of many merges
-        - Cherry-picking: Merge strategy: Third of many merges
-        ✔ Cherry-picking: Merge strategy: Third of many merges
-        - Cherry-picking: Merge strategy: Fourth of many merges
-        ✔ Cherry-picking: Merge strategy: Fourth of many merges
-        - Cherry-picking: Merge strategy: Fifth of many merges
-        ✔ Cherry-picking: Merge strategy: Fifth of many merges
-        - Cherry-picking: Merge strategy: Sixth of many merges
-        ✔ Cherry-picking: Merge strategy: Sixth of many merges
-        - Cherry-picking: Merge strategy: Seventh of many merges
-        ✔ Cherry-picking: Merge strategy: Seventh of many merges
-        - Cherry-picking: Merge strategy: Eighth of many merges
-        ✔ Cherry-picking: Merge strategy: Eighth of many merges
-        - Creating pull request
-        ✔ Creating pull request
-        View pull request: this-is-a-dry-run"
-      `);
+Press ENTER when the conflicts are resolved and files are staged (Y/n) ? Fix the following conflicts manually:
+
+Conflicting files:
+ - <SANDBOX_PATH>/new-fi
+le-added-with-many-merge-commits.txt
+
+
+Press ENTER when the conflicts are resolved and files are staged Yes
+✔ Cherry-picking: Merge strategy: First of many merges
+- Cherry-picking: Merge strategy: Second of many merges
+✔ Cherry-picking: Merge strategy: Second of many merges
+- Cherry-picking: Merge strategy: Third of many merges
+✔ Cherry-picking: Merge strategy: Third of many merges
+- Cherry-picking: Merge strategy: Fourth of many merges
+✔ Cherry-picking: Merge strategy: Fourth of many merges
+- Cherry-picking: Merge strategy: Fifth of many merges
+✔ Cherry-picking: Merge strategy: Fifth of many merges
+- Cherry-picking: Merge strategy: Sixth of many merges
+✔ Cherry-picking: Merge strategy: Sixth of many merges
+- Cherry-picking: Merge strategy: Seventh of many merges
+✔ Cherry-picking: Merge strategy: Seventh of many merges
+- Cherry-picking: Merge strategy: Eighth of many merges
+✔ Cherry-picking: Merge strategy: Eighth of many merges
+- Creating pull request
+✔ Creating pull request
+View pull request: this-is-a-dry-run"
+`);
     });
 
     it('backports all immediate children of the merge commit', async () => {

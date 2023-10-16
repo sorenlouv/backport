@@ -52,7 +52,6 @@ export async function getOptionsFromGithub(options: {
       accessToken,
       query,
       variables: { repoOwner, repoName },
-      fullResponse: true,
     });
 
     throwIfInsufficientPermissions(res);

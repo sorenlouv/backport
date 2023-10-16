@@ -18,12 +18,14 @@ describe('date filters (dateSince, dateUntil)', () => {
     );
 
     expect(output).toMatchInlineSnapshot(`
-          "? Select commit (Use arrow keys)
-          ❯ 1. Bump to 8.0.0  
-            2. Add package.json  
-            3. Update .backportrc.json  
-            4. Create .backportrc.json"
-        `);
+"repo: backport-org/backport-e2e • since: 2020-08-15T10:00:00.000Z • until: 2020-08-15T10:30:00.000Z
+
+? Select commit (Use arrow keys)
+❯ 1. Bump to 8.0.0  
+  2. Add package.json  
+  3. Update .backportrc.json  
+  4. Create .backportrc.json"
+`);
   });
 
   it('combined with --pr-filter', async () => {
@@ -52,9 +54,11 @@ describe('date filters (dateSince, dateUntil)', () => {
       { waitForString: 'Select commit' },
     );
     expect(output).toMatchInlineSnapshot(`
-      "? Select commit (Use arrow keys)
-      ❯ 1. [APM] Add link to officials docs for APM UI settings (#113396) 7.x"
-    `);
+"repo: elastic/kibana • autoMerge: true • since: 2021-09-20T00:00:00.000Z • until: 2021-10-01T00:00:00.000Z
+
+? Select commit (Use arrow keys)
+❯ 1. [APM] Add link to officials docs for APM UI settings (#113396) 7.x"
+`);
     expect(output).toEqual(outputFromPrFilter);
   });
 });

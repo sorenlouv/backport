@@ -33,5 +33,5 @@ export async function disablePullRequestAutoMerge(
     },
   });
 
-  return res.disablePullRequestAutoMerge.pullRequest?.number;
+  return res.data.data.disablePullRequestAutoMerge.pullRequest?.number;
 }

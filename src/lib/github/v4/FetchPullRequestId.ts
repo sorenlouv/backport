@@ -39,5 +39,5 @@ export async function fetchPullRequestId(
     },
   });
 
-  return prResponse.repository.pullRequest.id;
+  return prResponse.data.data.repository.pullRequest.id;
 }

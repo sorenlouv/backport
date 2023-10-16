@@ -27,6 +27,7 @@ export async function getCommitsWithoutBackports({
   const commitsInConflictingPaths = await fetchCommitsByAuthor({
     ...options,
     author: null, // retrieve commits across all authors
+    maxNumber: 50,
     dateSince: null,
     dateUntil: commit.sourceCommit.committedDate,
     commitPaths: conflictingFiles,

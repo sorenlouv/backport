@@ -31,22 +31,9 @@ type ApiRequestOptions = {
   variables?: Variables;
 };
 
-// Define the implementation signature
 export async function apiRequestV4<DataResponse>(
   opts: ApiRequestOptions,
-): Promise<DataResponse>;
-
-// Overload for returning AxiosResponse with fullResponse: true
-// eslint-disable-next-line
-export async function apiRequestV4<DataResponse>(
-  opts: ApiRequestOptions & { fullResponse: true },
-): Promise<AxiosResponse<GithubV4Response<DataResponse>, any>>;
-
-// Define the implementation
-// eslint-disable-next-line
-export async function apiRequestV4<DataResponse>(
-  opts: ApiRequestOptions & { fullResponse?: boolean },
-): Promise<DataResponse | AxiosResponse<GithubV4Response<DataResponse>, any>> {
+): Promise<AxiosResponse<GithubV4Response<DataResponse>, any>> {
   const {
     githubApiBaseUrlV4 = 'https://api.github.com/graphql',
     accessToken,
@@ -90,11 +77,7 @@ export async function apiRequestV4<DataResponse>(
 
     span?.setOutcome('success');
 
-    if (opts.fullResponse) {
-      return response;
-    }
-
-    return response.data.data;
+    return response;
   } catch (e) {
     span?.setOutcome('failure');
 

@@ -48,19 +48,21 @@ describe('gracefully handle corrupted repo', () => {
 
     // second run: backport should re-create remotes and branches correctly
     expect(output).toMatchInlineSnapshot(`
-      "- Initializing...
-      ? Select commit Bump to 8.0.0
+"- Initializing...
+repo: backport-org/integration-test
 
-      Backporting to 7.x:
-      - Pulling latest changes
-      ✔ Pulling latest changes
-      - Cherry-picking: Bump to 8.0.0
-      ✔ Cherry-picking: Bump to 8.0.0
-      - Creating pull request
-      ✔ Creating pull request
-      - Adding labels: backport
-      ✔ Adding labels: backport
-      View pull request: this-is-a-dry-run"
-    `);
+? Select commit Bump to 8.0.0
+
+Backporting to 7.x:
+- Pulling latest changes
+✔ Pulling latest changes
+- Cherry-picking: Bump to 8.0.0
+✔ Cherry-picking: Bump to 8.0.0
+- Creating pull request
+✔ Creating pull request
+- Adding labels: backport
+✔ Adding labels: backport
+View pull request: this-is-a-dry-run"
+`);
   });
 });

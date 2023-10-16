@@ -47,7 +47,7 @@ export async function enablePullRequestAutoMerge(
     },
   });
 
-  return res.enablePullRequestAutoMerge.pullRequest?.number;
+  return res.data.data.enablePullRequestAutoMerge.pullRequest?.number;
 }
 
 export function parseGithubError(e: GithubV4Exception<any>) {

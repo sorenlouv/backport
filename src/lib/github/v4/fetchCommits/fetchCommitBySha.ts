@@ -40,9 +40,9 @@ export async function fetchCommitBySha(options: {
     ${SourceCommitWithTargetPullRequestFragment}
   `;
 
-  let res: CommitsByShaResponse;
+  let data: CommitsByShaResponse;
   try {
-    res = await apiRequestV4<CommitsByShaResponse>({
+    const res = await apiRequestV4<CommitsByShaResponse>({
       githubApiBaseUrlV4,
       accessToken,
       query,
@@ -52,11 +52,12 @@ export async function fetchCommitBySha(options: {
         sha,
       },
     });
+    data = res.data.data;
   } catch (e) {
-    res = swallowMissingConfigFileException<CommitsByShaResponse>(e);
+    data = swallowMissingConfigFileException<CommitsByShaResponse>(e);
   }
 
-  const sourceCommit = res.repository.object;
+  const sourceCommit = data.repository.object;
   if (!sourceCommit) {
     throw new BackportError(
       `No commit found on branch "${sourceBranch}" with sha "${sha}"`,

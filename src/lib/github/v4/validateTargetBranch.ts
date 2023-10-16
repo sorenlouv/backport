@@ -45,7 +45,7 @@ export async function validateTargetBranch({
     variables: { repoOwner, repoName, branchName },
   });
 
-  if (!res.repository.ref) {
+  if (!res.data.data.repository.ref) {
     spinner.fail(`The branch "${branchName}" does not exist`);
     throw new BackportError({
       code: 'invalid-branch-exception',

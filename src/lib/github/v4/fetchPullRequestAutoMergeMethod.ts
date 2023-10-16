@@ -40,5 +40,5 @@ export async function fetchPullRequestAutoMergeMethod(
     },
   });
 
-  return res.repository.pullRequest?.autoMergeRequest?.mergeMethod;
+  return res.data.data.repository.pullRequest?.autoMergeRequest?.mergeMethod;
 }
