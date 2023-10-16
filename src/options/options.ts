@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import { isEmpty } from 'lodash';
 import { BackportError } from '../lib/BackportError';
 import { getGlobalConfigPath } from '../lib/env';
@@ -33,6 +34,8 @@ export const defaultConfigOptions = {
   cherrypickRef: true,
   commitConflicts: false,
   commitPaths: [] as Array<string>,
+  copySourcePRLabels: false,
+  copySourcePRReviewers: false,
   cwd: process.cwd(),
   dateSince: null,
   dateUntil: null,
@@ -51,8 +54,6 @@ export const defaultConfigOptions = {
   reviewers: [] as Array<string>,
   signoff: false,
   sourcePRLabels: [] as string[],
-  copySourcePRLabels: false,
-  copySourcePRReviewers: false,
   targetBranchChoices: [] as TargetBranchChoiceOrString[],
   targetBranches: [] as string[],
   targetPRLabels: [] as string[],
@@ -221,4 +222,38 @@ function getMergedOptionsFromConfigAndCli({
     ...optionsFromConfigFiles,
     ...optionsFromCliArgs,
   };
+}
+
+export function getActiveOptionsFormatted(options: ValidConfigOptions) {
+  const customOptions = [['repo', `${options.repoOwner}/${options.repoName}`]];
+
+  if (options.pullNumber) {
+    customOptions.push(['pullNumber', `${options.pullNumber}`]);
+  }
+
+  if (options.author && options.author !== options.authenticatedUsername) {
+    customOptions.push(['author', `${options.author}`]);
+  }
+
+  if (options.autoMerge !== defaultConfigOptions.autoMerge) {
+    customOptions.push(['autoMerge', `${options.autoMerge}`]);
+  }
+
+  if (options.maxNumber !== defaultConfigOptions.maxNumber) {
+    customOptions.push(['maxNumber', `${options.maxNumber}`]);
+  }
+
+  if (options.dateSince) {
+    customOptions.push(['since', `${options.dateSince}`]);
+  }
+
+  if (options.dateUntil) {
+    customOptions.push(['until', `${options.dateUntil}`]);
+  }
+
+  return (
+    customOptions
+      .map(([key, value]) => `${chalk.bold(key)}: ${value}`)
+      .join(' • ') + `\n`
+  );
 }

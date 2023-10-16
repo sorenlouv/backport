@@ -33,5 +33,5 @@ export async function fetchAuthorId({
     variables: { author },
   });
 
-  return res.user.id;
+  return res.data.data.user.id;
 }

@@ -55,7 +55,7 @@ export async function fetchExistingPullRequest({
   });
 
   const existingPullRequest =
-    res.repository.ref?.associatedPullRequests.edges[0];
+    res.data.data.repository.ref?.associatedPullRequests.edges[0];
 
   if (!existingPullRequest) {
     return;

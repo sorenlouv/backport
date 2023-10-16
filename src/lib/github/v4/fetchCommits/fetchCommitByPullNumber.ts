@@ -63,9 +63,9 @@ export async function fetchCommitsByPullNumber(options: {
     }
   `;
 
-  let res: CommitByPullNumberResponse;
+  let data: CommitByPullNumberResponse;
   try {
-    res = await apiRequestV4<CommitByPullNumberResponse>({
+    const res = await apiRequestV4<CommitByPullNumberResponse>({
       githubApiBaseUrlV4,
       accessToken,
       query,
@@ -75,11 +75,12 @@ export async function fetchCommitsByPullNumber(options: {
         pullNumber,
       },
     });
+    data = res.data.data;
   } catch (e) {
-    res = swallowMissingConfigFileException<CommitByPullNumberResponse>(e);
+    data = swallowMissingConfigFileException<CommitByPullNumberResponse>(e);
   }
 
-  const pullRequestNode = res.repository.pullRequest;
+  const pullRequestNode = data.repository.pullRequest;
   if (!pullRequestNode) {
     throw new BackportError(`The PR #${pullNumber} does not exist`);
   }

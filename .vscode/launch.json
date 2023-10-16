@@ -15,10 +15,20 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "yarn start (entrypoint.cli.ts)",
+      "name": "Run (basic)",
       "program": "${workspaceRoot}/src/entrypoint.cli.ts",
       "runtimeArgs": ["-r", "ts-node/register/transpile-only"],
       "args": ["--repo=elastic/kibana"],
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Run (many args)",
+      "program": "${workspaceRoot}/src/entrypoint.cli.ts",
+      "runtimeArgs": ["-r", "ts-node/register/transpile-only"],
+      "args": ["--dryRun", "--repo=elastic/kibana", "--maxNumber=100"],
+
       "console": "integratedTerminal"
     },
     {

@@ -79,7 +79,7 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
     },
   });
 
-  const pullRequestNode = res.repository.pullRequest;
+  const pullRequestNode = res.data.data.repository.pullRequest;
 
   if (!pullRequestNode?.mergeCommit) {
     throw new Error('Pull request is not merged');

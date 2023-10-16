@@ -85,19 +85,20 @@ export async function fetchPullRequestsBySearchQuery(options: {
     maxNumber,
   };
 
-  let res;
+  let data: ResponseData;
   try {
-    res = await apiRequestV4<ResponseData>({
+    const res = await apiRequestV4<ResponseData>({
       githubApiBaseUrlV4,
       accessToken,
       query,
       variables,
     });
+    data = res.data.data;
   } catch (e) {
-    res = swallowMissingConfigFileException<ResponseData>(e);
+    data = swallowMissingConfigFileException<ResponseData>(e);
   }
 
-  const commits = res.search.nodes.map((pullRequestNode) => {
+  const commits = data.search.nodes.map((pullRequestNode) => {
     const sourceCommit = pullRequestNode.mergeCommit;
     return parseSourceCommit({ options, sourceCommit });
   });

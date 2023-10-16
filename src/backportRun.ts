@@ -17,7 +17,11 @@ import {
   getOptionsFromCliArgs,
   OptionsFromCliArgs,
 } from './options/cliArgs';
-import { getOptions, ValidConfigOptions } from './options/options';
+import {
+  getActiveOptionsFormatted,
+  getOptions,
+  ValidConfigOptions,
+} from './options/options';
 import { runSequentially, Result } from './runSequentially';
 
 export type BackportAbortResponse = {
@@ -102,6 +106,8 @@ export async function backportRun({
 
     logger.info('Backporting options', options);
     spinner.stop();
+
+    consoleLog(getActiveOptionsFormatted(options));
 
     const commitsSpan = apm.startSpan(`Get commits`);
     commits = await getCommits(options);

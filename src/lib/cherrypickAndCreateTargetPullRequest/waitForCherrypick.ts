@@ -129,12 +129,23 @@ async function cherrypickAndHandleConflicts({
     .map((f) => f.relative)
     .slice(0, 50);
 
-  const commitsWithoutBackports = await getCommitsWithoutBackports({
-    options,
-    commit,
-    targetBranch,
-    conflictingFiles: conflictingFilesRelative,
-  });
+  let commitsWithoutBackports: Awaited<
+    ReturnType<typeof getCommitsWithoutBackports>
+  >;
+
+  try {
+    commitsWithoutBackports = await getCommitsWithoutBackports({
+      options,
+      commit,
+      targetBranch,
+      conflictingFiles: conflictingFilesRelative,
+    });
+  } catch (e) {
+    commitsWithoutBackports = [];
+    if (e instanceof Error) {
+      logger.warn(`Unable to fetch commits without backports: ${e.message}`);
+    }
+  }
 
   if (!options.interactive) {
     throw new BackportError({

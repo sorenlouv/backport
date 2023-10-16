@@ -34,7 +34,8 @@ describe('apiRequestV4', () => {
     });
 
     it('should return correct response', async () => {
-      expect(res).toEqual({ viewer: { login: 'sqren' } });
+      // @ts-expect-error
+      expect(res.data.data).toEqual({ viewer: { login: 'sqren' } });
     });
 
     it('should call with correct args', async () => {
