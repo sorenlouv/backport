@@ -471,7 +471,7 @@ Default: master (unless the default branch on Github is changed)
 
 #### `copySourcePRReviewers`
 
-Copies all labels from the original (source) pull request to the backport (target) pull request.
+Assign the same reviewers to the target pull request that were assigned to the original (source) pull request.
 
 ```json
 {
@@ -481,7 +481,7 @@ Copies all labels from the original (source) pull request to the backport (targe
 
 #### `copySourcePRLabels`
 
-Assign the same reviewers to the target pull request that were assigned to the original (source) pull request.
+Copies all labels from the original (source) pull request to the backport (target) pull request.
 
 ```json
 {
