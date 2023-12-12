@@ -157,6 +157,7 @@ View pull request: this-is-a-dry-run"
           `--dir=${sandboxPath}`,
           '--pr=9',
           '--dry-run',
+          '--editor=false',
         ],
         {
           keepAlive: true,

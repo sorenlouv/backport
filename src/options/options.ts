@@ -112,6 +112,8 @@ export async function getOptions({
     // cli args override the above
     ...optionsFromCliArgs,
 
+    editor: optionsFromCliArgs.editor === 'false' ? undefined : combined.editor,
+
     // required properties
     accessToken,
     repoName,
