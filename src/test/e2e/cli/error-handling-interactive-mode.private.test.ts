@@ -69,6 +69,7 @@ describe('interactive error handling', () => {
     await resetSandbox(backportDir);
     const { output } = await runBackportViaCli(
       [
+        '--editor=false',
         '--repo=backport-org/repo-with-conflicts',
         '--pr=12',
         '--branch=7.x',

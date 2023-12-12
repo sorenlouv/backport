@@ -204,7 +204,7 @@ describe('enablePullRequestAutoMerge', () => {
 
       expect(isMissingStatusChecks).toBe(false);
       expect(errorMessage).toMatchInlineSnapshot(
-        `"["Merge method rebase merging is not allowed on this repository"] (Github API v4)"`,
+        `"Merge method rebase merging is not allowed on this repository (Github API v4)"`,
       );
 
       // ensure Github API reflects the change before querying
@@ -285,7 +285,7 @@ describe('enablePullRequestAutoMerge', () => {
       }
 
       expect(errorMessage).toMatchInlineSnapshot(
-        `"["Pull request Pull request is in clean status"] (Github API v4)"`,
+        `"Pull request Pull request is in clean status (Github API v4)"`,
       );
       expect(isMissingStatusChecks).toBe(true);
     });
@@ -343,7 +343,7 @@ describe('enablePullRequestAutoMerge', () => {
       }
 
       expect(errorMessage).toMatchInlineSnapshot(
-        `"["Pull request Pull request is in clean status"] (Github API v4)"`,
+        `"Pull request Pull request is in clean status (Github API v4)"`,
       );
       expect(isMissingStatusChecks).toBe(true);
     });

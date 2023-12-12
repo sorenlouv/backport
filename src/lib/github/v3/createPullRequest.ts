@@ -129,7 +129,9 @@ export function getPullRequestBody({
 
   const customPrDescription = options.prDescription
     ?.replaceAll('{{defaultPrDescription}}', defaultPrDescription)
-    ?.replaceAll('{{commitsStringified}}', JSON.stringify(commits));
+    ?.replaceAll('{defaultPrDescription}', defaultPrDescription) // retain backwards compatibility
+    ?.replaceAll('{{commitsStringified}}', JSON.stringify(commits))
+    ?.replaceAll('{commits}', JSON.stringify(commits)); // retain backwards compatibility
 
   const template = Handlebars.compile(
     customPrDescription ?? defaultPrDescription,
