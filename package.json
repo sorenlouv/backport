@@ -14,7 +14,7 @@
     "branches",
     "branching"
   ],
-  "version": "9.4.1",
+  "version": "9.4.2",
   "main": "./dist/entrypoint.api.js",
   "types": "dist/entrypoint.api.d.ts",
   "bin": {
