@@ -8,10 +8,9 @@ export async function readConfigFile(
   filepath: string,
 ): Promise<ConfigFileOptions> {
   const fileContents = await readFile(filepath, 'utf8');
-  const configWithoutComments = stripJsonComments(fileContents);
 
   try {
-    return withConfigMigrations(JSON.parse(configWithoutComments));
+    return parseConfigFile(fileContents);
   } catch (e) {
     throw new BackportError(
       `"${filepath}" contains invalid JSON:\n\n${fileContents}`,
@@ -19,13 +18,11 @@ export async function readConfigFile(
   }
 }
 // ensure backwards compatability when config options are renamed
-export function withConfigMigrations({
-  upstream,
-  labels,
-  branches,
-  addOriginalReviewers,
-  ...config
-}: ConfigFileOptions) {
+export function parseConfigFile(fileContents: string): ConfigFileOptions {
+  const configWithoutComments = stripJsonComments(fileContents);
+  const { upstream, labels, branches, addOriginalReviewers, ...config } =
+    JSON.parse(configWithoutComments);
+
   const { repoName, repoOwner } = parseUpstream(upstream, config);
 
   return excludeUndefined({

@@ -504,9 +504,9 @@ export async function createBackportBranch({
 }) {
   const spinner = ora(options.interactive, 'Pulling latest changes').start();
 
-  try {
-    const cwd = getRepoPath(options);
+  const cwd = getRepoPath(options);
 
+  try {
     await spawnPromise('git', ['reset', '--hard'], cwd);
     await spawnPromise('git', ['clean', '-d', '--force'], cwd);
 
@@ -534,35 +534,48 @@ export async function createBackportBranch({
     try {
       await spawnPromise('git', ['branch', '-D', tmpBranchName], cwd);
     } catch (e) {
-      //
+      // swallow error
     }
 
     // fetch commits for source branch
     await fetchBranch(options, sourceBranch);
-
-    spinner.succeed();
   } catch (e) {
     spinner.fail();
 
     if (e instanceof SpawnError) {
-      const isBranchInvalid =
-        e.context.stderr.toLowerCase().includes(`couldn't find remote ref`) ||
-        e.context.stderr.toLowerCase().includes(`invalid refspec`) ||
-        e.context.stderr
-          .toLowerCase()
-          .includes(
-            `is not a commit and a branch '${backportBranch}' cannot be created from it`,
-          );
+      const invalidRemoteRef = e.context.stderr
+        .toLowerCase()
+        .match(/couldn't find remote ref (.*)/)?.[1];
 
-      if (isBranchInvalid) {
+      const invalidCommit = e.context.stderr
+        .toLowerCase()
+        .match(
+          /'(.+) is not a commit and a branch .+ cannot be created from it/,
+        )?.[1];
+
+      const invalidBranch = invalidRemoteRef || invalidCommit;
+
+      if (invalidBranch) {
         throw new BackportError(
-          `The branch "${targetBranch}" is invalid or doesn't exist`,
+          `The branch "${invalidBranch}" is invalid or doesn't exist`,
+        );
+      }
+
+      const invalidRefSpec = e.context.stderr
+        .toLowerCase()
+        .match(/invalid refspec (.*)/)?.[1];
+
+      if (invalidRefSpec) {
+        throw new BackportError(
+          `The remote "${invalidRefSpec}" is invalid or doesn't exist`,
         );
       }
     }
 
     throw e;
   }
+
+  spinner.succeed();
 }
 
 export async function deleteBackportBranch({
