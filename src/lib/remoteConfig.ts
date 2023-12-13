@@ -1,6 +1,5 @@
 import gql from 'graphql-tag';
-import { ConfigFileOptions } from '../entrypoint.api';
-import { withConfigMigrations } from '../options/config/readConfigFile';
+import { parseConfigFile } from '../options/config/readConfigFile';
 import { GithubV4Exception } from './github/v4/apiRequestV4';
 import { logger } from './logger';
 
@@ -40,11 +39,9 @@ export interface RemoteConfigHistory {
   };
 }
 
-export function parseRemoteConfig(remoteConfig: RemoteConfig) {
+export function parseRemoteConfigFile(remoteConfig: RemoteConfig) {
   try {
-    return withConfigMigrations(
-      JSON.parse(remoteConfig.file.object.text),
-    ) as ConfigFileOptions;
+    return parseConfigFile(remoteConfig.file.object.text);
   } catch (e) {
     logger.info('Parsing remote config failed', e);
     return;

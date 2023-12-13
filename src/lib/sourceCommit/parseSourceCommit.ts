@@ -2,9 +2,9 @@ import gql from 'graphql-tag';
 import { differenceBy } from 'lodash';
 import { ValidConfigOptions } from '../../options/options';
 import {
-  parseRemoteConfig,
   RemoteConfigHistory,
   RemoteConfigHistoryFragment,
+  parseRemoteConfigFile,
 } from '../remoteConfig';
 import {
   TargetPullRequest,
@@ -281,6 +281,6 @@ function getSourceCommitBranchLabelMapping(
     sourcePullRequest?.mergeCommit.remoteConfigHistory.edges?.[0]?.remoteConfig;
 
   if (remoteConfig) {
-    return parseRemoteConfig(remoteConfig)?.branchLabelMapping;
+    return parseRemoteConfigFile(remoteConfig)?.branchLabelMapping;
   }
 }

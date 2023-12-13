@@ -8,7 +8,7 @@ import {
 } from '../../../git';
 import { logger } from '../../../logger';
 import {
-  parseRemoteConfig,
+  parseRemoteConfigFile,
   swallowMissingConfigFileException,
 } from '../../../remoteConfig';
 import {
@@ -145,7 +145,7 @@ async function getRemoteConfigFileOptions(
   }
 
   logger.info('Remote config: Parsing.');
-  return parseRemoteConfig(remoteConfig);
+  return parseRemoteConfigFile(remoteConfig);
 }
 
 function throwIfInsufficientPermissions(

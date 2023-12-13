@@ -313,7 +313,30 @@ describe('createBackportBranch', () => {
         backportBranch,
       }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"The branch "4.x" is invalid or doesn't exist"`,
+      `"The remote "'https://github.com/elastic/kibana.git'" is invalid or doesn't exist"`,
+    );
+  });
+
+  it('should throw "is not a commit" error', async () => {
+    expect.assertions(1);
+    const err = new childProcess.SpawnError({
+      code: 128,
+      cmdArgs: [],
+      stdout: '',
+      stderr:
+        "fatal: 'origin/remote-branch-name' is not a commit and a branch 'local-branch-name' cannot be created from it",
+    });
+
+    jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
+    await expect(
+      createBackportBranch({
+        options,
+        sourceBranch,
+        targetBranch,
+        backportBranch,
+      }),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"The branch "origin/remote-branch-name'" is invalid or doesn't exist"`,
     );
   });
 
