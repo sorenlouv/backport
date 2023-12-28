@@ -64,6 +64,7 @@ async function createPr({
     owner: TEST_REPO_OWNER,
     repo: TEST_REPO_NAME,
     title: 'my pr title',
+    draft: true,
   };
 
   const { number } = await createPullRequest({ options, prPayload });

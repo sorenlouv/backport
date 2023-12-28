@@ -18,6 +18,7 @@ describe('fetchExistingPullRequest', () => {
         body: 'My PR body',
         head: 'sqren:backport/7.8/pr-foo',
         base: '7.8',
+        draft: false,
       };
 
       const res = await fetchExistingPullRequest({ options, prPayload });
@@ -39,6 +40,7 @@ describe('fetchExistingPullRequest', () => {
         body: 'My PR body',
         head: 'sqren:backport/7.8/pr-9',
         base: '7.8',
+        draft: false,
       };
       const res = await fetchExistingPullRequest({ options, prPayload });
 
