@@ -40,6 +40,7 @@ export const defaultConfigOptions = {
   dateSince: null,
   dateUntil: null,
   details: false,
+  draft: false,
   fork: true,
   gitHostname: 'github.com',
   interactive: true,

@@ -19,6 +19,7 @@ export interface PullRequestPayload {
   body: string;
   head: string;
   base: string;
+  draft: boolean;
   [key: string]: unknown;
 }
 

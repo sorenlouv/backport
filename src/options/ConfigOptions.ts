@@ -33,6 +33,7 @@ type Options = Partial<{
   commitPaths: string[];
   details: boolean;
   dir: string;
+  draft: boolean;
   dryRun: boolean;
   editor: string;
   fork: boolean;
