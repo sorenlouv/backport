@@ -56,7 +56,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
       const options = {
         assignees: [] as string[],
         authenticatedUsername: 'sqren_authenticated',
-        author: 'sqren',
+        author: 'sorenlouv',
         autoMerge: true,
         autoMergeMethod: 'squash',
         fork: true,
@@ -65,7 +65,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         githubApiBaseUrlV4: 'http://localhost/graphql',
         interactive: false,
         prTitle: '[{{targetBranch}}] {{commitMessages}}',
-        repoForkOwner: 'sqren',
+        repoForkOwner: 'sorenlouv',
         repoName: 'kibana',
         repoOwner: 'elastic',
         reviewers: [] as string[],
@@ -164,8 +164,8 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         <!--- Backport version: 1.2.3-mocked -->
 
         ### Questions ?
-        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)",
-            "head": "sqren:backport/6.x/pr-1000_pr-2000",
+        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)",
+            "head": "sorenlouv:backport/6.x/pr-1000_pr-2000",
             "title": "[6.x] My original commit message (#1000) | My other commit message (#2000)",
           },
         ]
@@ -202,7 +202,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
   "Pulling latest changes",
   "Cherry-picking: My original commit message (#1000)",
   "Cherry-picking: My other commit message (#2000)",
-  "Pushing branch "sqren:backport/6.x/pr-1000_pr-2000"",
+  "Pushing branch "sorenlouv:backport/6.x/pr-1000_pr-2000"",
   undefined,
   "Creating pull request",
   "Adding labels: backport",
@@ -220,7 +220,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
       const options = {
         assignees: [] as string[],
         authenticatedUsername: 'sqren_authenticated',
-        author: 'sqren',
+        author: 'sorenlouv',
         fork: true,
         prTitle: '[{{targetBranch}}] {{commitMessages}}',
         repoForkOwner: 'the_fork_owner',
@@ -284,7 +284,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         <!--- Backport version: 1.2.3-mocked -->
 
         ### Questions ?
-        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)",
+        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)",
             "head": "the_fork_owner:backport/6.x/commit-mySha",
             "title": "[6.x] My original commit message",
           },
@@ -305,11 +305,11 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
       const options = {
         assignees: [] as string[],
         authenticatedUsername: 'sqren_authenticated',
-        author: 'sqren',
+        author: 'sorenlouv',
         fork: true,
         githubApiBaseUrlV4: 'http://localhost/graphql',
         prTitle: '[{{targetBranch}}] {{commitMessages}}',
-        repoForkOwner: 'sqren',
+        repoForkOwner: 'sorenlouv',
         repoName: 'kibana',
         repoOwner: 'elastic',
         reviewers: [] as string[],
@@ -369,8 +369,8 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         <!--- Backport version: 1.2.3-mocked -->
 
         ### Questions ?
-        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)",
-            "head": "sqren:backport/6.x/commit-mySha",
+        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)",
+            "head": "sorenlouv:backport/6.x/commit-mySha",
             "title": "[6.x] My original commit message",
           },
         ]

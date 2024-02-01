@@ -54,7 +54,7 @@ describe('getOptions', () => {
         "Please update your config file: "/myHomeDir/.backport/config.json".
         It must contain a valid "accessToken".
 
-        Read more: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson"
+        Read more: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson"
       `);
     });
 
@@ -70,7 +70,7 @@ describe('getOptions', () => {
       ).rejects.toThrowErrorMatchingInlineSnapshot(`
         "Please specify a target branch: "--branch 6.1".
 
-        Read more: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson"
+        Read more: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson"
       `);
     });
 
@@ -79,7 +79,7 @@ describe('getOptions', () => {
         await expect(() =>
           getOptions({
             optionsFromCliArgs: {},
-            optionsFromModule: { repoForkOwner: '', author: 'sqren' },
+            optionsFromModule: { repoForkOwner: '', author: 'sorenlouv' },
           }),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
           `""repoForkOwner" cannot be empty!"`,
@@ -107,7 +107,7 @@ describe('getOptions', () => {
           "Please update your config file: "/myHomeDir/.backport/config.json".
           It must contain a valid "accessToken".
 
-          Read more: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson"
+          Read more: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson"
         `);
       });
     });
@@ -125,20 +125,20 @@ describe('getOptions', () => {
         ).rejects.toThrowErrorMatchingInlineSnapshot(`
           "Please specify a repository: "--repo elastic/kibana".
 
-          Read more: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson"
+          Read more: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson"
         `);
       });
 
       it('should get repoName from the remote', async () => {
         mockRepoOwnerAndName({
-          childRepoOwner: 'sqren',
+          childRepoOwner: 'sorenlouv',
           parentRepoOwner: 'elastic',
           repoName: 'kibana',
         });
 
         jest
           .spyOn(git, 'getRepoInfoFromGitRemotes')
-          .mockResolvedValue([{ repoName: 'kibana', repoOwner: 'sqren' }]);
+          .mockResolvedValue([{ repoName: 'kibana', repoOwner: 'sorenlouv' }]);
 
         const options = await getOptions({
           optionsFromCliArgs: {},
@@ -169,7 +169,7 @@ describe('getOptions', () => {
     await expect(
       getOptions({ optionsFromCliArgs: {}, optionsFromModule: {} }),
     ).rejects.toThrow(
-      'You must delete the branch "backport" to continue. See https://github.com/sqren/backport/issues/155 for details',
+      'You must delete the branch "backport" to continue. See https://github.com/sorenlouv/backport/issues/155 for details',
     );
   });
 
@@ -486,7 +486,7 @@ function mockProjectConfig(projectConfig: ConfigFileOptions) {
 }
 
 function mockGithubConfigOptions({
-  viewerLogin = 'DO_NOT_USE-sqren',
+  viewerLogin = 'DO_NOT_USE-sorenlouv',
   defaultBranchRef = 'DO_NOT_USE-default-branch-name',
   hasBackportBranch,
   hasRemoteConfig,

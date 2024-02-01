@@ -179,7 +179,7 @@ describe('git.private', () => {
         backportBranch: 'my-backport-branch',
       });
       await childProcess.exec(
-        `git remote add sqren https://x-access-token:${accessToken}@github.com/sqren/repo-with-conflicts.git`,
+        `git remote add sorenlouv https://x-access-token:${accessToken}@github.com/sorenlouv/repo-with-conflicts.git`,
         { cwd },
       );
     });
@@ -188,15 +188,15 @@ describe('git.private', () => {
       await expect(async () => {
         await pushBackportBranch({
           options: {
-            repoOwner: 'sqren',
+            repoOwner: 'sorenlouv',
             repoName: 'repo-with-conflicts',
             dir: cwd,
           } as ValidConfigOptions,
           backportBranch: 'my-backport-branch',
         });
       }).rejects.toThrowErrorMatchingInlineSnapshot(`
-        "Error pushing to https://github.com/sqren/repo-with-conflicts. Repository does not exist. Either fork the repository (https://github.com/sqren/repo-with-conflicts) or disable fork mode via "--no-fork".
-        Read more about fork mode in the docs: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#fork"
+        "Error pushing to https://github.com/sorenlouv/repo-with-conflicts. Repository does not exist. Either fork the repository (https://github.com/sorenlouv/repo-with-conflicts) or disable fork mode via "--no-fork".
+        Read more about fork mode in the docs: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#fork"
       `);
     });
   });
@@ -554,7 +554,7 @@ describe('git.private', () => {
       await gitInit(cwd);
       await childProcess.spawnPromise(
         'git',
-        ['remote', 'add', 'sqren', 'git@github.com:sqren/kibana.git'],
+        ['remote', 'add', 'sorenlouv', 'git@github.com:sorenlouv/kibana.git'],
         cwd,
       );
       await childProcess.spawnPromise(

@@ -75,7 +75,7 @@ export async function cherrypickAndCreateTargetPullRequest({
     repo: options.repoName,
     title: getTitle({ options, commits, targetBranch }),
     body: getPullRequestBody({ options, commits, targetBranch }),
-    head: `${repoForkOwner}:${backportBranch}`, // eg. sqren:backport/7.x/pr-75007
+    head: `${repoForkOwner}:${backportBranch}`, // eg. sorenlouv:backport/7.x/pr-75007
     base: targetBranch, // eg. 7.x
   };
 

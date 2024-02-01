@@ -17,7 +17,7 @@ const sandboxPath = getSandboxPath({ filename: __filename });
 // repo
 const REPO_OWNER = 'backport-org';
 const REPO_NAME = 'integration-test';
-const AUTHOR = 'sqren';
+const AUTHOR = 'sorenlouv';
 
 // commit 1
 const COMMIT_SHA_1 = '5bf29b7d847ea3dbde9280448f0f62ad0f22d3ad';
@@ -109,13 +109,13 @@ describe('entrypoint.module', () => {
         <!--- Backport version: 1.2.3-mocked -->
 
         ### Questions ?
-        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)"
+        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)"
       `);
     });
 
     it('pull request: head branch is in fork repo', async () => {
       expect(pullRequestResponse.data.head.label).toEqual(
-        `sqren:${BRANCH_WITH_ONE_COMMIT}`,
+        `sorenlouv:${BRANCH_WITH_ONE_COMMIT}`,
       );
     });
 
@@ -132,7 +132,7 @@ describe('entrypoint.module', () => {
       expect(branches.map((b) => b.name)).toEqual(['7.x', 'master']);
     });
 
-    it('creates a branch in the fork (sqren/integration-test)', async () => {
+    it('creates a branch in the fork (sorenlouv/integration-test)', async () => {
       const branches = await getBranchesOnGithub({
         accessToken,
         repoOwner: AUTHOR,
@@ -239,13 +239,13 @@ describe('entrypoint.module', () => {
         <!--- Backport version: 1.2.3-mocked -->
 
         ### Questions ?
-        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)"
+        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)"
       `);
     });
 
     it('pull request: head branch contains both commits in name', async () => {
       expect(pullRequestResponse.data.head.label).toEqual(
-        `sqren:${BRANCH_WITH_TWO_COMMITS}`,
+        `sorenlouv:${BRANCH_WITH_TWO_COMMITS}`,
       );
     });
 
@@ -296,7 +296,7 @@ describe('entrypoint.module', () => {
         <!--- Backport version: 1.2.3-mocked -->
 
         ### Questions ?
-        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)"
+        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)"
       `);
     });
 
@@ -355,7 +355,7 @@ describe('entrypoint.module', () => {
       ]);
     });
 
-    it('does not create branches in the fork (sqren/integration-test)', async () => {
+    it('does not create branches in the fork (sorenlouv/integration-test)', async () => {
       const branches = await getBranchesOnGithub({
         accessToken,
         repoOwner: AUTHOR,

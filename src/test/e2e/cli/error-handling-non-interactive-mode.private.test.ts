@@ -35,7 +35,7 @@ describe('non interactive (json) error handling', () => {
       "Please update your config file: "<GLOBAL_CONFIG_FILE>".
       It must contain a valid "accessToken".
 
-      Read more: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson"
+      Read more: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson"
     `);
   });
 
@@ -71,7 +71,7 @@ describe('non interactive (json) error handling', () => {
     expect(backportResult.errorMessage).toMatchInlineSnapshot(`
       "Please specify a target branch: "--branch 6.1".
 
-      Read more: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson"
+      Read more: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson"
     `);
   });
 

@@ -81,7 +81,7 @@ describe('getCommentBody', () => {
         \`\`\`
 
         ### Questions ?
-        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
+        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
 
         <!--- Backport version: 1.2.3-mocked -->"
       `);
@@ -134,7 +134,7 @@ describe('getCommentBody', () => {
         Note: Successful backport PRs will be merged automatically after passing CI.
 
         ### Questions ?
-        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
+        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
 
         <!--- Backport version: 1.2.3-mocked -->"
       `);
@@ -190,7 +190,7 @@ describe('getCommentBody', () => {
         \`\`\`
 
         ### Questions ?
-        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
+        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
 
         <!--- Backport version: 1.2.3-mocked -->"
       `);
@@ -250,7 +250,7 @@ describe('getCommentBody', () => {
         \`\`\`
 
         ### Questions ?
-        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
+        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
 
         <!--- Backport version: 1.2.3-mocked -->"
       `);
@@ -382,7 +382,7 @@ describe('getCommentBody', () => {
         \`\`\`
 
         ### Questions ?
-        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
+        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
 
         <!--- Backport version: 1.2.3-mocked -->"
       `);
@@ -427,7 +427,7 @@ describe('getCommentBody', () => {
         \`\`\`
 
         ### Questions ?
-        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
+        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
 
         <!--- Backport version: 1.2.3-mocked -->"
       `);
@@ -495,7 +495,7 @@ describe('getCommentBody', () => {
         \`\`\`
 
         ### Questions ?
-        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
+        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
 
         <!--- Backport version: 1.2.3-mocked -->"
       `);
@@ -551,7 +551,7 @@ describe('getCommentBody', () => {
         \`\`\`
 
         ### Questions ?
-        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
+        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
 
         <!--- Backport version: 1.2.3-mocked -->"
       `);
@@ -605,7 +605,7 @@ describe('getCommentBody', () => {
         \`\`\`
 
         ### Questions ?
-        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
+        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
 
         <!--- Backport version: 1.2.3-mocked -->"
       `);
@@ -655,7 +655,7 @@ describe('getCommentBody', () => {
         Note: Successful backport PRs will be merged automatically after passing CI.
 
         ### Questions ?
-        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
+        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
 
         <!--- Backport version: 1.2.3-mocked -->"
       `);
@@ -674,7 +674,7 @@ describe('getCommentBody', () => {
         Note: Successful backport PRs will be merged automatically after passing CI.
 
         ### Questions ?
-        Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
+        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
 
         <!--- Backport version: 1.2.3-mocked -->"
       `);

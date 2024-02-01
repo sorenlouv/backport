@@ -4,11 +4,11 @@ import { addAssigneesToPullRequest } from './addAssigneesToPullRequest';
 describe('addAssigneesToPullRequest', () => {
   it('should add assignees to PR', async () => {
     const pullNumber = 216;
-    const assignees = ['sqren'];
+    const assignees = ['sorenlouv'];
 
     const scope = nock('https://api.github.com')
       .post('/repos/elastic/kibana/issues/216/assignees', {
-        assignees: ['sqren'],
+        assignees: ['sorenlouv'],
       })
       .reply(200, 'some response');
 

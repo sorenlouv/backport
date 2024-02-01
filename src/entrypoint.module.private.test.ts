@@ -362,7 +362,7 @@ describe('entrypoint.module', () => {
         accessToken: accessToken,
         repoName: 'kibana',
         repoOwner: 'elastic',
-        author: 'sqren',
+        author: 'sorenlouv',
         dateUntil: '2021-01-01T10:00:00Z',
         maxNumber: 3,
       });

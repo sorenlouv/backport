@@ -8,7 +8,7 @@
 
 ## 🎉 New: The Backport Tool as a Github Action 🎉
 
-A [Github Action](https://github.com/sqren/backport-github-action) around The Backport Tool now exists. It makes it a breeze to get automatic backports when pull requests are merged.
+A [Github Action](https://github.com/sorenlouv/backport-github-action) around The Backport Tool now exists. It makes it a breeze to get automatic backports when pull requests are merged.
 
 # Backport CLI tool
 
@@ -116,4 +116,4 @@ This tools is for anybody who is working on a codebase where they have to mainta
 
 ## Contributing
 
-See [CONTRIBUTING.md](https://github.com/sqren/backport/blob/master/CONTRIBUTING.md)
+See [CONTRIBUTING.md](https://github.com/sorenlouv/backport/blob/master/CONTRIBUTING.md)

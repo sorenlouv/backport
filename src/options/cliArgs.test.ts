@@ -67,8 +67,8 @@ describe('getOptionsFromCliArgs', () => {
     });
 
     it('sets the author', () => {
-      const res = getOptionsFromCliArgs(['--author=sqren']);
-      expect(res.author).toEqual('sqren');
+      const res = getOptionsFromCliArgs(['--author=sorenlouv']);
+      expect(res.author).toEqual('sorenlouv');
     });
 
     it('sets the author to null', () => {

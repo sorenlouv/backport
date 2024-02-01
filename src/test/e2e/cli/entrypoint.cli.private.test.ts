@@ -126,7 +126,7 @@ Options:
       --verify                                        Opposite of no-verify                [boolean]
       --help                                          Show help                            [boolean]
 
-For bugs, feature requests or questions: https://github.com/sqren/backport/issues
+For bugs, feature requests or questions: https://github.com/sorenlouv/backport/issues
 Or contact me directly: "
 `);
   });
@@ -170,7 +170,7 @@ Or contact me directly: "
       [
         '--branch=7.x',
         '--repo=backport-org/backport-e2e',
-        '--author=sqren',
+        '--author=sorenlouv',
         `--accessToken=${accessToken}`,
         '--max-number=6',
       ],
@@ -195,7 +195,7 @@ Or contact me directly: "
       [
         '--branch=7.x',
         '--repo=backport-org/backport-e2e',
-        '--author=sqren',
+        '--author=sorenlouv',
         `--accessToken=${accessToken}`,
         '--max-number=6',
         '--source-branch=7.x',

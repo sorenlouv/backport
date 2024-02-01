@@ -185,8 +185,8 @@ describe('getRepoInfoFromGitRemotes', () => {
         'elastic\tgit@github.com:elastic/kibana.git (push)\n' +
         'peter\tgit@github.com:peter/kibana (fetch)\n' +
         'peter\tgit@github.com:peter/kibana (push)\n' +
-        'sqren\tgit@github.com:sqren/kibana.git (fetch)\n' +
-        'sqren\tgit@github.com:sqren/kibana.git (push)\n',
+        'sorenlouv\tgit@github.com:sorenlouv/kibana.git (fetch)\n' +
+        'sorenlouv\tgit@github.com:sorenlouv/kibana.git (push)\n',
       stderr: '',
       code: 0,
       cmdArgs: [],
@@ -196,7 +196,7 @@ describe('getRepoInfoFromGitRemotes', () => {
       { repoName: 'kibana', repoOwner: 'john.doe' },
       { repoName: 'kibana', repoOwner: 'elastic' },
       { repoName: 'kibana', repoOwner: 'peter' },
-      { repoName: 'kibana', repoOwner: 'sqren' },
+      { repoName: 'kibana', repoOwner: 'sorenlouv' },
     ]);
   });
 
@@ -741,15 +741,15 @@ describe('addRemote', () => {
     const spy = jest
       .spyOn(childProcess, 'spawnPromise')
       .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] });
-    await addRemote(options, 'sqren');
+    await addRemote(options, 'sorenlouv');
 
     return expect(spy).toHaveBeenCalledWith(
       'git',
       [
         'remote',
         'add',
-        'sqren',
-        'https://x-access-token:myAccessToken@github.com/sqren/kibana.git',
+        'sorenlouv',
+        'https://x-access-token:myAccessToken@github.com/sorenlouv/kibana.git',
       ],
       '/myHomeDir/.backport/repositories/elastic/kibana',
     );
@@ -761,7 +761,7 @@ describe('addRemote', () => {
       .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] });
     await addRemote(
       { ...options, gitHostname: 'github.my-company.com' },
-      'sqren',
+      'sorenlouv',
     );
 
     return expect(spy).toHaveBeenCalledWith(
@@ -769,8 +769,8 @@ describe('addRemote', () => {
       [
         'remote',
         'add',
-        'sqren',
-        'https://x-access-token:myAccessToken@github.my-company.com/sqren/kibana.git',
+        'sorenlouv',
+        'https://x-access-token:myAccessToken@github.my-company.com/sorenlouv/kibana.git',
       ],
       '/myHomeDir/.backport/repositories/elastic/kibana',
     );
@@ -794,20 +794,20 @@ describe('pushBackportBranch', () => {
         code: 128,
         cmdArgs: [
           'push',
-          'sqren',
+          'sorenlouv',
           'backport/7.x/pr-2:backport/7.x/pr-2',
           '--force',
         ],
         stdout: '',
         stderr:
-          "remote: Repository not found.\nfatal: repository 'https://github.com/sqren/kibana.git/' not found\n",
+          "remote: Repository not found.\nfatal: repository 'https://github.com/sorenlouv/kibana.git/' not found\n",
       }),
     );
 
     await expect(pushBackportBranch({ options, backportBranch })).rejects
       .toThrowErrorMatchingInlineSnapshot(`
       "Error pushing to https://github.com/the_fork_owner/kibana. Repository does not exist. Either fork the repository (https://github.com/elastic/kibana) or disable fork mode via "--no-fork".
-      Read more about fork mode in the docs: https://github.com/sqren/backport/blob/main/docs/config-file-options.md#fork"
+      Read more about fork mode in the docs: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#fork"
     `);
   });
 });

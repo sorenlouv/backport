@@ -114,7 +114,7 @@ Add assignees to the target pull request
 
 ```json
 {
-  "assignees": ["sqren"]
+  "assignees": ["sorenlouv"]
 }
 ```
 
@@ -124,7 +124,7 @@ By default only commits from the authenticated user are displayed. To see commit
 
 ```json
 {
-  "author": "sqren"
+  "author": "sorenlouv"
 }
 ```
 
@@ -340,9 +340,9 @@ Template values:
 
 - `{{sourceBranch}}`: Branch the commit is coming from (usually `main`)
 - `{{targetBranch}}`: Branch the backport PR will be targeting
-- `{{sourcePullRequest}}`: Original pull request object (see [interface](https://github.com/sqren/backport/blob/9e42503a7d0e06e60c575ed2c3b7dc3e5df0dd5c/src/lib/sourceCommit/parseSourceCommit.ts#L23-L31))
+- `{{sourcePullRequest}}`: Original pull request object (see [interface](https://github.com/sorenlouv/backport/blob/9e42503a7d0e06e60c575ed2c3b7dc3e5df0dd5c/src/lib/sourceCommit/parseSourceCommit.ts#L23-L31))
 - `{{commitMessages}}`: Message of backported commit. For multiple commits the messages will be separated by pipes (`|`).
-- `{{commits}}`: A list of commits ([interface](https://github.com/sqren/backport/blob/9e42503a7d0e06e60c575ed2c3b7dc3e5df0dd5c/src/lib/sourceCommit/parseSourceCommit.ts#L15-L36))
+- `{{commits}}`: A list of commits ([interface](https://github.com/sorenlouv/backport/blob/9e42503a7d0e06e60c575ed2c3b7dc3e5df0dd5c/src/lib/sourceCommit/parseSourceCommit.ts#L15-L36))
 
 Default: `"[{{targetBranch}}] {{commitMessages}}"`
 
@@ -360,7 +360,7 @@ Default: `"[{{targetBranch}}] {{commitMessages}}"`
 }
 ```
 
-See [source code](https://github.com/sqren/backport/blob/7c998dd05bda06e9979409cc4e63273bad711d11/src/lib/github/v3/createPullRequest.test.ts#L340-L522) for more examples
+See [source code](https://github.com/sorenlouv/backport/blob/7c998dd05bda06e9979409cc4e63273bad711d11/src/lib/github/v3/createPullRequest.test.ts#L340-L522) for more examples
 
 #### `prDescription`
 
@@ -371,7 +371,7 @@ The description uses the [handlebars templating engine](https://handlebarsjs.com
 - `{{targetBranch}}`: Branch the backport PR will be targeting
 - `{{commitMessages}}`: Message of backported commit. For multiple commits the messages will be separated by new lines (`|`).
 - `{{defaultPrDescription}}`: The default PR description. Using this makes it easy to append and prepend text to the existing description
-- `{{commits}}`: A list of commit objects (see [commit interface](https://github.com/sqren/backport/blob/9e42503a7d0e06e60c575ed2c3b7dc3e5df0dd5c/src/lib/sourceCommit/parseSourceCommit.ts#L15-L36))
+- `{{commits}}`: A list of commit objects (see [commit interface](https://github.com/sorenlouv/backport/blob/9e42503a7d0e06e60c575ed2c3b7dc3e5df0dd5c/src/lib/sourceCommit/parseSourceCommit.ts#L15-L36))
 
 **Example: List commits**
 
@@ -389,7 +389,7 @@ For people who often want to append the same text, they can create a bash alias:
 alias backport-skip-ci='backport --pr-description "{defaultPrDescription} [skip-ci]"'
 ```
 
-See [source code](https://github.com/sqren/backport/blob/7c998dd05bda06e9979409cc4e63273bad711d11/src/lib/github/v3/createPullRequest.test.ts#L340-L522) for more examples
+See [source code](https://github.com/sorenlouv/backport/blob/7c998dd05bda06e9979409cc4e63273bad711d11/src/lib/github/v3/createPullRequest.test.ts#L340-L522) for more examples
 
 #### `prFilter`
 
@@ -525,7 +525,7 @@ Branch name to use for the backport PR
 Template values:
 
 - `{{targetBranch}}`: Branch the backport PR will be targeting
-- `{{sourcePullRequest}}`: Original pull request object (see [interface](https://github.com/sqren/backport/blob/9e42503a7d0e06e60c575ed2c3b7dc3e5df0dd5c/src/lib/sourceCommit/parseSourceCommit.ts#L23-L31))
+- `{{sourcePullRequest}}`: Original pull request object (see [interface](https://github.com/sorenlouv/backport/blob/9e42503a7d0e06e60c575ed2c3b7dc3e5df0dd5c/src/lib/sourceCommit/parseSourceCommit.ts#L23-L31))
 - `{{refValues}}`: Name representing the original commit/PR, `commit-<hash>` or `pr-<pr number>` respectively.
 
 Default: `backport/{{targetBranch}}/{{refValues}}`
@@ -538,4 +538,4 @@ Default: `backport/{{targetBranch}}/{{refValues}}`
 }
 ```
 
-See [source code](https://github.com/sqren/backport/blob/main/src/lib/cherrypickAndCreateTargetPullRequest/getBackportBranchName.ts#L14).
+See [source code](https://github.com/sorenlouv/backport/blob/main/src/lib/cherrypickAndCreateTargetPullRequest/getBackportBranchName.ts#L14).

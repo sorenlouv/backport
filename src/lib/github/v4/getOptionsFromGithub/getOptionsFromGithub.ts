@@ -74,7 +74,7 @@ export async function getOptionsFromGithub(options: {
   // it is not possible to have a branch named "backport"
   if (data.repository.illegalBackportBranch) {
     throw new BackportError(
-      'You must delete the branch "backport" to continue. See https://github.com/sqren/backport/issues/155 for details',
+      'You must delete the branch "backport" to continue. See https://github.com/sorenlouv/backport/issues/155 for details',
     );
   }
 

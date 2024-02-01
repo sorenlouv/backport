@@ -13,7 +13,7 @@ describe('fetchRemoteProjectConfig', () => {
       const execOpts = { cwd: sandboxPath };
       await childProcess.exec(`git init`, execOpts);
       await childProcess.exec(
-        `git remote add sqren git@github.com:sqren/kibana.git`,
+        `git remote add sorenlouv git@github.com:sorenlouv/kibana.git`,
         execOpts,
       );
 

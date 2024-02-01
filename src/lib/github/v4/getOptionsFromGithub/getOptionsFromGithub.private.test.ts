@@ -13,7 +13,7 @@ describe('getOptionsFromGithub', () => {
     describe('is invalid', () => {
       it('throws an error', async () => {
         const combinedOptions = {
-          author: 'sqren',
+          author: 'sorenlouv',
           accessToken: 'foo',
           repoOwner: 'backport-org',
           repoName: 'backport-e2e',
@@ -29,7 +29,7 @@ describe('getOptionsFromGithub', () => {
     describe('is valid', () => {
       it('returns the options', async () => {
         const combinedOptions = {
-          author: 'sqren',
+          author: 'sorenlouv',
           accessToken,
           repoOwner: 'backport-org',
           repoName: 'backport-e2e',
@@ -37,7 +37,7 @@ describe('getOptionsFromGithub', () => {
         };
 
         expect(await getOptionsFromGithub(combinedOptions)).toEqual({
-          authenticatedUsername: 'sqren',
+          authenticatedUsername: 'sorenlouv',
           branchLabelMapping: {
             '^v(\\d+).(\\d+).\\d+$': '$1.$2',
             '^v7.9.0$': '7.x',
@@ -61,9 +61,9 @@ describe('getOptionsFromGithub', () => {
   describe('when `repoOwner` is fork', () => {
     it('returns original repoOwner', async () => {
       const combinedOptions = {
-        author: 'sqren',
+        author: 'sorenlouv',
         accessToken,
-        repoOwner: 'sqren',
+        repoOwner: 'sorenlouv',
         repoName: 'backport-e2e',
         cwd: process.cwd(),
       };
@@ -78,7 +78,7 @@ describe('getOptionsFromGithub', () => {
     describe('when no sourceBranch is specified', () => {
       it('uses the default branch of the repo', async () => {
         const combinedOptions = {
-          author: 'sqren',
+          author: 'sorenlouv',
           accessToken,
           repoOwner: 'backport-org',
           repoName: 'repo-with-non-standard-main-branch',
@@ -96,7 +96,7 @@ describe('getOptionsFromGithub', () => {
     describe('exists', () => {
       it('shows a warning', async () => {
         const combinedOptions = {
-          author: 'sqren',
+          author: 'sorenlouv',
           accessToken,
           repoOwner: 'backport-org',
           repoName: 'repo-with-branch-named-backport',
@@ -106,7 +106,7 @@ describe('getOptionsFromGithub', () => {
         await expect(async () => {
           await getOptionsFromGithub(combinedOptions);
         }).rejects.toThrow(
-          'You must delete the branch "backport" to continue. See https://github.com/sqren/backport/issues/155 for details',
+          'You must delete the branch "backport" to continue. See https://github.com/sorenlouv/backport/issues/155 for details',
         );
       });
     });
@@ -115,7 +115,7 @@ describe('getOptionsFromGithub', () => {
   describe('when a backportrc.json config was deleted from repo', () => {
     it('does not throw', async () => {
       const combinedOptions = {
-        author: 'sqren',
+        author: 'sorenlouv',
         accessToken,
         repoOwner: 'backport-org',
         repoName: 'repo-with-backportrc-removed',
@@ -125,7 +125,7 @@ describe('getOptionsFromGithub', () => {
       const options = await getOptionsFromGithub(combinedOptions);
 
       expect(options).toEqual({
-        authenticatedUsername: 'sqren',
+        authenticatedUsername: 'sorenlouv',
         isRepoPrivate: false,
         sourceBranch: 'main',
       });

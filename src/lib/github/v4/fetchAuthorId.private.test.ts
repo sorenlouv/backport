@@ -16,11 +16,11 @@ describe('fetchAuthorId', () => {
     });
   });
 
-  describe('author is "sqren"', () => {
+  describe('author is "sorenlouv"', () => {
     it('returns author id', async () => {
       const options = {
         accessToken,
-        author: 'sqren',
+        author: 'sorenlouv',
       } as ValidConfigOptions;
 
       expect(await fetchAuthorId(options)).toEqual('MDQ6VXNlcjIwOTk2Ng==');

@@ -15,7 +15,7 @@ describe('fetchCommitsByAuthor', () => {
       spy = jest.spyOn(apiRequestV4Module, 'apiRequestV4');
       commits = await fetchCommitsByAuthor({
         accessToken,
-        author: 'sqren',
+        author: 'sorenlouv',
         maxNumber: 10,
         repoName: 'kibana',
         repoOwner: 'elastic',
@@ -50,7 +50,7 @@ describe('fetchCommitsByAuthor', () => {
   describe('commitPaths', () => {
     const getOptions = () => ({
       accessToken,
-      author: 'sqren',
+      author: 'sorenlouv',
       maxNumber: 10,
       repoName: 'repo-with-different-commit-paths',
       repoOwner: 'backport-org',

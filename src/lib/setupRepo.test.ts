@@ -154,7 +154,7 @@ describe('setupRepo', () => {
         authenticatedUsername: 'sqren_authenticated',
         cwd: '/path/to/source/repo',
         fork: true,
-        repoForkOwner: 'sqren',
+        repoForkOwner: 'sorenlouv',
         repoName: 'kibana',
         repoOwner: 'elastic',
       } as ValidConfigOptions);
@@ -184,11 +184,11 @@ describe('setupRepo', () => {
           cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
         },
         {
-          cmd: 'git remote rm sqren',
+          cmd: 'git remote rm sorenlouv',
           cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
         },
         {
-          cmd: 'git remote add sqren https://x-access-token:myAccessToken@github.com/sqren/kibana.git',
+          cmd: 'git remote add sorenlouv https://x-access-token:myAccessToken@github.com/sorenlouv/kibana.git',
           cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
         },
         {

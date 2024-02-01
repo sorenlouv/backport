@@ -14,7 +14,7 @@ describe('allFetchers', () => {
   beforeEach(async () => {
     const commitsByAuthor = await fetchCommitsByAuthor({
       accessToken,
-      author: 'sqren',
+      author: 'sorenlouv',
       maxNumber: 1,
       repoName: 'kibana',
       repoOwner: 'elastic',
@@ -58,7 +58,7 @@ describe('allFetchers', () => {
   it('matches commitByAuthor with commitBySearchQuery', async () => {
     const commitsBySearchQuery = await fetchPullRequestsBySearchQuery({
       accessToken,
-      author: 'sqren',
+      author: 'sorenlouv',
       dateSince: null,
       dateUntil: null,
       maxNumber: 1,

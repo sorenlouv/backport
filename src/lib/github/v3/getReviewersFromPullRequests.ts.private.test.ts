@@ -16,7 +16,7 @@ describe('getReviewersFromPullRequests', () => {
       pullNumbers: [2],
     });
 
-    expect(reviewers).toEqual(['sqren', 'backport-demo-user']);
+    expect(reviewers).toEqual(['sorenlouv', 'backport-demo-user']);
   });
 
   it('excludes current user', async () => {
@@ -25,7 +25,7 @@ describe('getReviewersFromPullRequests', () => {
         repoOwner: 'backport-org',
         repoName: 'repo-with-reviewed-pull-requests',
         accessToken,
-        authenticatedUsername: 'sqren',
+        authenticatedUsername: 'sorenlouv',
         interactive: false,
       },
       pullNumbers: [2],

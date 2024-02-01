@@ -10,7 +10,7 @@ import {
 
 const defaultOptions = {
   accessToken: 'myAccessToken',
-  author: 'sqren',
+  author: 'sorenlouv',
   githubApiBaseUrlV4: 'http://localhost/graphql',
   maxNumber: 10,
   repoName: 'kibana',

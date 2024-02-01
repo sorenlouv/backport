@@ -3,11 +3,13 @@
 ### Running backport via docker
 
 **Create a bash alias**
+
 ```sh
-alias backport='docker run -it --rm -v $(pwd):/app:ro -v ~/.backport:/root/.backport sqren/backport'
+alias backport='docker run -it --rm -v $(pwd):/app:ro -v ~/.backport:/root/.backport sorenlouv/backport'
 ```
 
 You can now run backport via Docker like:
+
 ```sh
 backport --help
 ```
@@ -23,25 +25,25 @@ docker run -it --rm -v $(pwd):/app:ro -v ~/.backport:/root/.backport $(docker bu
 ### Build docker image
 
 ```
-docker build -t sqren/backport .
+docker build -t sorenlouv/backport .
 ```
 
 ### Test image locally before publishing:
 
 ```
-docker run --rm -v $(pwd):/app:ro -v ~/.backport:/root/.backport sqren/backport -v
+docker run --rm -v $(pwd):/app:ro -v ~/.backport:/root/.backport sorenlouv/backport -v
 ```
 
 ### Publish to Docker hub
 
 #### A. Via Github action
 
-Go to the [Docker push action](https://github.com/sqren/backport/actions/workflows/docker-build-and-push.yml) and deploy by clicking "Run workflow".
+Go to the [Docker push action](https://github.com/sorenlouv/backport/actions/workflows/docker-build-and-push.yml) and deploy by clicking "Run workflow".
 
 #### B. Locally
 
 ```
-docker push sqren/backport
+docker push sorenlouv/backport
 ```
 
 **Note: this will not produce multi-platform images**

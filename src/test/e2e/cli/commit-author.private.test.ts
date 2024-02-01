@@ -90,8 +90,8 @@ describe('commit author', () => {
         cwd: backportRepo,
       });
 
-      expect(authorName).toEqual('sqren');
-      expect(authorEmail).toEqual('sqren@users.noreply.github.com');
+      expect(authorName).toEqual('sorenlouv');
+      expect(authorEmail).toEqual('sorenlouv@users.noreply.github.com');
     });
   });
 });

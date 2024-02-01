@@ -48,7 +48,7 @@ describe('getPullRequestBody', () => {
       <!--- Backport version: 1.2.3-mocked -->
 
       ### Questions ?
-      Please refer to the [Backport tool documentation](https://github.com/sqren/backport)"
+      Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)"
     `);
   });
 
@@ -86,7 +86,7 @@ describe('getPullRequestBody', () => {
       <!--- Backport version: 1.2.3-mocked -->
 
       ### Questions ?
-      Please refer to the [Backport tool documentation](https://github.com/sqren/backport)"
+      Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)"
     `);
   });
 
@@ -153,7 +153,7 @@ describe('getPullRequestBody', () => {
       <!--- Backport version: 1.2.3-mocked -->
 
       ### Questions ?
-      Please refer to the [Backport tool documentation](https://github.com/sqren/backport)"
+      Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)"
     `);
   });
 
@@ -233,7 +233,7 @@ describe('getPullRequestBody', () => {
       <!--- Backport version: 1.2.3-mocked -->
 
       ### Questions ?
-      Please refer to the [Backport tool documentation](https://github.com/sqren/backport)"
+      Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)"
     `);
   });
 
@@ -331,7 +331,7 @@ describe('getPullRequestBody', () => {
       <!--- Backport version: 1.2.3-mocked -->
 
       ### Questions ?
-      Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
+      Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
 
       text to append"
     `);
@@ -373,7 +373,7 @@ This will backport the following commits from \`main\` to \`7.x\`:
 <!--- Backport version: 1.2.3-mocked -->
 
 ### Questions ?
-Please refer to the [Backport tool documentation](https://github.com/sqren/backport)
+Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
 
 <!--BACKPORT [{"sourcePullRequest":{"url":"https://github.com/backport-org/different-merge-strategies/pull/55"},"sourceCommit":{"sha":"abcdefghijklm","message":"My commit message (#55)"},"sourceBranch":"main"},{"sourceCommit":{"sha":"qwertyuiop","message":"Another commit message"}}] BACKPORT-->"
 `);

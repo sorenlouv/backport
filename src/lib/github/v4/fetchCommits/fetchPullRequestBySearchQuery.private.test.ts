@@ -9,7 +9,7 @@ describe('fetchPullRequestsBySearchQuery', () => {
     it('throws an error', async () => {
       const options = {
         accessToken,
-        author: 'sqren',
+        author: 'sorenlouv',
         dateSince: null,
         dateUntil: null,
         maxNumber: 10,
@@ -22,7 +22,7 @@ describe('fetchPullRequestsBySearchQuery', () => {
       await expect(fetchPullRequestsBySearchQuery(options)).rejects
         .toThrowErrorMatchingInlineSnapshot(`
               "No commits found for query:
-                  type:pr is:merged sort:created-desc repo:backport-org/backport-e2e author:sqren base:master label:non-existing
+                  type:pr is:merged sort:created-desc repo:backport-org/backport-e2e author:sorenlouv base:master label:non-existing
 
               Use \`--all\` to see commits by all users or \`--author=<username>\` for commits from a specific user"
             `);
@@ -33,7 +33,7 @@ describe('fetchPullRequestsBySearchQuery', () => {
     it('returns the merge commits for those PRs', async () => {
       const options = {
         accessToken,
-        author: 'sqren',
+        author: 'sorenlouv',
         dateSince: null,
         dateUntil: null,
         maxNumber: 10,

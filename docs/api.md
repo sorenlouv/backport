@@ -1,6 +1,6 @@
 # API
 
-`backport` can be imported as a Node module and interacted with programatically. This can be useful when creating automation around the Backport tool. See for example the [Backport Github Action](https://github.com/sqren/backport-github-action)
+`backport` can be imported as a Node module and interacted with programatically. This can be useful when creating automation around the Backport tool. See for example the [Backport Github Action](https://github.com/sorenlouv/backport-github-action)
 
 ### `backportRun(options, processArgs, exitCodeOnFailure)`
 

@@ -16,7 +16,7 @@ describe('fetchExistingPullRequest', () => {
         repo: 'backport-e2e',
         title: 'My PR title',
         body: 'My PR body',
-        head: 'sqren:backport/7.8/pr-foo',
+        head: 'sorenlouv:backport/7.8/pr-foo',
         base: '7.8',
       };
 
@@ -37,7 +37,7 @@ describe('fetchExistingPullRequest', () => {
         repo: 'backport-e2e',
         title: 'My PR title',
         body: 'My PR body',
-        head: 'sqren:backport/7.8/pr-9',
+        head: 'sorenlouv:backport/7.8/pr-9',
         base: '7.8',
       };
       const res = await fetchExistingPullRequest({ options, prPayload });

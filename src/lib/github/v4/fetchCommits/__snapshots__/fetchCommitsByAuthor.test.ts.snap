@@ -9,7 +9,7 @@ exports[`fetchCommitsByAuthor when commit has an associated pull request should 
   }
 }",
     "variables": {
-      "author": "sqren",
+      "author": "sorenlouv",
     },
   },
 ]

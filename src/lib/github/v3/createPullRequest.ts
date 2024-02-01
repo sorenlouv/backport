@@ -125,7 +125,7 @@ export function getPullRequestBody({
     '{{commitMessages}}\n\n' +
     '<!--- Backport version: {{PACKAGE_VERSION}} -->\n\n' +
     '### Questions ?\n' +
-    'Please refer to the [Backport tool documentation](https://github.com/sqren/backport)';
+    'Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)';
 
   const customPrDescription = options.prDescription
     ?.replaceAll('{{defaultPrDescription}}', defaultPrDescription)

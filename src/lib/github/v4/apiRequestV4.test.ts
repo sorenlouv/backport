@@ -16,7 +16,7 @@ describe('apiRequestV4', () => {
       commitsByAuthorCalls = mockGqlRequest<any>({
         name: 'MyQuery',
         statusCode: 200,
-        body: { data: { viewer: { login: 'sqren' } } },
+        body: { data: { viewer: { login: 'sorenlouv' } } },
       });
 
       res = await apiRequestV4({
@@ -35,7 +35,7 @@ describe('apiRequestV4', () => {
 
     it('should return correct response', async () => {
       // @ts-expect-error
-      expect(res.data.data).toEqual({ viewer: { login: 'sqren' } });
+      expect(res.data.data).toEqual({ viewer: { login: 'sorenlouv' } });
     });
 
     it('should call with correct args', async () => {

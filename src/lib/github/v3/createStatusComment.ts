@@ -116,7 +116,7 @@ export function getCommentBody({
   const linkToGithubActionLogs = options.githubActionRunId
     ? ` and see the [Github Action logs](https://github.com/${repoOwner}/${repoName}/actions/runs/${options.githubActionRunId}) for details`
     : '';
-  const questionsAndLinkToBackport = `\n### Questions ?\nPlease refer to the [Backport tool documentation](https://github.com/sqren/backport)${linkToGithubActionLogs}\n`;
+  const questionsAndLinkToBackport = `\n### Questions ?\nPlease refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)${linkToGithubActionLogs}\n`;
 
   if (
     backportResponse.status === 'aborted' &&
