@@ -124,6 +124,11 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       type: 'boolean',
     })
 
+    .option('draft', {
+      description: 'Publish pull request as draft',
+      type: 'boolean',
+    })
+
     .option('dryRun', {
       description: 'Run backport locally without pushing to Github',
       type: 'boolean',

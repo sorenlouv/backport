@@ -217,6 +217,7 @@ describe('getOptions', () => {
       dateSince: null,
       dateUntil: null,
       details: false,
+      draft: false,
       editor: 'code',
       fork: true,
       gitHostname: 'github.com',
