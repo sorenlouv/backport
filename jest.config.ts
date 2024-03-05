@@ -11,6 +11,7 @@ const baseConfig: JestConfigWithTsJest = {
   },
   snapshotSerializers: ['jest-snapshot-serializer-ansi'],
   setupFiles: ['./src/test/setupFiles/automatic-mocks.ts'],
+  setupFilesAfterEnv: ['./src/test/setupFiles/setup-after-env.ts'],
   preset: 'ts-jest',
   testRegex: 'src/.*test.ts$',
   testEnvironment: 'node',
