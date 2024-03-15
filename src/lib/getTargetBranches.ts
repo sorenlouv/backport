@@ -20,7 +20,7 @@ export async function getTargetBranches(
 
   // target branches from the first commit
   const suggestedTargetBranches =
-    commits.length === 1 ? commits[0].suggestedTargetBranches : [];
+    commits.length > 0 ? commits[0].suggestedTargetBranches : [];
 
   // require target branches to be specified when when in non-interactive mode
   if (!options.interactive) {

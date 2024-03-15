@@ -193,6 +193,49 @@ describe('getTargetBranches', () => {
       });
     });
   });
+
+  describe('when `commit.suggestedTargetBranches` is not empty and non-interactive mode', () => {
+    let branches: string[];
+
+    beforeEach(async () => {
+      const options = {
+        interactive: false,
+      } as ValidConfigOptions;
+
+      const commits: Commit[] = [
+        {
+          author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
+          sourceCommit: {
+            branchLabelMapping: {},
+            committedDate: 'aaa',
+            message: 'hey',
+            sha: 'abcd',
+          },
+          sourceBranch: '7.x',
+          suggestedTargetBranches: ['release/targetBranch'],
+          targetPullRequestStates: [],
+        },
+        {
+          author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
+          sourceCommit: {
+            branchLabelMapping: {},
+            committedDate: 'aaa',
+            message: 'hey',
+            sha: 'abcd',
+          },
+          sourceBranch: '7.x',
+          suggestedTargetBranches: ['release/targetBranch'],
+          targetPullRequestStates: [],
+        },
+      ];
+
+      branches = await getTargetBranches(options, commits);
+    });
+
+    it('should return branches from commit', () => {
+      expect(branches).toEqual(['release/targetBranch']);
+    });
+  });
 });
 
 describe('getTargetBranchChoices', () => {
