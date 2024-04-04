@@ -93,10 +93,12 @@ export function getPullRequestStates({
         state: 'MERGED' as const,
         url: sourcePullRequest.url,
         number: sourcePullRequest.number,
-        mergeCommit: {
-          message: sourcePullRequest.mergeCommit.message,
-          sha: sourcePullRequest.mergeCommit.sha,
-        },
+        mergeCommit: sourcePullRequest.mergeCommit
+          ? {
+              message: sourcePullRequest.mergeCommit.message,
+              sha: sourcePullRequest.mergeCommit.sha,
+            }
+          : undefined,
       };
     }
 

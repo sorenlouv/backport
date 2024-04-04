@@ -560,4 +560,42 @@ describe('getTitle', () => {
       'Branch: "7.x". Messages: My commit message (#55) | Another commit message (#56)',
     );
   });
+
+  it('support backticks', () => {
+    const options = {
+      prTitle: '[{{targetBranch}}] {{commitMessages}}',
+    } as ValidConfigOptions;
+
+    const commits = [
+      {
+        author: {
+          email: 'soren.louv@elastic.co',
+          name: 'Søren Louv-Jansen',
+        },
+        sourceBranch: 'main',
+        sourcePullRequest: {
+          labels: [],
+          title: 'My PR Title',
+          number: 55,
+          url: 'https://github.com/backport-org/different-merge-strategies/pull/55',
+          mergeCommit: {
+            sha: 'abcdefghi',
+            message: 'My commit message (#55)',
+          },
+        },
+        suggestedTargetBranches: [],
+        sourceCommit: {
+          branchLabelMapping: {},
+          committedDate: '2020',
+          sha: 'abcdefghi',
+          message: 'My commit message with `backticks` (#55)',
+        },
+        targetPullRequestStates: [],
+      },
+    ];
+
+    expect(getTitle({ options, commits, targetBranch: '7.x' })).toEqual(
+      '[7.x] My commit message with `backticks` (#55)',
+    );
+  });
 });

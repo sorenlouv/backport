@@ -152,8 +152,9 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
       ) {
         const unmergedBackports =
           result.error.errorContext.commitsWithoutBackports.map((c) => {
-            return ` - [${getFirstLine(c.commit.sourceCommit.message)}](${c
-              .commit.sourcePullRequest?.url})`;
+            return ` - [${getFirstLine(c.commit.sourceCommit.message)}](${
+              c.commit.sourcePullRequest?.url
+            })`;
           });
 
         const unmergedBackportsSection =
