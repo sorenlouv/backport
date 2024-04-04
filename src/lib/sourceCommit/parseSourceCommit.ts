@@ -25,7 +25,7 @@ export interface Commit {
     labels: string[];
     number: number;
     url: string;
-    mergeCommit: {
+    mergeCommit?: {
       message: string;
       sha: string;
     };
@@ -45,7 +45,7 @@ export interface SourcePullRequestNode {
       name: string;
     }[];
   };
-  mergeCommit: {
+  mergeCommit?: {
     remoteConfigHistory: RemoteConfigHistory['remoteConfigHistory'];
     sha: string;
     message: string;
@@ -171,10 +171,12 @@ export function parseSourceCommit({
           title: sourcePullRequest.title,
           number: sourcePullRequest.number,
           url: sourcePullRequest.url,
-          mergeCommit: {
-            message: sourcePullRequest.mergeCommit.message,
-            sha: sourcePullRequest.mergeCommit.sha,
-          },
+          mergeCommit: sourcePullRequest.mergeCommit
+            ? {
+                message: sourcePullRequest.mergeCommit.message,
+                sha: sourcePullRequest.mergeCommit.sha,
+              }
+            : undefined,
         }
       : undefined,
     sourceBranch: sourcePullRequest?.baseRefName ?? options.sourceBranch,
@@ -278,7 +280,8 @@ function getSourceCommitBranchLabelMapping(
   const sourcePullRequest = getSourcePullRequest(sourceCommit);
 
   const remoteConfig =
-    sourcePullRequest?.mergeCommit.remoteConfigHistory.edges?.[0]?.remoteConfig;
+    sourcePullRequest?.mergeCommit?.remoteConfigHistory.edges?.[0]
+      ?.remoteConfig;
 
   if (remoteConfig) {
     return parseRemoteConfigFile(remoteConfig)?.branchLabelMapping;
