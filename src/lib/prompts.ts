@@ -122,7 +122,7 @@ export function getChoicesForCommitPrompt(
       name = `${position}${message} ${pullStatus}`;
     }
 
-    const short = c.sourcePullRequest
+    const short = c.sourcePullRequest?.mergeCommit
       ? `#${c.sourcePullRequest.number} (${getShortSha(
           c.sourcePullRequest.mergeCommit.sha,
         )})`
