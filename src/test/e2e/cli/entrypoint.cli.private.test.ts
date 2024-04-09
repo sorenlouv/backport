@@ -64,6 +64,7 @@ Options:
       --dateUntil, --until                            ISO-8601 date for filtering commits   [string]
       --dir                                           Path to temporary backport repo       [string]
       --details                                       Show details about each commit       [boolean]
+      --draft                                         Publish pull request as draft        [boolean]
       --dryRun                                        Run backport locally without pushing to Github
                                                                                            [boolean]
       --editor                                        Editor to be opened during conflict resolution

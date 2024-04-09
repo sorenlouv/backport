@@ -19,6 +19,7 @@ export interface PullRequestPayload {
   body: string;
   head: string;
   base: string;
+  draft: boolean;
   [key: string]: unknown;
 }
 
@@ -33,12 +34,13 @@ export async function createPullRequest({
   number: number;
   didUpdate: boolean;
 }> {
+  const msg = `Creating ${options.draft ? 'draft ' : ''}pull request`;
   logger.info(
-    `Creating PR with title: "${prPayload.title}". ${prPayload.head} -> ${prPayload.base}`,
+    `${msg} with title: "${prPayload.title}". ${prPayload.head} -> ${prPayload.base}`,
   );
 
   const { accessToken, githubApiBaseUrlV3 } = options;
-  const spinner = ora(options.interactive, `Creating pull request`).start();
+  const spinner = ora(options.interactive, msg).start();
 
   if (options.dryRun) {
     spinner.succeed();
