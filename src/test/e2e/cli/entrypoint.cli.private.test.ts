@@ -1,5 +1,5 @@
-import { exec } from '../../../lib/child-process-promisified';
 import * as packageVersion from '../../../utils/packageVersion';
+import { exec } from '../../childProcessHelper';
 import { getDevAccessToken } from '../../private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
 import { runBackportViaCli } from './runBackportViaCli';

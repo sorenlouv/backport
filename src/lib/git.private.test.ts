@@ -4,6 +4,7 @@ import path from 'path';
 import makeDir from 'make-dir';
 import { Commit } from '../entrypoint.api';
 import { ValidConfigOptions } from '../options/options';
+import { exec } from '../test/childProcessHelper';
 import { getDevAccessToken } from '../test/private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from '../test/sandbox';
 import * as childProcess from './child-process-promisified';
@@ -178,7 +179,7 @@ describe('git.private', () => {
         targetBranch: '7.x',
         backportBranch: 'my-backport-branch',
       });
-      await childProcess.exec(
+      await exec(
         `git remote add sorenlouv https://x-access-token:${accessToken}@github.com/sorenlouv/repo-with-conflicts.git`,
         { cwd },
       );
@@ -380,7 +381,7 @@ describe('git.private', () => {
         cwd,
       );
 
-      await childProcess.exec('git checkout 7.x', { cwd });
+      await exec('git checkout 7.x', { cwd });
 
       // cherry-pick file
       try {
@@ -394,7 +395,7 @@ describe('git.private', () => {
       }
 
       // disregard conflicts and stage all files
-      await childProcess.exec('git add -A', { cwd });
+      await exec('git add -A', { cwd });
 
       await commitChanges({ commit, commitAuthor, options });
 
@@ -779,10 +780,7 @@ async function getCurrentSha(cwd: string) {
 }
 
 async function getCurrentBranchName(cwd: string) {
-  const { stdout } = await childProcess.exec(
-    'git rev-parse --abbrev-ref HEAD',
-    { cwd },
-  );
+  const { stdout } = await exec('git rev-parse --abbrev-ref HEAD', { cwd });
   return stdout.trim();
 }
 
