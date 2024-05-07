@@ -36,6 +36,7 @@ export async function spawnPromise(
   cmd: string,
   cmdArgs: ReadonlyArray<string>,
   cwd: string,
+  isInteractive = false,
 ): Promise<SpawnPromiseResponse> {
   const spawnSpan = startSpawnSpan(cmd, cmdArgs);
   const fullCmd = getFullCmd(cmd, cmdArgs);
@@ -47,15 +48,16 @@ export async function spawnPromise(
 
       // ensure that git commands return english error messages
       env: { ...process.env, LANG: 'en_US' },
+      ...(isInteractive ? { stdio: 'inherit' } : undefined),
     });
     let stderr = '';
     let stdout = '';
 
-    subprocess.stdout.on('data', (data: string) => {
+    subprocess.stdout?.on('data', (data: string) => {
       stdout += data;
     });
 
-    subprocess.stderr.on('data', (data: string) => {
+    subprocess.stderr?.on('data', (data: string) => {
       stderr += data;
     });
 

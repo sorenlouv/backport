@@ -177,7 +177,7 @@ async function cherrypickAndHandleConflicts({
    */
 
   if (options.editor) {
-    await spawnPromise(options.editor, [repoPath], options.cwd);
+    await spawnPromise(options.editor, [repoPath], options.cwd, true);
   }
 
   // list files with conflict markers + unstaged files and require user to resolve them
