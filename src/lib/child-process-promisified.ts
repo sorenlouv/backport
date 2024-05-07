@@ -1,22 +1,28 @@
 import childProcess from 'child_process';
-import { promisify } from 'util';
 import apm from 'elastic-apm-node';
 import { logger } from './logger';
-const execPromisified = promisify(childProcess.exec);
 
-export async function exec(
-  cmd: string,
-  options: childProcess.ExecOptions & { cwd: string },
-) {
-  const res = await execPromisified(cmd, {
-    maxBuffer: 100 * 1024 * 1024,
-    ...options,
+type SpawnErrorContext = {
+  cmdArgs: ReadonlyArray<string>;
+  code: number;
+  stderr: string;
+  stdout: string;
+};
 
-    // ensure that git commands return english error messages
-    env: { ...process.env, LANG: 'en_US' },
-  });
+export class SpawnError extends Error {
+  context: SpawnErrorContext;
+  constructor(context: SpawnErrorContext) {
+    const cmdArgs = context.cmdArgs.join(' ');
+    const message = `Code: ${
+      context.code
+    }, Args: "${cmdArgs}", Message: ${context.stderr.trim()}`;
 
-  return res;
+    super(message);
+    Error.captureStackTrace(this, SpawnError);
+    this.name = 'SpawnError';
+    this.message = message;
+    this.context = context;
+  }
 }
 
 type SpawnPromiseResponse = {
@@ -83,17 +89,6 @@ export async function spawnPromise(
   });
 }
 
-function startSpawnSpan(cmd: string, cmdArgs: ReadonlyArray<string>) {
-  const span = apm.startSpan(`Spawn: "${cmd}"`);
-  const fullCmd = getFullCmd(cmd, cmdArgs);
-  const firstCmdArg = cmdArgs.filter(
-    (cmdArg) => !cmdArg.startsWith('--') && !cmdArg.startsWith('-'),
-  )[0];
-  span?.setType('spawn', cmd, firstCmdArg);
-  span?.setLabel(`cmd`, fullCmd);
-  return span;
-}
-
 export const spawnStream = (cmd: string, cmdArgs: ReadonlyArray<string>) => {
   const spawnSpan = startSpawnSpan(cmd, cmdArgs);
 
@@ -111,29 +106,17 @@ export const spawnStream = (cmd: string, cmdArgs: ReadonlyArray<string>) => {
   return res;
 };
 
-function getFullCmd(cmd: string, cmdArgs: ReadonlyArray<string>) {
-  return `${cmd} ${cmdArgs.join(' ')}`;
+function startSpawnSpan(cmd: string, cmdArgs: ReadonlyArray<string>) {
+  const span = apm.startSpan(`Spawn: "${cmd}"`);
+  const fullCmd = getFullCmd(cmd, cmdArgs);
+  const firstCmdArg = cmdArgs.filter(
+    (cmdArg) => !cmdArg.startsWith('--') && !cmdArg.startsWith('-'),
+  )[0];
+  span?.setType('spawn', cmd, firstCmdArg);
+  span?.setLabel(`cmd`, fullCmd);
+  return span;
 }
 
-export type SpawnErrorContext = {
-  cmdArgs: ReadonlyArray<string>;
-  code: number;
-  stderr: string;
-  stdout: string;
-};
-
-export class SpawnError extends Error {
-  context: SpawnErrorContext;
-  constructor(context: SpawnErrorContext) {
-    const cmdArgs = context.cmdArgs.join(' ');
-    const message = `Code: ${
-      context.code
-    }, Args: "${cmdArgs}", Message: ${context.stderr.trim()}`;
-
-    super(message);
-    Error.captureStackTrace(this, SpawnError);
-    this.name = 'SpawnError';
-    this.message = message;
-    this.context = context;
-  }
+function getFullCmd(cmd: string, cmdArgs: ReadonlyArray<string>) {
+  return `${cmd} ${cmdArgs.join(' ')}`;
 }

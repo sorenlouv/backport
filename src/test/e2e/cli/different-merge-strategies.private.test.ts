@@ -1,5 +1,5 @@
 import fs from 'fs/promises';
-import { exec } from '../../../lib/child-process-promisified';
+import { exec } from '../../childProcessHelper';
 import { getDevAccessToken } from '../../private/getDevAccessToken';
 import { replaceStringAndLinebreaks } from '../../replaceStringAndLinebreaks';
 import { getSandboxPath, resetSandbox } from '../../sandbox';

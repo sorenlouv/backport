@@ -1,6 +1,6 @@
+import { exec } from '../../../test/childProcessHelper';
 import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from '../../../test/sandbox';
-import * as childProcess from '../../child-process-promisified';
 import { getRepoOwnerAndNameFromGitRemotes } from './getRepoOwnerAndNameFromGitRemotes';
 
 const sandboxPath = getSandboxPath({ filename: __filename });
@@ -11,8 +11,8 @@ describe('fetchRemoteProjectConfig', () => {
     it('retrives the original owner from github', async () => {
       await resetSandbox(sandboxPath);
       const execOpts = { cwd: sandboxPath };
-      await childProcess.exec(`git init`, execOpts);
-      await childProcess.exec(
+      await exec(`git init`, execOpts);
+      await exec(
         `git remote add sorenlouv git@github.com:sorenlouv/kibana.git`,
         execOpts,
       );
@@ -33,16 +33,10 @@ describe('fetchRemoteProjectConfig', () => {
     it('swallows the error and returns empty', async () => {
       await resetSandbox(sandboxPath);
       const execOpts = { cwd: sandboxPath };
-      await childProcess.exec(`git init`, execOpts);
-      await childProcess.exec(
-        `git remote add foo git@github.com:foo/kibana.git`,
-        execOpts,
-      );
+      await exec(`git init`, execOpts);
+      await exec(`git remote add foo git@github.com:foo/kibana.git`, execOpts);
 
-      await childProcess.exec(
-        `git remote add bar git@github.com:bar/kibana.git`,
-        execOpts,
-      );
+      await exec(`git remote add bar git@github.com:bar/kibana.git`, execOpts);
 
       expect(
         await getRepoOwnerAndNameFromGitRemotes({
@@ -57,7 +51,7 @@ describe('fetchRemoteProjectConfig', () => {
     it('returns empty', async () => {
       await resetSandbox(sandboxPath);
       const execOpts = { cwd: sandboxPath };
-      await childProcess.exec(`git init`, execOpts);
+      await exec(`git init`, execOpts);
 
       expect(
         await getRepoOwnerAndNameFromGitRemotes({

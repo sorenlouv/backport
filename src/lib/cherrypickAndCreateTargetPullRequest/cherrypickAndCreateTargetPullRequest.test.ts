@@ -28,7 +28,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
     execSpy = jest
       .spyOn(childProcess, 'spawnPromise')
 
-      // mock all exec commands to respond without errors
+      // mock all spawn commands to respond without errors
       .mockResolvedValue({ stdout: '', stderr: '', code: 0, cmdArgs: [] });
 
     consoleLogSpy = jest.spyOn(logger, 'consoleLog');
