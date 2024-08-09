@@ -409,7 +409,7 @@ Default: `False`
 
 ```json
 {
-  "publishStatusCommentOnSuccess": false
+  "publishStatusCommentOnAbort": false
 }
 ```
 
