@@ -193,7 +193,7 @@ Default: `backport`
 
 #### `branchLabelMapping`
 
-Automatically detech which branches a pull request should be backported to, based on the pull request labels.
+Automatically detect which branches a pull request should be backported to, based on the pull request labels.
 
 ```json
 {
@@ -409,7 +409,7 @@ Default: `False`
 
 ```json
 {
-  "publishStatusCommentOnSuccess": false
+  "publishStatusCommentOnAbort": false
 }
 ```
 
