@@ -344,19 +344,27 @@ Template values:
 - `{{commitMessages}}`: Message of backported commit. For multiple commits the messages will be separated by pipes (`|`).
 - `{{commits}}`: A list of commits ([`Commit` interface](https://github.com/sorenlouv/backport/blob/main/src/lib/sourceCommit/parseSourceCommit.ts))
 
-Default: `"[{{targetBranch}}] {{commitMessages}}"`
+**Default**
 
-**Example: Use original PR title prefixed by branch**
-
+```json
+{
+  "prTitle": "[{{targetBranch}}] {{commitMessages}}"
+}
 ```
-{{targetBranch}} {{sourcePullRequest.title}}
-```
 
-**Example**
+**Example: Slightly more verbose**
 
 ```json
 {
   "prTitle": "{{commitMessages}} backport for {{targetBranch}}"
+}
+```
+
+**Example: Use original PR title prefixed by branch**
+
+```json
+{
+  "prTitle": "{{targetBranch}} {{sourcePullRequest.title}}"
 }
 ```
 
