@@ -46,8 +46,8 @@ export async function spawnPromise(
     const subprocess = childProcess.spawn(cmd, cmdArgs, {
       cwd,
 
-      // ensure that git commands return english error messages
-      env: { ...process.env, LANG: 'en_US' },
+      // ensure that git commands return English error messages
+      env: { ...process.env, LANG: 'C' },
       ...(isInteractive ? { stdio: 'inherit' } : undefined),
     });
     let stderr = '';
@@ -95,7 +95,7 @@ export const spawnStream = (cmd: string, cmdArgs: ReadonlyArray<string>) => {
   const spawnSpan = startSpawnSpan(cmd, cmdArgs);
 
   const res = childProcess.spawn(cmd, cmdArgs, {
-    env: { ...process.env, LANG: 'en_US' },
+    env: { ...process.env, LANG: 'C' },
   });
 
   res.on('close', (code) => {
