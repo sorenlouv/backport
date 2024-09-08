@@ -191,11 +191,10 @@ export async function deleteRemote(
   } catch (e) {
     const isSpawnError = e instanceof SpawnError;
 
-    if (
-      isSpawnError &&
-      e.context.code > 0 &&
-      e.context.stderr.includes('No such remote')
-    ) {
+    // Swallow the "remote does not exist" failure, indicated by a return
+    // code of 2. From `git help remote`: "When subcommands such as add, rename,
+    // and remove can’t find the remote in question, the exit status is 2."
+    if (isSpawnError && e.context.code == 2) {
       return;
     }
 

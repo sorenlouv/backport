@@ -364,12 +364,24 @@ describe('deleteRemote', () => {
     repoName: 'kibana',
   } as ValidConfigOptions;
 
-  it('should swallow SpawnError error', async () => {
+  it('should swallow "no such remote" error', async () => {
     const err = new childProcess.SpawnError({
-      code: 128,
+      code: 2,
       cmdArgs: [],
       stdout: '',
-      stderr: "fatal: No such remote: 'origin'\n",
+      stderr: "fatal: No such remote: 'my-remote'\n",
+    });
+
+    jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
+    await expect(await deleteRemote(options, remoteName)).toBe(undefined);
+  });
+
+  it('should swallow "no such remote" error, even if it is not in English', async () => {
+    const err = new childProcess.SpawnError({
+      code: 2,
+      cmdArgs: [],
+      stdout: '',
+      stderr: "Fehler: Remote-Repository nicht gefunden: 'my-remote'\n",
     });
 
     jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
