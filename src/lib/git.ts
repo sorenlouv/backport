@@ -191,10 +191,15 @@ export async function deleteRemote(
   } catch (e) {
     const isSpawnError = e instanceof SpawnError;
 
-    // Swallow the "remote does not exist" failure, indicated by a return
-    // code of 2. From `git help remote`: "When subcommands such as add, rename,
-    // and remove can’t find the remote in question, the exit status is 2."
-    if (isSpawnError && e.context.code == 2) {
+    // Swallow the "remote does not exist" failure.
+    // Since git 2.30.0, this failure is indicated by the specific exit code 2.
+    // In earlier versions, the exit code is 128 and only the error message can
+    // tell the problems apart.
+    if (
+      isSpawnError &&
+      (e.context.code == 2 ||
+        (e.context.code == 128 && e.context.stderr.includes('No such remote')))
+    ) {
       return;
     }
 
