@@ -345,6 +345,34 @@ describe('getCommentBody', () => {
                     targetPullRequestStates: [],
                   },
                 },
+                {
+                  formatted: 'some-formatted-text',
+                  commit: {
+                    author: {
+                      email: 'matthias.wilhelm@elastic.co',
+                      name: 'Matthias Polman-Wilhelm',
+                    },
+                    sourceBranch: 'master',
+                    sourcePullRequest: {
+                      labels: [],
+                      number: 44,
+                      title: 'Antarctica commit | with pipeline char',
+                      url: 'url-to-pr-45',
+                      mergeCommit: {
+                        sha: '',
+                        message: 'Antarctica commit | with pipeline char',
+                      },
+                    },
+                    suggestedTargetBranches: [],
+                    sourceCommit: {
+                      branchLabelMapping: {},
+                      committedDate: '',
+                      sha: '',
+                      message: 'Antarctica commit | with pipeline char',
+                    },
+                    targetPullRequestStates: [],
+                  },
+                },
               ],
             }),
           },
@@ -365,27 +393,27 @@ describe('getCommentBody', () => {
     it('posts a comment when `publishStatusCommentOnFailure = true`', () => {
       const params = getParams({ publishStatusCommentOnFailure: true });
       expect(getCommentBody(params)).toMatchInlineSnapshot(`
-        "## 💔 Some backports could not be created
+"## 💔 Some backports could not be created
 
-        | Status | Branch | Result |
-        |:------:|:------:|:------|
-        |✅|7.x|[<img src="https://img.shields.io/github/pulls/detail/state/elastic/kibana/55">](url-to-pr-55)|
-        |❌|7.1|**Backport failed because of merge conflicts**<br><br>You might need to backport the following PRs to 7.1:<br> - [New Zealand commit message](url-to-pr-5)<br> - [Australia commit](url-to-pr-44)|
-        |❌|7.2|Backport failed because of merge conflicts|
+| Status | Branch | Result |
+|:------:|:------:|:------|
+|✅|7.x|[<img src="https://img.shields.io/github/pulls/detail/state/elastic/kibana/55">](url-to-pr-55)|
+|❌|7.1|**Backport failed because of merge conflicts**<br><br>You might need to backport the following PRs to 7.1:<br> - [New Zealand commit message](url-to-pr-5)<br> - [Australia commit](url-to-pr-44)<br> - [Antarctica commit \\| with pipeline char](url-to-pr-45)|
+|❌|7.2|Backport failed because of merge conflicts|
 
-        Note: Successful backport PRs will be merged automatically after passing CI.
+Note: Successful backport PRs will be merged automatically after passing CI.
 
-        ### Manual backport
-        To create the backport manually run:
-        \`\`\`
-        node scripts/backport --pr 55
-        \`\`\`
+### Manual backport
+To create the backport manually run:
+\`\`\`
+node scripts/backport --pr 55
+\`\`\`
 
-        ### Questions ?
-        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
+### Questions ?
+Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
 
-        <!--- Backport version: 1.2.3-mocked -->"
-      `);
+<!--- Backport version: 1.2.3-mocked -->"
+`);
     });
 
     it('does not post a comment when `publishStatusCommentOnFailure = false`', () => {
