@@ -364,7 +364,19 @@ describe('deleteRemote', () => {
     repoName: 'kibana',
   } as ValidConfigOptions;
 
-  it('should swallow "no such remote" error', async () => {
+  it('should swallow "no such remote" error on git before 2.30.0', async () => {
+    const err = new childProcess.SpawnError({
+      code: 128,
+      cmdArgs: [],
+      stdout: '',
+      stderr: "fatal: No such remote: 'my-remote'\n",
+    });
+
+    jest.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
+    await expect(await deleteRemote(options, remoteName)).toBe(undefined);
+  });
+
+  it('should swallow "no such remote" error on git 2.30.0 or later', async () => {
     const err = new childProcess.SpawnError({
       code: 2,
       cmdArgs: [],
@@ -376,9 +388,9 @@ describe('deleteRemote', () => {
     await expect(await deleteRemote(options, remoteName)).toBe(undefined);
   });
 
-  it('should swallow "no such remote" error, even if it is not in English', async () => {
+  it('should swallow "no such remote" error on git 2.30.0+, even if it is not in English', async () => {
     const err = new childProcess.SpawnError({
-      code: 2,
+      code: 2, // returned only by git 2.30.0 or later, earlier versions returned 128
       cmdArgs: [],
       stdout: '',
       stderr: "Fehler: Remote-Repository nicht gefunden: 'my-remote'\n",
