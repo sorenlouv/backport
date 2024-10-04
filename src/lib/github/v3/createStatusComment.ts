@@ -152,9 +152,10 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
       ) {
         const unmergedBackports =
           result.error.errorContext.commitsWithoutBackports.map((c) => {
-            return ` - [${getFirstLine(c.commit.sourceCommit.message)}](${
-              c.commit.sourcePullRequest?.url
-            })`;
+            const msg = getFirstLine(c.commit.sourceCommit.message);
+            // make sure to escape the pipe character to ensure the markdown table is correct
+            const msgEscaped = msg.replace(/\|/g, '\\|');
+            return ` - [${msgEscaped}](${c.commit.sourcePullRequest?.url})`;
           });
 
         const unmergedBackportsSection =
