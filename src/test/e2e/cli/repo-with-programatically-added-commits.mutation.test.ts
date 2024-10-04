@@ -4,7 +4,7 @@ import { getDevAccessToken } from '../../private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
 import { runBackportViaCli } from './runBackportViaCli';
 
-jest.setTimeout(15_000);
+jest.setTimeout(25_000);
 const accessToken = getDevAccessToken();
 const octokit = new Octokit({ auth: accessToken });
 

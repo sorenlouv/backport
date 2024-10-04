@@ -22,7 +22,7 @@ Example:
 #### `accessToken` **required**
 
 Personal access token.
-Access tokens can be created here: https://github.com/settings/tokens
+Access tokens can be created in the [GitHub Developer Settings, Personal Access Tokens, Tokens (classic)](https://github.com/settings/tokens/new?description=backport%20cli&scopes=repo,workflow)
 
 Please select the necessary access scopes:
 
