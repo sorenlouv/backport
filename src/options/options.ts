@@ -228,7 +228,10 @@ function getMergedOptionsFromConfigAndCli({
 }
 
 export function getActiveOptionsFormatted(options: ValidConfigOptions) {
-  const customOptions = [['repo', `${options.repoOwner}/${options.repoName}`]];
+  const customOptions = [
+    ['repo', `${options.repoOwner}/${options.repoName}`],
+    ['sourceBranch', `${options.sourceBranch}`],
+  ];
 
   if (options.pullNumber) {
     customOptions.push(['pullNumber', `${options.pullNumber}`]);

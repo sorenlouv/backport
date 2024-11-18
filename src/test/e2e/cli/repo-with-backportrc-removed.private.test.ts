@@ -14,7 +14,7 @@ describe('repo-with-backportrc-removed (missing .backportrc.json config file)', 
     );
 
     expect(output).toMatchInlineSnapshot(`
-"repo: backport-org/repo-with-backportrc-removed
+"repo: backport-org/repo-with-backportrc-removed • sourceBranch: main
 
 ? Select commit (Use arrow keys)
 ❯ 1. Rename README.me to README.md  

@@ -34,7 +34,7 @@ describe('test-that-repo-can-be-cloned', () => {
       expect(output).toContain('Cloning repository from github.com');
       expect(output).toMatchInlineSnapshot(`
 "- Initializing...
-repo: backport-org/test-that-repo-can-be-cloned • pullNumber: 1
+repo: backport-org/test-that-repo-can-be-cloned • sourceBranch: main • pullNumber: 1
 
 ? Select pull request Beginning of a beautiful repo (#1)
 ✔ 100% Cloning repository from github.com (one-time operation)
@@ -56,7 +56,7 @@ View pull request: this-is-a-dry-run"
       expect(output).not.toContain('Cloning repository from github.com');
       expect(output).toMatchInlineSnapshot(`
 "- Initializing...
-repo: backport-org/test-that-repo-can-be-cloned • pullNumber: 1
+repo: backport-org/test-that-repo-can-be-cloned • sourceBranch: main • pullNumber: 1
 
 ? Select pull request Beginning of a beautiful repo (#1)
 

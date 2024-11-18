@@ -49,7 +49,7 @@ describe('gracefully handle corrupted repo', () => {
     // second run: backport should re-create remotes and branches correctly
     expect(output).toMatchInlineSnapshot(`
 "- Initializing...
-repo: backport-org/integration-test
+repo: backport-org/integration-test • sourceBranch: master
 
 ? Select commit Bump to 8.0.0
 

@@ -18,8 +18,9 @@ export async function getOptionsFromConfigFiles({
 
   const globalConfigFile = optionsFromCliArgs.globalConfigFile;
 
+  const cwd = optionsFromCliArgs.cwd ?? process.cwd();
   const [projectConfig, globalConfig] = await Promise.all([
-    getProjectConfig(projectConfigFile),
+    getProjectConfig(projectConfigFile, cwd),
     getGlobalConfig(globalConfigFile),
   ]);
 

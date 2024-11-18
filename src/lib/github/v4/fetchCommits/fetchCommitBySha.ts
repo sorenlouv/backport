@@ -58,6 +58,7 @@ export async function fetchCommitBySha(options: {
   }
 
   const sourceCommit = data.repository.object;
+
   if (!sourceCommit) {
     throw new BackportError(
       `No commit found on branch "${sourceBranch}" with sha "${sha}"`,

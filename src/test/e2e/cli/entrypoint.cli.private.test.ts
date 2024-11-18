@@ -150,7 +150,7 @@ Or contact me directly: "
     );
 
     expect(output).toMatchInlineSnapshot(`
-"repo: backport-org/backport-e2e
+"repo: backport-org/backport-e2e • sourceBranch: master
 
 ? Select commit (Use arrow keys)
 ❯ 1. Add sheep emoji (#9) 7.8 
@@ -179,7 +179,7 @@ Or contact me directly: "
     );
 
     expect(output).toMatchInlineSnapshot(`
-"repo: backport-org/backport-e2e • maxNumber: 6
+"repo: backport-org/backport-e2e • sourceBranch: master • maxNumber: 6
 
 ? Select commit (Use arrow keys)
 ❯ 1. Add sheep emoji (#9) 7.8 
@@ -205,7 +205,7 @@ Or contact me directly: "
     );
 
     expect(output).toMatchInlineSnapshot(`
-"repo: backport-org/backport-e2e • maxNumber: 6
+"repo: backport-org/backport-e2e • sourceBranch: 7.x • maxNumber: 6
 
 ? Select commit (Use arrow keys)
 ❯ 1. Add 🍏 emoji (#5) (#6)  

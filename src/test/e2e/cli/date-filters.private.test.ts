@@ -18,7 +18,7 @@ describe('date filters (dateSince, dateUntil)', () => {
     );
 
     expect(output).toMatchInlineSnapshot(`
-"repo: backport-org/backport-e2e • since: 2020-08-15T10:00:00.000Z • until: 2020-08-15T10:30:00.000Z
+"repo: backport-org/backport-e2e • sourceBranch: master • since: 2020-08-15T10:00:00.000Z • until: 2020-08-15T10:30:00.000Z
 
 ? Select commit (Use arrow keys)
 ❯ 1. Bump to 8.0.0  
@@ -29,36 +29,39 @@ describe('date filters (dateSince, dateUntil)', () => {
   });
 
   it('combined with --pr-filter', async () => {
-    const { output } = await runBackportViaCli(
-      [
-        '--branch=7.x',
-        '--repo=elastic/kibana',
-        `--accessToken=${accessToken}`,
-        `--author=sorenlouv`,
-        '--since=2021-09-20',
-        '--until=2021-10-01',
-      ],
-      { waitForString: 'Select commit' },
-    );
+    const options = [
+      '--branch=7.x',
+      '--repo=elastic/kibana',
+      `--accessToken=${accessToken}`,
+      '--since=2023-09-01',
+      '--until=2023-10-01',
+    ];
 
-    const { output: outputFromPrFilter } = await runBackportViaCli(
-      [
-        '--branch=7.x',
-        '--repo=elastic/kibana',
-        `--accessToken=${accessToken}`,
-        `--pr-filter="author:sorenlouv"`,
-        '--since=2021-09-20',
-        '--until=2021-10-01',
-        '--source-branch=master',
-      ],
-      { waitForString: 'Select commit' },
-    );
-    expect(output).toMatchInlineSnapshot(`
-"repo: elastic/kibana • autoMerge: true • since: 2021-09-20T00:00:00.000Z • until: 2021-10-01T00:00:00.000Z
+    const { output: outputWithoutPrFilter } = await runBackportViaCli(options, {
+      waitForString: 'Select commit',
+    });
+
+    expect(outputWithoutPrFilter).toMatchInlineSnapshot(`
+"repo: elastic/kibana • sourceBranch: main • autoMerge: true • since: 2023-09-01T00:00:00.000Z • until: 2023-10-01T00:00:00.000Z
 
 ? Select commit (Use arrow keys)
-❯ 1. [APM] Add link to officials docs for APM UI settings (#113396) 7.x"
+❯ 1. [APM] Add support for versioned APIs in diagnostics tool (#167050)  
+  2. [APM] Add permissions for "input-only" package (#166234)  
+  3. [APM] Add docs for Serverless API tests (#166147)  
+  4. [APM] Paginate big traces (#165584) 8.10 
+  5. [APM] Move index settings persistence to data access plugn (#165560)"
 `);
-    expect(output).toEqual(outputFromPrFilter);
+
+    const { output: outputWithPrFilter } = await runBackportViaCli(
+      [...options, `--pr-filter="label:release_note:fix"`],
+      { waitForString: 'Select commit' },
+    );
+
+    expect(outputWithPrFilter).toMatchInlineSnapshot(`
+"repo: elastic/kibana • sourceBranch: main • autoMerge: true • since: 2023-09-01T00:00:00.000Z • until: 2023-10-01T00:00:00.000Z
+
+? Select commit (Use arrow keys)
+❯ 1. [APM] Paginate big traces (#165584) 8.10"
+`);
   });
 });
