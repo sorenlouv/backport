@@ -85,15 +85,15 @@ describe('fetchCommitBySha', () => {
       ],
     };
 
-    await expect(
-      await fetchCommitBySha({
-        repoOwner: 'elastic',
-        repoName: 'kibana',
-        accessToken,
-        sha: 'cb6fbc0e',
-        sourceBranch: 'master',
-      }),
-    ).toEqual(expectedCommit);
+    const commit = await fetchCommitBySha({
+      repoOwner: 'elastic',
+      repoName: 'kibana',
+      accessToken,
+      sha: 'cb6fbc0e',
+      sourceBranch: 'master',
+    });
+
+    expect(commit).toEqual(expectedCommit);
   });
 
   it('throws if sha does not exist', async () => {

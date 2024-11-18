@@ -90,7 +90,7 @@ describe('interactive error handling', () => {
         stringAfter: '<BACKPORT_DIR>',
       }),
     ).toMatchInlineSnapshot(`
-"repo: backport-org/repo-with-conflicts • pullNumber: 12
+"repo: backport-org/repo-with-conflicts • sourceBranch: main • pullNumber: 12
 
 
 Backporting to 7.x:

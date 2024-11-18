@@ -35,6 +35,7 @@ export async function getOptionsFromGithub(options: {
   repoOwner: string;
   skipRemoteConfig?: boolean;
   globalConfigFile?: string;
+  sourceBranch?: string;
 }) {
   const {
     accessToken,
@@ -86,7 +87,7 @@ export async function getOptionsFromGithub(options: {
 
   return {
     authenticatedUsername: data.viewer.login,
-    sourceBranch: data.repository.defaultBranchRef.name,
+    sourceBranch: options.sourceBranch ?? data.repository.defaultBranchRef.name,
     isRepoPrivate: data.repository.isPrivate,
     ...remoteConfig,
   };

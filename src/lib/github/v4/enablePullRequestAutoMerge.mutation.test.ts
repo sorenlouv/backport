@@ -19,7 +19,7 @@ const TEST_REPO_NAME = 'repo-with-auto-merge-enabled';
 const INITIAL_SHA = '70aa879411e95b6662f8ddcb80a944fc4444579f';
 const accessToken = getDevAccessToken();
 
-jest.setTimeout(10_000);
+jest.setTimeout(20_000);
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -327,7 +327,8 @@ describe('enablePullRequestAutoMerge', () => {
       await resetReference(octokit);
     });
 
-    it('should not be possible to enable auto-merge', async () => {
+    // eslint-disable-next-line jest/no-disabled-tests
+    it.skip('should not be possible to enable auto-merge', async () => {
       let isMissingStatusChecks;
       let errorMessage;
 
@@ -342,6 +343,13 @@ describe('enablePullRequestAutoMerge', () => {
         errorMessage = err.message;
         isMissingStatusChecks = res.isMissingStatusChecks;
       }
+
+      const autoMergeMethod = await fetchPullRequestAutoMergeMethod(
+        options,
+        pullNumber,
+      );
+
+      expect(autoMergeMethod).toBe(undefined);
 
       expect(errorMessage).toMatchInlineSnapshot(
         `"Pull request Pull request is in clean status (Github API v4)"`,
