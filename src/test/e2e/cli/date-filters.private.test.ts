@@ -18,7 +18,7 @@ describe('date filters (dateSince, dateUntil)', () => {
     );
 
     expect(output).toMatchInlineSnapshot(`
-"repo: backport-org/backport-e2e • sourceBranch: master • since: 2020-08-15T10:00:00.000Z • until: 2020-08-15T10:30:00.000Z
+"repo: backport-org/backport-e2e 🔹 sourceBranch: master 🔹 author: sorenlouv 🔹 since: 2020-08-15T10:00:00.000Z 🔹 until: 2020-08-15T10:30:00.000Z
 
 ? Select commit (Use arrow keys)
 ❯ 1. Bump to 8.0.0  
@@ -42,7 +42,7 @@ describe('date filters (dateSince, dateUntil)', () => {
     });
 
     expect(outputWithoutPrFilter).toMatchInlineSnapshot(`
-"repo: elastic/kibana • sourceBranch: main • autoMerge: true • since: 2023-09-01T00:00:00.000Z • until: 2023-10-01T00:00:00.000Z
+"repo: elastic/kibana 🔹 sourceBranch: main 🔹 author: sorenlouv 🔹 autoMerge: true 🔹 since: 2023-09-01T00:00:00.000Z 🔹 until: 2023-10-01T00:00:00.000Z
 
 ? Select commit (Use arrow keys)
 ❯ 1. [APM] Add support for versioned APIs in diagnostics tool (#167050)  
@@ -58,7 +58,7 @@ describe('date filters (dateSince, dateUntil)', () => {
     );
 
     expect(outputWithPrFilter).toMatchInlineSnapshot(`
-"repo: elastic/kibana • sourceBranch: main • autoMerge: true • since: 2023-09-01T00:00:00.000Z • until: 2023-10-01T00:00:00.000Z
+"repo: elastic/kibana 🔹 sourceBranch: main 🔹 author: sorenlouv 🔹 autoMerge: true 🔹 since: 2023-09-01T00:00:00.000Z 🔹 until: 2023-10-01T00:00:00.000Z
 
 ? Select commit (Use arrow keys)
 ❯ 1. [APM] Paginate big traces (#165584) 8.10"

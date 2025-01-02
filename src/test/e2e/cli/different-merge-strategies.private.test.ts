@@ -21,7 +21,7 @@ describe('different-merge-strategies', () => {
     );
 
     expect(output).toMatchInlineSnapshot(`
-"repo: backport-org/different-merge-strategies • sourceBranch: main • maxNumber: 20
+"repo: backport-org/different-merge-strategies 🔹 sourceBranch: main 🔹 author: sorenlouv 🔹 maxNumber: 20
 
 ? Select commit (Use arrow keys)
 ❯ 1. Downsides with "Rebase and merge"  
@@ -71,7 +71,7 @@ describe('different-merge-strategies', () => {
     it('runs to completion without errors', () => {
       expect(output).toMatchInlineSnapshot(`
 "- Initializing...
-repo: backport-org/different-merge-strategies • sourceBranch: main • pullNumber: 9
+repo: backport-org/different-merge-strategies 🔹 sourceBranch: main 🔹 pullNumber: 9 🔹 author: sorenlouv
 
 ? Select pull request Merge pull request #9 from backport-org/many-merge-commits
 ✔ 100% Cloning repository from github.com (one-time operation)
@@ -191,7 +191,7 @@ View pull request: this-is-a-dry-run"
     it('has the right output', async () => {
       expect(output).toMatchInlineSnapshot(`
 "- Initializing...
-repo: backport-org/different-merge-strategies • sourceBranch: main • pullNumber: 9
+repo: backport-org/different-merge-strategies 🔹 sourceBranch: main 🔹 pullNumber: 9 🔹 author: sorenlouv
 
 ? Select pull request Merge pull request #9 from backport-org/many-merge-commits
 ✔ 100% Cloning repository from github.com (one-time operation)
