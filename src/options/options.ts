@@ -55,6 +55,7 @@ export const defaultConfigOptions = {
   reviewers: [] as Array<string>,
   signoff: false,
   sourcePRLabels: [] as string[],
+  noUnmergedBackportsHelp: false,
   targetBranchChoices: [] as TargetBranchChoiceOrString[],
   targetBranches: [] as string[],
   targetPRLabels: [] as string[],
@@ -237,11 +238,15 @@ export function getActiveOptionsFormatted(options: ValidConfigOptions) {
     customOptions.push(['pullNumber', `${options.pullNumber}`]);
   }
 
-  if (options.author && options.author !== options.authenticatedUsername) {
+  if (options.sha) {
+    customOptions.push(['sha', `${options.sha}`]);
+  }
+
+  if (options.author) {
     customOptions.push(['author', `${options.author}`]);
   }
 
-  if (options.autoMerge !== defaultConfigOptions.autoMerge) {
+  if (options.autoMerge === true) {
     customOptions.push(['autoMerge', `${options.autoMerge}`]);
   }
 
@@ -259,7 +264,7 @@ export function getActiveOptionsFormatted(options: ValidConfigOptions) {
 
   return (
     customOptions
-      .map(([key, value]) => `${chalk.bold(key)}: ${value}`)
-      .join(' • ') + `\n`
+      .map(([key, value]) => `${key}: ${chalk.bold(value)}`)
+      .join(' 🔹 ') + `\n`
   );
 }

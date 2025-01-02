@@ -366,6 +366,11 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       type: 'string',
     })
 
+    .option('noUnmergedBackportsHelp', {
+      description: 'Do not list the unmerged backports in PR comment',
+      type: 'boolean',
+    })
+
     .option('sourceBranch', {
       description: `Specify a non-default branch (normally "master") to backport from`,
       type: 'string',
