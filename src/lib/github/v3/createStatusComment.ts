@@ -73,6 +73,7 @@ export function getCommentBody({
     repoOwner,
     autoMerge,
     isRepoPrivate,
+    noUnmergedBackportsHelp,
     publishStatusCommentOnAbort,
     publishStatusCommentOnFailure,
     publishStatusCommentOnSuccess,
@@ -171,7 +172,7 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
         return [
           '❌',
           result.targetBranch,
-          unmergedBackportsSection
+          unmergedBackportsSection && !noUnmergedBackportsHelp
             ? `**${backportFailedLabel}**${unmergedBackportsSection}`
             : backportFailedLabel,
         ];

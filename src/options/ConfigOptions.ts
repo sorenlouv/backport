@@ -31,6 +31,8 @@ type Options = Partial<{
   cherrypickRef: boolean;
   commitConflicts: boolean;
   commitPaths: string[];
+  copySourcePRLabels: boolean;
+  copySourcePRReviewers: boolean;
   details: boolean;
   dir: string;
   draft: boolean;
@@ -67,10 +69,9 @@ type Options = Partial<{
   sha: string | string[];
   signoff: boolean;
   skipRemoteConfig: boolean;
+  noUnmergedBackportsHelp: boolean;
   sourceBranch: string;
   sourcePRLabels: string[];
-  copySourcePRLabels: boolean;
-  copySourcePRReviewers: boolean;
   targetBranchChoices: TargetBranchChoiceOrString[];
   targetBranches: string[];
   targetPRLabels: string[];

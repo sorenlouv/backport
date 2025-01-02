@@ -111,6 +111,8 @@ Options:
                                                       authenticated user                    [string]
       --repo, --upstream                              Repo owner and name                   [string]
       --sha, --commit                                 Commit sha to backport                [string]
+      --noUnmergedBackportsHelp                       Do not list the unmerged backports in PR
+                                                      comment                              [boolean]
       --sourceBranch                                  Specify a non-default branch (normally
                                                       "master") to backport from            [string]
       --sourcePRLabel, --sourcePrLabel                Add labels to the source (original) PR [array]
@@ -150,7 +152,7 @@ Or contact me directly: "
     );
 
     expect(output).toMatchInlineSnapshot(`
-"repo: backport-org/backport-e2e • sourceBranch: master
+"repo: backport-org/backport-e2e 🔹 sourceBranch: master 🔹 author: sorenlouv
 
 ? Select commit (Use arrow keys)
 ❯ 1. Add sheep emoji (#9) 7.8 
@@ -179,7 +181,7 @@ Or contact me directly: "
     );
 
     expect(output).toMatchInlineSnapshot(`
-"repo: backport-org/backport-e2e • sourceBranch: master • maxNumber: 6
+"repo: backport-org/backport-e2e 🔹 sourceBranch: master 🔹 author: sorenlouv 🔹 maxNumber: 6
 
 ? Select commit (Use arrow keys)
 ❯ 1. Add sheep emoji (#9) 7.8 
@@ -205,7 +207,7 @@ Or contact me directly: "
     );
 
     expect(output).toMatchInlineSnapshot(`
-"repo: backport-org/backport-e2e • sourceBranch: 7.x • maxNumber: 6
+"repo: backport-org/backport-e2e 🔹 sourceBranch: 7.x 🔹 author: sorenlouv 🔹 maxNumber: 6
 
 ? Select commit (Use arrow keys)
 ❯ 1. Add 🍏 emoji (#5) (#6)  
