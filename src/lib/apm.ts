@@ -14,7 +14,6 @@ apm
     logLevel: 'off',
     captureBody: 'all',
     errorOnAbortedRequests: false,
-    logUncaughtExceptions: false,
     environment,
   })
   // remove access token
