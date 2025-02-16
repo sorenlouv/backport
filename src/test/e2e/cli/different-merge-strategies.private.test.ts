@@ -208,15 +208,15 @@ Please fix the conflicts in <SANDBOX_PATH>
 ? Fix the following conflicts manually:
 
 Conflicting files:
- - <SANDBOX_PATH>/new-fi
-le-added-with-many-merge-commits.txt
+ - <SANDBOX_PATH>/ne
+w-file-added-with-many-merge-commits.txt
 
 
 Press ENTER when the conflicts are resolved and files are staged (Y/n) ? Fix the following conflicts manually:
 
 Conflicting files:
- - <SANDBOX_PATH>/new-fi
-le-added-with-many-merge-commits.txt
+ - <SANDBOX_PATH>/ne
+w-file-added-with-many-merge-commits.txt
 
 
 Press ENTER when the conflicts are resolved and files are staged Yes

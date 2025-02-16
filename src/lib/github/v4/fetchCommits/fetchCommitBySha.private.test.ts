@@ -58,7 +58,7 @@ describe('fetchCommitBySha', () => {
         sha: 'cb6fbc0e1b406675724181a3e9f59459b5f8f892',
       },
       sourcePullRequest: {
-        labels: ['Team:APM', 'release_note:skip', 'v7.9.0'],
+        labels: ['Team:APM - DEPRECATED', 'release_note:skip', 'v7.9.0'],
         number: 70740,
         title: '[APM] Add API tests',
         url: 'https://github.com/elastic/kibana/pull/70740',

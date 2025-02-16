@@ -121,7 +121,7 @@ exports[`fetchCommitBySha snapshot request/response returns the correct response
   },
   "sourcePullRequest": {
     "labels": [
-      "Team:APM",
+      "Team:APM - DEPRECATED",
       "v8.0.0",
       "release_note:skip",
       "auto-backport",
