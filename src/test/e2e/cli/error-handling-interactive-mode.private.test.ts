@@ -106,8 +106,7 @@ Hint: Before fixing the conflicts manually you should consider backporting the f
 ? Fix the following conflicts manually:
 
 Conflicting files:
- - <BACKPORT_DIR>/l
-a-liga.md
+ - <BACKPORT_DIR>/la-liga.md
 
 
 Press ENTER when the conflicts are resolved and files are staged (Y/n)"

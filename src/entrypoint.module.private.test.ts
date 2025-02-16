@@ -202,7 +202,7 @@ describe('entrypoint.module', () => {
             sha: 'd1b348e6213c5ad48653dfaad6eaf4928b2c688b',
           },
           sourcePullRequest: {
-            labels: ['Team:APM', 'release_note:skip', 'v7.11.0'],
+            labels: ['Team:APM - DEPRECATED', 'release_note:skip', 'v7.11.0'],
             number: 88188,
             title:
               '[APM] Fix incorrect table column header (95th instead of avg)',
@@ -270,7 +270,7 @@ describe('entrypoint.module', () => {
             sha: 'd1b348e6213c5ad48653dfaad6eaf4928b2c688b',
           },
           sourcePullRequest: {
-            labels: ['Team:APM', 'release_note:skip', 'v7.11.0'],
+            labels: ['Team:APM - DEPRECATED', 'release_note:skip', 'v7.11.0'],
             number: 88188,
             title:
               '[APM] Fix incorrect table column header (95th instead of avg)',
@@ -388,7 +388,7 @@ describe('entrypoint.module', () => {
     "sourcePullRequest": {
       "labels": [
         "release_note:fix",
-        "Team:APM",
+        "Team:APM - DEPRECATED",
         "apm:test-plan-done",
         "v7.11.0",
         "apm:test-plan-7.11.0",
@@ -450,7 +450,7 @@ Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>
     },
     "sourcePullRequest": {
       "labels": [
-        "Team:APM",
+        "Team:APM - DEPRECATED",
         "release_note:skip",
         "v7.11.0",
       ],
@@ -501,7 +501,7 @@ Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>
     },
     "sourcePullRequest": {
       "labels": [
-        "Team:APM",
+        "Team:APM - DEPRECATED",
         "release_note:skip",
         "v7.11.0",
       ],

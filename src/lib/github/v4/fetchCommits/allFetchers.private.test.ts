@@ -88,7 +88,7 @@ describe('allFetchers', () => {
       },
       sourcePullRequest: {
         labels: [
-          'Team:APM',
+          'Team:APM - DEPRECATED',
           'v8.0.0',
           'release_note:skip',
           'auto-backport',
