@@ -27,7 +27,7 @@
       "name": "Run (many args)",
       "program": "${workspaceRoot}/src/entrypoint.cli.ts",
       "runtimeArgs": ["-r", "ts-node/register/transpile-only"],
-      "args": ["--dryRun", "--repo=elastic/kibana", "--maxNumber=100"],
+      "args": ["--repo=elastic/kibana", "--pr=206340"],
 
       "console": "integratedTerminal"
     },

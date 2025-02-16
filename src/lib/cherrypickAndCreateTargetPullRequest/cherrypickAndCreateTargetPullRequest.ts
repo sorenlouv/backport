@@ -13,10 +13,10 @@ import { addLabelsToPullRequest } from '../github/v3/addLabelsToPullRequest';
 import { addReviewersToPullRequest } from '../github/v3/addReviewersToPullRequest';
 import {
   createPullRequest,
-  getTitle,
-  getPullRequestBody,
   PullRequestPayload,
-} from '../github/v3/createPullRequest';
+} from '../github/v3/getPullRequest/createPullRequest';
+import { getPullRequestBody } from '../github/v3/getPullRequest/getPullRequestBody';
+import { getTitle } from '../github/v3/getPullRequest/getTitle';
 import { validateTargetBranch } from '../github/v4/validateTargetBranch';
 import { consoleLog } from '../logger';
 import { sequentially } from '../sequentially';

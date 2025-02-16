@@ -28,6 +28,7 @@ export function getBackportBranchName({
     )
     .join('_')
     .slice(0, 200);
+
   const defaultBackportBranchName = 'backport/{{targetBranch}}/{{refValues}}';
   const template = Handlebars.compile(
     options.backportBranchName ?? defaultBackportBranchName,

@@ -1,11 +1,11 @@
 import apm from 'elastic-apm-node';
-import { BackportError } from './lib/BackportError';
-import { cherrypickAndCreateTargetPullRequest } from './lib/cherrypickAndCreateTargetPullRequest/cherrypickAndCreateTargetPullRequest';
-import { getLogfilePath } from './lib/env';
-import { logger, consoleLog } from './lib/logger';
-import { sequentially } from './lib/sequentially';
-import { Commit } from './lib/sourceCommit/parseSourceCommit';
-import { ValidConfigOptions } from './options/options';
+import { ValidConfigOptions } from '../options/options';
+import { BackportError } from './BackportError';
+import { cherrypickAndCreateTargetPullRequest } from './cherrypickAndCreateTargetPullRequest/cherrypickAndCreateTargetPullRequest';
+import { getLogfilePath } from './env';
+import { logger, consoleLog } from './logger';
+import { sequentially } from './sequentially';
+import { Commit } from './sourceCommit/parseSourceCommit';
 
 export type SuccessResult = {
   status: 'success';

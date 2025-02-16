@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 import { ValidConfigOptions } from '../../../options/options';
-import { PullRequestPayload } from '../v3/createPullRequest';
+import { PullRequestPayload } from '../v3/getPullRequest/createPullRequest';
 import { apiRequestV4 } from './apiRequestV4';
 
 export async function fetchExistingPullRequest({
