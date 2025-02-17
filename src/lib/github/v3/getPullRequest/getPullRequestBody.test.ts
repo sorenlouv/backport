@@ -99,6 +99,39 @@ text to append"
         );
       });
 
+      it('strips markdown comments', () => {
+        const commits = [
+          {
+            sourcePullRequest: {
+              url: 'https://github.com/backport-org/different-merge-strategies/pull/55',
+            },
+            sourceCommit: {
+              sha: 'acbcdef',
+              message:
+                'My commit message (#55) <!-- markdown-comment --> And then some more text',
+            },
+            sourceBranch: 'main',
+          },
+        ] as Commit[];
+
+        const options = {
+          prDescription: 'Just output the commits: {commits}',
+        } as ValidConfigOptions;
+
+        const res = getPullRequestBody({
+          options,
+          commits,
+          targetBranch: '7.x',
+        });
+
+        expect(res).not.toContain('markdown-comment');
+        expect(res).not.toContain('<!--');
+        expect(res).not.toContain('-->');
+        expect(res).toContain(
+          'My commit message (#55)  And then some more text',
+        );
+      });
+
       it('handles curly brackets in commit messages without error', () => {
         const commits = [
           {
