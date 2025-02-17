@@ -37,7 +37,9 @@ export function getPullRequestBody({
     '### Questions ?\n' +
     'Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)';
 
-  const commitsStringified = `{{{{raw}}}}${JSON.stringify(commits)}{{{{/raw}}}}`;
+  const commitsStringified = stripMarkdownComments(
+    `{{{{raw}}}}${JSON.stringify(commits)}{{{{/raw}}}}`,
+  );
 
   const prDescription = (options.prDescription ?? defaultPrDescription)
 
@@ -78,4 +80,8 @@ export function getPullRequestBody({
       .replaceAll('{{{{raw}}}}', '')
       .replaceAll('{{{{/raw}}}}', '');
   }
+}
+
+function stripMarkdownComments(str: string): string {
+  return str.replace(/<!--[\s\S]*?-->/g, '');
 }
