@@ -1,3 +1,4 @@
+import Handlebars from 'handlebars';
 import { Commit } from '../../../../entrypoint.api';
 import { ValidConfigOptions } from '../../../../options/options';
 import { getTitle } from './getTitle';
@@ -113,5 +114,27 @@ describe('getTitle', () => {
     expect(() =>
       getTitle({ options, commits, targetBranch: '7.x' }),
     ).not.toThrow();
+  });
+
+  it('should return default description if handlebars compilation fails', () => {
+    const compileError = new Error('Simulated compile error');
+
+    // Stub Handlebars.compile to throw an error.
+    const compileSpy = jest
+      .spyOn(Handlebars, 'compile')
+      .mockImplementation(() => {
+        throw compileError;
+      });
+
+    const options = {} as ValidConfigOptions;
+
+    expect(
+      getTitle({ options, commits, targetBranch: '7.x' }),
+    ).toMatchInlineSnapshot(
+      `"[7.x] My commit message (#55) | Another commit message (#56)"`,
+    );
+
+    // Restore the stubs.
+    compileSpy.mockRestore();
   });
 });

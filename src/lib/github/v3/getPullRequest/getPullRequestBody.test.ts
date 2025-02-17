@@ -449,7 +449,7 @@ Please refer to the [Backport tool documentation](https://github.com/sorenlouv/b
   });
 
   describe('handlebars', () => {
-    it('should throw an error if Handlebars compilation fails', () => {
+    it('should return default description if handlebars compilation fails', () => {
       const compileError = new Error('Simulated compile error');
 
       // Stub Handlebars.compile to throw an error.
