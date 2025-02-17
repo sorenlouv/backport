@@ -20,7 +20,7 @@
   "bin": {
     "backport": "./bin/backport"
   },
-  "license": "MIT",
+  "license": "Apache-2.0",
   "scripts": {
     "postinstall": "test -f ./dist/scripts/runPostinstall.js && node ./dist/scripts/runPostinstall.js || echo 'Dist folder missing'",
     "version": "echo \"Bumping version\" && yarn extractPackageVersion && git add src/utils/packageVersion.ts && yarn tsc",
