@@ -9,6 +9,8 @@ import { createStatusComment } from './lib/github/v3/createStatusComment';
 import { GithubV4Exception } from './lib/github/v4/apiRequestV4';
 import { consoleLog, initLogger } from './lib/logger';
 import { ora } from './lib/ora';
+import { registerHandlebarsHelpers } from './lib/registerHandlebarsHelpers';
+import { runSequentially, Result } from './lib/runSequentially';
 import { setupRepo } from './lib/setupRepo';
 import { Commit } from './lib/sourceCommit/parseSourceCommit';
 import { ConfigFileOptions } from './options/ConfigOptions';
@@ -22,7 +24,8 @@ import {
   getOptions,
   ValidConfigOptions,
 } from './options/options';
-import { runSequentially, Result } from './runSequentially';
+
+registerHandlebarsHelpers();
 
 export type BackportAbortResponse = {
   status: 'aborted';

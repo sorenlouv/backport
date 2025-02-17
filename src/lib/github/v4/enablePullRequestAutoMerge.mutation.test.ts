@@ -2,7 +2,10 @@ import crypto from 'crypto';
 import { Octokit } from '@octokit/rest';
 import { ValidConfigOptions } from '../../../options/options';
 import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
-import { createPullRequest, PullRequestPayload } from '../v3/createPullRequest';
+import {
+  createPullRequest,
+  PullRequestPayload,
+} from '../v3/getPullRequest/createPullRequest';
 import { GithubV4Exception } from './apiRequestV4';
 import { disablePullRequestAutoMerge } from './disablePullRequestAutoMerge';
 import {

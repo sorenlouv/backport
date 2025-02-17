@@ -3,6 +3,7 @@
  * It will be run once per test file
  */
 
+import { registerHandlebarsHelpers } from '../../lib/registerHandlebarsHelpers';
 import * as packageVersionModule from '../../utils/packageVersion';
 
 /* eslint-disable @typescript-eslint/no-empty-function */
@@ -45,3 +46,5 @@ jest.mock('../../lib/logger', () => {
     logger,
   };
 });
+
+registerHandlebarsHelpers();

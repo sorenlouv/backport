@@ -18,7 +18,7 @@ export type {
   HandledErrorResult,
   SuccessResult,
   UnhandledErrorResult,
-} from './runSequentially';
+} from './lib/runSequentially';
 export type {
   BackportAbortResponse,
   BackportFailureResponse,
