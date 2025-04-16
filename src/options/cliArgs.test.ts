@@ -261,6 +261,36 @@ describe('getOptionsFromCliArgs', () => {
     });
   });
 
+  describe('copySourcePRReviewers', () => {
+    it('should be undefined when not provided', () => {
+      const res = getOptionsFromCliArgs([]);
+      expect(res.copySourcePRReviewers).toBe(undefined);
+    });
+
+    it('should be true when option is provided with no value given', () => {
+      const res = getOptionsFromCliArgs(['--copy-source-pr-reviewers']);
+      expect(res.copySourcePRReviewers).toBe(true);
+    });
+
+    it('should set to false', () => {
+      const argv = ['--copy-source-pr-reviewers', 'false'];
+      const res = getOptionsFromCliArgs(argv);
+      expect(res.copySourcePRReviewers).toBe(false);
+    });
+
+    it('should set to true', () => {
+      const argv = ['--copy-source-pr-reviewers', 'true'];
+      const res = getOptionsFromCliArgs(argv);
+      expect(res.copySourcePRReviewers).toBe(true);
+    });
+
+    it('should accept a list of regexes', () => {
+      const argv = ['--copy-source-pr-reviewers', '^foo, bar$, baz*'];
+      const res = getOptionsFromCliArgs(argv);
+      expect(res.copySourcePRReviewers).toEqual(['^foo', 'bar$', 'baz*']);
+    });
+  });
+
   describe('repo', () => {
     it('splits into repoOwner and repoName', () => {
       const argv = ['--repo', 'elastic/kibana'];

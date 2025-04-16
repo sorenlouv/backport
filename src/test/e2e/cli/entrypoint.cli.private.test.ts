@@ -120,7 +120,7 @@ Options:
                                                                                            [boolean]
       --copySourcePRReviewers,                        Copy reviewers from the source PR to the
       --copySourcePrReviewers,                        target PR
-      --addOriginalReviewers                                                               [boolean]
+      --addOriginalReviewers                                                                [string]
   -b, --targetBranch, --branch                        Branch(es) to backport to              [array]
       --targetBranchChoice                            List branches to backport to           [array]
   -l, --targetPRLabel, --label                        Add labels to the target (backport) PR [array]
