@@ -25,8 +25,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
-          cache-dependency-path: '**/yarn.lock'
 
       - run: git config --global user.email "backportci@users.noreply.github.com "
       - run: git config --global user.name "Backport CI"
