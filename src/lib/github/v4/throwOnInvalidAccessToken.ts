@@ -10,7 +10,7 @@ export function throwOnInvalidAccessToken({
   repoName,
   globalConfigFile,
 }: {
-  error: GithubV4Exception<unknown>;
+  error: GithubV4Exception;
   repoOwner: string;
   repoName: string;
   globalConfigFile?: string;
@@ -22,20 +22,20 @@ export function throwOnInvalidAccessToken({
     }
   }
 
-  const statusCode = error.githubResponse.status;
+  const statusCode = error.response.status;
 
   switch (statusCode) {
     case 200: {
-      const repoNotFound = error.githubResponse.data.errors?.some(
+      const repoNotFound = error.response.errors?.some(
         (error) =>
-          error.type === 'NOT_FOUND' && error.path?.join('.') === 'repository',
+          error.extensions.type === 'NOT_FOUND' &&
+          error.path?.join('.') === 'repository',
       );
 
-      const grantedScopes =
-        error.githubResponse.headers['x-oauth-scopes'] || '';
-      const requiredScopes =
-        error.githubResponse.headers['x-accepted-oauth-scopes'] || '';
-      const ssoHeader = maybe(error.githubResponse.headers['x-github-sso']);
+      const headers = error.response.headers as Record<string, string>;
+      const grantedScopes = headers['x-oauth-scopes'] || '';
+      const requiredScopes = headers['x-accepted-oauth-scopes'] || '';
+      const ssoHeader = maybe(headers['x-github-sso']);
 
       if (repoNotFound) {
         const hasRequiredScopes = isEmpty(
@@ -55,8 +55,8 @@ export function throwOnInvalidAccessToken({
         );
       }
 
-      const repoAccessForbidden = error.githubResponse.data.errors?.some(
-        (error) => error.type === 'FORBIDDEN',
+      const repoAccessForbidden = error.response.errors?.some(
+        (error) => error.extensions.type === 'FORBIDDEN',
       );
 
       const ssoAuthUrl = getSSOAuthUrl(ssoHeader);

@@ -24,7 +24,7 @@ The remaining documentation focuses on the Backport CLI tool (not the Github Act
 
 ## Requirements
 
-- Node 18 or higher
+- Node 20 or higher
 - git
 
 ## Install

@@ -1,9 +1,9 @@
-import gql from 'graphql-tag';
+import { CommitByPullNumberQuery } from '../../../../graphql/generated';
 import { ValidConfigOptions } from '../../../../options/options';
 import { BackportError } from '../../../BackportError';
 import { swallowMissingConfigFileException } from '../../../remoteConfig';
 import { Commit } from '../../../sourceCommit/parseSourceCommit';
-import { apiRequestV4 } from '../apiRequestV4';
+import { getV4Client } from '../apiRequestV4';
 import { fetchCommitBySha } from './fetchCommitBySha';
 import { fetchCommitsForRebaseAndMergeStrategy } from './fetchCommitsForRebaseAndMergeStrategy';
 
@@ -24,63 +24,24 @@ export async function fetchCommitsByPullNumber(options: {
     repoOwner,
   } = options;
 
-  const query = gql`
-    query CommitByPullNumber(
-      $repoOwner: String!
-      $repoName: String!
-      $pullNumber: Int!
-    ) {
-      repository(owner: $repoOwner, name: $repoName) {
-        pullRequest(number: $pullNumber) {
-          # used to determine if "Rebase and Merge" strategy was used
-          commits(last: 1) {
-            totalCount
-            edges {
-              node {
-                commit {
-                  message
-                }
-              }
-            }
-          }
-
-          mergeCommit {
-            oid
-
-            # used to determine if "Rebase and Merge" strategy was used
-            committedDate
-            history(first: 2) {
-              edges {
-                node {
-                  message
-                  committedDate
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  `;
-
-  let data: CommitByPullNumberResponse;
+  let data: CommitByPullNumberQuery;
   try {
-    const res = await apiRequestV4<CommitByPullNumberResponse>({
+    const client = getV4Client({
       githubApiBaseUrlV4,
       accessToken,
-      query,
-      variables: {
-        repoOwner,
-        repoName,
-        pullNumber,
-      },
     });
-    data = res.data.data;
+
+    const res = await client.CommitByPullNumber({
+      repoOwner,
+      repoName,
+      pullNumber,
+    });
+    data = res.data;
   } catch (e) {
-    data = swallowMissingConfigFileException<CommitByPullNumberResponse>(e);
+    data = swallowMissingConfigFileException<CommitByPullNumberQuery>(e);
   }
 
-  const pullRequestNode = data.repository.pullRequest;
+  const pullRequestNode = data.repository?.pullRequest;
   if (!pullRequestNode) {
     throw new BackportError(`The PR #${pullNumber} does not exist`);
   }
@@ -90,14 +51,16 @@ export async function fetchCommitsByPullNumber(options: {
     throw new BackportError(`The PR #${pullNumber} is not merged`);
   }
 
-  const lastCommitInPullRequest = pullRequestNode.commits.edges[0].node.commit;
-  const firstCommitInBaseBranch = mergeCommit.history.edges[0].node;
+  const lastCommitInPullRequest =
+    pullRequestNode.commits.edges?.[0]?.node?.commit;
+
+  const firstCommitInBaseBranch = mergeCommit?.history.edges?.[0]?.node;
   const isRebaseAndMergeStrategy =
     pullRequestNode.commits.totalCount > 0 &&
-    mergeCommit.history.edges.every(
-      (c) => c.node.committedDate === mergeCommit.committedDate,
+    mergeCommit?.history.edges?.every(
+      (c) => c?.node?.committedDate === mergeCommit.committedDate,
     ) &&
-    lastCommitInPullRequest.message === firstCommitInBaseBranch.message;
+    lastCommitInPullRequest?.message === firstCommitInBaseBranch?.message;
 
   if (isRebaseAndMergeStrategy) {
     const commits = await fetchCommitsForRebaseAndMergeStrategy(
@@ -109,30 +72,6 @@ export async function fetchCommitsByPullNumber(options: {
     }
   }
 
-  const commit = await fetchCommitBySha({ ...options, sha: mergeCommit.oid });
+  const commit = await fetchCommitBySha({ ...options, sha: mergeCommit?.oid });
   return [commit];
-}
-
-interface CommitByPullNumberResponse {
-  repository: {
-    pullRequest: {
-      commits: {
-        totalCount: number;
-        edges: { node: { commit: { message: string } } }[];
-      };
-
-      mergeCommit: {
-        oid: string;
-        committedDate: string;
-        history: {
-          edges: {
-            node: {
-              message: string;
-              committedDate: string;
-            };
-          }[];
-        };
-      } | null;
-    } | null;
-  };
 }

@@ -1,0 +1,11 @@
+    query PullRequestBySearchQuery($query: String!, $maxNumber: Int!) {
+      search(query: $query, type: ISSUE, first: $maxNumber) {
+        nodes {
+          ... on PullRequest {
+            mergeCommit {
+              ...SourceCommitWithTargetPullRequestFragment
+            }
+          }
+        }
+      }
+    }

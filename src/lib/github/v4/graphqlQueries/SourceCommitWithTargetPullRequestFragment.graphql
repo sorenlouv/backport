@@ -1,0 +1,90 @@
+fragment SourceCommitWithTargetPullRequestFragment on Commit {
+  # Source Commit
+  repository {
+    name
+    owner {
+      login
+    }
+  }
+  sha: oid
+  message
+  committedDate
+
+  author {
+    name
+    email
+  }
+
+  # Source pull request: PR where source commit was merged in
+  associatedPullRequests(first: 1) {
+    edges {
+      node {
+        title
+        url
+        number
+        labels(first: 50) {
+          nodes {
+            name
+          }
+        }
+        baseRefName
+
+        # source merge commit (the commit that actually went into the source branch)
+        mergeCommit {
+          ...RemoteConfigHistoryFragment
+          sha: oid
+          message
+        }
+
+        # (possible) backport pull requests referenced in the source pull request
+        timelineItems(last: 20, itemTypes: CROSS_REFERENCED_EVENT) {
+          edges {
+            ...CrossReferencedEventTimelineItemFragment
+          }
+        }
+      }
+    }
+  }
+}
+
+fragment CrossReferencedEventTimelineItemFragment on PullRequestTimelineItemsEdge {
+  node {
+    ... on CrossReferencedEvent {
+      targetPullRequest: source {
+        __typename
+
+        # Target PRs (backport PRs)
+        ...PullRequestTimeLineItemFragment
+      }
+    }
+  }
+}
+
+fragment PullRequestTimeLineItemFragment on PullRequest {
+  # target merge commit: the backport commit that was merged into the target branch
+  targetMergeCommit: mergeCommit {
+    sha: oid
+    message
+  }
+  repository {
+    name
+    owner {
+      login
+    }
+  }
+  url
+  title
+  state
+  baseRefName
+  number
+  commits(first: 20) {
+    edges {
+      node {
+        targetCommit: commit {
+          message
+          sha: oid
+        }
+      }
+    }
+  }
+}

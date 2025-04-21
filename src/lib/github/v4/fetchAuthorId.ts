@@ -1,9 +1,4 @@
-import gql from 'graphql-tag';
-import { apiRequestV4 } from './apiRequestV4';
-
-export interface AuthorIdResponse {
-  user: { id: string };
-}
+import { getV4Client } from './apiRequestV4';
 
 export async function fetchAuthorId({
   accessToken,
@@ -18,20 +13,7 @@ export async function fetchAuthorId({
     return null;
   }
 
-  const query = gql`
-    query AuthorId($author: String!) {
-      user(login: $author) {
-        id
-      }
-    }
-  `;
-
-  const res = await apiRequestV4<AuthorIdResponse>({
-    githubApiBaseUrlV4,
-    accessToken,
-    query,
-    variables: { author },
-  });
-
-  return res.data.data.user.id;
+  const client = getV4Client({ githubApiBaseUrlV4, accessToken });
+  const res = await client.AuthorId({ author });
+  return res.data.user?.id;
 }

@@ -1,12 +1,12 @@
 import nock from 'nock';
+import {
+  AuthorIdQuery,
+  CommitsByAuthorQuery,
+} from '../../../../graphql/generated';
 import { mockGqlRequest } from '../../../../test/nockHelpers';
 import { Commit } from '../../../sourceCommit/parseSourceCommit';
-import { AuthorIdResponse } from '../fetchAuthorId';
 import { commitsByAuthorMock } from '../mocks/commitsByAuthorMock';
-import {
-  CommitByAuthorResponse,
-  fetchCommitsByAuthor,
-} from './fetchCommitsByAuthor';
+import { fetchCommitsByAuthor } from './fetchCommitsByAuthor';
 
 const defaultOptions = {
   accessToken: 'myAccessToken',
@@ -37,13 +37,13 @@ describe('fetchCommitsByAuthor', () => {
     let commitsByAuthorCalls: ReturnType<typeof mockGqlRequest>;
 
     beforeEach(async () => {
-      authorIdCalls = mockGqlRequest<AuthorIdResponse>({
+      authorIdCalls = mockGqlRequest<AuthorIdQuery>({
         name: 'AuthorId',
         statusCode: 200,
         body: { data: authorIdMockData },
       });
 
-      commitsByAuthorCalls = mockGqlRequest<CommitByAuthorResponse>({
+      commitsByAuthorCalls = mockGqlRequest<CommitsByAuthorQuery>({
         name: 'CommitsByAuthor',
         statusCode: 200,
         body: { data: commitsByAuthorMock },
@@ -163,14 +163,14 @@ describe('fetchCommitsByAuthor', () => {
 
   describe('when a custom github api hostname is supplied', () => {
     it('should be used in gql requests', async () => {
-      const authorIdCalls = mockGqlRequest<AuthorIdResponse>({
+      const authorIdCalls = mockGqlRequest<AuthorIdQuery>({
         name: 'AuthorId',
         statusCode: 200,
         body: { data: authorIdMockData },
         apiBaseUrl: 'http://localhost/my-custom-api',
       });
 
-      const commitsByAuthorCalls = mockGqlRequest<CommitByAuthorResponse>({
+      const commitsByAuthorCalls = mockGqlRequest<CommitsByAuthorQuery>({
         name: 'CommitsByAuthor',
         statusCode: 200,
         body: { data: commitsByAuthorMock },

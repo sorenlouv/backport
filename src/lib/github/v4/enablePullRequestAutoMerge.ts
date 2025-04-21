@@ -1,11 +1,6 @@
-import gql from 'graphql-tag';
 import { ValidConfigOptions } from '../../../options/options';
 import { fetchPullRequestId } from './FetchPullRequestId';
-import { apiRequestV4, GithubV4Exception } from './apiRequestV4';
-
-interface Response {
-  enablePullRequestAutoMerge: { pullRequest?: { number: number } };
-}
+import { getV4Client, GithubV4Exception } from './apiRequestV4';
 
 export async function enablePullRequestAutoMerge(
   options: ValidConfigOptions,
@@ -22,38 +17,25 @@ export async function enablePullRequestAutoMerge(
     targetPullRequestNumber,
   );
 
-  const query = gql`
-    mutation EnablePullRequestAutoMerge(
-      $pullRequestId: ID!
-      $mergeMethod: PullRequestMergeMethod!
-    ) {
-      enablePullRequestAutoMerge(
-        input: { pullRequestId: $pullRequestId, mergeMethod: $mergeMethod }
-      ) {
-        pullRequest {
-          number
-        }
-      }
-    }
-  `;
+  if (!pullRequestId) {
+    throw new Error(
+      `Failed to get pull request ID for pull request #${targetPullRequestNumber}`,
+    );
+  }
 
-  const res = await apiRequestV4<Response>({
-    githubApiBaseUrlV4,
-    accessToken,
-    query,
-    variables: {
-      pullRequestId,
-      mergeMethod: autoMergeMethod.toUpperCase(),
-    },
+  const client = getV4Client({ githubApiBaseUrlV4, accessToken });
+  const res = await client.EnablePullRequestAutoMerge({
+    pullRequestId,
+    mergeMethod: autoMergeMethod.toUpperCase() as any,
   });
 
-  return res.data.data.enablePullRequestAutoMerge.pullRequest?.number;
+  return res.data.enablePullRequestAutoMerge?.pullRequest?.number;
 }
 
-export function parseGithubError(e: GithubV4Exception<any>) {
-  const isMissingStatusChecks = e.githubResponse.data.errors?.some(
+export function parseGithubError(e: GithubV4Exception) {
+  const isMissingStatusChecks = e.response.errors?.some(
     (e) =>
-      e.type === 'UNPROCESSABLE' &&
+      e.extensions.type === 'UNPROCESSABLE' &&
       (e.message.includes(
         'Branch does not have required protected branch rules',
       ) ||

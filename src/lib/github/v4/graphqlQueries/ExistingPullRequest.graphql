@@ -1,0 +1,26 @@
+    query ExistingPullRequest(
+      $repoOwner: String!
+      $repoName: String!
+      $base: String!
+      $head: String!
+    ) {
+      repository(owner: $repoOwner, name: $repoName) {
+        name
+        ref(qualifiedName: $head) {
+          name
+          associatedPullRequests(
+            first: 1
+            states: OPEN
+            baseRefName: $base
+            headRefName: $head
+          ) {
+            edges {
+              node {
+                number
+                url
+              }
+            }
+          }
+        }
+      }
+    }

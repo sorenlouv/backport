@@ -1,14 +1,13 @@
+import { ClientError } from 'graphql-request';
+import { GithubV4Exception } from './apiRequestV4';
 import { throwOnInvalidAccessToken } from './throwOnInvalidAccessToken';
 
 describe('throwOnInvalidAccessToken', () => {
   describe('when status code is', () => {
-    it('should handle invalid access token', () => {
-      const error = {
-        githubResponse: {
-          status: 401,
-          headers: {},
-        },
-      } as any;
+    it.only('should handle invalid access token', () => {
+      const error = new GithubV4Exception({
+        response: { status: 401 },
+      } as ClientError);
 
       return expect(() =>
         throwOnInvalidAccessToken({

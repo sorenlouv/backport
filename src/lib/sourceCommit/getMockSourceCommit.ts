@@ -1,4 +1,7 @@
-import { SourceCommitWithTargetPullRequest } from './parseSourceCommit';
+import {
+  PullRequestState,
+  SourceCommitWithTargetPullRequestFragmentFragment,
+} from '../../graphql/generated';
 
 export function getMockSourceCommit({
   sourceCommit,
@@ -29,13 +32,13 @@ export function getMockSourceCommit({
     repoName?: string;
     repoOwner?: string;
   }>;
-}): SourceCommitWithTargetPullRequest {
+}): SourceCommitWithTargetPullRequestFragmentFragment {
   const defaultTargetPullRequestTitle =
     'DO NOT USE: Please specify a title in test!!!';
 
   const defaultSourceCommitSha = 'DO NOT USE: please specify a sha in test!!!';
 
-  const baseMockCommit: SourceCommitWithTargetPullRequest = {
+  const baseMockCommit: SourceCommitWithTargetPullRequestFragmentFragment = {
     author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
     repository: {
       name: 'kibana',
@@ -44,7 +47,7 @@ export function getMockSourceCommit({
     committedDate: sourceCommit.commitedDate ?? '2021-12-22T00:00:00Z',
     sha: sourceCommit.sha ?? defaultSourceCommitSha,
     message: sourceCommit.message,
-    associatedPullRequests: { edges: null },
+    associatedPullRequests: { edges: undefined },
   };
 
   if (!sourcePullRequest) {
@@ -97,13 +100,14 @@ export function getMockSourceCommit({
               edges: timelineItems.map((timelineItem) => {
                 return {
                   node: {
+                    __typename: 'CrossReferencedEvent' as const,
                     targetPullRequest: {
-                      __typename: 'PullRequest',
+                      __typename: 'PullRequest' as const,
                       url: `https://github.com/elastic/kibana/pull/${timelineItem.number}`,
                       title:
                         timelineItem.title ?? defaultTargetPullRequestTitle,
                       number: timelineItem.number,
-                      state: timelineItem.state,
+                      state: timelineItem.state as PullRequestState,
                       baseRefName: timelineItem.targetBranch,
 
                       targetMergeCommit:
@@ -112,7 +116,7 @@ export function getMockSourceCommit({
                               message: timelineItem.commitMessages[0],
                               sha: 'target-merge-commit-sha',
                             }
-                          : null,
+                          : undefined,
 
                       repository: {
                         name: timelineItem.repoName ?? 'kibana',

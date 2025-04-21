@@ -1,15 +1,14 @@
-import gql from 'graphql-tag';
 import { isEmpty } from 'lodash';
+import { PullRequestBySearchQueryQuery } from '../../../../graphql/generated';
+import { filterNil } from '../../../../utils/filterEmpty';
 import { filterUnmergedCommits } from '../../../../utils/filterUnmergedCommits';
 import { BackportError } from '../../../BackportError';
 import { swallowMissingConfigFileException } from '../../../remoteConfig';
 import {
   Commit,
-  SourceCommitWithTargetPullRequest,
-  SourceCommitWithTargetPullRequestFragment,
   parseSourceCommit,
 } from '../../../sourceCommit/parseSourceCommit';
-import { apiRequestV4 } from '../apiRequestV4';
+import { getV4Client } from '../apiRequestV4';
 
 export async function fetchPullRequestsBySearchQuery(options: {
   accessToken: string;
@@ -36,22 +35,6 @@ export async function fetchPullRequestsBySearchQuery(options: {
     repoOwner,
     sourceBranch,
   } = options;
-
-  const query = gql`
-    query PullRequestBySearchQuery($query: String!, $maxNumber: Int!) {
-      search(query: $query, type: ISSUE, first: $maxNumber) {
-        nodes {
-          ... on PullRequest {
-            mergeCommit {
-              ...SourceCommitWithTargetPullRequestFragment
-            }
-          }
-        }
-      }
-    }
-
-    ${SourceCommitWithTargetPullRequestFragment}
-  `;
 
   function dateFilter() {
     if (dateUntil && dateSince) {
@@ -80,28 +63,31 @@ export async function fetchPullRequestsBySearchQuery(options: {
     prFilter,
   ].join(' ');
 
-  const variables = {
-    query: searchQuery,
-    maxNumber,
-  };
-
-  let data: ResponseData;
+  let data: PullRequestBySearchQueryQuery;
   try {
-    const res = await apiRequestV4<ResponseData>({
-      githubApiBaseUrlV4,
-      accessToken,
-      query,
-      variables,
+    const client = getV4Client({ githubApiBaseUrlV4, accessToken });
+    const res = await client.PullRequestBySearchQuery({
+      query: searchQuery,
+      maxNumber,
     });
-    data = res.data.data;
+    data = res.data;
   } catch (e) {
-    data = swallowMissingConfigFileException<ResponseData>(e);
+    data = swallowMissingConfigFileException<PullRequestBySearchQueryQuery>(e);
   }
 
-  const commits = data.search.nodes.map((pullRequestNode) => {
-    const sourceCommit = pullRequestNode.mergeCommit;
-    return parseSourceCommit({ options, sourceCommit });
-  });
+  const commits = (data.search.nodes ?? [])
+    .map((pullRequestNode) => {
+      if (
+        pullRequestNode?.__typename !== 'PullRequest' ||
+        !pullRequestNode.mergeCommit
+      ) {
+        return;
+      }
+
+      const sourceCommit = pullRequestNode.mergeCommit;
+      return parseSourceCommit({ options, sourceCommit });
+    })
+    .filter(filterNil);
 
   // terminate if not commits were found
   if (isEmpty(commits)) {
@@ -117,12 +103,4 @@ export async function fetchPullRequestsBySearchQuery(options: {
   }
 
   return commits;
-}
-
-interface ResponseData {
-  search: {
-    nodes: Array<{
-      mergeCommit: SourceCommitWithTargetPullRequest;
-    }>;
-  };
 }

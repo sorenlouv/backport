@@ -200,7 +200,7 @@ describe('enablePullRequestAutoMerge', () => {
           pullNumber,
         );
       } catch (e) {
-        const err = e as GithubV4Exception<any>;
+        const err = e as GithubV4Exception;
         const res = parseGithubError(err);
         errorMessage = err.message;
         isMissingStatusChecks = res.isMissingStatusChecks;
@@ -282,7 +282,7 @@ describe('enablePullRequestAutoMerge', () => {
           pullNumber,
         );
       } catch (e) {
-        const err = e as GithubV4Exception<any>;
+        const err = e as GithubV4Exception;
         const res = parseGithubError(err);
         errorMessage = err.message;
         isMissingStatusChecks = res.isMissingStatusChecks;
@@ -341,7 +341,7 @@ describe('enablePullRequestAutoMerge', () => {
           pullNumber,
         );
       } catch (e) {
-        const err = e as GithubV4Exception<any>;
+        const err = e as GithubV4Exception;
         const res = parseGithubError(err);
         errorMessage = err.message;
         isMissingStatusChecks = res.isMissingStatusChecks;

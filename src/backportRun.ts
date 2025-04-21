@@ -201,7 +201,7 @@ function outputError({
   e,
   logFilePath,
 }: {
-  e: BackportError | GithubV4Exception<any> | Error;
+  e: BackportError | GithubV4Exception | Error;
   logFilePath?: string;
 }) {
   if (e instanceof BackportError || e instanceof GithubV4Exception) {

@@ -1,0 +1,18 @@
+  query GithubConfigOptions($repoOwner: String!, $repoName: String!) {
+    viewer {
+      login
+    }
+    repository(owner: $repoOwner, name: $repoName) {
+      # check to see if a branch named "backport" exists
+      illegalBackportBranch: ref(qualifiedName: "refs/heads/backport") {
+        id
+      }
+      isPrivate
+      defaultBranchRef {
+        name
+        target {
+          ...RemoteConfigHistoryFragment
+        }
+      }
+    }
+  }

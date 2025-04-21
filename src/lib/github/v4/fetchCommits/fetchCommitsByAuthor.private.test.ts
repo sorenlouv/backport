@@ -1,18 +1,14 @@
-import { DocumentNode, print } from 'graphql';
 import { getDevAccessToken } from '../../../../test/private/getDevAccessToken';
 import { Commit } from '../../../sourceCommit/parseSourceCommit';
-import * as apiRequestV4Module from '../apiRequestV4';
 import { fetchCommitsByAuthor } from './fetchCommitsByAuthor';
 
 const accessToken = getDevAccessToken();
 
 describe('fetchCommitsByAuthor', () => {
   describe('snapshot request/response', () => {
-    let spy: jest.SpyInstance;
     let commits: Commit[];
 
     beforeEach(async () => {
-      spy = jest.spyOn(apiRequestV4Module, 'apiRequestV4');
       commits = await fetchCommitsByAuthor({
         accessToken,
         author: 'sorenlouv',
@@ -23,22 +19,6 @@ describe('fetchCommitsByAuthor', () => {
         dateSince: '2021-01-10T00:00:00Z',
         dateUntil: '2022-01-01T00:00:00Z',
         commitPaths: [] as Array<string>,
-      });
-    });
-
-    it('makes the right queries', () => {
-      const queries = spy.mock.calls.reduce((acc, call) => {
-        const query = call[0].query as DocumentNode;
-        //@ts-expect-error
-        const name = query.definitions[0].name.value;
-        return { ...acc, [name]: print(query) };
-      }, {});
-
-      const queryNames = Object.keys(queries);
-      expect(queryNames).toEqual(['AuthorId', 'CommitsByAuthor']);
-
-      queryNames.forEach((name) => {
-        expect(queries[name]).toMatchSnapshot(`Query: ${name}`);
       });
     });
 

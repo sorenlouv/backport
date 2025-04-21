@@ -1,9 +1,11 @@
 import fs from 'fs/promises';
 import os from 'os';
 import nock from 'nock';
+import {
+  GithubConfigOptionsQuery,
+  RepoOwnerAndNameQuery,
+} from '../graphql/generated';
 import * as git from '../lib/git';
-import { GithubConfigOptionsResponse } from '../lib/github/v4/getOptionsFromGithub/query';
-import { RepoOwnerAndNameResponse } from '../lib/github/v4/getRepoOwnerAndNameFromGitRemotes';
 import * as logger from '../lib/logger';
 import { mockConfigFiles } from '../test/mockConfigFiles';
 import { mockGqlRequest } from '../test/nockHelpers';
@@ -502,7 +504,7 @@ function mockGithubConfigOptions({
   isRepoPrivate?: boolean;
   headers?: Record<string, string>;
 }) {
-  return mockGqlRequest<GithubConfigOptionsResponse>({
+  return mockGqlRequest<GithubConfigOptionsQuery>({
     name: 'GithubConfigOptions',
     statusCode: 200,
     body: {
@@ -555,7 +557,7 @@ function mockRepoOwnerAndName({
   parentRepoOwner: string;
   childRepoOwner: string;
 }) {
-  return mockGqlRequest<RepoOwnerAndNameResponse>({
+  return mockGqlRequest<RepoOwnerAndNameQuery>({
     name: 'RepoOwnerAndName',
     statusCode: 200,
     body: {

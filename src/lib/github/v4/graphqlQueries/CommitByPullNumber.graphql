@@ -1,0 +1,36 @@
+    query CommitByPullNumber(
+      $repoOwner: String!
+      $repoName: String!
+      $pullNumber: Int!
+    ) {
+      repository(owner: $repoOwner, name: $repoName) {
+        pullRequest(number: $pullNumber) {
+          # used to determine if "Rebase and Merge" strategy was used
+          commits(last: 1) {
+            totalCount
+            edges {
+              node {
+                commit {
+                  message
+                }
+              }
+            }
+          }
+
+          mergeCommit {
+            oid
+
+            # used to determine if "Rebase and Merge" strategy was used
+            committedDate
+            history(first: 2) {
+              edges {
+                node {
+                  message
+                  committedDate
+                }
+              }
+            }
+          }
+        }
+      }
+    }

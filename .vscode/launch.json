@@ -39,10 +39,8 @@
         "--runInBand",
         "${file}",
         "--config",
-        "${workspaceRoot}/jest.config.js"
+        "${workspaceRoot}/jest.config.ts"
       ],
-      "port": 9229,
-      "address": "localhost",
       "stopOnEntry": false,
       "runtimeExecutable": null,
       "sourceMaps": true,

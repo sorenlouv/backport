@@ -1,14 +1,12 @@
-import gql from 'graphql-tag';
+import { CommitsByShaQuery } from '../../../../graphql/generated';
 import { ValidConfigOptions } from '../../../../options/options';
 import { BackportError } from '../../../BackportError';
 import { swallowMissingConfigFileException } from '../../../remoteConfig';
 import {
   Commit,
-  SourceCommitWithTargetPullRequest,
-  SourceCommitWithTargetPullRequestFragment,
   parseSourceCommit,
 } from '../../../sourceCommit/parseSourceCommit';
-import { apiRequestV4 } from '../apiRequestV4';
+import { getV4Client } from '../apiRequestV4';
 
 export async function fetchCommitBySha(options: {
   accessToken: string;
@@ -28,48 +26,22 @@ export async function fetchCommitBySha(options: {
     sourceBranch,
   } = options;
 
-  const query = gql`
-    query CommitsBySha($repoOwner: String!, $repoName: String!, $sha: String!) {
-      repository(owner: $repoOwner, name: $repoName) {
-        object(expression: $sha) {
-          ...SourceCommitWithTargetPullRequestFragment
-        }
-      }
-    }
-
-    ${SourceCommitWithTargetPullRequestFragment}
-  `;
-
-  let data: CommitsByShaResponse;
+  let data: CommitsByShaQuery;
   try {
-    const res = await apiRequestV4<CommitsByShaResponse>({
-      githubApiBaseUrlV4,
-      accessToken,
-      query,
-      variables: {
-        repoOwner,
-        repoName,
-        sha,
-      },
-    });
-    data = res.data.data;
+    const client = getV4Client({ githubApiBaseUrlV4, accessToken });
+    const res = await client.CommitsBySha({ repoOwner, repoName, sha });
+
+    data = res.data;
   } catch (e) {
-    data = swallowMissingConfigFileException<CommitsByShaResponse>(e);
+    data = swallowMissingConfigFileException<CommitsByShaQuery>(e);
   }
 
-  const sourceCommit = data.repository.object;
-
-  if (!sourceCommit) {
+  const sourceCommit = data.repository?.object;
+  if (!sourceCommit || sourceCommit.__typename !== 'Commit') {
     throw new BackportError(
       `No commit found on branch "${sourceBranch}" with sha "${sha}"`,
     );
   }
 
   return parseSourceCommit({ options, sourceCommit });
-}
-
-interface CommitsByShaResponse {
-  repository: {
-    object: SourceCommitWithTargetPullRequest | null;
-  };
 }

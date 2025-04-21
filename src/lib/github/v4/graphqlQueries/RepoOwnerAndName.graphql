@@ -1,0 +1,14 @@
+  query RepoOwnerAndName($repoOwner: String!, $repoName: String!) {
+    repository(owner: $repoOwner, name: $repoName) {
+      isFork
+      name
+      owner {
+        login
+      }
+      parent {
+        owner {
+          login
+        }
+      }
+    }
+  }

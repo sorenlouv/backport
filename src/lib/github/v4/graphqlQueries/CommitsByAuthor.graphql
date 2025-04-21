@@ -1,0 +1,32 @@
+    query CommitsByAuthor(
+      $authorId: ID
+      $commitPath: String
+      $dateSince: GitTimestamp
+      $dateUntil: GitTimestamp
+      $maxNumber: Int!
+      $repoName: String!
+      $repoOwner: String!
+      $sourceBranch: String!
+    ) {
+      repository(owner: $repoOwner, name: $repoName) {
+        ref(qualifiedName: $sourceBranch) {
+          target {
+            ... on Commit {
+              history(
+                first: $maxNumber
+                author: { id: $authorId }
+                path: $commitPath
+                since: $dateSince
+                until: $dateUntil
+              ) {
+                edges {
+                  node {
+                    ...SourceCommitWithTargetPullRequestFragment
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }

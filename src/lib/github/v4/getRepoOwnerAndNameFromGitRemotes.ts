@@ -1,8 +1,7 @@
-import gql from 'graphql-tag';
 import { maybe } from '../../../utils/maybe';
 import { getRepoInfoFromGitRemotes } from '../../git';
 import { logger } from '../../logger';
-import { apiRequestV4, GithubV4Exception } from './apiRequestV4';
+import { getV4Client, GithubV4Exception } from './apiRequestV4';
 
 // This method should be used to get the origin owner (instead of a fork owner)
 export async function getRepoOwnerAndNameFromGitRemotes({
@@ -22,24 +21,20 @@ export async function getRepoOwnerAndNameFromGitRemotes({
   }
 
   try {
-    const res = await apiRequestV4<RepoOwnerAndNameResponse>({
-      githubApiBaseUrlV4,
-      accessToken,
-      query,
-      variables: {
-        repoOwner: firstRemote.repoOwner,
-        repoName: firstRemote.repoName,
-      },
+    const client = getV4Client({ githubApiBaseUrlV4, accessToken });
+    const res = await client.RepoOwnerAndName({
+      repoOwner: firstRemote.repoOwner,
+      repoName: firstRemote.repoName,
     });
 
-    const { data } = res.data;
+    const { repository } = res.data;
 
     return {
-      repoName: data.repository.name,
+      repoName: repository?.name,
       // get the original owner (not the fork owner)
-      repoOwner: data.repository.isFork
-        ? data.repository.parent.owner.login
-        : data.repository.owner.login,
+      repoOwner: repository?.isFork
+        ? repository.parent?.owner.login
+        : repository?.owner.login,
     };
   } catch (e) {
     if (e instanceof GithubV4Exception) {
@@ -49,38 +44,3 @@ export async function getRepoOwnerAndNameFromGitRemotes({
     throw e;
   }
 }
-
-export interface RepoOwnerAndNameResponse {
-  repository:
-    | {
-        isFork: true;
-        name: string;
-        owner: { login: string };
-        parent: {
-          owner: { login: string };
-        };
-      }
-    | {
-        isFork: false;
-        name: string;
-        owner: { login: string };
-        parent: null;
-      };
-}
-
-const query = gql`
-  query RepoOwnerAndName($repoOwner: String!, $repoName: String!) {
-    repository(owner: $repoOwner, name: $repoName) {
-      isFork
-      name
-      owner {
-        login
-      }
-      parent {
-        owner {
-          login
-        }
-      }
-    }
-  }
-`;

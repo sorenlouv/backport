@@ -1,0 +1,7 @@
+    mutation DisablePullRequestAutoMerge($pullRequestId: ID!) {
+      disablePullRequestAutoMerge(input: { pullRequestId: $pullRequestId }) {
+        pullRequest {
+          number
+        }
+      }
+    }

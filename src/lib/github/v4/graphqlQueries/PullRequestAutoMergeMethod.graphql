@@ -1,0 +1,14 @@
+    query PullRequestAutoMergeMethod(
+      $repoOwner: String!
+      $repoName: String!
+      $pullNumber: Int!
+    ) {
+      repository(owner: $repoOwner, name: $repoName) {
+        pullRequest(number: $pullNumber) {
+          autoMergeRequest {
+            enabledAt
+            mergeMethod
+          }
+        }
+      }
+    }

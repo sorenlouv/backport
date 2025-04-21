@@ -1,5 +1,5 @@
-import gql from 'graphql-tag';
 import { isEmpty, uniqBy, orderBy } from 'lodash';
+import { CommitsByAuthorQuery } from '../../../../graphql/generated';
 import { ValidConfigOptions } from '../../../../options/options';
 import { filterNil } from '../../../../utils/filterEmpty';
 import { filterUnmergedCommits } from '../../../../utils/filterUnmergedCommits';
@@ -7,11 +7,9 @@ import { BackportError } from '../../../BackportError';
 import { swallowMissingConfigFileException } from '../../../remoteConfig';
 import {
   Commit,
-  SourceCommitWithTargetPullRequest,
-  SourceCommitWithTargetPullRequestFragment,
   parseSourceCommit,
 } from '../../../sourceCommit/parseSourceCommit';
-import { GithubV4Exception, apiRequestV4 } from '../apiRequestV4';
+import { GithubV4Exception, getV4Client } from '../apiRequestV4';
 import { fetchAuthorId } from '../fetchAuthorId';
 
 async function fetchByCommitPath({
@@ -29,7 +27,7 @@ async function fetchByCommitPath({
     repoOwner: string;
     sourceBranch: string;
   };
-  authorId: string | null;
+  authorId: string | null | undefined;
   commitPath: string | null;
 }) {
   const {
@@ -43,71 +41,29 @@ async function fetchByCommitPath({
     sourceBranch,
   } = options;
 
-  const query = gql`
-    query CommitsByAuthor(
-      $authorId: ID
-      $commitPath: String
-      $dateSince: GitTimestamp
-      $dateUntil: GitTimestamp
-      $maxNumber: Int!
-      $repoName: String!
-      $repoOwner: String!
-      $sourceBranch: String!
-    ) {
-      repository(owner: $repoOwner, name: $repoName) {
-        ref(qualifiedName: $sourceBranch) {
-          target {
-            ... on Commit {
-              history(
-                first: $maxNumber
-                author: { id: $authorId }
-                path: $commitPath
-                since: $dateSince
-                until: $dateUntil
-              ) {
-                edges {
-                  node {
-                    ...SourceCommitWithTargetPullRequestFragment
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
-    ${SourceCommitWithTargetPullRequestFragment}
-  `;
-
-  const variables = {
-    repoOwner,
-    repoName,
-    sourceBranch,
-    maxNumber,
-    authorId,
-    commitPath,
-    dateSince,
-    dateUntil,
-  };
-
   try {
-    const res = await apiRequestV4<CommitByAuthorResponse>({
-      githubApiBaseUrlV4,
-      accessToken,
-      query,
-      variables,
+    const client = getV4Client({ githubApiBaseUrlV4, accessToken });
+    const res = await client.CommitsByAuthor({
+      repoOwner,
+      repoName,
+      sourceBranch,
+      maxNumber,
+      authorId,
+      commitPath,
+      dateSince,
+      dateUntil,
     });
-    return res.data.data;
+
+    return res.data;
   } catch (e) {
     if (e instanceof GithubV4Exception) {
-      if (e.githubResponse.status === 502 && maxNumber > 50) {
+      if (e.response.status === 502 && maxNumber > 50) {
         throw new BackportError(
           `The GitHub API returned a 502 error. Try reducing the number of commits to display: "--max-number 20"`,
         );
       }
     }
-    return swallowMissingConfigFileException<CommitByAuthorResponse>(e);
+    return swallowMissingConfigFileException<CommitsByAuthorQuery>(e);
   }
 }
 
@@ -137,7 +93,7 @@ export async function fetchCommitsByAuthor(options: {
   );
 
   // we only need to check if the first item is `null` (if the first is `null` they all are)
-  if (responses[0].repository.ref === null) {
+  if (!responses[0]?.repository?.ref) {
     throw new BackportError(
       `The upstream branch "${sourceBranch}" does not exist. Try specifying a different branch with "--source-branch <your-branch>"`,
     );
@@ -145,8 +101,16 @@ export async function fetchCommitsByAuthor(options: {
 
   const commits = responses
     .flatMap((res) => {
-      return res.repository.ref?.target.history.edges.map((edge) => {
-        const sourceCommit = edge.node;
+      if (res.repository?.ref?.target?.__typename !== 'Commit') {
+        return;
+      }
+
+      return res.repository.ref.target.history.edges?.map((edge) => {
+        const sourceCommit = edge?.node;
+        if (sourceCommit?.__typename !== 'Commit') {
+          return;
+        }
+
         return parseSourceCommit({ options, sourceCommit });
       });
     })
@@ -176,16 +140,4 @@ export async function fetchCommitsByAuthor(options: {
   }
 
   return commitsSorted;
-}
-
-export interface CommitByAuthorResponse {
-  repository: {
-    ref: {
-      target: {
-        history: {
-          edges: Array<{ node: SourceCommitWithTargetPullRequest }>;
-        };
-      };
-    } | null;
-  };
 }

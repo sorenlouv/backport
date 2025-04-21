@@ -1,0 +1,42 @@
+ query CommitsForRebaseAndMergeStrategy(
+      $repoOwner: String!
+      $repoName: String!
+      $pullNumber: Int!
+      $commitsTotalCount: Int!
+    ) {
+      repository(owner: $repoOwner, name: $repoName) {
+        pullRequest(number: $pullNumber) {
+          number
+          commits(first: $commitsTotalCount) {
+            totalCount
+            edges {
+              node {
+                commit {
+                  message
+                }
+              }
+            }
+          }
+
+          mergeCommit {
+            committedDate
+            history(first: $commitsTotalCount) {
+              edges {
+                node {
+                  oid
+                  message
+                  committedDate
+                  associatedPullRequests(first: 1) {
+                    edges {
+                      node {
+                        number
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }

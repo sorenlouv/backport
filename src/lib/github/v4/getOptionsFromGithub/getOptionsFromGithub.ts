@@ -1,4 +1,5 @@
-import { AxiosResponse } from 'axios';
+import { GraphQLResponse } from 'graphql-request';
+import { GithubConfigOptionsQuery } from '../../../../graphql/generated';
 import { ConfigFileOptions } from '../../../../options/ConfigOptions';
 import { BackportError } from '../../../BackportError';
 import {
@@ -11,13 +12,8 @@ import {
   parseRemoteConfigFile,
   swallowMissingConfigFileException,
 } from '../../../remoteConfig';
-import {
-  apiRequestV4,
-  GithubV4Exception,
-  GithubV4Response,
-} from '../apiRequestV4';
+import { getV4Client, GithubV4Exception } from '../apiRequestV4';
 import { throwOnInvalidAccessToken } from '../throwOnInvalidAccessToken';
-import { GithubConfigOptionsResponse, query } from './query';
 
 // fetches the default source branch for the repo (normally "master")
 // startup checks:
@@ -45,19 +41,15 @@ export async function getOptionsFromGithub(options: {
     globalConfigFile,
   } = options;
 
-  let data: GithubConfigOptionsResponse;
+  let data: GithubConfigOptionsQuery;
 
   try {
-    const res = await apiRequestV4<GithubConfigOptionsResponse>({
-      githubApiBaseUrlV4,
-      accessToken,
-      query,
-      variables: { repoOwner, repoName },
-    });
+    const client = getV4Client({ githubApiBaseUrlV4, accessToken });
+    const res = await client.GithubConfigOptions({ repoOwner, repoName });
 
     throwIfInsufficientPermissions(res);
 
-    data = res.data.data;
+    data = res.data;
   } catch (e) {
     if (!(e instanceof GithubV4Exception)) {
       throw e;
@@ -69,11 +61,11 @@ export async function getOptionsFromGithub(options: {
       repoOwner,
       globalConfigFile,
     });
-    data = swallowMissingConfigFileException<GithubConfigOptionsResponse>(e);
+    data = swallowMissingConfigFileException<GithubConfigOptionsQuery>(e);
   }
 
   // it is not possible to have a branch named "backport"
-  if (data.repository.illegalBackportBranch) {
+  if (data.repository?.illegalBackportBranch) {
     throw new BackportError(
       'You must delete the branch "backport" to continue. See https://github.com/sorenlouv/backport/issues/155 for details',
     );
@@ -87,14 +79,15 @@ export async function getOptionsFromGithub(options: {
 
   return {
     authenticatedUsername: data.viewer.login,
-    sourceBranch: options.sourceBranch ?? data.repository.defaultBranchRef.name,
-    isRepoPrivate: data.repository.isPrivate,
+    sourceBranch:
+      options.sourceBranch ?? data.repository?.defaultBranchRef?.name ?? 'main',
+    isRepoPrivate: data.repository?.isPrivate,
     ...remoteConfig,
   };
 }
 
 async function getRemoteConfigFileOptions(
-  res: GithubConfigOptionsResponse,
+  res: GithubConfigOptionsQuery,
   cwd?: string,
   skipRemoteConfig?: boolean,
 ): Promise<ConfigFileOptions | undefined> {
@@ -105,10 +98,14 @@ async function getRemoteConfigFileOptions(
     return;
   }
 
-  const remoteConfig =
-    res.repository.defaultBranchRef.target.remoteConfigHistory.edges?.[0]
-      ?.remoteConfig;
+  const targetNode = res.repository?.defaultBranchRef?.target;
 
+  if (targetNode?.__typename !== 'Commit') {
+    logger.warn('Remote config: Skipping. Node is not a commit');
+    return;
+  }
+
+  const remoteConfig = targetNode.remoteConfigHistory.edges?.[0]?.remoteConfig;
   if (!remoteConfig) {
     logger.info("Remote config: Skipping. Remote config doesn't exist");
     return;
@@ -150,9 +147,12 @@ async function getRemoteConfigFileOptions(
 }
 
 function throwIfInsufficientPermissions(
-  res: AxiosResponse<GithubV4Response<GithubConfigOptionsResponse>, any>,
+  res: GraphQLResponse<GithubConfigOptionsQuery> & {
+    headers: Headers;
+    status: number;
+  },
 ) {
-  const accessScopesHeader = res.headers['x-oauth-scopes'] as
+  const accessScopesHeader = res.headers.get('x-oauth-scopes') as
     | string
     | undefined;
 
@@ -164,8 +164,7 @@ function throwIfInsufficientPermissions(
     .split(',')
     .map((scope) => scope.trim());
 
-  const isRepoPrivate = res.data.data.repository.isPrivate;
-
+  const isRepoPrivate = res.data?.repository?.isPrivate;
   if (isRepoPrivate && !accessTokenScopes.includes('repo')) {
     throw new BackportError(
       `You must grant the "repo" scope to your personal access token`,

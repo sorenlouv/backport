@@ -1,6 +1,9 @@
-import { CommitByAuthorResponse } from '../fetchCommits/fetchCommitsByAuthor';
+import {
+  CommitsByAuthorQuery,
+  PullRequestState,
+} from '../../../../graphql/generated';
 
-export const commitsByAuthorMock: CommitByAuthorResponse = {
+export const commitsByAuthorMock: CommitsByAuthorQuery = {
   repository: {
     ref: {
       target: {
@@ -110,7 +113,7 @@ export const commitsByAuthorMock: CommitByAuthorResponse = {
                                   },
                                   url: 'https://github.com/elastic/kibana/pull/99',
                                   title: 'some title',
-                                  state: 'MERGED',
+                                  state: 'MERGED' as PullRequestState,
                                   number: 99,
                                   baseRefName: '6.3',
                                   commits: {

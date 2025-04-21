@@ -1,0 +1,5 @@
+    query AuthorId($author: String!) {
+      user(login: $author) {
+        id
+      }
+    }

@@ -1,0 +1,7 @@
+    query CommitsBySha($repoOwner: String!, $repoName: String!, $sha: String!) {
+      repository(owner: $repoOwner, name: $repoName) {
+        object(expression: $sha) {
+          ...SourceCommitWithTargetPullRequestFragment
+        }
+      }
+    }

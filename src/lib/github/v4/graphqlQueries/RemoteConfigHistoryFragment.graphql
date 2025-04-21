@@ -1,0 +1,18 @@
+  fragment RemoteConfigHistoryFragment on Commit {
+    remoteConfigHistory: history(first: 1, path: ".backportrc.json") {
+      edges {
+        remoteConfig: node {
+          committedDate
+          file(path: ".backportrc.json") {
+            ... on TreeEntry {
+              object {
+                ... on Blob {
+                  text
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
