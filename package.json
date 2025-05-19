@@ -97,7 +97,6 @@
     "@graphql-codegen/typescript": "^4.1.6",
     "@graphql-codegen/typescript-graphql-request": "^6.2.0",
     "@graphql-codegen/typescript-operations": "^4.6.1",
-    "@graphql-codegen/typescript-urql": "^4.0.0",
     "@parcel/watcher": "^2.5.1",
     "@types/core-js": "^2.5.5",
     "@types/dedent": "^0.7.0",

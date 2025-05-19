@@ -31,6 +31,7 @@ export async function fetchCommitBySha(options: {
     query CommitsBySha($repoOwner: String!, $repoName: String!, $sha: String!) {
       repository(owner: $repoOwner, name: $repoName) {
         object(expression: $sha) {
+          __typename
           ...SourceCommitWithTargetPullRequestFragment
         }
       }
@@ -41,7 +42,6 @@ export async function fetchCommitBySha(options: {
   try {
     const variables = { repoOwner, repoName, sha };
     const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
-
     const result = await client.query(query, variables);
 
     if (result.error) {

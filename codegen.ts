@@ -14,10 +14,10 @@ const config: CodegenConfig = {
         gqlTagName: 'graphql',
         fragmentMasking: false,
       },
-      // plugins: ['@graphql-codegen/typescript-urql'],
       config: {
+        skipTypename: false, // Include __typename
         withHooks: false, // Disable React hooks
-        urqlImportFrom: '@urql/core', // Import from @urql/core
+        urqlImportFrom: '@urql/core',
       },
     },
   },

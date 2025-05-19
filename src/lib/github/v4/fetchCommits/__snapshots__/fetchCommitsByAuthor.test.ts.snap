@@ -34,6 +34,7 @@ exports[`fetchCommitsByAuthor when commit has an associated pull request should 
           ) {
             edges {
               node {
+                __typename
                 ...SourceCommitWithTargetPullRequestFragment
               }
             }

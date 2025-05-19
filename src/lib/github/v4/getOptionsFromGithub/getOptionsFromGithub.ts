@@ -62,6 +62,7 @@ export async function getOptionsFromGithub(options: {
           defaultBranchRef {
             name
             target {
+              __typename
               ...RemoteConfigHistoryFragment
             }
           }

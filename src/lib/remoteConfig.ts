@@ -11,8 +11,10 @@ export const RemoteConfigHistoryFragment = graphql(`
           committedDate
           file(path: ".backportrc.json") {
             ... on TreeEntry {
+              __typename
               object {
                 ... on Blob {
+                  __typename
                   text
                 }
               }
@@ -46,7 +48,8 @@ export function swallowMissingConfigFileException<T>(
   const missingConfigError = errors?.some((error) => {
     return (
       error.path?.includes('remoteConfig') &&
-      error.extensions.type === 'NOT_FOUND'
+      // @ts-expect-error
+      error.originalError?.type === 'NOT_FOUND'
     );
   });
 

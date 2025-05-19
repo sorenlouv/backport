@@ -36282,9 +36282,9 @@ export type CommitsByShaQuery = {
   repository?: {
     __typename?: 'Repository';
     object?:
-      | { __typename?: 'Blob' }
+      | { __typename: 'Blob' }
       | {
-          __typename?: 'Commit';
+          __typename: 'Commit';
           message: string;
           committedDate: any;
           sha: any;
@@ -36318,7 +36318,7 @@ export type CommitsByShaQuery = {
                   } | null> | null;
                 } | null;
                 mergeCommit?: {
-                  __typename?: 'Commit';
+                  __typename: 'Commit';
                   message: string;
                   sha: any;
                   remoteConfigHistory: {
@@ -36329,9 +36329,9 @@ export type CommitsByShaQuery = {
                         __typename?: 'Commit';
                         committedDate: any;
                         file?: {
-                          __typename?: 'TreeEntry';
+                          __typename: 'TreeEntry';
                           object?:
-                            | { __typename?: 'Blob'; text?: string | null }
+                            | { __typename: 'Blob'; text?: string | null }
                             | { __typename?: 'Commit' }
                             | { __typename?: 'Tag' }
                             | { __typename?: 'Tree' }
@@ -36365,7 +36365,7 @@ export type CommitsByShaQuery = {
                       | { __typename?: 'ConvertedNoteToIssueEvent' }
                       | { __typename?: 'ConvertedToDiscussionEvent' }
                       | {
-                          __typename?: 'CrossReferencedEvent';
+                          __typename: 'CrossReferencedEvent';
                           targetPullRequest:
                             | { __typename: 'Issue' }
                             | {
@@ -36459,8 +36459,8 @@ export type CommitsByShaQuery = {
             } | null> | null;
           } | null;
         }
-      | { __typename?: 'Tag' }
-      | { __typename?: 'Tree' }
+      | { __typename: 'Tag' }
+      | { __typename: 'Tree' }
       | null;
   } | null;
 };
@@ -36485,13 +36485,13 @@ export type CommitsByAuthorQuery = {
       target?:
         | { __typename?: 'Blob' }
         | {
-            __typename?: 'Commit';
+            __typename: 'Commit';
             history: {
               __typename?: 'CommitHistoryConnection';
               edges?: Array<{
                 __typename?: 'CommitEdge';
                 node?: {
-                  __typename?: 'Commit';
+                  __typename: 'Commit';
                   message: string;
                   committedDate: any;
                   sha: any;
@@ -36525,7 +36525,7 @@ export type CommitsByAuthorQuery = {
                           } | null> | null;
                         } | null;
                         mergeCommit?: {
-                          __typename?: 'Commit';
+                          __typename: 'Commit';
                           message: string;
                           sha: any;
                           remoteConfigHistory: {
@@ -36536,10 +36536,10 @@ export type CommitsByAuthorQuery = {
                                 __typename?: 'Commit';
                                 committedDate: any;
                                 file?: {
-                                  __typename?: 'TreeEntry';
+                                  __typename: 'TreeEntry';
                                   object?:
                                     | {
-                                        __typename?: 'Blob';
+                                        __typename: 'Blob';
                                         text?: string | null;
                                       }
                                     | { __typename?: 'Commit' }
@@ -36579,7 +36579,7 @@ export type CommitsByAuthorQuery = {
                               | { __typename?: 'ConvertedNoteToIssueEvent' }
                               | { __typename?: 'ConvertedToDiscussionEvent' }
                               | {
-                                  __typename?: 'CrossReferencedEvent';
+                                  __typename: 'CrossReferencedEvent';
                                   targetPullRequest:
                                     | { __typename: 'Issue' }
                                     | {
@@ -36758,9 +36758,9 @@ export type PullRequestBySearchQueryQuery = {
       | { __typename?: 'MarketplaceListing' }
       | { __typename?: 'Organization' }
       | {
-          __typename?: 'PullRequest';
+          __typename: 'PullRequest';
           mergeCommit?: {
-            __typename?: 'Commit';
+            __typename: 'Commit';
             message: string;
             committedDate: any;
             sha: any;
@@ -36794,7 +36794,7 @@ export type PullRequestBySearchQueryQuery = {
                     } | null> | null;
                   } | null;
                   mergeCommit?: {
-                    __typename?: 'Commit';
+                    __typename: 'Commit';
                     message: string;
                     sha: any;
                     remoteConfigHistory: {
@@ -36805,9 +36805,9 @@ export type PullRequestBySearchQueryQuery = {
                           __typename?: 'Commit';
                           committedDate: any;
                           file?: {
-                            __typename?: 'TreeEntry';
+                            __typename: 'TreeEntry';
                             object?:
-                              | { __typename?: 'Blob'; text?: string | null }
+                              | { __typename: 'Blob'; text?: string | null }
                               | { __typename?: 'Commit' }
                               | { __typename?: 'Tag' }
                               | { __typename?: 'Tree' }
@@ -36841,7 +36841,7 @@ export type PullRequestBySearchQueryQuery = {
                         | { __typename?: 'ConvertedNoteToIssueEvent' }
                         | { __typename?: 'ConvertedToDiscussionEvent' }
                         | {
-                            __typename?: 'CrossReferencedEvent';
+                            __typename: 'CrossReferencedEvent';
                             targetPullRequest:
                               | { __typename: 'Issue' }
                               | {
@@ -37024,9 +37024,9 @@ export type GithubConfigOptionsQuery = {
       __typename?: 'Ref';
       name: string;
       target?:
-        | { __typename?: 'Blob' }
+        | { __typename: 'Blob' }
         | {
-            __typename?: 'Commit';
+            __typename: 'Commit';
             remoteConfigHistory: {
               __typename?: 'CommitHistoryConnection';
               edges?: Array<{
@@ -37035,9 +37035,9 @@ export type GithubConfigOptionsQuery = {
                   __typename?: 'Commit';
                   committedDate: any;
                   file?: {
-                    __typename?: 'TreeEntry';
+                    __typename: 'TreeEntry';
                     object?:
-                      | { __typename?: 'Blob'; text?: string | null }
+                      | { __typename: 'Blob'; text?: string | null }
                       | { __typename?: 'Commit' }
                       | { __typename?: 'Tag' }
                       | { __typename?: 'Tree' }
@@ -37047,8 +37047,8 @@ export type GithubConfigOptionsQuery = {
               } | null> | null;
             };
           }
-        | { __typename?: 'Tag' }
-        | { __typename?: 'Tree' }
+        | { __typename: 'Tag' }
+        | { __typename: 'Tree' }
         | null;
     } | null;
   } | null;
@@ -37118,9 +37118,9 @@ export type RemoteConfigHistoryFragmentFragment = {
         __typename?: 'Commit';
         committedDate: any;
         file?: {
-          __typename?: 'TreeEntry';
+          __typename: 'TreeEntry';
           object?:
-            | { __typename?: 'Blob'; text?: string | null }
+            | { __typename: 'Blob'; text?: string | null }
             | { __typename?: 'Commit' }
             | { __typename?: 'Tag' }
             | { __typename?: 'Tree' }
@@ -37132,7 +37132,7 @@ export type RemoteConfigHistoryFragmentFragment = {
 };
 
 export type SourceCommitWithTargetPullRequestFragmentFragment = {
-  __typename?: 'Commit';
+  __typename: 'Commit';
   message: string;
   committedDate: any;
   sha: any;
@@ -37163,7 +37163,7 @@ export type SourceCommitWithTargetPullRequestFragmentFragment = {
           nodes?: Array<{ __typename?: 'Label'; name: string } | null> | null;
         } | null;
         mergeCommit?: {
-          __typename?: 'Commit';
+          __typename: 'Commit';
           message: string;
           sha: any;
           remoteConfigHistory: {
@@ -37174,9 +37174,9 @@ export type SourceCommitWithTargetPullRequestFragmentFragment = {
                 __typename?: 'Commit';
                 committedDate: any;
                 file?: {
-                  __typename?: 'TreeEntry';
+                  __typename: 'TreeEntry';
                   object?:
-                    | { __typename?: 'Blob'; text?: string | null }
+                    | { __typename: 'Blob'; text?: string | null }
                     | { __typename?: 'Commit' }
                     | { __typename?: 'Tag' }
                     | { __typename?: 'Tree' }
@@ -37210,7 +37210,7 @@ export type SourceCommitWithTargetPullRequestFragmentFragment = {
               | { __typename?: 'ConvertedNoteToIssueEvent' }
               | { __typename?: 'ConvertedToDiscussionEvent' }
               | {
-                  __typename?: 'CrossReferencedEvent';
+                  __typename: 'CrossReferencedEvent';
                   targetPullRequest:
                     | { __typename: 'Issue' }
                     | {
@@ -37388,6 +37388,13 @@ export const RemoteConfigHistoryFragmentFragmentDoc = {
                                           kind: 'Field',
                                           name: {
                                             kind: 'Name',
+                                            value: '__typename',
+                                          },
+                                        },
+                                        {
+                                          kind: 'Field',
+                                          name: {
+                                            kind: 'Name',
                                             value: 'object',
                                           },
                                           selectionSet: {
@@ -37405,6 +37412,13 @@ export const RemoteConfigHistoryFragmentFragmentDoc = {
                                                 selectionSet: {
                                                   kind: 'SelectionSet',
                                                   selections: [
+                                                    {
+                                                      kind: 'Field',
+                                                      name: {
+                                                        kind: 'Name',
+                                                        value: '__typename',
+                                                      },
+                                                    },
                                                     {
                                                       kind: 'Field',
                                                       name: {
@@ -37454,6 +37468,7 @@ export const SourceCommitWithTargetPullRequestFragmentFragmentDoc = {
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
+          { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'repository' },
@@ -37569,6 +37584,10 @@ export const SourceCommitWithTargetPullRequestFragmentFragmentDoc = {
                                 kind: 'SelectionSet',
                                 selections: [
                                   {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: '__typename' },
+                                  },
+                                  {
                                     kind: 'FragmentSpread',
                                     name: {
                                       kind: 'Name',
@@ -37635,6 +37654,13 @@ export const SourceCommitWithTargetPullRequestFragmentFragmentDoc = {
                                                   selections: [
                                                     {
                                                       kind: 'Field',
+                                                      name: {
+                                                        kind: 'Name',
+                                                        value: '__typename',
+                                                      },
+                                                    },
+                                                    {
+                                                      kind: 'Field',
                                                       alias: {
                                                         kind: 'Name',
                                                         value:
@@ -37668,6 +37694,14 @@ export const SourceCommitWithTargetPullRequestFragmentFragmentDoc = {
                                                             selectionSet: {
                                                               kind: 'SelectionSet',
                                                               selections: [
+                                                                {
+                                                                  kind: 'Field',
+                                                                  name: {
+                                                                    kind: 'Name',
+                                                                    value:
+                                                                      '__typename',
+                                                                  },
+                                                                },
                                                                 {
                                                                   kind: 'Field',
                                                                   alias: {
@@ -38012,6 +38046,13 @@ export const SourceCommitWithTargetPullRequestFragmentFragmentDoc = {
                                           kind: 'Field',
                                           name: {
                                             kind: 'Name',
+                                            value: '__typename',
+                                          },
+                                        },
+                                        {
+                                          kind: 'Field',
+                                          name: {
+                                            kind: 'Name',
                                             value: 'object',
                                           },
                                           selectionSet: {
@@ -38029,6 +38070,13 @@ export const SourceCommitWithTargetPullRequestFragmentFragmentDoc = {
                                                 selectionSet: {
                                                   kind: 'SelectionSet',
                                                   selections: [
+                                                    {
+                                                      kind: 'Field',
+                                                      name: {
+                                                        kind: 'Name',
+                                                        value: '__typename',
+                                                      },
+                                                    },
                                                     {
                                                       kind: 'Field',
                                                       name: {
@@ -38601,6 +38649,10 @@ export const CommitsByShaDocument = {
                     kind: 'SelectionSet',
                     selections: [
                       {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: '__typename' },
+                      },
+                      {
                         kind: 'FragmentSpread',
                         name: {
                           kind: 'Name',
@@ -38699,6 +38751,13 @@ export const CommitsByShaDocument = {
                                           kind: 'Field',
                                           name: {
                                             kind: 'Name',
+                                            value: '__typename',
+                                          },
+                                        },
+                                        {
+                                          kind: 'Field',
+                                          name: {
+                                            kind: 'Name',
                                             value: 'object',
                                           },
                                           selectionSet: {
@@ -38716,6 +38775,13 @@ export const CommitsByShaDocument = {
                                                 selectionSet: {
                                                   kind: 'SelectionSet',
                                                   selections: [
+                                                    {
+                                                      kind: 'Field',
+                                                      name: {
+                                                        kind: 'Name',
+                                                        value: '__typename',
+                                                      },
+                                                    },
                                                     {
                                                       kind: 'Field',
                                                       name: {
@@ -38760,6 +38826,7 @@ export const CommitsByShaDocument = {
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
+          { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'repository' },
@@ -38875,6 +38942,10 @@ export const CommitsByShaDocument = {
                                 kind: 'SelectionSet',
                                 selections: [
                                   {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: '__typename' },
+                                  },
+                                  {
                                     kind: 'FragmentSpread',
                                     name: {
                                       kind: 'Name',
@@ -38941,6 +39012,13 @@ export const CommitsByShaDocument = {
                                                   selections: [
                                                     {
                                                       kind: 'Field',
+                                                      name: {
+                                                        kind: 'Name',
+                                                        value: '__typename',
+                                                      },
+                                                    },
+                                                    {
+                                                      kind: 'Field',
                                                       alias: {
                                                         kind: 'Name',
                                                         value:
@@ -38974,6 +39052,14 @@ export const CommitsByShaDocument = {
                                                             selectionSet: {
                                                               kind: 'SelectionSet',
                                                               selections: [
+                                                                {
+                                                                  kind: 'Field',
+                                                                  name: {
+                                                                    kind: 'Name',
+                                                                    value:
+                                                                      '__typename',
+                                                                  },
+                                                                },
                                                                 {
                                                                   kind: 'Field',
                                                                   alias: {
@@ -39397,6 +39483,10 @@ export const CommitsByAuthorDocument = {
                                 selections: [
                                   {
                                     kind: 'Field',
+                                    name: { kind: 'Name', value: '__typename' },
+                                  },
+                                  {
+                                    kind: 'Field',
                                     name: { kind: 'Name', value: 'history' },
                                     arguments: [
                                       {
@@ -39488,6 +39578,13 @@ export const CommitsByAuthorDocument = {
                                                 selectionSet: {
                                                   kind: 'SelectionSet',
                                                   selections: [
+                                                    {
+                                                      kind: 'Field',
+                                                      name: {
+                                                        kind: 'Name',
+                                                        value: '__typename',
+                                                      },
+                                                    },
                                                     {
                                                       kind: 'FragmentSpread',
                                                       name: {
@@ -39603,6 +39700,13 @@ export const CommitsByAuthorDocument = {
                                           kind: 'Field',
                                           name: {
                                             kind: 'Name',
+                                            value: '__typename',
+                                          },
+                                        },
+                                        {
+                                          kind: 'Field',
+                                          name: {
+                                            kind: 'Name',
                                             value: 'object',
                                           },
                                           selectionSet: {
@@ -39620,6 +39724,13 @@ export const CommitsByAuthorDocument = {
                                                 selectionSet: {
                                                   kind: 'SelectionSet',
                                                   selections: [
+                                                    {
+                                                      kind: 'Field',
+                                                      name: {
+                                                        kind: 'Name',
+                                                        value: '__typename',
+                                                      },
+                                                    },
                                                     {
                                                       kind: 'Field',
                                                       name: {
@@ -39664,6 +39775,7 @@ export const CommitsByAuthorDocument = {
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
+          { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'repository' },
@@ -39779,6 +39891,10 @@ export const CommitsByAuthorDocument = {
                                 kind: 'SelectionSet',
                                 selections: [
                                   {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: '__typename' },
+                                  },
+                                  {
                                     kind: 'FragmentSpread',
                                     name: {
                                       kind: 'Name',
@@ -39845,6 +39961,13 @@ export const CommitsByAuthorDocument = {
                                                   selections: [
                                                     {
                                                       kind: 'Field',
+                                                      name: {
+                                                        kind: 'Name',
+                                                        value: '__typename',
+                                                      },
+                                                    },
+                                                    {
+                                                      kind: 'Field',
                                                       alias: {
                                                         kind: 'Name',
                                                         value:
@@ -39878,6 +40001,14 @@ export const CommitsByAuthorDocument = {
                                                             selectionSet: {
                                                               kind: 'SelectionSet',
                                                               selections: [
+                                                                {
+                                                                  kind: 'Field',
+                                                                  name: {
+                                                                    kind: 'Name',
+                                                                    value:
+                                                                      '__typename',
+                                                                  },
+                                                                },
                                                                 {
                                                                   kind: 'Field',
                                                                   alias: {
@@ -40542,10 +40673,18 @@ export const PullRequestBySearchQueryDocument = {
                           selections: [
                             {
                               kind: 'Field',
+                              name: { kind: 'Name', value: '__typename' },
+                            },
+                            {
+                              kind: 'Field',
                               name: { kind: 'Name', value: 'mergeCommit' },
                               selectionSet: {
                                 kind: 'SelectionSet',
                                 selections: [
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: '__typename' },
+                                  },
                                   {
                                     kind: 'FragmentSpread',
                                     name: {
@@ -40652,6 +40791,13 @@ export const PullRequestBySearchQueryDocument = {
                                           kind: 'Field',
                                           name: {
                                             kind: 'Name',
+                                            value: '__typename',
+                                          },
+                                        },
+                                        {
+                                          kind: 'Field',
+                                          name: {
+                                            kind: 'Name',
                                             value: 'object',
                                           },
                                           selectionSet: {
@@ -40669,6 +40815,13 @@ export const PullRequestBySearchQueryDocument = {
                                                 selectionSet: {
                                                   kind: 'SelectionSet',
                                                   selections: [
+                                                    {
+                                                      kind: 'Field',
+                                                      name: {
+                                                        kind: 'Name',
+                                                        value: '__typename',
+                                                      },
+                                                    },
                                                     {
                                                       kind: 'Field',
                                                       name: {
@@ -40713,6 +40866,7 @@ export const PullRequestBySearchQueryDocument = {
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
+          { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'repository' },
@@ -40828,6 +40982,10 @@ export const PullRequestBySearchQueryDocument = {
                                 kind: 'SelectionSet',
                                 selections: [
                                   {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: '__typename' },
+                                  },
+                                  {
                                     kind: 'FragmentSpread',
                                     name: {
                                       kind: 'Name',
@@ -40894,6 +41052,13 @@ export const PullRequestBySearchQueryDocument = {
                                                   selections: [
                                                     {
                                                       kind: 'Field',
+                                                      name: {
+                                                        kind: 'Name',
+                                                        value: '__typename',
+                                                      },
+                                                    },
+                                                    {
+                                                      kind: 'Field',
                                                       alias: {
                                                         kind: 'Name',
                                                         value:
@@ -40927,6 +41092,14 @@ export const PullRequestBySearchQueryDocument = {
                                                             selectionSet: {
                                                               kind: 'SelectionSet',
                                                               selections: [
+                                                                {
+                                                                  kind: 'Field',
+                                                                  name: {
+                                                                    kind: 'Name',
+                                                                    value:
+                                                                      '__typename',
+                                                                  },
+                                                                },
                                                                 {
                                                                   kind: 'Field',
                                                                   alias: {
@@ -41713,6 +41886,10 @@ export const GithubConfigOptionsDocument = {
                           kind: 'SelectionSet',
                           selections: [
                             {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: '__typename' },
+                            },
+                            {
                               kind: 'FragmentSpread',
                               name: {
                                 kind: 'Name',
@@ -41814,6 +41991,13 @@ export const GithubConfigOptionsDocument = {
                                           kind: 'Field',
                                           name: {
                                             kind: 'Name',
+                                            value: '__typename',
+                                          },
+                                        },
+                                        {
+                                          kind: 'Field',
+                                          name: {
+                                            kind: 'Name',
                                             value: 'object',
                                           },
                                           selectionSet: {
@@ -41831,6 +42015,13 @@ export const GithubConfigOptionsDocument = {
                                                 selectionSet: {
                                                   kind: 'SelectionSet',
                                                   selections: [
+                                                    {
+                                                      kind: 'Field',
+                                                      name: {
+                                                        kind: 'Name',
+                                                        value: '__typename',
+                                                      },
+                                                    },
                                                     {
                                                       kind: 'Field',
                                                       name: {

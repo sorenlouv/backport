@@ -33,54 +33,11 @@ export interface Commit {
   targetPullRequestStates: TargetPullRequest[];
 }
 
-// export type TimelineEdge = TimelinePullRequestEdge | TimelineIssueEdge;
-
-// export interface TimelinePullRequestEdge {
-//   node: {
-//     targetPullRequest: {
-//       __typename: 'PullRequest';
-//       url: string;
-//       title: string;
-//       state: 'OPEN' | 'CLOSED' | 'MERGED';
-//       baseRefName: string;
-//       number: number;
-
-//       targetMergeCommit: {
-//         sha: string;
-//         message: string;
-//       } | null;
-
-//       repository: {
-//         name: string;
-//         owner: {
-//           login: string;
-//         };
-//       };
-
-//       commits: {
-//         edges: Array<{
-//           node: { targetCommit: { message: string; sha: string } };
-//         }>;
-//       };
-//     };
-//   };
-// }
-
-// interface TimelineIssueEdge {
-//   node: { targetPullRequest: { __typename: 'Issue' } };
-// }
-
 function getSuggestedTargetBranches(
   sourceCommit: SourceCommitWithTargetPullRequestFragmentFragment,
   targetPullRequestStates: TargetPullRequest[],
   branchLabelMapping?: ValidConfigOptions['branchLabelMapping'],
 ) {
-  // const hasAssociatedPullRequest =
-  //   sourceCommit.associatedPullRequests?.edges?.length !== 0;
-  // if (hasAssociatedPullRequest) {
-  //   console.log('getSuggestedTargetBranches START');
-  // }
-
   const missingPrs = getPullRequestStates({
     sourceCommit,
     branchLabelMapping,
@@ -89,10 +46,6 @@ function getSuggestedTargetBranches(
   const mergedPrs = targetPullRequestStates.filter(
     (pr) => pr.state === 'MERGED',
   );
-
-  // if (hasAssociatedPullRequest) {
-  //   console.log('targetPullRequestStates', targetPullRequestStates);
-  // }
 
   return differenceBy(missingPrs, mergedPrs, (pr) => pr.label).map(
     (pr) => pr.branch,
@@ -110,6 +63,7 @@ export function parseSourceCommit({
   };
 }): Commit {
   const sourcePullRequest = getSourcePullRequest(sourceCommit);
+
   const sourceCommitBranchLabelMapping =
     getSourceCommitBranchLabelMapping(sourceCommit);
 
@@ -160,6 +114,7 @@ export function parseSourceCommit({
 
 export const SourceCommitWithTargetPullRequestFragment = graphql(`
   fragment SourceCommitWithTargetPullRequestFragment on Commit {
+    __typename
     # Source Commit
     repository {
       name
@@ -192,6 +147,7 @@ export const SourceCommitWithTargetPullRequestFragment = graphql(`
 
           # source merge commit (the commit that actually went into the source branch)
           mergeCommit {
+            __typename
             ...RemoteConfigHistoryFragment
             sha: oid
             message
@@ -202,11 +158,13 @@ export const SourceCommitWithTargetPullRequestFragment = graphql(`
             edges {
               node {
                 ... on CrossReferencedEvent {
+                  __typename
                   targetPullRequest: source {
                     __typename
 
                     # Target PRs (backport PRs)
                     ... on PullRequest {
+                      __typename
                       # target merge commit: the backport commit that was merged into the target branch
                       targetMergeCommit: mergeCommit {
                         sha: oid

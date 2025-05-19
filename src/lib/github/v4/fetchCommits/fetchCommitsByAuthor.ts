@@ -57,6 +57,7 @@ async function fetchByCommitPath({
         ref(qualifiedName: $sourceBranch) {
           target {
             ... on Commit {
+              __typename
               history(
                 first: $maxNumber
                 author: { id: $authorId }
@@ -66,6 +67,7 @@ async function fetchByCommitPath({
               ) {
                 edges {
                   node {
+                    __typename
                     ...SourceCommitWithTargetPullRequestFragment
                   }
                 }
@@ -99,7 +101,7 @@ async function fetchByCommitPath({
     return result.data;
   } catch (e) {
     if (e instanceof GithubV4Exception) {
-      if (e.responseData?.status === 502 && maxNumber > 50) {
+      if (e.result.statusCode === 502 && maxNumber > 50) {
         throw new BackportError(
           `The GitHub API returned a 502 error. Try reducing the number of commits to display: "--max-number 20"`,
         );

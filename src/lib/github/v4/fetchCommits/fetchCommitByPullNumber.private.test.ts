@@ -6,7 +6,7 @@ const accessToken = getDevAccessToken();
 
 describe('fetchCommitByPullNumber', () => {
   describe('when PR was merged', () => {
-    it.only('the pull request response is returned', async () => {
+    it('the pull request response is returned', async () => {
       const options = {
         accessToken,
         pullNumber: 5,

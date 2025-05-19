@@ -71,11 +71,13 @@ export function getPullRequestStates({
     branchLabelMapping,
   );
 
-  return mergeByKey(
+  const allTargetBranches = mergeByKey(
     targetBranchesFromLabels,
     createdTargetPullRequests,
     'branch',
-  ).map((res) => {
+  );
+
+  return allTargetBranches.map((res) => {
     if (res.state) {
       return { ...res, state: res.state };
     }

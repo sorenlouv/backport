@@ -42,7 +42,9 @@ export async function fetchPullRequestsBySearchQuery(options: {
       search(query: $query, type: ISSUE, first: $maxNumber) {
         nodes {
           ... on PullRequest {
+            __typename
             mergeCommit {
+              __typename
               ...SourceCommitWithTargetPullRequestFragment
             }
           }
@@ -98,7 +100,6 @@ export async function fetchPullRequestsBySearchQuery(options: {
 
   const commits = data?.search.nodes
     ?.map((pullRequestNode) => {
-      //__typename?: 'PullRequest';
       if (pullRequestNode?.__typename === 'PullRequest') {
         const sourceCommit = pullRequestNode.mergeCommit;
         if (sourceCommit) {
