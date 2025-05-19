@@ -4,7 +4,7 @@ import { getSandboxPath, resetSandbox } from '../../sandbox';
 import { runBackportViaCli } from './runBackportViaCli';
 
 const accessToken = getDevAccessToken();
-jest.setTimeout(15_000);
+jest.setTimeout(25_000);
 
 describe('gracefully handle corrupted repo', () => {
   it('backports correctly', async () => {

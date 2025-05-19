@@ -28,13 +28,16 @@ export function getBackportBranchName({
     )
     .join('_')
     .slice(0, 200);
-  const defaultBackportBranchName = 'backport/{{targetBranch}}/{{refValues}}';
-  const template = Handlebars.compile(
-    options.backportBranchName ?? defaultBackportBranchName,
-  );
 
+  const sourcePullRequest = commits[0].sourcePullRequest; // assume that all commits are from the same PR
+  const defaultBackportBranchName = 'backport/{{targetBranch}}/{{refValues}}';
+
+  const backportBranchName =
+    options.backportBranchName ?? defaultBackportBranchName;
+
+  const template = Handlebars.compile(backportBranchName);
   return template({
-    sourcePullRequest: commits[0].sourcePullRequest, // assume that all commits are from the same PR
+    sourcePullRequest,
     targetBranch,
     refValues,
   });

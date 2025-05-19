@@ -1,6 +1,5 @@
 import { exec } from '../../childProcessHelper';
 import { getDevAccessToken } from '../../private/getDevAccessToken';
-import { replaceStringAndLinebreaks } from '../../replaceStringAndLinebreaks';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
 import { runBackportViaCli } from './runBackportViaCli';
 const accessToken = getDevAccessToken();
@@ -105,11 +104,7 @@ View pull request: this-is-a-dry-run"
       const { output } = await run();
 
       expect(
-        replaceStringAndLinebreaks({
-          haystack: output,
-          stringBefore: sourceRepo,
-          stringAfter: '<SOURCE_REPO>',
-        }),
+        output.replaceAll('\n', '').replaceAll(sourceRepo, '<SOURCE_REPO>'),
       ).toContain(
         '✔ 100% Cloning repository from <SOURCE_REPO> (one-time operation)',
       );

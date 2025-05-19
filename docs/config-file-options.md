@@ -342,7 +342,8 @@ Template values:
 - `{{targetBranch}}`: Branch the backport PR will be targeting
 - `{{sourcePullRequest}}`: Original pull request object (see [`Commit` interface](https://github.com/sorenlouv/backport/blob/main/src/lib/sourceCommit/parseSourceCommit.ts))
 - `{{commitMessages}}`: Message of backported commit. For multiple commits the messages will be separated by pipes (`|`).
-- `{{commits}}`: A list of commits ([`Commit` interface](https://github.com/sorenlouv/backport/blob/main/src/lib/sourceCommit/parseSourceCommit.ts))
+- `{{commits}}`: An array of selected commits ([`Commit` interface](https://github.com/sorenlouv/backport/blob/main/src/lib/sourceCommit/parseSourceCommit.ts))
+- `{{commitsStringified}}`: Array of commits stringified for easier output
 
 **Default**
 
