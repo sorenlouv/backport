@@ -25,6 +25,7 @@ exports[`fetchCommitsByAuthor when commit has an associated pull request should 
     ref(qualifiedName: $sourceBranch) {
       target {
         ... on Commit {
+          __typename
           history(
             first: $maxNumber
             author: {id: $authorId}
@@ -53,8 +54,10 @@ fragment RemoteConfigHistoryFragment on Commit {
         file(path: 
 ".backportrc.json") {
           ... on TreeEntry {
+            __typename
             object {
               ... on Blob {
+                __typename
                 text
               }
             }
@@ -65,6 +68,7 @@ fragment RemoteConfigHistoryFragment on Commit {
   }
 }
 fragment SourceCommitWithTargetPullRequestFragment on Commit {
+  __typename
   repository {
     name
     owner {
@@ -91,6 +95,7 @@ fragment SourceCommitWithTargetPullRequestFragment on Commit {
         }
         baseRefName
         mergeCommit {
+          __typename
           ...RemoteConfigHistoryFragment
           sha: oid
           message
@@ -99,9 +104,11 @@ fragment SourceCommitWithTargetPullRequestFragment on Commit {
           edges {
             node {
               ... on CrossReferencedEvent {
+                __typename
                 targetPullRequest: source {
                   __typename
                   ... on PullRequest {
+                    __typename
                     targetMergeCommit: mergeCommit {
                       sha: oid
                       message

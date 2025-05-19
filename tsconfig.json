@@ -10,7 +10,10 @@
   "compilerOptions": {
     "declaration": true,
     "target": "ES2021",
-    "lib": ["ES2021"],
+    "lib": [
+      "ES2021", 
+      "DOM" // needed by wonka
+    ],
     "module": "CommonJS",
     "outDir": "./dist",
     "forceConsistentCasingInFileNames": true,

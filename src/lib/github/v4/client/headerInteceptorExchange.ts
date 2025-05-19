@@ -21,14 +21,12 @@ export const responseMetaInterceptorExchange: Exchange = ({
     const operationsWithWrappedFetch$ = pipe(
       operations$,
       map((operation) => {
-        const originalFetch = operation.context.fetch || client.fetch || fetch;
+        const originalFetch =
+          operation.context.fetch || (client as any).fetch || fetch;
 
         const newContext = {
           ...operation.context,
-          fetch: async (
-            input: RequestInfo | URL,
-            init?: RequestInit,
-          ): Promise<Response> => {
+          fetch: async (input: unknown, init?: unknown): Promise<Response> => {
             const response = await originalFetch(input, init);
             // Store both headers and status code when the response is received
             temporaryResponseDataStore.set(operation.key, {

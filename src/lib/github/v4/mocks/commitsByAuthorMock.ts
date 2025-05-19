@@ -12,6 +12,7 @@ export const commitsByAuthorMock: CommitsByAuthorQuery = {
           edges: [
             {
               node: {
+                __typename: 'Commit',
                 author: {
                   email: 'soren.louv@elastic.co',
                   name: 'Søren Louv-Jansen',
@@ -30,6 +31,7 @@ export const commitsByAuthorMock: CommitsByAuthorQuery = {
             },
             {
               node: {
+                __typename: 'Commit',
                 author: {
                   email: 'soren.louv@elastic.co',
                   name: 'Søren Louv-Jansen',
@@ -53,6 +55,7 @@ export const commitsByAuthorMock: CommitsByAuthorQuery = {
                         },
                         number: 85,
                         mergeCommit: {
+                          __typename: 'Commit',
                           remoteConfigHistory: { edges: [] },
                           sha: 'f3b618b9421fdecdb36862f907afbdd6344b361d',
                           message: 'Add witch (#85)',
@@ -68,6 +71,7 @@ export const commitsByAuthorMock: CommitsByAuthorQuery = {
             },
             {
               node: {
+                __typename: 'Commit',
                 author: {
                   email: 'soren.louv@elastic.co',
                   name: 'Søren Louv-Jansen',
@@ -92,6 +96,7 @@ export const commitsByAuthorMock: CommitsByAuthorQuery = {
                         baseRefName: 'master',
                         number: 80,
                         mergeCommit: {
+                          __typename: 'Commit',
                           remoteConfigHistory: { edges: [] },
                           sha: '79cf18453ec32a4677009dcbab1c9c8c73fc14fe',
                           message:
@@ -144,6 +149,7 @@ export const commitsByAuthorMock: CommitsByAuthorQuery = {
             },
             {
               node: {
+                __typename: 'Commit',
                 author: {
                   email: 'soren.louv@elastic.co',
                   name: 'Søren Louv-Jansen',
@@ -162,6 +168,7 @@ export const commitsByAuthorMock: CommitsByAuthorQuery = {
             },
             {
               node: {
+                __typename: 'Commit',
                 author: {
                   email: 'soren.louv@elastic.co',
                   name: 'Søren Louv-Jansen',

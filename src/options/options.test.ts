@@ -527,7 +527,9 @@ function mockGithubConfigOptions({
                         remoteConfig: {
                           committedDate: '2020-08-15T00:00:00.000Z',
                           file: {
+                            __typename: 'TreeEntry',
                             object: {
+                              __typename: 'Blob',
                               text: JSON.stringify({
                                 autoMergeMethod: 'rebase',
                                 branchLabelMapping: {

@@ -24,7 +24,7 @@ export async function disablePullRequestAutoMerge(
   `);
 
   const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
-  const result = await client.query(query, {
+  const result = await client.mutation(query, {
     pullRequestId,
   });
 
