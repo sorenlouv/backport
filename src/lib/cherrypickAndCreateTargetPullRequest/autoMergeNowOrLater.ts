@@ -1,10 +1,10 @@
 import { ValidConfigOptions } from '../../options/options';
 import { mergePullRequest } from '../github/v3/mergePullRequest';
-import { GithubV4Exception } from '../github/v4/apiRequestV4';
 import {
   enablePullRequestAutoMerge,
-  parseGithubError,
+  isMissingStatusChecksError,
 } from '../github/v4/enablePullRequestAutoMerge';
+import { GithubV4Exception } from '../github/v4/fetchCommits/graphqlClient';
 import { logger } from '../logger';
 import { ora } from '../ora';
 
@@ -34,8 +34,7 @@ export async function autoMergeNowOrLater(
         `Auto merge: Failed to enable auto merge for PR "#${pullNumber}" due to ${e.message}`,
       );
 
-      const { isMissingStatusChecks } = parseGithubError(e);
-      if (!isMissingStatusChecks) {
+      if (!isMissingStatusChecksError(e)) {
         throw e;
       }
 

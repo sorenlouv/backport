@@ -1,8 +1,11 @@
-import gql from 'graphql-tag';
+import { graphql } from '../../../graphql/generated';
 import { maybe } from '../../../utils/maybe';
 import { getRepoInfoFromGitRemotes } from '../../git';
 import { logger } from '../../logger';
-import { apiRequestV4, GithubV4Exception } from './apiRequestV4';
+import {
+  getGraphQLClient,
+  GithubV4Exception,
+} from './fetchCommits/graphqlClient';
 
 // This method should be used to get the origin owner (instead of a fork owner)
 export async function getRepoOwnerAndNameFromGitRemotes({
@@ -22,24 +25,39 @@ export async function getRepoOwnerAndNameFromGitRemotes({
   }
 
   try {
-    const res = await apiRequestV4<RepoOwnerAndNameResponse>({
-      githubApiBaseUrlV4,
-      accessToken,
-      query,
-      variables: {
-        repoOwner: firstRemote.repoOwner,
-        repoName: firstRemote.repoName,
-      },
-    });
+    const variables = {
+      repoOwner: firstRemote.repoOwner,
+      repoName: firstRemote.repoName,
+    };
 
-    const { data } = res.data;
+    const query = graphql(`
+      query RepoOwnerAndName($repoOwner: String!, $repoName: String!) {
+        repository(owner: $repoOwner, name: $repoName) {
+          isFork
+          name
+          owner {
+            login
+          }
+          parent {
+            owner {
+              login
+            }
+          }
+        }
+      }
+    `);
 
+    const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
+    const result = await client.query(query, variables);
+
+    if (result.error) {
+      throw new GithubV4Exception(result);
+    }
+
+    const repo = result.data?.repository;
     return {
-      repoName: data.repository.name,
-      // get the original owner (not the fork owner)
-      repoOwner: data.repository.isFork
-        ? data.repository.parent.owner.login
-        : data.repository.owner.login,
+      repoName: repo?.name,
+      repoOwner: repo?.isFork ? repo.parent?.owner.login : repo?.owner.login, // get the original owner (not the fork owner)
     };
   } catch (e) {
     if (e instanceof GithubV4Exception) {
@@ -49,38 +67,3 @@ export async function getRepoOwnerAndNameFromGitRemotes({
     throw e;
   }
 }
-
-export interface RepoOwnerAndNameResponse {
-  repository:
-    | {
-        isFork: true;
-        name: string;
-        owner: { login: string };
-        parent: {
-          owner: { login: string };
-        };
-      }
-    | {
-        isFork: false;
-        name: string;
-        owner: { login: string };
-        parent: null;
-      };
-}
-
-const query = gql`
-  query RepoOwnerAndName($repoOwner: String!, $repoName: String!) {
-    repository(owner: $repoOwner, name: $repoName) {
-      isFork
-      name
-      owner {
-        login
-      }
-      parent {
-        owner {
-          login
-        }
-      }
-    }
-  }
-`;

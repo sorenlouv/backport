@@ -1,15 +1,15 @@
-import gql from 'graphql-tag';
 import { isEmpty } from 'lodash';
+import { graphql } from '../../../../graphql/generated';
+import { PullRequestBySearchQueryQuery } from '../../../../graphql/generated/graphql';
+import { filterNil } from '../../../../utils/filterEmpty';
 import { filterUnmergedCommits } from '../../../../utils/filterUnmergedCommits';
 import { BackportError } from '../../../BackportError';
 import { swallowMissingConfigFileException } from '../../../remoteConfig';
 import {
   Commit,
-  SourceCommitWithTargetPullRequest,
-  SourceCommitWithTargetPullRequestFragment,
   parseSourceCommit,
 } from '../../../sourceCommit/parseSourceCommit';
-import { apiRequestV4 } from '../apiRequestV4';
+import { getGraphQLClient, GithubV4Exception } from './graphqlClient';
 
 export async function fetchPullRequestsBySearchQuery(options: {
   accessToken: string;
@@ -37,7 +37,7 @@ export async function fetchPullRequestsBySearchQuery(options: {
     sourceBranch,
   } = options;
 
-  const query = gql`
+  const query = graphql(`
     query PullRequestBySearchQuery($query: String!, $maxNumber: Int!) {
       search(query: $query, type: ISSUE, first: $maxNumber) {
         nodes {
@@ -49,9 +49,7 @@ export async function fetchPullRequestsBySearchQuery(options: {
         }
       }
     }
-
-    ${SourceCommitWithTargetPullRequestFragment}
-  `;
+  `);
 
   function dateFilter() {
     if (dateUntil && dateSince) {
@@ -85,26 +83,33 @@ export async function fetchPullRequestsBySearchQuery(options: {
     maxNumber,
   };
 
-  let data: ResponseData;
+  let data: PullRequestBySearchQueryQuery | undefined;
   try {
-    const res = await apiRequestV4<ResponseData>({
-      githubApiBaseUrlV4,
-      accessToken,
-      query,
-      variables,
-    });
-    data = res.data.data;
+    const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
+    const result = await client.query(query, variables);
+
+    if (result.error) {
+      throw new GithubV4Exception(result);
+    }
+    data = result.data;
   } catch (e) {
-    data = swallowMissingConfigFileException<ResponseData>(e);
+    data = swallowMissingConfigFileException<PullRequestBySearchQueryQuery>(e);
   }
 
-  const commits = data.search.nodes.map((pullRequestNode) => {
-    const sourceCommit = pullRequestNode.mergeCommit;
-    return parseSourceCommit({ options, sourceCommit });
-  });
+  const commits = data?.search.nodes
+    ?.map((pullRequestNode) => {
+      //__typename?: 'PullRequest';
+      if (pullRequestNode?.__typename === 'PullRequest') {
+        const sourceCommit = pullRequestNode.mergeCommit;
+        if (sourceCommit) {
+          return parseSourceCommit({ options, sourceCommit });
+        }
+      }
+    })
+    .filter(filterNil);
 
   // terminate if not commits were found
-  if (isEmpty(commits)) {
+  if (!commits || isEmpty(commits)) {
     const errorText = author
       ? `No commits found for query:\n    ${searchQuery}\n\nUse \`--all\` to see commits by all users or \`--author=<username>\` for commits from a specific user`
       : `No commits found for query:\n    ${searchQuery}`;
@@ -117,12 +122,4 @@ export async function fetchPullRequestsBySearchQuery(options: {
   }
 
   return commits;
-}
-
-interface ResponseData {
-  search: {
-    nodes: Array<{
-      mergeCommit: SourceCommitWithTargetPullRequest;
-    }>;
-  };
 }

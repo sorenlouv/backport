@@ -1,3 +1,4 @@
+import { PullRequestState } from '../../graphql/generated/graphql';
 import { ValidConfigOptions } from '../../options/options';
 import { getMockSourceCommit } from './getMockSourceCommit';
 import { Commit, parseSourceCommit } from './parseSourceCommit';
@@ -42,9 +43,7 @@ describe('parseSourceCommit', () => {
 
       const commit = parseSourceCommit({
         sourceCommit: mockSourceCommit,
-        options: {
-          sourceBranch: 'sourcebranch-from-options',
-        } as unknown as ValidConfigOptions,
+        options: { sourceBranch: 'sourcebranch-from-options' },
       });
 
       expect(commit.sourceBranch).toBe('sourcebranch-from-options');
@@ -71,13 +70,13 @@ describe('parseSourceCommit', () => {
         },
         timelineItems: [
           {
-            state: 'MERGED',
+            state: PullRequestState.Merged,
             targetBranch: '6.3',
             commitMessages: ['My commit message (#66)'],
             number: 5678,
           },
           {
-            state: 'OPEN',
+            state: PullRequestState.Open,
             targetBranch: '6.2',
             commitMessages: ['My commit message (#66)'],
             number: 9876,
@@ -104,7 +103,7 @@ describe('parseSourceCommit', () => {
             sha: 'my sha',
           },
           number: 55,
-          state: 'MERGED',
+          state: PullRequestState.Merged,
           url: 'https://github.com/elastic/kibana/pull/55',
         },
         {
@@ -113,7 +112,7 @@ describe('parseSourceCommit', () => {
           branchLabelMappingKey: '^v(\\d+).(\\d+).\\d+$',
           isSourceBranch: false,
           number: 5678,
-          state: 'MERGED',
+          state: PullRequestState.Merged,
           url: 'https://github.com/elastic/kibana/pull/5678',
           mergeCommit: {
             message: 'My commit message (#66)',
@@ -126,7 +125,7 @@ describe('parseSourceCommit', () => {
           branchLabelMappingKey: '^v(\\d+).(\\d+).\\d+$',
           isSourceBranch: false,
           number: 9876,
-          state: 'OPEN',
+          state: PullRequestState.Open,
           url: 'https://github.com/elastic/kibana/pull/9876',
         },
         {
@@ -167,7 +166,7 @@ describe('parseSourceCommit', () => {
         },
         timelineItems: [
           {
-            state: 'OPEN',
+            state: PullRequestState.Open,
             targetBranch: '6.2',
             commitMessages: ['My commit message (#66)'],
             number: 9876,
@@ -194,7 +193,7 @@ describe('parseSourceCommit', () => {
             sha: 'my-sha',
           },
           number: 55,
-          state: 'MERGED',
+          state: PullRequestState.Merged,
           url: 'https://github.com/elastic/kibana/pull/55',
         },
         {
@@ -203,7 +202,7 @@ describe('parseSourceCommit', () => {
           branchLabelMappingKey: '^v(\\d+).(\\d+).\\d+$',
           isSourceBranch: false,
           number: 9876,
-          state: 'OPEN',
+          state: PullRequestState.Open,
           url: 'https://github.com/elastic/kibana/pull/9876',
         },
         {
@@ -239,13 +238,13 @@ describe('parseSourceCommit', () => {
       },
       timelineItems: [
         {
-          state: 'MERGED',
+          state: PullRequestState.Merged,
           targetBranch: '6.x',
           commitMessages: ['My commit message (#1234)'],
           number: 5678,
         },
         {
-          state: 'OPEN',
+          state: PullRequestState.Open,
           targetBranch: '6.2',
           commitMessages: ['My commit message (#1234)'],
           number: 9876,
@@ -286,7 +285,7 @@ describe('parseSourceCommit', () => {
 
           isSourceBranch: false,
           number: 5678,
-          state: 'MERGED',
+          state: PullRequestState.Merged,
           url: 'https://github.com/elastic/kibana/pull/5678',
           mergeCommit: {
             message: 'My commit message (#1234)',
@@ -299,7 +298,7 @@ describe('parseSourceCommit', () => {
           branchLabelMappingKey: '^v(\\d+).(\\d+).\\d+$',
           isSourceBranch: false,
           number: 9876,
-          state: 'OPEN',
+          state: PullRequestState.Open,
           url: 'https://github.com/elastic/kibana/pull/9876',
         },
         {

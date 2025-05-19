@@ -1,14 +1,16 @@
+import {
+  GithubV4Exception,
+  OperationResultWithMeta,
+} from './fetchCommits/graphqlClient';
 import { throwOnInvalidAccessToken } from './throwOnInvalidAccessToken';
 
 describe('throwOnInvalidAccessToken', () => {
   describe('when status code is', () => {
     it('should handle invalid access token', () => {
-      const error = {
-        githubResponse: {
-          status: 401,
-          headers: {},
-        },
-      } as any;
+      const error = new GithubV4Exception({
+        statusCode: 401,
+        responseHeaders: new Headers({}),
+      } as OperationResultWithMeta);
 
       return expect(() =>
         throwOnInvalidAccessToken({
@@ -20,15 +22,15 @@ describe('throwOnInvalidAccessToken', () => {
     });
 
     it('should handle SSO error', () => {
-      const error = {
-        githubResponse: {
-          status: 200,
-          headers: { 'x-github-sso': 'required; url=https://ssourl.com' },
-          data: {
-            errors: [{ type: 'FORBIDDEN' }],
-          },
+      const error = new GithubV4Exception({
+        statusCode: 200,
+        responseHeaders: new Headers({
+          'x-github-sso': 'required; url=https://ssourl.com',
+        }),
+        error: {
+          graphQLErrors: [{ originalError: { type: 'FORBIDDEN' } }],
         },
-      } as any;
+      } as unknown as OperationResultWithMeta);
 
       return expect(() =>
         throwOnInvalidAccessToken({
@@ -40,18 +42,18 @@ describe('throwOnInvalidAccessToken', () => {
     });
 
     it('should handle non-existing repo', () => {
-      const error = {
-        githubResponse: {
-          status: 200,
-          headers: {
-            'x-oauth-scopes': 'a,b,c',
-            'x-accepted-oauth-scopes': 'a,b,c',
-          },
-          data: {
-            errors: [{ type: 'NOT_FOUND', path: ['repository'] }],
-          },
+      const error = new GithubV4Exception({
+        statusCode: 200,
+        responseHeaders: new Headers({
+          'x-oauth-scopes': 'a,b,c',
+          'x-accepted-oauth-scopes': 'a,b,c',
+        }),
+        error: {
+          graphQLErrors: [
+            { originalError: { type: 'NOT_FOUND' }, path: ['repository'] },
+          ],
         },
-      } as any;
+      } as unknown as OperationResultWithMeta);
 
       return expect(() =>
         throwOnInvalidAccessToken({
@@ -63,18 +65,18 @@ describe('throwOnInvalidAccessToken', () => {
     });
 
     it('should handle insufficient permissions (oauth scopes)', () => {
-      const error = {
-        githubResponse: {
-          status: 200,
-          headers: {
-            'x-oauth-scopes': 'a,b',
-            'x-accepted-oauth-scopes': 'a,b,c',
-          },
-          data: {
-            errors: [{ type: 'NOT_FOUND', path: ['repository'] }],
-          },
+      const error = new GithubV4Exception({
+        statusCode: 200,
+        responseHeaders: new Headers({
+          'x-oauth-scopes': 'a,b',
+          'x-accepted-oauth-scopes': 'a,b,c',
+        }),
+        error: {
+          graphQLErrors: [
+            { originalError: { type: 'NOT_FOUND' }, path: ['repository'] },
+          ],
         },
-      } as any;
+      } as unknown as OperationResultWithMeta);
 
       return expect(() =>
         throwOnInvalidAccessToken({
@@ -86,12 +88,10 @@ describe('throwOnInvalidAccessToken', () => {
     });
 
     it('should not handle unknown cases', () => {
-      const error = {
-        githubResponse: {
-          status: 500,
-          headers: {},
-        },
-      } as any;
+      const error = new GithubV4Exception({
+        statusCode: 500,
+        responseHeaders: {},
+      } as OperationResultWithMeta);
 
       return expect(
         throwOnInvalidAccessToken({

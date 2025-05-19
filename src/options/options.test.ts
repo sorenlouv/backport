@@ -1,12 +1,14 @@
 import fs from 'fs/promises';
 import os from 'os';
 import nock from 'nock';
+import {
+  GithubConfigOptionsQuery,
+  RepoOwnerAndNameQuery,
+} from '../graphql/generated/graphql';
 import * as git from '../lib/git';
-import { GithubConfigOptionsResponse } from '../lib/github/v4/getOptionsFromGithub/query';
-import { RepoOwnerAndNameResponse } from '../lib/github/v4/getRepoOwnerAndNameFromGitRemotes';
 import * as logger from '../lib/logger';
 import { mockConfigFiles } from '../test/mockConfigFiles';
-import { mockGqlRequest } from '../test/nockHelpers';
+import { mockUrqlRequest } from '../test/nockHelpers';
 import { ConfigFileOptions } from './ConfigOptions';
 import { getOptions } from './options';
 
@@ -502,20 +504,22 @@ function mockGithubConfigOptions({
   isRepoPrivate?: boolean;
   headers?: Record<string, string>;
 }) {
-  return mockGqlRequest<GithubConfigOptionsResponse>({
-    name: 'GithubConfigOptions',
-    statusCode: 200,
+  return mockUrqlRequest<GithubConfigOptionsQuery>({
+    operationName: 'GithubConfigOptions',
+    headers,
     body: {
       data: {
         viewer: {
           login: viewerLogin,
         },
+
         repository: {
           isPrivate: isRepoPrivate,
           illegalBackportBranch: hasBackportBranch ? { id: 'foo' } : null,
           defaultBranchRef: {
             name: defaultBranchRef,
             target: {
+              __typename: 'Commit',
               remoteConfigHistory: {
                 edges: hasRemoteConfig
                   ? [
@@ -542,7 +546,6 @@ function mockGithubConfigOptions({
         },
       },
     },
-    headers,
   });
 }
 
@@ -555,9 +558,8 @@ function mockRepoOwnerAndName({
   parentRepoOwner: string;
   childRepoOwner: string;
 }) {
-  return mockGqlRequest<RepoOwnerAndNameResponse>({
-    name: 'RepoOwnerAndName',
-    statusCode: 200,
+  return mockUrqlRequest<RepoOwnerAndNameQuery>({
+    operationName: 'RepoOwnerAndName',
     body: {
       data: {
         repository: {

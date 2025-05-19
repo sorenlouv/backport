@@ -1,9 +1,13 @@
-import { CommitByAuthorResponse } from '../fetchCommits/fetchCommitsByAuthor';
+import {
+  CommitsByAuthorQuery,
+  PullRequestState,
+} from '../../../../graphql/generated/graphql';
 
-export const commitsByAuthorMock: CommitByAuthorResponse = {
+export const commitsByAuthorMock: CommitsByAuthorQuery = {
   repository: {
     ref: {
       target: {
+        __typename: 'Commit',
         history: {
           edges: [
             {
@@ -97,6 +101,7 @@ export const commitsByAuthorMock: CommitByAuthorResponse = {
                           edges: [
                             {
                               node: {
+                                __typename: 'CrossReferencedEvent',
                                 targetPullRequest: {
                                   __typename: 'PullRequest',
                                   targetMergeCommit: {
@@ -110,7 +115,7 @@ export const commitsByAuthorMock: CommitByAuthorResponse = {
                                   },
                                   url: 'https://github.com/elastic/kibana/pull/99',
                                   title: 'some title',
-                                  state: 'MERGED',
+                                  state: PullRequestState.Merged,
                                   number: 99,
                                   baseRefName: '6.3',
                                   commits: {

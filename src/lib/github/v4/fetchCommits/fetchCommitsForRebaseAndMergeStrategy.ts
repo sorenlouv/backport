@@ -1,7 +1,8 @@
-import gql from 'graphql-tag';
+import { first } from 'lodash';
 import { Commit } from '../../../../entrypoint.api';
-import { apiRequestV4 } from '../apiRequestV4';
+import { graphql } from '../../../../graphql/generated';
 import { fetchCommitBySha } from './fetchCommitBySha';
+import { getGraphQLClient, GithubV4Exception } from './graphqlClient';
 
 export async function fetchCommitsForRebaseAndMergeStrategy(
   options: {
@@ -22,7 +23,7 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
     repoOwner,
   } = options;
 
-  const query = gql`
+  const query = graphql(`
     query CommitsForRebaseAndMergeStrategy(
       $repoOwner: String!
       $repoName: String!
@@ -65,21 +66,17 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
         }
       }
     }
-  `;
+  `);
 
-  const res = await apiRequestV4<Response>({
-    githubApiBaseUrlV4,
-    accessToken,
-    query,
-    variables: {
-      repoOwner,
-      repoName,
-      pullNumber,
-      commitsTotalCount,
-    },
-  });
+  const variables = { repoOwner, repoName, pullNumber, commitsTotalCount };
+  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
+  const result = await client.query(query, variables);
 
-  const pullRequestNode = res.data.data.repository.pullRequest;
+  if (result.error) {
+    throw new GithubV4Exception(result);
+  }
+
+  const pullRequestNode = result.data?.repository?.pullRequest;
 
   if (!pullRequestNode?.mergeCommit) {
     throw new Error('Pull request is not merged');
@@ -91,19 +88,19 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
     );
   }
 
-  const commitsInPullRequest = pullRequestNode.commits.edges;
+  const commitsInPullRequest = pullRequestNode.commits.edges ?? [];
   const commitsInBaseBranch =
-    pullRequestNode.mergeCommit.history.edges.reverse();
+    pullRequestNode.mergeCommit.history.edges?.reverse() ?? [];
 
   const didUseRebaseAndMergeStrategy = commitsInBaseBranch.every((c, i) => {
     const hasSameCommittedDate =
-      c.node.committedDate === pullRequestNode.mergeCommit?.committedDate;
+      c?.node?.committedDate === pullRequestNode.mergeCommit?.committedDate;
 
     const hasSameCommitMessages =
-      c.node.message === commitsInPullRequest[i].node.commit.message;
+      c?.node?.message === commitsInPullRequest[i]?.node?.commit.message;
 
     const hasSamePullNumber =
-      c.node.associatedPullRequests.edges[0].node.number ===
+      first(c?.node?.associatedPullRequests?.edges)?.node?.number ===
       pullRequestNode.number;
 
     return hasSameCommittedDate && hasSameCommitMessages && hasSamePullNumber;
@@ -112,48 +109,10 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
   if (didUseRebaseAndMergeStrategy) {
     const commits = await Promise.all(
       commitsInBaseBranch.map((c) =>
-        fetchCommitBySha({ ...options, sha: c.node.oid }),
+        fetchCommitBySha({ ...options, sha: c?.node?.oid }),
       ),
     );
 
     return commits;
   }
-}
-
-interface Response {
-  repository: {
-    pullRequest: {
-      number: number;
-      commits: {
-        totalCount: number;
-        edges: {
-          node: {
-            commit: {
-              message: string;
-            };
-          };
-        }[];
-      };
-
-      mergeCommit: {
-        committedDate: string;
-        history: {
-          edges: {
-            node: {
-              oid: string;
-              message: string;
-              committedDate: string;
-              associatedPullRequests: {
-                edges: {
-                  node: {
-                    number: number;
-                  };
-                }[];
-              };
-            };
-          }[];
-        };
-      } | null;
-    } | null;
-  };
 }

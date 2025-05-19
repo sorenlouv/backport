@@ -3,6 +3,7 @@
 exports[`fetchCommitsByAuthor when commit has an associated pull request should call with correct args to fetch author id 1`] = `
 [
   {
+    "operationName": "AuthorId",
     "query": "query AuthorId($author: String!) {
   user(login: $author) {
     id
@@ -18,6 +19,7 @@ exports[`fetchCommitsByAuthor when commit has an associated pull request should 
 exports[`fetchCommitsByAuthor when commit has an associated pull request should call with correct args to fetch commits 1`] = `
 [
   {
+    "operationName": "CommitsByAuthor",
     "query": "query CommitsByAuthor($authorId: ID, $commitPath: String, $dateSince: GitTimestamp, $dateUntil: GitTimestamp, $maxNumber: Int!, $repoName: String!, $repoOwner: String!, $sourceBranch: String!) {
   repository(owner: $repoOwner, name: $repoName) {
     ref(qualifiedName: $sourceBranch) {
@@ -41,7 +43,26 @@ exports[`fetchCommitsByAuthor when commit has an associated pull request should 
     }
   }
 }
-
+fragment RemoteConfigHistoryFragment on Commit {
+  remoteConfigHistory: history(first: 1, path: 
+".backportrc.json") {
+    edges {
+      remoteConfig: node {
+        committedDate
+        file(path: 
+".backportrc.json") {
+          ... on TreeEntry {
+            object {
+              ... on Blob {
+                text
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
 fragment SourceCommitWithTargetPullRequestFragment on Commit {
   repository {
     name
@@ -107,25 +128,6 @@ fragment SourceCommitWithTargetPullRequestFragment on Commit {
                     }
                   }
                 }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-fragment RemoteConfigHistoryFragment on Commit {
-  remoteConfigHistory: history(first: 1, path: ".backportrc.json") {
-    edges {
-      remoteConfig: node {
-        committedDate
-        file(path: ".backportrc.json") {
-          ... on TreeEntry {
-            object {
-              ... on Blob {
-                text
               }
             }
           }

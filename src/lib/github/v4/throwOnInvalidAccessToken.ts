@@ -2,7 +2,8 @@ import { isEmpty, difference } from 'lodash';
 import { maybe } from '../../../utils/maybe';
 import { BackportError } from '../../BackportError';
 import { getGlobalConfigPath } from '../../env';
-import { GithubV4Exception } from './apiRequestV4';
+import { logger } from '../../logger';
+import { GithubV4Exception } from './fetchCommits/graphqlClient';
 
 export function throwOnInvalidAccessToken({
   error,
@@ -15,27 +16,31 @@ export function throwOnInvalidAccessToken({
   repoName: string;
   globalConfigFile?: string;
 }) {
-  function getSSOAuthUrl(ssoHeader?: string) {
+  function getSSOAuthUrl(ssoHeader?: string | null) {
     const matches = ssoHeader?.match(/url=(.*)/);
     if (matches) {
       return matches[1];
     }
   }
 
-  const statusCode = error.githubResponse.status;
+  const { statusCode } = error.result;
 
   switch (statusCode) {
     case 200: {
-      const repoNotFound = error.githubResponse.data.errors?.some(
+      const repoNotFound = error.result.error?.graphQLErrors.some(
         (error) =>
-          error.type === 'NOT_FOUND' && error.path?.join('.') === 'repository',
+          //@ts-expect-error
+          error.originalError.type === 'NOT_FOUND' &&
+          error.path?.join('.') === 'repository',
       );
 
       const grantedScopes =
-        error.githubResponse.headers['x-oauth-scopes'] || '';
+        error.result.responseHeaders?.get('x-oauth-scopes') || '';
       const requiredScopes =
-        error.githubResponse.headers['x-accepted-oauth-scopes'] || '';
-      const ssoHeader = maybe(error.githubResponse.headers['x-github-sso']);
+        error.result.responseHeaders?.get('x-accepted-oauth-scopes') || '';
+      const ssoHeader = maybe(
+        error.result.responseHeaders?.get('x-github-sso'),
+      );
 
       if (repoNotFound) {
         const hasRequiredScopes = isEmpty(
@@ -55,8 +60,9 @@ export function throwOnInvalidAccessToken({
         );
       }
 
-      const repoAccessForbidden = error.githubResponse.data.errors?.some(
-        (error) => error.type === 'FORBIDDEN',
+      const repoAccessForbidden = error.result.error?.graphQLErrors.some(
+        // @ts-expect-error
+        (error) => error.originalError.type === 'FORBIDDEN',
       );
 
       const ssoAuthUrl = getSSOAuthUrl(ssoHeader);
@@ -78,6 +84,7 @@ export function throwOnInvalidAccessToken({
       );
 
     default:
+      logger.warn(`Unexpected status code: ${statusCode}`);
       return undefined;
   }
 }

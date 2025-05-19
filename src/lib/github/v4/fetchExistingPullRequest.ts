@@ -1,7 +1,11 @@
-import gql from 'graphql-tag';
+import { first } from 'lodash';
+import { graphql } from '../../../graphql/generated';
 import { ValidConfigOptions } from '../../../options/options';
 import { PullRequestPayload } from '../v3/getPullRequest/createPullRequest';
-import { apiRequestV4 } from './apiRequestV4';
+import {
+  getGraphQLClient,
+  GithubV4Exception,
+} from './fetchCommits/graphqlClient';
 
 export async function fetchExistingPullRequest({
   options,
@@ -11,7 +15,7 @@ export async function fetchExistingPullRequest({
   prPayload: PullRequestPayload;
 }) {
   const { githubApiBaseUrlV4, accessToken } = options;
-  const query = gql`
+  const query = graphql(`
     query ExistingPullRequest(
       $repoOwner: String!
       $repoName: String!
@@ -38,49 +42,34 @@ export async function fetchExistingPullRequest({
         }
       }
     }
-  `;
+  `);
 
   const { repoForkOwner, head } = splitHead(prPayload);
 
-  const res = await apiRequestV4<ExistingPullRequestResponse>({
-    githubApiBaseUrlV4,
-    accessToken,
-    query,
-    variables: {
-      repoOwner: repoForkOwner,
-      repoName: prPayload.repo,
-      base: prPayload.base,
-      head: head,
-    },
-  });
+  const variables = {
+    repoOwner: repoForkOwner,
+    repoName: prPayload.repo,
+    base: prPayload.base,
+    head: head,
+  };
+  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
+  const result = await client.query(query, variables);
 
-  const existingPullRequest =
-    res.data.data.repository.ref?.associatedPullRequests.edges[0];
+  if (result.error) {
+    throw new GithubV4Exception(result);
+  }
 
-  if (!existingPullRequest) {
+  const existingPullRequest = first(
+    result.data?.repository?.ref?.associatedPullRequests.edges,
+  );
+
+  if (!existingPullRequest?.node) {
     return;
   }
 
   return {
     url: existingPullRequest.node.url,
     number: existingPullRequest.node.number,
-  };
-}
-
-interface ExistingPullRequestResponse {
-  repository: {
-    name: string;
-    ref: {
-      name: string;
-      associatedPullRequests: {
-        edges: {
-          node: {
-            number: number;
-            url: string;
-          };
-        }[];
-      };
-    } | null;
   };
 }
 

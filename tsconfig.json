@@ -1,5 +1,12 @@
 {
+  "plugins": [
+    {
+      "name": "@0no-co/graphqlsp",
+      "schema": "./schema.graphql"
+    }
+  ],
   "include": ["src/**/*"],
+  "exclude": ["src/graphql/generated/graphql.ts"],
   "compilerOptions": {
     "declaration": true,
     "target": "ES2021",

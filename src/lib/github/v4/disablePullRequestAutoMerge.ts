@@ -1,11 +1,10 @@
-import gql from 'graphql-tag';
+import { graphql } from '../../../graphql/generated';
 import { ValidConfigOptions } from '../../../options/options';
-import { fetchPullRequestId } from './FetchPullRequestId';
-import { apiRequestV4 } from './apiRequestV4';
-
-interface Response {
-  disablePullRequestAutoMerge: { pullRequest?: { number: number } };
-}
+import {
+  getGraphQLClient,
+  GithubV4Exception,
+} from './fetchCommits/graphqlClient';
+import { fetchPullRequestId } from './fetchPullRequestId2';
 
 export async function disablePullRequestAutoMerge(
   options: ValidConfigOptions,
@@ -14,7 +13,7 @@ export async function disablePullRequestAutoMerge(
   const { accessToken, githubApiBaseUrlV4 } = options;
   const pullRequestId = await fetchPullRequestId(options, pullNumber);
 
-  const query = gql`
+  const query = graphql(`
     mutation DisablePullRequestAutoMerge($pullRequestId: ID!) {
       disablePullRequestAutoMerge(input: { pullRequestId: $pullRequestId }) {
         pullRequest {
@@ -22,16 +21,16 @@ export async function disablePullRequestAutoMerge(
         }
       }
     }
-  `;
+  `);
 
-  const res = await apiRequestV4<Response>({
-    githubApiBaseUrlV4,
-    accessToken,
-    query,
-    variables: {
-      pullRequestId,
-    },
+  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
+  const result = await client.query(query, {
+    pullRequestId,
   });
 
-  return res.data.data.disablePullRequestAutoMerge.pullRequest?.number;
+  if (result.error) {
+    throw new GithubV4Exception(result);
+  }
+
+  return result.data?.disablePullRequestAutoMerge?.pullRequest?.number;
 }

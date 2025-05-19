@@ -6,12 +6,12 @@ import {
   createPullRequest,
   PullRequestPayload,
 } from '../v3/getPullRequest/createPullRequest';
-import { GithubV4Exception } from './apiRequestV4';
 import { disablePullRequestAutoMerge } from './disablePullRequestAutoMerge';
 import {
   enablePullRequestAutoMerge,
-  parseGithubError,
+  isMissingStatusChecksError,
 } from './enablePullRequestAutoMerge';
+import { GithubV4Exception } from './fetchCommits/graphqlClient';
 import { fetchPullRequestAutoMergeMethod } from './fetchPullRequestAutoMergeMethod';
 
 // The test repo requires auto-merge being enabled in options, as well as all merge types enabled (merge, squash, rebase)
@@ -200,10 +200,9 @@ describe('enablePullRequestAutoMerge', () => {
           pullNumber,
         );
       } catch (e) {
-        const err = e as GithubV4Exception<any>;
-        const res = parseGithubError(err);
+        const err = e as GithubV4Exception;
+        isMissingStatusChecks = isMissingStatusChecksError(err);
         errorMessage = err.message;
-        isMissingStatusChecks = res.isMissingStatusChecks;
       }
 
       expect(isMissingStatusChecks).toBe(false);
@@ -282,10 +281,9 @@ describe('enablePullRequestAutoMerge', () => {
           pullNumber,
         );
       } catch (e) {
-        const err = e as GithubV4Exception<any>;
-        const res = parseGithubError(err);
+        const err = e as GithubV4Exception;
+        isMissingStatusChecks = isMissingStatusChecksError(err);
         errorMessage = err.message;
-        isMissingStatusChecks = res.isMissingStatusChecks;
       }
 
       expect(errorMessage).toMatchInlineSnapshot(
@@ -341,10 +339,9 @@ describe('enablePullRequestAutoMerge', () => {
           pullNumber,
         );
       } catch (e) {
-        const err = e as GithubV4Exception<any>;
-        const res = parseGithubError(err);
+        const err = e as GithubV4Exception;
+        isMissingStatusChecks = isMissingStatusChecksError(err);
         errorMessage = err.message;
-        isMissingStatusChecks = res.isMissingStatusChecks;
       }
 
       const autoMergeMethod = await fetchPullRequestAutoMergeMethod(

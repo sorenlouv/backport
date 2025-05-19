@@ -1,9 +1,9 @@
-import gql from 'graphql-tag';
+import { graphql } from '../graphql/generated';
 import { parseConfigFile } from '../options/config/readConfigFile';
-import { GithubV4Exception } from './github/v4/apiRequestV4';
+import { GithubV4Exception } from './github/v4/fetchCommits/graphqlClient';
 import { logger } from './logger';
 
-export const RemoteConfigHistoryFragment = gql`
+export const RemoteConfigHistoryFragment = graphql(`
   fragment RemoteConfigHistoryFragment on Commit {
     remoteConfigHistory: history(first: 1, path: ".backportrc.json") {
       edges {
@@ -22,24 +22,9 @@ export const RemoteConfigHistoryFragment = gql`
       }
     }
   }
-`;
+`);
 
-export interface RemoteConfig {
-  committedDate: string;
-  file: {
-    object: { text: string };
-  };
-}
-
-export interface RemoteConfigHistory {
-  remoteConfigHistory: {
-    edges: Array<{
-      remoteConfig: RemoteConfig;
-    }> | null;
-  };
-}
-
-export function parseRemoteConfigFile(remoteConfig: RemoteConfig) {
+export function parseRemoteConfigFile(remoteConfig: any) {
   try {
     return parseConfigFile(remoteConfig.file.object.text);
   } catch (e) {
@@ -55,10 +40,14 @@ export function swallowMissingConfigFileException<T>(
     throw error;
   }
 
-  const { data, errors } = error.githubResponse.data;
+  const data = error.result.data;
+  const errors = error.result.error?.graphQLErrors;
 
   const missingConfigError = errors?.some((error) => {
-    return error.path?.includes('remoteConfig') && error.type === 'NOT_FOUND';
+    return (
+      error.path?.includes('remoteConfig') &&
+      error.extensions.type === 'NOT_FOUND'
+    );
   });
 
   // swallow error if it's just the config file that's missing

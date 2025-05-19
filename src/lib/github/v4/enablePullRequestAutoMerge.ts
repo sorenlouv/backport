@@ -1,11 +1,10 @@
-import gql from 'graphql-tag';
+import { graphql } from '../../../graphql/generated';
 import { ValidConfigOptions } from '../../../options/options';
-import { fetchPullRequestId } from './FetchPullRequestId';
-import { apiRequestV4, GithubV4Exception } from './apiRequestV4';
-
-interface Response {
-  enablePullRequestAutoMerge: { pullRequest?: { number: number } };
-}
+import {
+  getGraphQLClient,
+  GithubV4Exception,
+} from './fetchCommits/graphqlClient';
+import { fetchPullRequestId } from './fetchPullRequestId2';
 
 export async function enablePullRequestAutoMerge(
   options: ValidConfigOptions,
@@ -22,7 +21,7 @@ export async function enablePullRequestAutoMerge(
     targetPullRequestNumber,
   );
 
-  const query = gql`
+  const query = graphql(`
     mutation EnablePullRequestAutoMerge(
       $pullRequestId: ID!
       $mergeMethod: PullRequestMergeMethod!
@@ -35,30 +34,30 @@ export async function enablePullRequestAutoMerge(
         }
       }
     }
-  `;
+  `);
 
-  const res = await apiRequestV4<Response>({
-    githubApiBaseUrlV4,
-    accessToken,
-    query,
-    variables: {
-      pullRequestId,
-      mergeMethod: autoMergeMethod.toUpperCase(),
-    },
-  });
+  const variables = {
+    pullRequestId,
+    mergeMethod: autoMergeMethod.toUpperCase() as any,
+  };
 
-  return res.data.data.enablePullRequestAutoMerge.pullRequest?.number;
+  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
+  const result = await client.mutation(query, variables);
+
+  if (result.error) {
+    throw new GithubV4Exception(result);
+  }
+
+  return result.data?.enablePullRequestAutoMerge?.pullRequest?.number;
 }
 
-export function parseGithubError(e: GithubV4Exception<any>) {
-  const isMissingStatusChecks = e.githubResponse.data.errors?.some(
+export function isMissingStatusChecksError(e: GithubV4Exception<unknown>) {
+  return e.result.error?.graphQLErrors.some(
     (e) =>
-      e.type === 'UNPROCESSABLE' &&
+      e.extensions.type === 'UNPROCESSABLE' &&
       (e.message.includes(
         'Branch does not have required protected branch rules',
       ) ||
         e.message.includes('Pull request is in clean status')),
   );
-
-  return { isMissingStatusChecks };
 }

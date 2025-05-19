@@ -1,4 +1,6 @@
-import { AxiosResponse } from 'axios';
+import { OperationResult } from '@urql/core';
+import { graphql } from '../../../../graphql/generated';
+import { GithubConfigOptionsQuery } from '../../../../graphql/generated/graphql';
 import { ConfigFileOptions } from '../../../../options/ConfigOptions';
 import { BackportError } from '../../../BackportError';
 import {
@@ -12,12 +14,10 @@ import {
   swallowMissingConfigFileException,
 } from '../../../remoteConfig';
 import {
-  apiRequestV4,
+  getGraphQLClient,
   GithubV4Exception,
-  GithubV4Response,
-} from '../apiRequestV4';
+} from '../fetchCommits/graphqlClient';
 import { throwOnInvalidAccessToken } from '../throwOnInvalidAccessToken';
-import { GithubConfigOptionsResponse, query } from './query';
 
 // fetches the default source branch for the repo (normally "master")
 // startup checks:
@@ -45,19 +45,41 @@ export async function getOptionsFromGithub(options: {
     globalConfigFile,
   } = options;
 
-  let data: GithubConfigOptionsResponse;
+  let data: GithubConfigOptionsQuery | undefined;
 
   try {
-    const res = await apiRequestV4<GithubConfigOptionsResponse>({
-      githubApiBaseUrlV4,
-      accessToken,
-      query,
-      variables: { repoOwner, repoName },
-    });
+    const query = graphql(`
+      query GithubConfigOptions($repoOwner: String!, $repoName: String!) {
+        viewer {
+          login
+        }
+        repository(owner: $repoOwner, name: $repoName) {
+          # check to see if a branch named "backport" exists
+          illegalBackportBranch: ref(qualifiedName: "refs/heads/backport") {
+            id
+          }
+          isPrivate
+          defaultBranchRef {
+            name
+            target {
+              ...RemoteConfigHistoryFragment
+            }
+          }
+        }
+      }
+    `);
 
-    throwIfInsufficientPermissions(res);
+    const variables = { repoOwner, repoName };
+    const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
+    const result = await client.query(query, variables);
 
-    data = res.data.data;
+    if (result.error) {
+      throw new GithubV4Exception(result);
+    }
+
+    throwIfInsufficientPermissions(result);
+
+    data = result.data;
   } catch (e) {
     if (!(e instanceof GithubV4Exception)) {
       throw e;
@@ -69,11 +91,11 @@ export async function getOptionsFromGithub(options: {
       repoOwner,
       globalConfigFile,
     });
-    data = swallowMissingConfigFileException<GithubConfigOptionsResponse>(e);
+    data = swallowMissingConfigFileException<GithubConfigOptionsQuery>(e);
   }
 
   // it is not possible to have a branch named "backport"
-  if (data.repository.illegalBackportBranch) {
+  if (data?.repository?.illegalBackportBranch) {
     throw new BackportError(
       'You must delete the branch "backport" to continue. See https://github.com/sorenlouv/backport/issues/155 for details',
     );
@@ -85,16 +107,23 @@ export async function getOptionsFromGithub(options: {
     options.skipRemoteConfig,
   );
 
+  if (!data) {
+    throw new BackportError(
+      'Failed to fetch options from GitHub. Please check your access token and repository settings.',
+    );
+  }
+
   return {
     authenticatedUsername: data.viewer.login,
-    sourceBranch: options.sourceBranch ?? data.repository.defaultBranchRef.name,
-    isRepoPrivate: data.repository.isPrivate,
+    sourceBranch:
+      options.sourceBranch ?? data.repository?.defaultBranchRef?.name ?? 'main',
+    isRepoPrivate: data.repository?.isPrivate,
     ...remoteConfig,
   };
 }
 
 async function getRemoteConfigFileOptions(
-  res: GithubConfigOptionsResponse,
+  res: GithubConfigOptionsQuery | undefined,
   cwd?: string,
   skipRemoteConfig?: boolean,
 ): Promise<ConfigFileOptions | undefined> {
@@ -102,6 +131,11 @@ async function getRemoteConfigFileOptions(
     logger.info(
       'Remote config: Skipping. `--skip-remote-config` specified via config file or cli',
     );
+    return;
+  }
+
+  if (res?.repository?.defaultBranchRef?.target?.__typename !== 'Commit') {
+    logger.info('Remote config: Skipping. Default branch is not a commit');
     return;
   }
 
@@ -150,13 +184,18 @@ async function getRemoteConfigFileOptions(
 }
 
 function throwIfInsufficientPermissions(
-  res: AxiosResponse<GithubV4Response<GithubConfigOptionsResponse>, any>,
+  res: OperationResult<
+    GithubConfigOptionsQuery,
+    {
+      repoOwner: string;
+      repoName: string;
+    }
+  >,
 ) {
-  const accessScopesHeader = res.headers['x-oauth-scopes'] as
-    | string
-    | undefined;
+  const responseHeaders = (res as any).responseHeaders as Headers;
 
-  if (accessScopesHeader === undefined) {
+  const accessScopesHeader = responseHeaders.get('x-oauth-scopes');
+  if (accessScopesHeader == null) {
     return;
   }
 
@@ -164,7 +203,7 @@ function throwIfInsufficientPermissions(
     .split(',')
     .map((scope) => scope.trim());
 
-  const isRepoPrivate = res.data.data.repository.isPrivate;
+  const isRepoPrivate = res.data?.repository?.isPrivate;
 
   if (isRepoPrivate && !accessTokenScopes.includes('repo')) {
     throw new BackportError(

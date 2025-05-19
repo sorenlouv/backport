@@ -1,4 +1,7 @@
-import { SourceCommitWithTargetPullRequest } from './parseSourceCommit';
+import {
+  PullRequestState,
+  SourceCommitWithTargetPullRequestFragmentFragment,
+} from '../../graphql/generated/graphql';
 
 export function getMockSourceCommit({
   sourceCommit,
@@ -21,7 +24,7 @@ export function getMockSourceCommit({
     sourceBranch?: string;
   } | null;
   timelineItems?: Array<{
-    state: 'OPEN' | 'CLOSED' | 'MERGED';
+    state: PullRequestState;
     targetBranch: string;
     title?: string;
     number: number;
@@ -29,13 +32,13 @@ export function getMockSourceCommit({
     repoName?: string;
     repoOwner?: string;
   }>;
-}): SourceCommitWithTargetPullRequest {
+}): SourceCommitWithTargetPullRequestFragmentFragment {
   const defaultTargetPullRequestTitle =
     'DO NOT USE: Please specify a title in test!!!';
 
   const defaultSourceCommitSha = 'DO NOT USE: please specify a sha in test!!!';
 
-  const baseMockCommit: SourceCommitWithTargetPullRequest = {
+  const baseMockCommit: SourceCommitWithTargetPullRequestFragmentFragment = {
     author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
     repository: {
       name: 'kibana',
@@ -96,7 +99,9 @@ export function getMockSourceCommit({
             timelineItems: {
               edges: timelineItems.map((timelineItem) => {
                 return {
+                  __typename: 'PullRequestTimelineItemsEdge',
                   node: {
+                    __typename: 'CrossReferencedEvent',
                     targetPullRequest: {
                       __typename: 'PullRequest',
                       url: `https://github.com/elastic/kibana/pull/${timelineItem.number}`,

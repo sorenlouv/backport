@@ -17,7 +17,7 @@ export function getCommitAuthor({
   }
 
   return {
-    name: options.gitAuthorName ?? commit.author.name,
-    email: options.gitAuthorEmail ?? commit.author.email,
+    name: options.gitAuthorName ?? commit.author!.name!,
+    email: options.gitAuthorEmail ?? commit.author!.email!,
   };
 }
