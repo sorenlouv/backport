@@ -28,7 +28,7 @@
     "prepublishOnly": "rm -rf ./dist/ && yarn && yarn lint && yarn tsc",
     "extractPackageVersion": "node -p \"'export const PACKAGE_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" | prettier --parser typescript > src/utils/packageVersion.ts",
     "lint-and-test": "yarn lint && yarn test-all",
-    "lint": "tsc && eslint './**/*.{ts,js}'",
+    "lint": "tsc && eslint './**/*.{ts,js}' --fix && yarn codegen",
     "start": "NODE_ENV=development ts-node --transpile-only ./src/entrypoint.cli.ts",
     "test-all": "jest --config ./jest.config.all.ts",
     "test-mutation": "jest --config ./jest.config.mutation.ts",

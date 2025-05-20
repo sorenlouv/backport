@@ -6,7 +6,7 @@ module.exports = {
   globals: {
     NodeJS: true,
   },
-  ignorePatterns: ['dist/', 'node_modules/'],
+  ignorePatterns: ['dist/', 'node_modules/', 'src/graphql/generated/'],
   plugins: ['@typescript-eslint', 'jest', 'import'],
   parser: '@typescript-eslint/parser', // Specifies the ESLint parser
   parserOptions: {
