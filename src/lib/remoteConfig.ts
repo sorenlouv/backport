@@ -1,6 +1,6 @@
 import { graphql } from '../graphql/generated';
 import { parseConfigFile } from '../options/config/readConfigFile';
-import { GithubV4Exception } from './github/v4/fetchCommits/graphqlClient';
+import { OperationResultWithMeta } from './github/v4/fetchCommits/graphqlClient';
 import { logger } from './logger';
 
 export const RemoteConfigHistoryFragment = graphql(`
@@ -35,29 +35,21 @@ export function parseRemoteConfigFile(remoteConfig: any) {
   }
 }
 
-export function swallowMissingConfigFileException<T>(
-  error: GithubV4Exception<T> | unknown,
-) {
-  if (!(error instanceof GithubV4Exception)) {
-    throw error;
-  }
+export function isMissingConfigFileException(
+  result: OperationResultWithMeta<unknown>,
+): boolean {
+  const data = result.data;
+  const errors = result.error?.graphQLErrors;
 
-  const data = error.result.data;
-  const errors = error.result.error?.graphQLErrors;
+  const isMissingConfigError =
+    errors?.some((error) => {
+      return (
+        error.path?.includes('remoteConfig') &&
+        // @ts-expect-error
+        error.originalError?.type === 'NOT_FOUND'
+      );
+    }) ?? false;
 
-  const missingConfigError = errors?.some((error) => {
-    return (
-      error.path?.includes('remoteConfig') &&
-      // @ts-expect-error
-      error.originalError?.type === 'NOT_FOUND'
-    );
-  });
-
-  // swallow error if it's just the config file that's missing
-  if (missingConfigError && data != null) {
-    return data as T;
-  }
-
-  // Throw unexpected error
-  throw error;
+  const isMissingConfigFileException = isMissingConfigError && data != null;
+  return isMissingConfigFileException;
 }

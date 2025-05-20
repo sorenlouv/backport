@@ -1,15 +1,14 @@
 import { isEmpty } from 'lodash';
 import { graphql } from '../../../../graphql/generated';
-import { PullRequestBySearchQueryQuery } from '../../../../graphql/generated/graphql';
 import { filterNil } from '../../../../utils/filterEmpty';
 import { filterUnmergedCommits } from '../../../../utils/filterUnmergedCommits';
 import { BackportError } from '../../../BackportError';
-import { swallowMissingConfigFileException } from '../../../remoteConfig';
+import { isMissingConfigFileException } from '../../../remoteConfig';
 import {
   Commit,
   parseSourceCommit,
 } from '../../../sourceCommit/parseSourceCommit';
-import { getGraphQLClient, GithubV4Exception } from './graphqlClient';
+import { GithubV4Exception, getGraphQLClient } from './graphqlClient';
 
 export async function fetchPullRequestsBySearchQuery(options: {
   accessToken: string;
@@ -85,18 +84,13 @@ export async function fetchPullRequestsBySearchQuery(options: {
     maxNumber,
   };
 
-  let data: PullRequestBySearchQueryQuery | undefined;
-  try {
-    const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
-    const result = await client.query(query, variables);
+  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
+  const result = await client.query(query, variables);
 
-    if (result.error) {
-      throw new GithubV4Exception(result);
-    }
-    data = result.data;
-  } catch (e) {
-    data = swallowMissingConfigFileException<PullRequestBySearchQueryQuery>(e);
+  if (result.error && !isMissingConfigFileException(result)) {
+    throw new GithubV4Exception(result);
   }
+  const { data } = result;
 
   const commits = data?.search.nodes
     ?.map((pullRequestNode) => {

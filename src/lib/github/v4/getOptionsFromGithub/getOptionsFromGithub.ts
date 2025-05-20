@@ -11,13 +11,13 @@ import {
 import { logger } from '../../../logger';
 import {
   parseRemoteConfigFile,
-  swallowMissingConfigFileException,
+  isMissingConfigFileException,
 } from '../../../remoteConfig';
 import {
-  getGraphQLClient,
   GithubV4Exception,
+  getGraphQLClient,
 } from '../fetchCommits/graphqlClient';
-import { throwOnInvalidAccessToken } from '../throwOnInvalidAccessToken';
+import { getInvalidAccessTokenMessage } from '../getInvalidAccessTokenMessage';
 
 // fetches the default source branch for the repo (normally "master")
 // startup checks:
@@ -45,55 +45,57 @@ export async function getOptionsFromGithub(options: {
     globalConfigFile,
   } = options;
 
-  let data: GithubConfigOptionsQuery | undefined;
-
-  try {
-    const query = graphql(`
-      query GithubConfigOptions($repoOwner: String!, $repoName: String!) {
-        viewer {
-          login
+  const query = graphql(`
+    query GithubConfigOptions($repoOwner: String!, $repoName: String!) {
+      viewer {
+        login
+      }
+      repository(owner: $repoOwner, name: $repoName) {
+        # check to see if a branch named "backport" exists
+        illegalBackportBranch: ref(qualifiedName: "refs/heads/backport") {
+          id
         }
-        repository(owner: $repoOwner, name: $repoName) {
-          # check to see if a branch named "backport" exists
-          illegalBackportBranch: ref(qualifiedName: "refs/heads/backport") {
-            id
-          }
-          isPrivate
-          defaultBranchRef {
-            name
-            target {
-              __typename
-              ...RemoteConfigHistoryFragment
-            }
+        isPrivate
+        defaultBranchRef {
+          name
+          target {
+            __typename
+            ...RemoteConfigHistoryFragment
           }
         }
       }
-    `);
-
-    const variables = { repoOwner, repoName };
-    const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
-    const result = await client.query(query, variables);
-
-    if (result.error) {
-      throw new GithubV4Exception(result);
     }
+  `);
 
-    throwIfInsufficientPermissions(result);
+  const variables = { repoOwner, repoName };
+  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
+  const result = await client.query(query, variables);
 
-    data = result.data;
-  } catch (e) {
-    if (!(e instanceof GithubV4Exception)) {
-      throw e;
-    }
-
-    throwOnInvalidAccessToken({
-      error: e,
+  if (result.error) {
+    const isInvalidAccessTokenMessage = getInvalidAccessTokenMessage({
+      result,
       repoName,
       repoOwner,
       globalConfigFile,
     });
-    data = swallowMissingConfigFileException<GithubConfigOptionsQuery>(e);
+
+    if (isInvalidAccessTokenMessage) {
+      throw new BackportError(isInvalidAccessTokenMessage);
+    }
+
+    if (!isMissingConfigFileException(result)) {
+      throw new GithubV4Exception(result);
+    }
   }
+
+  const insufficientPermissionsErrorMessage =
+    getInsufficientPermissionsErrorMessage(result);
+
+  if (insufficientPermissionsErrorMessage) {
+    throw new BackportError(insufficientPermissionsErrorMessage);
+  }
+
+  const { data } = result;
 
   // it is not possible to have a branch named "backport"
   if (data?.repository?.illegalBackportBranch) {
@@ -184,7 +186,7 @@ async function getRemoteConfigFileOptions(
   return parseRemoteConfigFile(remoteConfig);
 }
 
-function throwIfInsufficientPermissions(
+function getInsufficientPermissionsErrorMessage(
   res: OperationResult<
     GithubConfigOptionsQuery,
     {
@@ -192,9 +194,8 @@ function throwIfInsufficientPermissions(
       repoName: string;
     }
   >,
-) {
+): string | undefined {
   const responseHeaders = (res as any).responseHeaders as Headers;
-
   const accessScopesHeader = responseHeaders.get('x-oauth-scopes');
   if (accessScopesHeader == null) {
     return;
@@ -207,17 +208,13 @@ function throwIfInsufficientPermissions(
   const isRepoPrivate = res.data?.repository?.isPrivate;
 
   if (isRepoPrivate && !accessTokenScopes.includes('repo')) {
-    throw new BackportError(
-      `You must grant the "repo" scope to your personal access token`,
-    );
+    return `You must grant the "repo" scope to your personal access token`;
   }
 
   if (
     !accessTokenScopes.includes('repo') &&
     !accessTokenScopes.includes('public_repo')
   ) {
-    throw new BackportError(
-      `You must grant the "repo" or "public_repo" scope to your personal access token`,
-    );
+    return `You must grant the "repo" or "public_repo" scope to your personal access token`;
   }
 }

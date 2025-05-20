@@ -25,18 +25,11 @@ export function getGraphQLClient({
 }
 
 export class GithubV4Exception<T> extends Error {
-  result: OperationResultWithMeta<T>;
-
-  constructor(result: OperationResultWithMeta<T>, contextMessage?: string) {
-    const githubMessages =
-      result.error?.graphQLErrors.map((e) => e.message).join(', ') ||
-      result.error?.message;
-
-    const message = `${contextMessage ?? githubMessages} (Github API v4)`;
+  constructor(public result: OperationResultWithMeta<T>) {
+    const message = `${result.error?.message} (Github API v4)`;
 
     super(message);
     Error.captureStackTrace(this, GithubV4Exception);
     this.name = 'GithubV4Exception';
-    this.result = result;
   }
 }

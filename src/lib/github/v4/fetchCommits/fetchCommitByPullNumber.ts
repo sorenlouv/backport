@@ -1,12 +1,11 @@
 import { graphql } from '../../../../graphql/generated';
-import { CommitByPullNumberQuery } from '../../../../graphql/generated/graphql';
 import { ValidConfigOptions } from '../../../../options/options';
 import { BackportError } from '../../../BackportError';
-import { swallowMissingConfigFileException } from '../../../remoteConfig';
+import { isMissingConfigFileException } from '../../../remoteConfig';
 import { Commit } from '../../../sourceCommit/parseSourceCommit';
 import { fetchCommitBySha } from './fetchCommitBySha';
 import { fetchCommitsForRebaseAndMergeStrategy } from './fetchCommitsForRebaseAndMergeStrategy';
-import { getGraphQLClient, GithubV4Exception } from './graphqlClient';
+import { GithubV4Exception, getGraphQLClient } from './graphqlClient';
 
 export async function fetchCommitsByPullNumber(options: {
   accessToken: string;
@@ -64,20 +63,15 @@ export async function fetchCommitsByPullNumber(options: {
     }
   `);
 
-  let data: CommitByPullNumberQuery | undefined;
-  try {
-    const variables = { repoOwner, repoName, pullNumber };
-    const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
-    const result = await client.query(query, variables);
+  const variables = { repoOwner, repoName, pullNumber };
+  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
+  const result = await client.query(query, variables);
 
-    if (result.error) {
-      throw new GithubV4Exception(result);
-    }
-
-    data = result.data;
-  } catch (e) {
-    data = swallowMissingConfigFileException<CommitByPullNumberQuery>(e);
+  if (result.error && !isMissingConfigFileException(result)) {
+    throw new GithubV4Exception(result);
   }
+
+  const { data } = result;
 
   const pullRequestNode = data?.repository?.pullRequest;
   if (!pullRequestNode) {

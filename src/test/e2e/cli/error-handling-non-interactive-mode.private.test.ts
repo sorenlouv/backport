@@ -166,7 +166,7 @@ describe('non interactive (json) error handling', () => {
     const backportResult = JSON.parse(output) as BackportFailureResponse;
     expect(backportResult.status).toEqual('failure');
     expect(backportResult.errorMessage).toEqual(
-      'Could not resolve to a PullRequest with the number of 900. (Github API v4)',
+      '[GraphQL] Could not resolve to a PullRequest with the number of 900. (Github API v4)',
     );
   });
 

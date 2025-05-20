@@ -1,28 +1,25 @@
-import {
-  GithubV4Exception,
-  OperationResultWithMeta,
-} from './fetchCommits/graphqlClient';
-import { throwOnInvalidAccessToken } from './throwOnInvalidAccessToken';
+import { OperationResultWithMeta } from './fetchCommits/graphqlClient';
+import { getInvalidAccessTokenMessage } from './getInvalidAccessTokenMessage';
 
-describe('throwOnInvalidAccessToken', () => {
+describe('getInvalidAccessTokenMessage', () => {
   describe('when status code is', () => {
     it('should handle invalid access token', () => {
-      const error = new GithubV4Exception({
+      const result = {
         statusCode: 401,
         responseHeaders: new Headers({}),
-      } as OperationResultWithMeta);
+      } as OperationResultWithMeta;
 
-      return expect(() =>
-        throwOnInvalidAccessToken({
+      return expect(
+        getInvalidAccessTokenMessage({
+          result,
           repoOwner: 'elastic',
           repoName: 'kibana',
-          error,
         }),
-      ).toThrow('Please check your access token and make sure it is valid');
+      ).toContain('Please check your access token and make sure it is valid');
     });
 
     it('should handle SSO error', () => {
-      const error = new GithubV4Exception({
+      const result = {
         statusCode: 200,
         responseHeaders: new Headers({
           'x-github-sso': 'required; url=https://ssourl.com',
@@ -30,19 +27,23 @@ describe('throwOnInvalidAccessToken', () => {
         error: {
           graphQLErrors: [{ originalError: { type: 'FORBIDDEN' } }],
         },
-      } as unknown as OperationResultWithMeta);
+      } as unknown as OperationResultWithMeta;
 
-      return expect(() =>
-        throwOnInvalidAccessToken({
+      return expect(
+        getInvalidAccessTokenMessage({
+          result,
           repoOwner: 'elastic',
           repoName: 'kibana',
-          error,
         }),
-      ).toThrowErrorMatchingSnapshot();
+      ).toMatchInlineSnapshot(`
+"Please follow the link to authorize your personal access token with SSO:
+
+https://ssourl.com"
+`);
     });
 
     it('should handle non-existing repo', () => {
-      const error = new GithubV4Exception({
+      const result = {
         statusCode: 200,
         responseHeaders: new Headers({
           'x-oauth-scopes': 'a,b,c',
@@ -53,19 +54,19 @@ describe('throwOnInvalidAccessToken', () => {
             { originalError: { type: 'NOT_FOUND' }, path: ['repository'] },
           ],
         },
-      } as unknown as OperationResultWithMeta);
+      } as unknown as OperationResultWithMeta;
 
-      return expect(() =>
-        throwOnInvalidAccessToken({
+      return expect(
+        getInvalidAccessTokenMessage({
+          result,
           repoOwner: 'elastic',
           repoName: 'kibana',
-          error,
         }),
-      ).toThrow(`The repository "elastic/kibana" doesn't exist`);
+      ).toBe(`The repository "elastic/kibana" doesn't exist`);
     });
 
     it('should handle insufficient permissions (oauth scopes)', () => {
-      const error = new GithubV4Exception({
+      const result = {
         statusCode: 200,
         responseHeaders: new Headers({
           'x-oauth-scopes': 'a,b',
@@ -76,28 +77,33 @@ describe('throwOnInvalidAccessToken', () => {
             { originalError: { type: 'NOT_FOUND' }, path: ['repository'] },
           ],
         },
-      } as unknown as OperationResultWithMeta);
+      } as unknown as OperationResultWithMeta;
 
-      return expect(() =>
-        throwOnInvalidAccessToken({
+      return expect(
+        getInvalidAccessTokenMessage({
+          result,
           repoOwner: 'elastic',
           repoName: 'kibana',
-          error,
         }),
-      ).toThrowErrorMatchingSnapshot();
+      ).toMatchInlineSnapshot(`
+"You do not have access to the repository "elastic/kibana". Please make sure your access token has the required scopes.
+
+Required scopes: a,b,c
+Access token scopes: a,b"
+`);
     });
 
     it('should not handle unknown cases', () => {
-      const error = new GithubV4Exception({
+      const result = {
         statusCode: 500,
         responseHeaders: {},
-      } as OperationResultWithMeta);
+      } as OperationResultWithMeta;
 
       return expect(
-        throwOnInvalidAccessToken({
+        getInvalidAccessTokenMessage({
+          result,
           repoOwner: 'elastic',
           repoName: 'kibana',
-          error,
         }),
       ).toBe(undefined);
     });

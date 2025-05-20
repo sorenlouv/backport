@@ -1,13 +1,12 @@
 import { graphql } from '../../../../graphql/generated';
-import { CommitsByShaQuery } from '../../../../graphql/generated/graphql';
 import { ValidConfigOptions } from '../../../../options/options';
 import { BackportError } from '../../../BackportError';
-import { swallowMissingConfigFileException } from '../../../remoteConfig';
+import { isMissingConfigFileException } from '../../../remoteConfig';
 import {
   Commit,
   parseSourceCommit,
 } from '../../../sourceCommit/parseSourceCommit';
-import { getGraphQLClient, GithubV4Exception } from './graphqlClient';
+import { GithubV4Exception, getGraphQLClient } from './graphqlClient';
 
 export async function fetchCommitBySha(options: {
   accessToken: string;
@@ -38,20 +37,15 @@ export async function fetchCommitBySha(options: {
     }
   `);
 
-  let data: CommitsByShaQuery | undefined;
-  try {
-    const variables = { repoOwner, repoName, sha };
-    const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
-    const result = await client.query(query, variables);
+  const variables = { repoOwner, repoName, sha };
+  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
+  const result = await client.query(query, variables);
 
-    if (result.error) {
-      throw new GithubV4Exception(result);
-    }
-
-    data = result.data;
-  } catch (e) {
-    data = swallowMissingConfigFileException<CommitsByShaQuery>(e);
+  if (result.error && !isMissingConfigFileException(result)) {
+    throw new GithubV4Exception(result);
   }
+
+  const { data } = result;
 
   const sourceCommit = data?.repository?.object;
   if (sourceCommit?.__typename !== 'Commit') {

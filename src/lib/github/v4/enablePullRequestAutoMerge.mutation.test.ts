@@ -207,7 +207,7 @@ describe('enablePullRequestAutoMerge', () => {
 
       expect(isMissingStatusChecks).toBe(false);
       expect(errorMessage).toMatchInlineSnapshot(
-        `"Merge method rebase merging is not allowed on this repository (Github API v4)"`,
+        `"[GraphQL] Merge method rebase merging is not allowed on this repository (Github API v4)"`,
       );
 
       // ensure Github API reflects the change before querying

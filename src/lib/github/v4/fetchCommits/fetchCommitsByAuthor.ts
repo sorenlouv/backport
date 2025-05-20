@@ -1,17 +1,20 @@
 import { isEmpty, uniqBy, orderBy, first } from 'lodash';
 import { graphql } from '../../../../graphql/generated';
-import { CommitsByAuthorQuery } from '../../../../graphql/generated/graphql';
 import { ValidConfigOptions } from '../../../../options/options';
 import { filterNil } from '../../../../utils/filterEmpty';
 import { filterUnmergedCommits } from '../../../../utils/filterUnmergedCommits';
 import { BackportError } from '../../../BackportError';
-import { swallowMissingConfigFileException } from '../../../remoteConfig';
+import { isMissingConfigFileException } from '../../../remoteConfig';
 import {
   Commit,
   parseSourceCommit,
 } from '../../../sourceCommit/parseSourceCommit';
 import { fetchAuthorId } from '../fetchAuthorId';
-import { getGraphQLClient, GithubV4Exception } from './graphqlClient';
+import {
+  getGraphQLClient,
+  GithubV4Exception,
+  OperationResultWithMeta,
+} from './graphqlClient';
 
 async function fetchByCommitPath({
   options,
@@ -90,25 +93,25 @@ async function fetchByCommitPath({
     dateUntil,
   };
 
-  try {
-    const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
-    const result = await client.query(query, variables);
+  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
+  const result = await client.query(query, variables);
 
-    if (result.error) {
+  if (result.error) {
+    if (
+      (result as OperationResultWithMeta).statusCode === 502 &&
+      maxNumber > 50
+    ) {
+      throw new BackportError(
+        `The GitHub API returned a 502 error. Try reducing the number of commits to display: "--max-number 20"`,
+      );
+    }
+
+    if (!isMissingConfigFileException(result)) {
       throw new GithubV4Exception(result);
     }
-
-    return result.data;
-  } catch (e) {
-    if (e instanceof GithubV4Exception) {
-      if (e.result.statusCode === 502 && maxNumber > 50) {
-        throw new BackportError(
-          `The GitHub API returned a 502 error. Try reducing the number of commits to display: "--max-number 20"`,
-        );
-      }
-    }
-    return swallowMissingConfigFileException<CommitsByAuthorQuery>(e);
   }
+
+  return result.data;
 }
 
 export async function fetchCommitsByAuthor(options: {
