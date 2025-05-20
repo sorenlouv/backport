@@ -1,6 +1,6 @@
 import { graphql } from '../graphql/generated';
 import { parseConfigFile } from '../options/config/readConfigFile';
-import { OperationResultWithMeta } from './github/v4/fetchCommits/graphqlClient';
+import { OperationResultWithMeta } from './github/v4/client/graphqlClient';
 import { logger } from './logger';
 
 export const RemoteConfigHistoryFragment = graphql(`

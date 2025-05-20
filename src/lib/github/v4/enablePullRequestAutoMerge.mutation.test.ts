@@ -11,7 +11,7 @@ import {
   enablePullRequestAutoMerge,
   isMissingStatusChecksError,
 } from './enablePullRequestAutoMerge';
-import { GithubV4Exception } from './fetchCommits/graphqlClient';
+import { GithubV4Exception } from './client/graphqlClient';
 import { fetchPullRequestAutoMergeMethod } from './fetchPullRequestAutoMergeMethod';
 
 // The test repo requires auto-merge being enabled in options, as well as all merge types enabled (merge, squash, rebase)

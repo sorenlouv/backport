@@ -13,10 +13,7 @@ import {
   parseRemoteConfigFile,
   isMissingConfigFileException,
 } from '../../../remoteConfig';
-import {
-  GithubV4Exception,
-  getGraphQLClient,
-} from '../fetchCommits/graphqlClient';
+import { GithubV4Exception, getGraphQLClient } from '../client/graphqlClient';
 import { getInvalidAccessTokenMessage } from '../getInvalidAccessTokenMessage';
 
 // fetches the default source branch for the repo (normally "master")

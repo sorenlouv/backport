@@ -8,7 +8,7 @@ import {
   Commit,
   parseSourceCommit,
 } from '../../../sourceCommit/parseSourceCommit';
-import { GithubV4Exception, getGraphQLClient } from './graphqlClient';
+import { GithubV4Exception, getGraphQLClient } from '../client/graphqlClient';
 
 export async function fetchPullRequestsBySearchQuery(options: {
   accessToken: string;

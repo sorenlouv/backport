@@ -1,6 +1,6 @@
 import { fetchExchange, Client, OperationResult } from '@urql/core';
 import type { ValidConfigOptions } from '../../../../options/options';
-import { responseMetaInterceptorExchange } from '../client/headerInteceptorExchange';
+import { responseMetaInterceptorExchange } from './headerInteceptorExchange';
 
 export interface OperationResultWithMeta<Data = any>
   extends OperationResult<Data> {

@@ -2,7 +2,7 @@ import { first } from 'lodash';
 import { Commit } from '../../../../entrypoint.api';
 import { graphql } from '../../../../graphql/generated';
 import { fetchCommitBySha } from './fetchCommitBySha';
-import { getGraphQLClient, GithubV4Exception } from './graphqlClient';
+import { getGraphQLClient, GithubV4Exception } from '../client/graphqlClient';
 
 export async function fetchCommitsForRebaseAndMergeStrategy(
   options: {

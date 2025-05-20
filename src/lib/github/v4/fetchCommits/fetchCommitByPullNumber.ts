@@ -5,7 +5,7 @@ import { isMissingConfigFileException } from '../../../remoteConfig';
 import { Commit } from '../../../sourceCommit/parseSourceCommit';
 import { fetchCommitBySha } from './fetchCommitBySha';
 import { fetchCommitsForRebaseAndMergeStrategy } from './fetchCommitsForRebaseAndMergeStrategy';
-import { GithubV4Exception, getGraphQLClient } from './graphqlClient';
+import { GithubV4Exception, getGraphQLClient } from '../client/graphqlClient';
 
 export async function fetchCommitsByPullNumber(options: {
   accessToken: string;

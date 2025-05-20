@@ -1,7 +1,7 @@
 // headerInterceptorExchange.ts (or your chosen filename)
 import { Exchange } from '@urql/core'; // Removed OperationResult as it's used via OperationResultWithMeta
 import { pipe, map } from 'wonka';
-import { OperationResultWithMeta } from '../fetchCommits/graphqlClient';
+import { OperationResultWithMeta } from './graphqlClient';
 
 interface StoredResponseData {
   headers: Headers;

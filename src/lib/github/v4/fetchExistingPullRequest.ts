@@ -2,10 +2,7 @@ import { first } from 'lodash';
 import { graphql } from '../../../graphql/generated';
 import { ValidConfigOptions } from '../../../options/options';
 import { PullRequestPayload } from '../v3/getPullRequest/createPullRequest';
-import {
-  getGraphQLClient,
-  GithubV4Exception,
-} from './fetchCommits/graphqlClient';
+import { getGraphQLClient, GithubV4Exception } from './client/graphqlClient';
 
 export async function fetchExistingPullRequest({
   options,

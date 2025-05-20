@@ -14,7 +14,7 @@ import {
   getGraphQLClient,
   GithubV4Exception,
   OperationResultWithMeta,
-} from './graphqlClient';
+} from '../client/graphqlClient';
 
 async function fetchByCommitPath({
   options,

@@ -2,7 +2,7 @@ import { isEmpty, difference } from 'lodash';
 import { maybe } from '../../../utils/maybe';
 import { getGlobalConfigPath } from '../../env';
 import { logger } from '../../logger';
-import { OperationResultWithMeta } from './fetchCommits/graphqlClient';
+import { OperationResultWithMeta } from './client/graphqlClient';
 
 export function getInvalidAccessTokenMessage({
   result,

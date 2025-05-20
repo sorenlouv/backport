@@ -1,9 +1,6 @@
-import { graphql } from '../../../graphql/generated';
-import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
-import {
-  GithubV4Exception,
-  getGraphQLClient,
-} from './fetchCommits/graphqlClient';
+import { graphql } from '../../../../graphql/generated';
+import { getDevAccessToken } from '../../../../test/private/getDevAccessToken';
+import { OperationResultWithMeta, getGraphQLClient } from './graphqlClient';
 
 const getViewerQuery = graphql(`
   query GetViewer {
@@ -21,8 +18,8 @@ const getRepoQuery = graphql(`
   }
 `);
 
-describe('GithubV4Exception', () => {
-  let error: GithubV4Exception<unknown>;
+describe('graphqlClient', () => {
+  let result: OperationResultWithMeta;
 
   describe('when the access token is invalid', () => {
     beforeAll(async () => {
@@ -30,27 +27,23 @@ describe('GithubV4Exception', () => {
         accessToken: 'foobar',
         githubApiBaseUrlV4: 'https://api.github.com/graphql',
       });
-      const result = await client.query(getViewerQuery, {});
-
-      error = new GithubV4Exception(result);
+      result = await client.query(getViewerQuery, {});
     });
 
     it('includes status code', async () => {
-      expect(error.result.statusCode).toBe(401);
+      expect(result.statusCode).toBe(401);
     });
 
     it('does not include graphql errors', async () => {
-      expect(error.result.error?.graphQLErrors).toEqual([]);
+      expect(result.error?.graphQLErrors).toEqual([]);
     });
 
     it('includes error message', async () => {
-      expect(error.result.error?.message).toBe('[Network] Unauthorized');
+      expect(result.error?.message).toBe('[Network] Unauthorized');
     });
 
     it('includes custom github response headers', async () => {
-      expect(error.result.responseHeaders?.has('x-github-request-id')).toBe(
-        true,
-      );
+      expect(result.responseHeaders?.has('x-github-request-id')).toBe(true);
     });
   });
 
@@ -61,19 +54,15 @@ describe('GithubV4Exception', () => {
         accessToken: accessToken,
         githubApiBaseUrlV4: 'https://api.github.com/graphql',
       });
-      const result = await client.query(getViewerQuery, {});
-
-      error = new GithubV4Exception(result);
+      result = await client.query(getViewerQuery, {});
     });
 
     it('includes status code', async () => {
-      expect(error.result.statusCode).toBe(200);
+      expect(result.statusCode).toBe(200);
     });
 
-    it('includes custom github response headers', async () => {
-      expect(error.result.responseHeaders?.get('x-oauth-scopes')).toBe(
-        'repo, workflow',
-      );
+    it('includes oauth-scopes headers', async () => {
+      expect(result.responseHeaders?.get('x-oauth-scopes')).toContain('repo');
     });
   });
 
@@ -84,31 +73,29 @@ describe('GithubV4Exception', () => {
         accessToken: accessToken,
         githubApiBaseUrlV4: 'https://api.github.com/graphql',
       });
-      const result = await client.query(getRepoQuery, {
+      result = await client.query(getRepoQuery, {
         repoName: 'backportNonExisting',
         repoOwner: 'sorenlouv',
       });
-
-      error = new GithubV4Exception(result);
     });
 
     it('includes status code', async () => {
-      expect(error.result.statusCode).toBe(200);
+      expect(result.statusCode).toBe(200);
     });
 
     it('includes error path', async () => {
-      expect(error.result.error?.graphQLErrors[0].path).toEqual(['repository']);
+      expect(result.error?.graphQLErrors[0].path).toEqual(['repository']);
     });
 
     it('includes error type', async () => {
       //@ts-expect-error
-      expect(error.result.error?.graphQLErrors[0].originalError.type).toBe(
+      expect(result.error?.graphQLErrors[0].originalError.type).toBe(
         'NOT_FOUND',
       );
     });
 
     it('includes graphql errors', async () => {
-      expect(error.result.error?.graphQLErrors).toMatchInlineSnapshot(`
+      expect(result.error?.graphQLErrors).toMatchInlineSnapshot(`
 [
   [GraphQLError: Could not resolve to a Repository with the name 'sorenlouv/backportNonExisting'.],
 ]
@@ -116,13 +103,13 @@ describe('GithubV4Exception', () => {
     });
 
     it('includes error message', async () => {
-      expect(error.result.error?.message).toBe(
+      expect(result.error?.message).toBe(
         "[GraphQL] Could not resolve to a Repository with the name 'sorenlouv/backportNonExisting'.",
       );
     });
 
     it('includes custom github response headers', async () => {
-      expect(error.result.responseHeaders?.get('x-oauth-scopes')).toBe(
+      expect(result.responseHeaders?.get('x-oauth-scopes')).toBe(
         'repo, workflow',
       );
     });
