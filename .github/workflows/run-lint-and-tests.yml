@@ -29,7 +29,7 @@ jobs:
       - run: git config --global user.email "backportci@users.noreply.github.com "
       - run: git config --global user.name "Backport CI"
       - run: yarn
-      - run: yarn lint
       - run: yarn build
+      - run: yarn lint
       - run: yarn test
       - run: ACCESS_TOKEN=${{ secrets.GH_ACCESS_TOKEN }} yarn test-private
