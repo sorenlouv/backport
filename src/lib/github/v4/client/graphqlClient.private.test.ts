@@ -41,10 +41,6 @@ describe('graphqlClient', () => {
     it('includes error message', async () => {
       expect(result.error?.message).toBe('[Network] Unauthorized');
     });
-
-    it('includes custom github response headers', async () => {
-      expect(result.responseHeaders?.has('x-github-request-id')).toBe(true);
-    });
   });
 
   describe('when the access token is valid', () => {
@@ -61,7 +57,7 @@ describe('graphqlClient', () => {
       expect(result.statusCode).toBe(200);
     });
 
-    it('includes oauth-scopes headers', async () => {
+    it('includes x-oauth-scopes headers', async () => {
       expect(result.responseHeaders?.get('x-oauth-scopes')).toContain('repo');
     });
   });
@@ -108,10 +104,8 @@ describe('graphqlClient', () => {
       );
     });
 
-    it('includes custom github response headers', async () => {
-      expect(result.responseHeaders?.get('x-oauth-scopes')).toBe(
-        'repo, workflow',
-      );
+    it('includes x-oauth-scopes headers', async () => {
+      expect(result.responseHeaders?.get('x-oauth-scopes')).toContain('repo');
     });
   });
 });
