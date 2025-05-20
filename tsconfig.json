@@ -17,7 +17,14 @@
     "module": "CommonJS",
     "outDir": "./dist",
     "forceConsistentCasingInFileNames": true,
+
+    // strictness
     "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+
     "noUnusedLocals": true,
     "esModuleInterop": true,
     "useUnknownInCatchVariables": true,
