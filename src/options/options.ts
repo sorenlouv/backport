@@ -53,6 +53,7 @@ export const defaultConfigOptions = {
   publishStatusCommentOnSuccess: true,
   resetAuthor: false,
   reviewers: [] as Array<string>,
+  shallow: false,
   signoff: false,
   sourcePRLabels: [] as string[],
   noUnmergedBackportsHelp: false,

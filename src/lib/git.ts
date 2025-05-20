@@ -24,18 +24,31 @@ export function getRemoteUrl(
 }
 
 export async function cloneRepo(
-  { sourcePath, targetPath }: { sourcePath: string; targetPath: string },
+  {
+    sourcePath,
+    targetPath,
+    shallow = false,
+    depth = 50,
+  }: {
+    sourcePath: string;
+    targetPath: string;
+    shallow?: boolean;
+    depth?: number;
+  },
   onProgress: (progress: number) => void,
 ) {
-  logger.info(`Cloning repo from ${sourcePath} to ${targetPath}`);
+  logger.info(
+    `Cloning repo from ${sourcePath} to ${targetPath}${shallow ? ` (shallow, depth=${depth})` : ''}`,
+  );
+
+  const cloneArgs = ['clone', sourcePath, targetPath, '--progress'];
+  if (shallow) {
+    cloneArgs.push('--depth', depth.toString());
+    cloneArgs.push('--no-single-branch');
+  }
 
   return new Promise<void>((resolve, reject) => {
-    const subprocess = spawnStream('git', [
-      'clone',
-      sourcePath,
-      targetPath,
-      '--progress',
-    ]);
+    const subprocess = spawnStream('git', cloneArgs);
 
     const progress = {
       fileUpdate: 0,
