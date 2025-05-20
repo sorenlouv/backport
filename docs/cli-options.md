@@ -47,6 +47,7 @@ The CLI options will override the [config-file-options.md](/docs/config-file-opt
 | --target-pr-label       | --label, -l        | Labels added to the target PR                                               |                           |
 | --help                  |                    | Show help                                                                   |                           |
 | -v, --version           |                    | Show version number                                                         |                           |
+| --shallow               |                    | Use shallow clone to speed up repository setup (optionally specify depth, default: 50) | false                     |
 
 [1]: https://git-scm.com/docs/git-cherry-pick#Documentation/git-cherry-pick.txt--x
 [2]: https://docs.github.com/en/search-github/getting-started-with-searching-on-github/understanding-the-search-syntax

@@ -58,9 +58,9 @@ Add a [project config](/docs/config-file-options.md#project-config-backportrcjso
   "autoMergeMethod": "squash",
 
   // Optional: Automatically detect which branches a pull request should be backported to based on the pull request labels.
-  // In this case, adding the label "auto-backport-to-production" will backport the PR to the "production" branch
+  // In this case, adding the label "auto-back-port-to-production" will backport the PR to the "production" branch
   "branchLabelMapping": {
-    "^auto-backport-to-(.+)$": "$1"
+    "^auto-back-port-to-(.+)$": "$1"
   }
 }
 ```
@@ -113,6 +113,17 @@ This tools is for anybody who is working on a codebase where they have to mainta
 - list PRs filtered by a query: `backport --pr-filter label:backport-v2` (will list commits from PRs with the label "backport-v2")
 - forward port commits: `backport --source-branch 7.x --branch master` (will forwardport from 7.x to master)
 - backport merge commits: `backport --mainline`
+
+## Shallow clone option
+
+You can use the `--shallow` option to speed up repository cloning. By default, this uses a depth of 50. You can specify a custom depth with `--shallow=30`.
+
+Examples:
+
+- `backport --shallow` (uses depth 50)
+- `backport --shallow=30` (uses depth 30)
+
+Note: Shallow clones are faster but may not work for very old commits. If you encounter errors, try increasing the depth or omit `--shallow` to fetch the full history.
 
 ## Contributing
 
