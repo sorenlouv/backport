@@ -23,18 +23,19 @@
   "license": "Apache-2.0",
   "scripts": {
     "postinstall": "test -f ./dist/scripts/runPostinstall.js && node ./dist/scripts/runPostinstall.js || echo 'Dist folder missing'",
-    "version": "echo \"Bumping version\" && yarn extractPackageVersion && git add src/utils/packageVersion.ts && yarn tsc",
+    "version": "echo \"Bumping version\" && yarn extractPackageVersion && git add src/utils/packageVersion.ts && yarn build",
     "prepare": "husky install",
-    "prepublishOnly": "rm -rf ./dist/ && yarn && yarn lint && yarn tsc",
+    "prepublishOnly": "rm -rf ./dist/ && yarn && yarn lint && yarn build",
     "extractPackageVersion": "node -p \"'export const PACKAGE_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" | prettier --parser typescript > src/utils/packageVersion.ts",
     "lint-and-test": "yarn lint && yarn test-all",
-    "lint": "tsc && eslint './**/*.{ts,js}' --fix && yarn codegen",
+    "lint": "tsc --noEmit --incremental && eslint './**/*.{ts,js}' --fix",
     "start": "NODE_ENV=development ts-node --transpile-only ./src/entrypoint.cli.ts",
     "test-all": "jest --config ./jest.config.all.ts",
     "test-mutation": "jest --config ./jest.config.mutation.ts",
     "test-private": "jest --config ./jest.config.private.ts",
     "test": "jest",
-    "codegen": "graphql-codegen --config codegen.ts"
+    "codegen": "graphql-codegen --config codegen.ts",
+    "build": "yarn codegen && tsc --incremental"
   },
   "lint-staged": {
     "*.ts": [
@@ -61,7 +62,7 @@
     ]
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "dependencies": {
     "@octokit/rest": "^19.0.7",
