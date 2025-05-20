@@ -6,12 +6,12 @@ import {
   createPullRequest,
   PullRequestPayload,
 } from '../v3/getPullRequest/createPullRequest';
+import { GithubV4Exception } from './client/graphqlClient';
 import { disablePullRequestAutoMerge } from './disablePullRequestAutoMerge';
 import {
   enablePullRequestAutoMerge,
   isMissingStatusChecksError,
 } from './enablePullRequestAutoMerge';
-import { GithubV4Exception } from './client/graphqlClient';
 import { fetchPullRequestAutoMergeMethod } from './fetchPullRequestAutoMergeMethod';
 
 // The test repo requires auto-merge being enabled in options, as well as all merge types enabled (merge, squash, rebase)

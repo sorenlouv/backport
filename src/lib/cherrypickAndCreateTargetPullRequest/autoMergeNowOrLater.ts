@@ -1,10 +1,10 @@
 import { ValidConfigOptions } from '../../options/options';
 import { mergePullRequest } from '../github/v3/mergePullRequest';
+import { GithubV4Exception } from '../github/v4/client/graphqlClient';
 import {
   enablePullRequestAutoMerge,
   isMissingStatusChecksError,
 } from '../github/v4/enablePullRequestAutoMerge';
-import { GithubV4Exception } from '../github/v4/client/graphqlClient';
 import { logger } from '../logger';
 import { ora } from '../ora';
 

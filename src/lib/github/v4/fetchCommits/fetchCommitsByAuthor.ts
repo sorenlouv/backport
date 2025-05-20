@@ -9,12 +9,12 @@ import {
   Commit,
   parseSourceCommit,
 } from '../../../sourceCommit/parseSourceCommit';
-import { fetchAuthorId } from '../fetchAuthorId';
 import {
   getGraphQLClient,
   GithubV4Exception,
   OperationResultWithMeta,
 } from '../client/graphqlClient';
+import { fetchAuthorId } from '../fetchAuthorId';
 
 async function fetchByCommitPath({
   options,
