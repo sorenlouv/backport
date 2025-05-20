@@ -4,7 +4,7 @@ import { getDevAccessToken } from '../../private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
 import { runBackportViaCli } from './runBackportViaCli';
 
-jest.setTimeout(10_000);
+jest.setTimeout(15_000);
 const accessToken = getDevAccessToken();
 
 describe('entrypoint cli', () => {

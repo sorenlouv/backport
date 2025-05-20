@@ -1,19 +1,17 @@
-import gql from 'graphql-tag';
 import { differenceBy } from 'lodash';
+import { graphql } from '../../graphql/generated';
+import { SourceCommitWithTargetPullRequestFragmentFragment } from '../../graphql/generated/graphql';
 import { ValidConfigOptions } from '../../options/options';
-import {
-  RemoteConfigHistory,
-  RemoteConfigHistoryFragment,
-  parseRemoteConfigFile,
-} from '../remoteConfig';
+import { filterNil } from '../../utils/filterEmpty';
+import { parseRemoteConfigFile } from '../remoteConfig';
 import {
   TargetPullRequest,
   getPullRequestStates,
-  getSourcePullRequest,
 } from './getPullRequestStates';
+import { getSourcePullRequest } from './getSourcePullRequest';
 
 export interface Commit {
-  author: SourceCommitWithTargetPullRequest['author'];
+  author: SourceCommitWithTargetPullRequestFragmentFragment['author'];
   sourceCommit: {
     committedDate: string;
     message: string;
@@ -35,83 +33,8 @@ export interface Commit {
   targetPullRequestStates: TargetPullRequest[];
 }
 
-export interface SourcePullRequestNode {
-  title: string;
-  baseRefName: string;
-  url: string;
-  number: number;
-  labels: {
-    nodes: {
-      name: string;
-    }[];
-  };
-  mergeCommit?: {
-    remoteConfigHistory: RemoteConfigHistory['remoteConfigHistory'];
-    sha: string;
-    message: string;
-  };
-  timelineItems: {
-    edges: TimelineEdge[];
-  };
-}
-
-export type TimelineEdge = TimelinePullRequestEdge | TimelineIssueEdge;
-
-export interface TimelinePullRequestEdge {
-  node: {
-    targetPullRequest: {
-      __typename: 'PullRequest';
-      url: string;
-      title: string;
-      state: 'OPEN' | 'CLOSED' | 'MERGED';
-      baseRefName: string;
-      number: number;
-
-      targetMergeCommit: {
-        sha: string;
-        message: string;
-      } | null;
-
-      repository: {
-        name: string;
-        owner: {
-          login: string;
-        };
-      };
-
-      commits: {
-        edges: Array<{
-          node: { targetCommit: { message: string; sha: string } };
-        }>;
-      };
-    };
-  };
-}
-
-interface TimelineIssueEdge {
-  node: { targetPullRequest: { __typename: 'Issue' } };
-}
-
-export type SourceCommitWithTargetPullRequest = {
-  repository: {
-    name: string;
-    owner: { login: string };
-  };
-  sha: string;
-  message: string;
-  committedDate: string;
-  author: {
-    name: string;
-    email: string;
-  };
-
-  associatedPullRequests: {
-    edges: { node: SourcePullRequestNode }[] | null;
-  };
-};
-
 function getSuggestedTargetBranches(
-  sourceCommit: SourceCommitWithTargetPullRequest,
+  sourceCommit: SourceCommitWithTargetPullRequestFragmentFragment,
   targetPullRequestStates: TargetPullRequest[],
   branchLabelMapping?: ValidConfigOptions['branchLabelMapping'],
 ) {
@@ -133,28 +56,29 @@ export function parseSourceCommit({
   sourceCommit,
   options,
 }: {
-  sourceCommit: SourceCommitWithTargetPullRequest;
+  sourceCommit: SourceCommitWithTargetPullRequestFragmentFragment;
   options: {
     branchLabelMapping?: ValidConfigOptions['branchLabelMapping'];
     sourceBranch: string;
   };
 }): Commit {
   const sourcePullRequest = getSourcePullRequest(sourceCommit);
+
   const sourceCommitBranchLabelMapping =
     getSourceCommitBranchLabelMapping(sourceCommit);
 
-  const currentBranchLabelMapping = options.branchLabelMapping;
+  const branchLabelMapping =
+    sourceCommitBranchLabelMapping ?? options.branchLabelMapping;
 
   const targetPullRequestStates = getPullRequestStates({
     sourceCommit,
-    branchLabelMapping:
-      sourceCommitBranchLabelMapping ?? currentBranchLabelMapping,
+    branchLabelMapping,
   });
 
   const suggestedTargetBranches = getSuggestedTargetBranches(
     sourceCommit,
     targetPullRequestStates,
-    currentBranchLabelMapping,
+    options.branchLabelMapping,
   );
 
   return {
@@ -167,7 +91,10 @@ export function parseSourceCommit({
     },
     sourcePullRequest: sourcePullRequest
       ? {
-          labels: sourcePullRequest.labels.nodes.map((label) => label.name),
+          labels:
+            sourcePullRequest.labels?.nodes
+              ?.map((label) => label?.name)
+              .filter(filterNil) ?? [],
           title: sourcePullRequest.title,
           number: sourcePullRequest.number,
           url: sourcePullRequest.url,
@@ -185,8 +112,9 @@ export function parseSourceCommit({
   };
 }
 
-export const SourceCommitWithTargetPullRequestFragment = gql`
+export const SourceCommitWithTargetPullRequestFragment = graphql(`
   fragment SourceCommitWithTargetPullRequestFragment on Commit {
+    __typename
     # Source Commit
     repository {
       name
@@ -219,6 +147,7 @@ export const SourceCommitWithTargetPullRequestFragment = gql`
 
           # source merge commit (the commit that actually went into the source branch)
           mergeCommit {
+            __typename
             ...RemoteConfigHistoryFragment
             sha: oid
             message
@@ -229,11 +158,13 @@ export const SourceCommitWithTargetPullRequestFragment = gql`
             edges {
               node {
                 ... on CrossReferencedEvent {
+                  __typename
                   targetPullRequest: source {
                     __typename
 
                     # Target PRs (backport PRs)
                     ... on PullRequest {
+                      __typename
                       # target merge commit: the backport commit that was merged into the target branch
                       targetMergeCommit: mergeCommit {
                         sha: oid
@@ -270,12 +201,10 @@ export const SourceCommitWithTargetPullRequestFragment = gql`
       }
     }
   }
-
-  ${RemoteConfigHistoryFragment}
-`;
+`);
 
 function getSourceCommitBranchLabelMapping(
-  sourceCommit: SourceCommitWithTargetPullRequest,
+  sourceCommit: SourceCommitWithTargetPullRequestFragmentFragment,
 ): ValidConfigOptions['branchLabelMapping'] {
   const sourcePullRequest = getSourcePullRequest(sourceCommit);
 

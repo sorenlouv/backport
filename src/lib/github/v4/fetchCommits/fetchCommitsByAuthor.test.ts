@@ -1,12 +1,14 @@
 import nock from 'nock';
-import { mockGqlRequest } from '../../../../test/nockHelpers';
-import { Commit } from '../../../sourceCommit/parseSourceCommit';
-import { AuthorIdResponse } from '../fetchAuthorId';
-import { commitsByAuthorMock } from '../mocks/commitsByAuthorMock';
 import {
-  CommitByAuthorResponse,
-  fetchCommitsByAuthor,
-} from './fetchCommitsByAuthor';
+  AuthorIdQuery,
+  AuthorIdQueryVariables,
+  CommitsByAuthorQuery,
+  CommitsByAuthorQueryVariables,
+} from '../../../../graphql/generated/graphql';
+import { mockUrqlRequest } from '../../../../test/nockHelpers';
+import { Commit } from '../../../sourceCommit/parseSourceCommit';
+import { commitsByAuthorMock } from '../mocks/commitsByAuthorMock';
+import { fetchCommitsByAuthor } from './fetchCommitsByAuthor';
 
 const defaultOptions = {
   accessToken: 'myAccessToken',
@@ -33,19 +35,20 @@ describe('fetchCommitsByAuthor', () => {
 
   describe('when commit has an associated pull request', () => {
     let res: Commit[];
-    let authorIdCalls: ReturnType<typeof mockGqlRequest>;
-    let commitsByAuthorCalls: ReturnType<typeof mockGqlRequest>;
+    let authorIdCalls: ReturnType<typeof mockUrqlRequest>;
+    let commitsByAuthorCalls: ReturnType<typeof mockUrqlRequest>;
 
-    beforeEach(async () => {
-      authorIdCalls = mockGqlRequest<AuthorIdResponse>({
-        name: 'AuthorId',
-        statusCode: 200,
+    beforeAll(async () => {
+      authorIdCalls = mockUrqlRequest<AuthorIdQuery, AuthorIdQueryVariables>({
+        operationName: 'AuthorId',
         body: { data: authorIdMockData },
       });
 
-      commitsByAuthorCalls = mockGqlRequest<CommitByAuthorResponse>({
-        name: 'CommitsByAuthor',
-        statusCode: 200,
+      commitsByAuthorCalls = mockUrqlRequest<
+        CommitsByAuthorQuery,
+        CommitsByAuthorQueryVariables
+      >({
+        operationName: 'CommitsByAuthor',
         body: { data: commitsByAuthorMock },
       });
 
@@ -163,16 +166,17 @@ describe('fetchCommitsByAuthor', () => {
 
   describe('when a custom github api hostname is supplied', () => {
     it('should be used in gql requests', async () => {
-      const authorIdCalls = mockGqlRequest<AuthorIdResponse>({
-        name: 'AuthorId',
-        statusCode: 200,
+      const authorIdCalls = mockUrqlRequest<
+        AuthorIdQuery,
+        AuthorIdQueryVariables
+      >({
+        operationName: 'AuthorId',
         body: { data: authorIdMockData },
         apiBaseUrl: 'http://localhost/my-custom-api',
       });
 
-      const commitsByAuthorCalls = mockGqlRequest<CommitByAuthorResponse>({
-        name: 'CommitsByAuthor',
-        statusCode: 200,
+      const commitsByAuthorCalls = mockUrqlRequest<CommitsByAuthorQuery>({
+        operationName: 'CommitsByAuthor',
         body: { data: commitsByAuthorMock },
         apiBaseUrl: 'http://localhost/my-custom-api',
       });

@@ -1,44 +1,63 @@
 import { URL } from 'url';
-import gql from 'graphql-tag';
 import { disableFragmentWarnings } from 'graphql-tag';
 import nock from 'nock';
-import { getQueryName } from '../lib/github/v4/apiRequestV4';
 
 disableFragmentWarnings();
 
-export function mockGqlRequest<T>({
-  name,
-  statusCode,
-  body,
-  headers,
-  apiBaseUrl,
-}: {
-  name: string;
-  statusCode: number;
-  body?: { data: T } | { errors: any[] };
-  headers?: any;
-  apiBaseUrl?: string;
-}) {
-  const { origin, pathname } = new URL(
-    // default to localhost as host to avoid CORS issues
-    // Remember to set `githubApiBaseUrlV4: 'http://localhost/graphql'` in options
-    apiBaseUrl ?? 'http://localhost/graphql',
-  );
-
-  const scope = nock(origin)
-    .post(pathname, (body) => getQueryName(gql(body.query)) === name)
-    .reply(statusCode, body, headers);
-
-  return listenForCallsToNockScope(scope) as {
-    query: string;
-    variables: string;
-  }[];
+// Interface for the typical GraphQL request payload Urql sends
+interface GraphQLRequestBody<TVariables = Record<string, any>> {
+  query: string;
+  variables?: TVariables;
+  operationName?: string;
 }
 
-export function listenForCallsToNockScope(scope: nock.Scope) {
-  const calls: unknown[] = [];
-  scope.on('request', (req, interceptor, body) => {
-    calls.push(JSON.parse(body));
+// Interface for the expected structure of captured calls
+export interface CapturedCall<TVariables = Record<string, any>> {
+  query: string;
+  variables?: TVariables;
+  operationName?: string;
+}
+
+export function mockUrqlRequest<TData = any, TVariables = Record<string, any>>({
+  operationName,
+  statusCode = 200,
+  body,
+  headers,
+  apiBaseUrl = 'http://localhost/graphql',
+}: {
+  operationName: string;
+  statusCode?: number;
+  body?: { data: TData } | { errors: ReadonlyArray<any> };
+  headers?: nock.ReplyHeaders;
+  apiBaseUrl?: string;
+}) {
+  const { origin, pathname } = new URL(apiBaseUrl);
+
+  const scope = nock(origin)
+    .post(
+      pathname,
+      (requestBody: GraphQLRequestBody<TVariables>) =>
+        requestBody.operationName === operationName,
+    )
+    .reply(statusCode, body, headers);
+
+  return listenForCallsToNockScope<TVariables>(scope);
+}
+
+export function listenForCallsToNockScope<TVariables>(
+  scope: nock.Scope,
+): CapturedCall<TVariables>[] {
+  const calls: CapturedCall<TVariables>[] = [];
+  scope.on('request', (req, interceptor, bodyString) => {
+    try {
+      calls.push(JSON.parse(bodyString));
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to parse nock request body:', bodyString, e);
+      // Push raw body if parsing fails, or handle as appropriate
+      calls.push(bodyString as any);
+    }
   });
+
   return calls;
 }

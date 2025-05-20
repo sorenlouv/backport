@@ -3,6 +3,7 @@
 exports[`fetchCommitsByAuthor when commit has an associated pull request should call with correct args to fetch author id 1`] = `
 [
   {
+    "operationName": "AuthorId",
     "query": "query AuthorId($author: String!) {
   user(login: $author) {
     id
@@ -18,11 +19,13 @@ exports[`fetchCommitsByAuthor when commit has an associated pull request should 
 exports[`fetchCommitsByAuthor when commit has an associated pull request should call with correct args to fetch commits 1`] = `
 [
   {
+    "operationName": "CommitsByAuthor",
     "query": "query CommitsByAuthor($authorId: ID, $commitPath: String, $dateSince: GitTimestamp, $dateUntil: GitTimestamp, $maxNumber: Int!, $repoName: String!, $repoOwner: String!, $sourceBranch: String!) {
   repository(owner: $repoOwner, name: $repoName) {
     ref(qualifiedName: $sourceBranch) {
       target {
         ... on Commit {
+          __typename
           history(
             first: $maxNumber
             author: {id: $authorId}
@@ -32,6 +35,7 @@ exports[`fetchCommitsByAuthor when commit has an associated pull request should 
           ) {
             edges {
               node {
+                __typename
                 ...SourceCommitWithTargetPullRequestFragment
               }
             }
@@ -41,8 +45,30 @@ exports[`fetchCommitsByAuthor when commit has an associated pull request should 
     }
   }
 }
-
+fragment RemoteConfigHistoryFragment on Commit {
+  remoteConfigHistory: history(first: 1, path: 
+".backportrc.json") {
+    edges {
+      remoteConfig: node {
+        committedDate
+        file(path: 
+".backportrc.json") {
+          ... on TreeEntry {
+            __typename
+            object {
+              ... on Blob {
+                __typename
+                text
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
 fragment SourceCommitWithTargetPullRequestFragment on Commit {
+  __typename
   repository {
     name
     owner {
@@ -69,6 +95,7 @@ fragment SourceCommitWithTargetPullRequestFragment on Commit {
         }
         baseRefName
         mergeCommit {
+          __typename
           ...RemoteConfigHistoryFragment
           sha: oid
           message
@@ -77,9 +104,11 @@ fragment SourceCommitWithTargetPullRequestFragment on Commit {
           edges {
             node {
               ... on CrossReferencedEvent {
+                __typename
                 targetPullRequest: source {
                   __typename
                   ... on PullRequest {
+                    __typename
                     targetMergeCommit: mergeCommit {
                       sha: oid
                       message
@@ -107,25 +136,6 @@ fragment SourceCommitWithTargetPullRequestFragment on Commit {
                     }
                   }
                 }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-fragment RemoteConfigHistoryFragment on Commit {
-  remoteConfigHistory: history(first: 1, path: ".backportrc.json") {
-    edges {
-      remoteConfig: node {
-        committedDate
-        file(path: ".backportrc.json") {
-          ... on TreeEntry {
-            object {
-              ... on Blob {
-                text
               }
             }
           }

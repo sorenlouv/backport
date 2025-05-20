@@ -1,4 +1,6 @@
-import { AxiosResponse } from 'axios';
+import { OperationResult } from '@urql/core';
+import { graphql } from '../../../../graphql/generated';
+import { GithubConfigOptionsQuery } from '../../../../graphql/generated/graphql';
 import { ConfigFileOptions } from '../../../../options/ConfigOptions';
 import { BackportError } from '../../../BackportError';
 import {
@@ -9,15 +11,10 @@ import {
 import { logger } from '../../../logger';
 import {
   parseRemoteConfigFile,
-  swallowMissingConfigFileException,
+  isMissingConfigFileException,
 } from '../../../remoteConfig';
-import {
-  apiRequestV4,
-  GithubV4Exception,
-  GithubV4Response,
-} from '../apiRequestV4';
-import { throwOnInvalidAccessToken } from '../throwOnInvalidAccessToken';
-import { GithubConfigOptionsResponse, query } from './query';
+import { GithubV4Exception, getGraphQLClient } from '../client/graphqlClient';
+import { getInvalidAccessTokenMessage } from '../getInvalidAccessTokenMessage';
 
 // fetches the default source branch for the repo (normally "master")
 // startup checks:
@@ -45,35 +42,60 @@ export async function getOptionsFromGithub(options: {
     globalConfigFile,
   } = options;
 
-  let data: GithubConfigOptionsResponse;
-
-  try {
-    const res = await apiRequestV4<GithubConfigOptionsResponse>({
-      githubApiBaseUrlV4,
-      accessToken,
-      query,
-      variables: { repoOwner, repoName },
-    });
-
-    throwIfInsufficientPermissions(res);
-
-    data = res.data.data;
-  } catch (e) {
-    if (!(e instanceof GithubV4Exception)) {
-      throw e;
+  const query = graphql(`
+    query GithubConfigOptions($repoOwner: String!, $repoName: String!) {
+      viewer {
+        login
+      }
+      repository(owner: $repoOwner, name: $repoName) {
+        # check to see if a branch named "backport" exists
+        illegalBackportBranch: ref(qualifiedName: "refs/heads/backport") {
+          id
+        }
+        isPrivate
+        defaultBranchRef {
+          name
+          target {
+            __typename
+            ...RemoteConfigHistoryFragment
+          }
+        }
+      }
     }
+  `);
 
-    throwOnInvalidAccessToken({
-      error: e,
+  const variables = { repoOwner, repoName };
+  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
+  const result = await client.query(query, variables);
+
+  if (result.error) {
+    const isInvalidAccessTokenMessage = getInvalidAccessTokenMessage({
+      result,
       repoName,
       repoOwner,
       globalConfigFile,
     });
-    data = swallowMissingConfigFileException<GithubConfigOptionsResponse>(e);
+
+    if (isInvalidAccessTokenMessage) {
+      throw new BackportError(isInvalidAccessTokenMessage);
+    }
+
+    if (!isMissingConfigFileException(result)) {
+      throw new GithubV4Exception(result);
+    }
   }
 
+  const insufficientPermissionsErrorMessage =
+    getInsufficientPermissionsErrorMessage(result);
+
+  if (insufficientPermissionsErrorMessage) {
+    throw new BackportError(insufficientPermissionsErrorMessage);
+  }
+
+  const { data } = result;
+
   // it is not possible to have a branch named "backport"
-  if (data.repository.illegalBackportBranch) {
+  if (data?.repository?.illegalBackportBranch) {
     throw new BackportError(
       'You must delete the branch "backport" to continue. See https://github.com/sorenlouv/backport/issues/155 for details',
     );
@@ -85,16 +107,23 @@ export async function getOptionsFromGithub(options: {
     options.skipRemoteConfig,
   );
 
+  if (!data) {
+    throw new BackportError(
+      'Failed to fetch options from GitHub. Please check your access token and repository settings.',
+    );
+  }
+
   return {
     authenticatedUsername: data.viewer.login,
-    sourceBranch: options.sourceBranch ?? data.repository.defaultBranchRef.name,
-    isRepoPrivate: data.repository.isPrivate,
+    sourceBranch:
+      options.sourceBranch ?? data.repository?.defaultBranchRef?.name ?? 'main',
+    isRepoPrivate: data.repository?.isPrivate,
     ...remoteConfig,
   };
 }
 
 async function getRemoteConfigFileOptions(
-  res: GithubConfigOptionsResponse,
+  res: GithubConfigOptionsQuery | undefined,
   cwd?: string,
   skipRemoteConfig?: boolean,
 ): Promise<ConfigFileOptions | undefined> {
@@ -102,6 +131,11 @@ async function getRemoteConfigFileOptions(
     logger.info(
       'Remote config: Skipping. `--skip-remote-config` specified via config file or cli',
     );
+    return;
+  }
+
+  if (res?.repository?.defaultBranchRef?.target?.__typename !== 'Commit') {
+    logger.info('Remote config: Skipping. Default branch is not a commit');
     return;
   }
 
@@ -149,14 +183,18 @@ async function getRemoteConfigFileOptions(
   return parseRemoteConfigFile(remoteConfig);
 }
 
-function throwIfInsufficientPermissions(
-  res: AxiosResponse<GithubV4Response<GithubConfigOptionsResponse>, any>,
-) {
-  const accessScopesHeader = res.headers['x-oauth-scopes'] as
-    | string
-    | undefined;
-
-  if (accessScopesHeader === undefined) {
+function getInsufficientPermissionsErrorMessage(
+  res: OperationResult<
+    GithubConfigOptionsQuery,
+    {
+      repoOwner: string;
+      repoName: string;
+    }
+  >,
+): string | undefined {
+  const responseHeaders = (res as any).responseHeaders as Headers;
+  const accessScopesHeader = responseHeaders.get('x-oauth-scopes');
+  if (accessScopesHeader == null) {
     return;
   }
 
@@ -164,20 +202,16 @@ function throwIfInsufficientPermissions(
     .split(',')
     .map((scope) => scope.trim());
 
-  const isRepoPrivate = res.data.data.repository.isPrivate;
+  const isRepoPrivate = res.data?.repository?.isPrivate;
 
   if (isRepoPrivate && !accessTokenScopes.includes('repo')) {
-    throw new BackportError(
-      `You must grant the "repo" scope to your personal access token`,
-    );
+    return `You must grant the "repo" scope to your personal access token`;
   }
 
   if (
     !accessTokenScopes.includes('repo') &&
     !accessTokenScopes.includes('public_repo')
   ) {
-    throw new BackportError(
-      `You must grant the "repo" or "public_repo" scope to your personal access token`,
-    );
+    return `You must grant the "repo" or "public_repo" scope to your personal access token`;
   }
 }

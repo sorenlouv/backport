@@ -3,8 +3,11 @@
  * It will be run once per test file
  */
 
+import { disableApm } from '../../lib/apm';
 import { registerHandlebarsHelpers } from '../../lib/registerHandlebarsHelpers';
 import * as packageVersionModule from '../../utils/packageVersion';
+
+disableApm();
 
 /* eslint-disable @typescript-eslint/no-empty-function */
 

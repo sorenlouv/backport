@@ -1,13 +1,30 @@
 {
+  "plugins": [
+    {
+      "name": "@0no-co/graphqlsp",
+      "schema": "./schema.graphql"
+    }
+  ],
   "include": ["src/**/*"],
+  "exclude": ["src/graphql/generated/graphql.ts"],
   "compilerOptions": {
     "declaration": true,
     "target": "ES2021",
-    "lib": ["ES2021"],
+    "lib": [
+      "ES2021", 
+      "DOM" // needed by wonka
+    ],
     "module": "CommonJS",
     "outDir": "./dist",
     "forceConsistentCasingInFileNames": true,
+
+    // strictness
     "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+
     "noUnusedLocals": true,
     "esModuleInterop": true,
     "useUnknownInCatchVariables": true,

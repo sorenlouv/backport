@@ -6,7 +6,7 @@ import { getLogfilePath } from './lib/env';
 import { getCommits } from './lib/getCommits';
 import { getTargetBranches } from './lib/getTargetBranches';
 import { createStatusComment } from './lib/github/v3/createStatusComment';
-import { GithubV4Exception } from './lib/github/v4/apiRequestV4';
+import { GithubV4Exception } from './lib/github/v4/client/graphqlClient';
 import { consoleLog, initLogger } from './lib/logger';
 import { ora } from './lib/ora';
 import { registerHandlebarsHelpers } from './lib/registerHandlebarsHelpers';
@@ -201,7 +201,7 @@ function outputError({
   e,
   logFilePath,
 }: {
-  e: BackportError | GithubV4Exception<any> | Error;
+  e: BackportError | GithubV4Exception<unknown> | Error;
   logFilePath?: string;
 }) {
   if (e instanceof BackportError || e instanceof GithubV4Exception) {

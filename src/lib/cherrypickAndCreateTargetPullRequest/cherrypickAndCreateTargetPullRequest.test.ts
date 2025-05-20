@@ -3,7 +3,7 @@ import nock from 'nock';
 import { ValidConfigOptions } from '../../options/options';
 import {
   listenForCallsToNockScope,
-  mockGqlRequest,
+  mockUrqlRequest,
 } from '../../test/nockHelpers';
 import { SpyHelper } from '../../types/SpyHelper';
 import * as childProcess from '../child-process-promisified';
@@ -127,9 +127,8 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         },
       ];
 
-      mockGqlRequest<TargetBranchResponse>({
-        name: 'GetBranchId',
-        statusCode: 200,
+      mockUrqlRequest<TargetBranchResponse>({
+        operationName: 'GetBranchId',
         body: { data: { repository: { ref: { id: 'foo' } } } },
       });
 
@@ -250,9 +249,8 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         },
       ];
 
-      mockGqlRequest<TargetBranchResponse>({
-        name: 'GetBranchId',
-        statusCode: 200,
+      mockUrqlRequest<TargetBranchResponse>({
+        operationName: 'GetBranchId',
         body: { data: { repository: { ref: { id: 'foo' } } } },
       });
 
@@ -318,9 +316,8 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         targetPRLabels: ['backport'],
       } as ValidConfigOptions;
 
-      mockGqlRequest<TargetBranchResponse>({
-        name: 'GetBranchId',
-        statusCode: 200,
+      mockUrqlRequest<TargetBranchResponse>({
+        operationName: 'GetBranchId',
         body: { data: { repository: { ref: { id: 'foo' } } } },
       });
 

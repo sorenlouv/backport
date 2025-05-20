@@ -1,17 +1,19 @@
-import gql from 'graphql-tag';
-import { isEmpty, uniqBy, orderBy } from 'lodash';
+import { isEmpty, uniqBy, orderBy, first } from 'lodash';
+import { graphql } from '../../../../graphql/generated';
 import { ValidConfigOptions } from '../../../../options/options';
 import { filterNil } from '../../../../utils/filterEmpty';
 import { filterUnmergedCommits } from '../../../../utils/filterUnmergedCommits';
 import { BackportError } from '../../../BackportError';
-import { swallowMissingConfigFileException } from '../../../remoteConfig';
+import { isMissingConfigFileException } from '../../../remoteConfig';
 import {
   Commit,
-  SourceCommitWithTargetPullRequest,
-  SourceCommitWithTargetPullRequestFragment,
   parseSourceCommit,
 } from '../../../sourceCommit/parseSourceCommit';
-import { GithubV4Exception, apiRequestV4 } from '../apiRequestV4';
+import {
+  getGraphQLClient,
+  GithubV4Exception,
+  OperationResultWithMeta,
+} from '../client/graphqlClient';
 import { fetchAuthorId } from '../fetchAuthorId';
 
 async function fetchByCommitPath({
@@ -29,7 +31,7 @@ async function fetchByCommitPath({
     repoOwner: string;
     sourceBranch: string;
   };
-  authorId: string | null;
+  authorId: string | null | undefined;
   commitPath: string | null;
 }) {
   const {
@@ -43,7 +45,7 @@ async function fetchByCommitPath({
     sourceBranch,
   } = options;
 
-  const query = gql`
+  const query = graphql(`
     query CommitsByAuthor(
       $authorId: ID
       $commitPath: String
@@ -58,6 +60,7 @@ async function fetchByCommitPath({
         ref(qualifiedName: $sourceBranch) {
           target {
             ... on Commit {
+              __typename
               history(
                 first: $maxNumber
                 author: { id: $authorId }
@@ -67,6 +70,7 @@ async function fetchByCommitPath({
               ) {
                 edges {
                   node {
+                    __typename
                     ...SourceCommitWithTargetPullRequestFragment
                   }
                 }
@@ -76,9 +80,7 @@ async function fetchByCommitPath({
         }
       }
     }
-
-    ${SourceCommitWithTargetPullRequestFragment}
-  `;
+  `);
 
   const variables = {
     repoOwner,
@@ -91,24 +93,25 @@ async function fetchByCommitPath({
     dateUntil,
   };
 
-  try {
-    const res = await apiRequestV4<CommitByAuthorResponse>({
-      githubApiBaseUrlV4,
-      accessToken,
-      query,
-      variables,
-    });
-    return res.data.data;
-  } catch (e) {
-    if (e instanceof GithubV4Exception) {
-      if (e.githubResponse.status === 502 && maxNumber > 50) {
-        throw new BackportError(
-          `The GitHub API returned a 502 error. Try reducing the number of commits to display: "--max-number 20"`,
-        );
-      }
+  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
+  const result = await client.query(query, variables);
+
+  if (result.error) {
+    if (
+      (result as OperationResultWithMeta).statusCode === 502 &&
+      maxNumber > 50
+    ) {
+      throw new BackportError(
+        `The GitHub API returned a 502 error. Try reducing the number of commits to display: "--max-number 20"`,
+      );
     }
-    return swallowMissingConfigFileException<CommitByAuthorResponse>(e);
+
+    if (!isMissingConfigFileException(result)) {
+      throw new GithubV4Exception(result);
+    }
   }
+
+  return result.data;
 }
 
 export async function fetchCommitsByAuthor(options: {
@@ -128,16 +131,18 @@ export async function fetchCommitsByAuthor(options: {
   const { sourceBranch, commitPaths = [] } = options;
 
   const authorId = await fetchAuthorId(options);
-  const responses = await Promise.all(
-    isEmpty(commitPaths)
-      ? [fetchByCommitPath({ options, authorId, commitPath: null })]
-      : commitPaths.map((commitPath) =>
-          fetchByCommitPath({ options, authorId, commitPath }),
-        ),
-  );
+  const responses = (
+    await Promise.all(
+      isEmpty(commitPaths)
+        ? [fetchByCommitPath({ options, authorId, commitPath: null })]
+        : commitPaths.map((commitPath) =>
+            fetchByCommitPath({ options, authorId, commitPath }),
+          ),
+    )
+  ).filter(filterNil);
 
   // we only need to check if the first item is `null` (if the first is `null` they all are)
-  if (responses[0].repository.ref === null) {
+  if (first(responses)?.repository?.ref === null) {
     throw new BackportError(
       `The upstream branch "${sourceBranch}" does not exist. Try specifying a different branch with "--source-branch <your-branch>"`,
     );
@@ -145,9 +150,16 @@ export async function fetchCommitsByAuthor(options: {
 
   const commits = responses
     .flatMap((res) => {
-      return res.repository.ref?.target.history.edges.map((edge) => {
-        const sourceCommit = edge.node;
-        return parseSourceCommit({ options, sourceCommit });
+      const repoRefTarget = res.repository?.ref?.target;
+      if (repoRefTarget?.__typename !== 'Commit') {
+        return;
+      }
+
+      return repoRefTarget.history.edges?.map((edge) => {
+        const sourceCommit = edge?.node;
+        if (sourceCommit) {
+          return parseSourceCommit({ options, sourceCommit });
+        }
       });
     })
     .filter(filterNil);
@@ -176,16 +188,4 @@ export async function fetchCommitsByAuthor(options: {
   }
 
   return commitsSorted;
-}
-
-export interface CommitByAuthorResponse {
-  repository: {
-    ref: {
-      target: {
-        history: {
-          edges: Array<{ node: SourceCommitWithTargetPullRequest }>;
-        };
-      };
-    } | null;
-  };
 }

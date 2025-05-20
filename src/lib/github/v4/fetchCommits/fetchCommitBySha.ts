@@ -1,14 +1,12 @@
-import gql from 'graphql-tag';
+import { graphql } from '../../../../graphql/generated';
 import { ValidConfigOptions } from '../../../../options/options';
 import { BackportError } from '../../../BackportError';
-import { swallowMissingConfigFileException } from '../../../remoteConfig';
+import { isMissingConfigFileException } from '../../../remoteConfig';
 import {
   Commit,
-  SourceCommitWithTargetPullRequest,
-  SourceCommitWithTargetPullRequestFragment,
   parseSourceCommit,
 } from '../../../sourceCommit/parseSourceCommit';
-import { apiRequestV4 } from '../apiRequestV4';
+import { GithubV4Exception, getGraphQLClient } from '../client/graphqlClient';
 
 export async function fetchCommitBySha(options: {
   accessToken: string;
@@ -28,48 +26,33 @@ export async function fetchCommitBySha(options: {
     sourceBranch,
   } = options;
 
-  const query = gql`
+  const query = graphql(`
     query CommitsBySha($repoOwner: String!, $repoName: String!, $sha: String!) {
       repository(owner: $repoOwner, name: $repoName) {
         object(expression: $sha) {
+          __typename
           ...SourceCommitWithTargetPullRequestFragment
         }
       }
     }
+  `);
 
-    ${SourceCommitWithTargetPullRequestFragment}
-  `;
+  const variables = { repoOwner, repoName, sha };
+  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
+  const result = await client.query(query, variables);
 
-  let data: CommitsByShaResponse;
-  try {
-    const res = await apiRequestV4<CommitsByShaResponse>({
-      githubApiBaseUrlV4,
-      accessToken,
-      query,
-      variables: {
-        repoOwner,
-        repoName,
-        sha,
-      },
-    });
-    data = res.data.data;
-  } catch (e) {
-    data = swallowMissingConfigFileException<CommitsByShaResponse>(e);
+  if (result.error && !isMissingConfigFileException(result)) {
+    throw new GithubV4Exception(result);
   }
 
-  const sourceCommit = data.repository.object;
+  const { data } = result;
 
-  if (!sourceCommit) {
+  const sourceCommit = data?.repository?.object;
+  if (sourceCommit?.__typename !== 'Commit') {
     throw new BackportError(
       `No commit found on branch "${sourceBranch}" with sha "${sha}"`,
     );
   }
 
   return parseSourceCommit({ options, sourceCommit });
-}
-
-interface CommitsByShaResponse {
-  repository: {
-    object: SourceCommitWithTargetPullRequest | null;
-  };
 }

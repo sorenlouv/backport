@@ -1,13 +1,18 @@
-import { CommitByAuthorResponse } from '../fetchCommits/fetchCommitsByAuthor';
+import {
+  CommitsByAuthorQuery,
+  PullRequestState,
+} from '../../../../graphql/generated/graphql';
 
-export const commitsByAuthorMock: CommitByAuthorResponse = {
+export const commitsByAuthorMock: CommitsByAuthorQuery = {
   repository: {
     ref: {
       target: {
+        __typename: 'Commit',
         history: {
           edges: [
             {
               node: {
+                __typename: 'Commit',
                 author: {
                   email: 'soren.louv@elastic.co',
                   name: 'Søren Louv-Jansen',
@@ -26,6 +31,7 @@ export const commitsByAuthorMock: CommitByAuthorResponse = {
             },
             {
               node: {
+                __typename: 'Commit',
                 author: {
                   email: 'soren.louv@elastic.co',
                   name: 'Søren Louv-Jansen',
@@ -49,6 +55,7 @@ export const commitsByAuthorMock: CommitByAuthorResponse = {
                         },
                         number: 85,
                         mergeCommit: {
+                          __typename: 'Commit',
                           remoteConfigHistory: { edges: [] },
                           sha: 'f3b618b9421fdecdb36862f907afbdd6344b361d',
                           message: 'Add witch (#85)',
@@ -64,6 +71,7 @@ export const commitsByAuthorMock: CommitByAuthorResponse = {
             },
             {
               node: {
+                __typename: 'Commit',
                 author: {
                   email: 'soren.louv@elastic.co',
                   name: 'Søren Louv-Jansen',
@@ -88,6 +96,7 @@ export const commitsByAuthorMock: CommitByAuthorResponse = {
                         baseRefName: 'master',
                         number: 80,
                         mergeCommit: {
+                          __typename: 'Commit',
                           remoteConfigHistory: { edges: [] },
                           sha: '79cf18453ec32a4677009dcbab1c9c8c73fc14fe',
                           message:
@@ -97,6 +106,7 @@ export const commitsByAuthorMock: CommitByAuthorResponse = {
                           edges: [
                             {
                               node: {
+                                __typename: 'CrossReferencedEvent',
                                 targetPullRequest: {
                                   __typename: 'PullRequest',
                                   targetMergeCommit: {
@@ -110,7 +120,7 @@ export const commitsByAuthorMock: CommitByAuthorResponse = {
                                   },
                                   url: 'https://github.com/elastic/kibana/pull/99',
                                   title: 'some title',
-                                  state: 'MERGED',
+                                  state: PullRequestState.Merged,
                                   number: 99,
                                   baseRefName: '6.3',
                                   commits: {
@@ -139,6 +149,7 @@ export const commitsByAuthorMock: CommitByAuthorResponse = {
             },
             {
               node: {
+                __typename: 'Commit',
                 author: {
                   email: 'soren.louv@elastic.co',
                   name: 'Søren Louv-Jansen',
@@ -157,6 +168,7 @@ export const commitsByAuthorMock: CommitByAuthorResponse = {
             },
             {
               node: {
+                __typename: 'Commit',
                 author: {
                   email: 'soren.louv@elastic.co',
                   name: 'Søren Louv-Jansen',

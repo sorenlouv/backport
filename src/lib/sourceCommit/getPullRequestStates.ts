@@ -1,20 +1,20 @@
 import { keyBy, merge, uniqBy, values } from 'lodash';
+import { SourceCommitWithTargetPullRequestFragmentFragment } from '../../graphql/generated/graphql';
 import { ValidConfigOptions } from '../../options/options';
 import { filterNil } from '../../utils/filterEmpty';
 import { getFirstLine } from '../github/commitFormatters';
 import {
   SourcePullRequestNode,
-  SourceCommitWithTargetPullRequest,
-  TimelineEdge,
-  TimelinePullRequestEdge,
-} from './parseSourceCommit';
+  getSourcePullRequest,
+} from './getSourcePullRequest';
+import { isPullRequestCrossReferencedEvent } from './isPullRequestCrossReferencedEvent';
 
-export type PullRequestState = 'OPEN' | 'CLOSED' | 'MERGED' | 'NOT_CREATED';
+type CreatedPullRequestState = 'CLOSED' | 'MERGED' | 'OPEN' | 'NOT_CREATED';
 type CreatedPullRequest = {
   url: string;
   number: number;
   branch: string;
-  state: PullRequestState;
+  state: CreatedPullRequestState;
   mergeCommit?: {
     sha: string;
     message: string;
@@ -31,14 +31,8 @@ type TargetBranchWithLabel = {
 export type TargetPullRequest =
   | (CreatedPullRequest & Partial<TargetBranchWithLabel>)
   | ((TargetBranchWithLabel & Partial<CreatedPullRequest>) & {
-      state: PullRequestState;
+      state: CreatedPullRequestState;
     });
-
-export function getSourcePullRequest(
-  sourceCommit: SourceCommitWithTargetPullRequest,
-): SourcePullRequestNode | undefined {
-  return sourceCommit.associatedPullRequests.edges?.[0]?.node;
-}
 
 function mergeByKey<T, K>(
   obj1: T[],
@@ -54,7 +48,7 @@ export function getPullRequestStates({
   sourceCommit,
   branchLabelMapping,
 }: {
-  sourceCommit: SourceCommitWithTargetPullRequest;
+  sourceCommit: SourceCommitWithTargetPullRequestFragmentFragment;
   branchLabelMapping: ValidConfigOptions['branchLabelMapping'];
 }): TargetPullRequest[] {
   const sourcePullRequest = getSourcePullRequest(sourceCommit);
@@ -77,11 +71,13 @@ export function getPullRequestStates({
     branchLabelMapping,
   );
 
-  return mergeByKey(
+  const allTargetBranches = mergeByKey(
     targetBranchesFromLabels,
     createdTargetPullRequests,
     'branch',
-  ).map((res) => {
+  );
+
+  return allTargetBranches.map((res) => {
     if (res.state) {
       return { ...res, state: res.state };
     }
@@ -108,7 +104,7 @@ export function getPullRequestStates({
 }
 
 function getCreatedTargetPullRequests(
-  sourceCommit: SourceCommitWithTargetPullRequest,
+  sourceCommit: SourceCommitWithTargetPullRequestFragmentFragment,
 ): CreatedPullRequest[] {
   const sourcePullRequest = getSourcePullRequest(sourceCommit);
 
@@ -117,9 +113,10 @@ function getCreatedTargetPullRequests(
   }
 
   const sourceCommitMessage = getFirstLine(sourceCommit.message);
-  return sourcePullRequest.timelineItems.edges
+
+  return (sourcePullRequest.timelineItems.edges ?? [])
     .filter(filterNil)
-    .filter(filterPullRequests)
+    .filter(isPullRequestCrossReferencedEvent)
     .filter((item) => {
       const { targetPullRequest } = item.node;
 
@@ -129,9 +126,13 @@ function getCreatedTargetPullRequests(
       }
 
       // at least one of the commits in `targetPullRequest` should match the merge commit from the source pull request
-      const didCommitMatch = targetPullRequest.commits.edges.some(
+      const didCommitMatch = targetPullRequest.commits.edges?.some(
         (commitEdge) => {
-          const { targetCommit } = commitEdge.node;
+          const targetCommit = commitEdge?.node?.targetCommit;
+
+          if (!targetCommit) {
+            return false;
+          }
 
           const matchingRepoName =
             sourceCommit.repository.name === targetPullRequest.repository.name;
@@ -173,20 +174,13 @@ function getCreatedTargetPullRequests(
     });
 }
 
-// narrow TimelineEdge to TimelinePullRequestEdge
-function filterPullRequests(
-  item: TimelineEdge,
-): item is TimelinePullRequestEdge {
-  const { targetPullRequest } = item.node;
-  return targetPullRequest.__typename === 'PullRequest';
-}
-
 function getTargetBranchesFromLabels(
   sourcePullRequest: SourcePullRequestNode,
   branchLabelMapping: NonNullable<ValidConfigOptions['branchLabelMapping']>,
 ): TargetBranchWithLabel[] {
-  const targetBranchesFromLabels = sourcePullRequest.labels.nodes
-    .map((label) => label.name)
+  const targetBranchesFromLabels = sourcePullRequest.labels?.nodes
+    ?.map((label) => label?.name)
+    .filter(filterNil)
     .map((label) => {
       const res = getTargetBranchFromLabel({ branchLabelMapping, label });
       if (res) {

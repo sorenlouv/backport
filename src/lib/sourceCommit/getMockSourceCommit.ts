@@ -1,4 +1,8 @@
-import { SourceCommitWithTargetPullRequest } from './parseSourceCommit';
+import {
+  PullRequestState,
+  RemoteConfigHistoryFragmentFragment,
+  SourceCommitWithTargetPullRequestFragmentFragment,
+} from '../../graphql/generated/graphql';
 
 export function getMockSourceCommit({
   sourceCommit,
@@ -21,7 +25,7 @@ export function getMockSourceCommit({
     sourceBranch?: string;
   } | null;
   timelineItems?: Array<{
-    state: 'OPEN' | 'CLOSED' | 'MERGED';
+    state: PullRequestState;
     targetBranch: string;
     title?: string;
     number: number;
@@ -29,13 +33,14 @@ export function getMockSourceCommit({
     repoName?: string;
     repoOwner?: string;
   }>;
-}): SourceCommitWithTargetPullRequest {
+}): SourceCommitWithTargetPullRequestFragmentFragment {
   const defaultTargetPullRequestTitle =
     'DO NOT USE: Please specify a title in test!!!';
 
   const defaultSourceCommitSha = 'DO NOT USE: please specify a sha in test!!!';
 
-  const baseMockCommit: SourceCommitWithTargetPullRequest = {
+  const baseMockCommit: SourceCommitWithTargetPullRequestFragmentFragment = {
+    __typename: 'Commit',
     author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
     repository: {
       name: 'kibana',
@@ -51,25 +56,28 @@ export function getMockSourceCommit({
     return baseMockCommit;
   }
 
-  const remoteConfigHistory = sourceCommit.remoteConfig
-    ? {
-        edges: [
-          {
-            remoteConfig: {
-              committedDate: sourceCommit.remoteConfig.committedDate,
-              file: {
-                object: {
-                  text: JSON.stringify({
-                    branchLabelMapping:
-                      sourceCommit.remoteConfig.branchLabelMapping,
-                  }),
+  const remoteConfigHistory: RemoteConfigHistoryFragmentFragment['remoteConfigHistory'] =
+    sourceCommit.remoteConfig
+      ? {
+          edges: [
+            {
+              remoteConfig: {
+                committedDate: sourceCommit.remoteConfig.committedDate,
+                file: {
+                  __typename: 'TreeEntry',
+                  object: {
+                    __typename: 'Blob',
+                    text: JSON.stringify({
+                      branchLabelMapping:
+                        sourceCommit.remoteConfig.branchLabelMapping,
+                    }),
+                  },
                 },
               },
             },
-          },
-        ],
-      }
-    : { edges: [] };
+          ],
+        }
+      : { edges: [] };
 
   return {
     ...baseMockCommit,
@@ -78,6 +86,7 @@ export function getMockSourceCommit({
         {
           node: {
             mergeCommit: {
+              __typename: 'Commit',
               remoteConfigHistory,
               sha: sourceCommit.sha ?? defaultSourceCommitSha,
               message: sourceCommit.message,
@@ -96,7 +105,9 @@ export function getMockSourceCommit({
             timelineItems: {
               edges: timelineItems.map((timelineItem) => {
                 return {
+                  __typename: 'PullRequestTimelineItemsEdge',
                   node: {
+                    __typename: 'CrossReferencedEvent',
                     targetPullRequest: {
                       __typename: 'PullRequest',
                       url: `https://github.com/elastic/kibana/pull/${timelineItem.number}`,

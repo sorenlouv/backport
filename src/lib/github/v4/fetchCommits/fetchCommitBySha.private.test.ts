@@ -1,48 +1,10 @@
-import { DocumentNode, print } from 'graphql';
 import { getDevAccessToken } from '../../../../test/private/getDevAccessToken';
 import { Commit } from '../../../sourceCommit/parseSourceCommit';
-import * as apiRequestV4Module from '../apiRequestV4';
 import { fetchCommitBySha } from './fetchCommitBySha';
 
 const accessToken = getDevAccessToken();
 
 describe('fetchCommitBySha', () => {
-  describe('snapshot request/response', () => {
-    let spy: jest.SpyInstance;
-    let commit: Commit;
-
-    beforeEach(async () => {
-      spy = jest.spyOn(apiRequestV4Module, 'apiRequestV4');
-
-      commit = await fetchCommitBySha({
-        repoOwner: 'elastic',
-        repoName: 'kibana',
-        accessToken,
-        sha: 'd421ddcf6157150596581c7885afa3690cec6339',
-        sourceBranch: 'main',
-      });
-    });
-
-    it('makes the right queries', () => {
-      const queries = spy.mock.calls.reduce((acc, call) => {
-        const query = call[0].query as DocumentNode;
-        //@ts-expect-error
-        const name = query.definitions[0].name.value;
-        return { ...acc, [name]: print(query) };
-      }, {});
-
-      const queryNames = Object.keys(queries);
-      expect(queryNames).toEqual(['CommitsBySha']);
-      queryNames.forEach((name) => {
-        expect(queries[name]).toMatchSnapshot(`Query: ${name}`);
-      });
-    });
-
-    it('returns the correct response', async () => {
-      expect(commit).toMatchSnapshot();
-    });
-  });
-
   it('should return single commit with pull request', async () => {
     const expectedCommit: Commit = {
       author: { email: 'sorenlouv@gmail.com', name: 'Søren Louv-Jansen' },

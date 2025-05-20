@@ -1,9 +1,9 @@
-import gql from 'graphql-tag';
+import { graphql } from '../../../../graphql/generated';
 import { ValidConfigOptions } from '../../../../options/options';
 import { BackportError } from '../../../BackportError';
-import { swallowMissingConfigFileException } from '../../../remoteConfig';
+import { isMissingConfigFileException } from '../../../remoteConfig';
 import { Commit } from '../../../sourceCommit/parseSourceCommit';
-import { apiRequestV4 } from '../apiRequestV4';
+import { GithubV4Exception, getGraphQLClient } from '../client/graphqlClient';
 import { fetchCommitBySha } from './fetchCommitBySha';
 import { fetchCommitsForRebaseAndMergeStrategy } from './fetchCommitsForRebaseAndMergeStrategy';
 
@@ -24,7 +24,7 @@ export async function fetchCommitsByPullNumber(options: {
     repoOwner,
   } = options;
 
-  const query = gql`
+  const query = graphql(`
     query CommitByPullNumber(
       $repoOwner: String!
       $repoName: String!
@@ -61,26 +61,19 @@ export async function fetchCommitsByPullNumber(options: {
         }
       }
     }
-  `;
+  `);
 
-  let data: CommitByPullNumberResponse;
-  try {
-    const res = await apiRequestV4<CommitByPullNumberResponse>({
-      githubApiBaseUrlV4,
-      accessToken,
-      query,
-      variables: {
-        repoOwner,
-        repoName,
-        pullNumber,
-      },
-    });
-    data = res.data.data;
-  } catch (e) {
-    data = swallowMissingConfigFileException<CommitByPullNumberResponse>(e);
+  const variables = { repoOwner, repoName, pullNumber };
+  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
+  const result = await client.query(query, variables);
+
+  if (result.error && !isMissingConfigFileException(result)) {
+    throw new GithubV4Exception(result);
   }
 
-  const pullRequestNode = data.repository.pullRequest;
+  const { data } = result;
+
+  const pullRequestNode = data?.repository?.pullRequest;
   if (!pullRequestNode) {
     throw new BackportError(`The PR #${pullNumber} does not exist`);
   }
@@ -90,14 +83,15 @@ export async function fetchCommitsByPullNumber(options: {
     throw new BackportError(`The PR #${pullNumber} is not merged`);
   }
 
-  const lastCommitInPullRequest = pullRequestNode.commits.edges[0].node.commit;
-  const firstCommitInBaseBranch = mergeCommit.history.edges[0].node;
+  const lastCommitInPullRequest =
+    pullRequestNode.commits.edges?.[0]?.node?.commit;
+  const firstCommitInBaseBranch = mergeCommit?.history.edges?.[0]?.node;
   const isRebaseAndMergeStrategy =
     pullRequestNode.commits.totalCount > 0 &&
-    mergeCommit.history.edges.every(
-      (c) => c.node.committedDate === mergeCommit.committedDate,
+    mergeCommit?.history.edges?.every(
+      (c) => c?.node?.committedDate === mergeCommit.committedDate,
     ) &&
-    lastCommitInPullRequest.message === firstCommitInBaseBranch.message;
+    lastCommitInPullRequest?.message === firstCommitInBaseBranch?.message;
 
   if (isRebaseAndMergeStrategy) {
     const commits = await fetchCommitsForRebaseAndMergeStrategy(
@@ -109,30 +103,6 @@ export async function fetchCommitsByPullNumber(options: {
     }
   }
 
-  const commit = await fetchCommitBySha({ ...options, sha: mergeCommit.oid });
+  const commit = await fetchCommitBySha({ ...options, sha: mergeCommit?.oid });
   return [commit];
-}
-
-interface CommitByPullNumberResponse {
-  repository: {
-    pullRequest: {
-      commits: {
-        totalCount: number;
-        edges: { node: { commit: { message: string } } }[];
-      };
-
-      mergeCommit: {
-        oid: string;
-        committedDate: string;
-        history: {
-          edges: {
-            node: {
-              message: string;
-              committedDate: string;
-            };
-          }[];
-        };
-      } | null;
-    } | null;
-  };
 }
