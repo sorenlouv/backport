@@ -32,7 +32,7 @@ describe('CLI “backport” binary', () => {
     expect(result.stdout.trim()).toBe(pkg.version);
   });
 
-  it('prints help/usage when run without args', () => {
+  it('list commits', () => {
     const result = spawnSync(
       'node',
       [binPath, '--repo', 'elastic/kibana', `--accessToken`, accessToken],
@@ -41,12 +41,20 @@ describe('CLI “backport” binary', () => {
       },
     );
 
-    // eslint-disable-next-line no-console
-    console.log(result.stdout);
-
     const strippedStdout = stripAnsi(result.stdout);
     expect(result.status).toBe(0);
     expect(strippedStdout).toContain('repo: elastic/kibana');
     expect(strippedStdout).toContain('Select commit');
+  });
+
+  it('displays help section', () => {
+    const result = spawnSync('node', [binPath, '--help'], {
+      encoding: 'utf8',
+    });
+
+    const strippedStdout = stripAnsi(result.stdout);
+    expect(result.status).toBe(0);
+    expect(strippedStdout).toContain('backport [args]');
+    expect(strippedStdout).toContain('-v, --version');
   });
 });
