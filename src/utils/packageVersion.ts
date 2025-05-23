@@ -1,2 +1,4 @@
 import pkg from '../../package.json';
-export const PACKAGE_VERSION = pkg.version;
+export function getPackageVersion() {
+  return pkg.version;
+}

@@ -1,6 +1,6 @@
 import Handlebars from 'handlebars';
 import { ValidConfigOptions } from '../../../../options/options';
-import { PACKAGE_VERSION } from '../../../../utils/packageVersion';
+import { getPackageVersion } from '../../../../utils/packageVersion';
 import { getSourceBranchFromCommits } from '../../../getSourceBranchFromCommits';
 import { logger } from '../../../logger';
 import { Commit } from '../../../sourceCommit/parseSourceCommit';
@@ -64,7 +64,7 @@ export function getPullRequestBody({
     .replaceAll('{{targetBranch}}', targetBranch)
 
     // replace package version
-    .replaceAll('{{PACKAGE_VERSION}}', PACKAGE_VERSION);
+    .replaceAll('{{PACKAGE_VERSION}}', getPackageVersion());
 
   try {
     const template = Handlebars.compile(prDescription, { noEscape: true });

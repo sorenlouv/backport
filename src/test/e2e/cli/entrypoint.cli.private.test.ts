@@ -1,4 +1,4 @@
-import * as packageVersion from '../../../utils/packageVersion';
+import * as packageVersionModule from '../../../utils/packageVersion';
 import { exec } from '../../childProcessHelper';
 import { getDevAccessToken } from '../../private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
@@ -25,7 +25,7 @@ describe('entrypoint cli', () => {
 
   it('PACKAGE_VERSION should match', async () => {
     // @ts-expect-error
-    expect(packageVersion.UNMOCKED_PACKAGE_VERSION).toBe(
+    expect(packageVersionModule.UNMOCKED_PACKAGE_VERSION).toBe(
       process.env.npm_package_version,
     );
   });

@@ -2,7 +2,7 @@ import { Octokit } from '@octokit/rest';
 import apm from 'elastic-apm-node';
 import { BackportResponse } from '../../../backportRun';
 import { ValidConfigOptions } from '../../../options/options';
-import { PACKAGE_VERSION } from '../../../utils/packageVersion';
+import { getPackageVersion } from '../../../utils/packageVersion';
 import { BackportError } from '../../BackportError';
 import { logger, redactAccessToken } from '../../logger';
 import { getFirstLine } from '../commitFormatters';
@@ -111,7 +111,7 @@ export function getCommentBody({
     return;
   }
 
-  const packageVersionSection = `\n<!--- Backport version: ${PACKAGE_VERSION} -->`;
+  const packageVersionSection = `\n<!--- Backport version: ${getPackageVersion()} -->`;
   const manualBackportCommand = `\n### Manual backport\nTo create the backport manually run:\n\`\`\`\n${options.backportBinary} --pr ${pullNumber}\n\`\`\`\n`;
 
   const linkToGithubActionLogs = options.githubActionRunId
