@@ -3,6 +3,9 @@ import fs from 'fs';
 import path from 'path';
 import stripAnsi from 'strip-ansi';
 import pkg from '../../../../package.json';
+import { getDevAccessToken } from '../../private/getDevAccessToken';
+
+const accessToken = getDevAccessToken();
 
 describe('CLI “backport” binary', () => {
   const binPath = path.resolve(__dirname, '../../../../bin/backport');
@@ -30,9 +33,13 @@ describe('CLI “backport” binary', () => {
   });
 
   it('prints help/usage when run without args', () => {
-    const result = spawnSync('node', [binPath, '--repo', 'elastic/kibana'], {
-      encoding: 'utf8',
-    });
+    const result = spawnSync(
+      'node',
+      [binPath, '--repo', 'elastic/kibana', `--accessToken`, accessToken],
+      {
+        encoding: 'utf8',
+      },
+    );
 
     // eslint-disable-next-line no-console
     console.log(result.stdout);
