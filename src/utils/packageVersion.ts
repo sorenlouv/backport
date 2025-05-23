@@ -1,1 +1,4 @@
-export const PACKAGE_VERSION = '10.0.0';
+import pkg from '../../package.json';
+export function getPackageVersion() {
+  return pkg.version;
+}
