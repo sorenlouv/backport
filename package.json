@@ -15,18 +15,16 @@
     "branching"
   ],
   "version": "10.0.0",
-  "main": "./dist/entrypoint.api.js",
-  "types": "dist/entrypoint.api.d.ts",
+  "main": "./dist/src/entrypoint.api.js",
+  "types": "dist/src/entrypoint.api.d.ts",
   "bin": {
     "backport": "./bin/backport"
   },
   "license": "Apache-2.0",
   "scripts": {
-    "postinstall": "test -f ./dist/scripts/runPostinstall.js && node ./dist/scripts/runPostinstall.js || echo 'Dist folder missing'",
-    "version": "echo \"Bumping version\" && yarn extractPackageVersion && git add src/utils/packageVersion.ts && yarn build",
+    "postinstall": "test -f ./dist/src/scripts/runPostinstall.js && node ./dist/src/scripts/runPostinstall.js || echo 'Dist folder missing'",
     "prepare": "husky install",
     "prepublishOnly": "rm -rf ./dist/ && yarn && yarn lint && yarn build",
-    "extractPackageVersion": "node -p \"'export const PACKAGE_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" | prettier --parser typescript > src/utils/packageVersion.ts",
     "lint-and-test": "yarn lint && yarn test-all",
     "lint": "tsc --noEmit --incremental && eslint './**/*.{ts,js}' --fix",
     "start": "NODE_ENV=development ts-node --transpile-only ./src/entrypoint.cli.ts",

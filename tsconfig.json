@@ -28,6 +28,7 @@
     "noUnusedLocals": true,
     "esModuleInterop": true,
     "useUnknownInCatchVariables": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "resolveJsonModule": true,
   }
 }
