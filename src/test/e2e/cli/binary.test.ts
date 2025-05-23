@@ -34,6 +34,9 @@ describe('CLI “backport” binary', () => {
       encoding: 'utf8',
     });
 
+    // eslint-disable-next-line no-console
+    console.log(result.stdout);
+
     const strippedStdout = stripAnsi(result.stdout);
     expect(result.status).toBe(0);
     expect(strippedStdout).toContain('repo: elastic/kibana');
