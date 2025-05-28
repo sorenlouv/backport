@@ -392,7 +392,13 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
     .option('copySourcePRReviewers', {
       description: 'Copy reviewers from the source PR to the target PR',
       alias: ['copySourcePrReviewers', 'addOriginalReviewers'],
-      type: 'boolean',
+      type: 'string',
+      coerce: (val: string) => {
+        if (val === 'true' || val === '') return true;
+        if (val === 'false') return false;
+
+        return val.split(',').map((s) => s.trim());
+      },
     })
 
     .option('targetBranch', {
