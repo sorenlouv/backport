@@ -25,7 +25,14 @@ describe('getInvalidAccessTokenMessage', () => {
           'x-github-sso': 'required; url=https://ssourl.com',
         }),
         error: {
-          graphQLErrors: [{ originalError: { type: 'FORBIDDEN' } }],
+          graphQLErrors: [
+            {
+              type: 'FORBIDDEN',
+              extensions: { saml_failure: true },
+              message:
+                'Resource protected by organization SAML enforcement. You must grant your Personal Access token access to this organization.',
+            },
+          ],
         },
       } as unknown as OperationResultWithMeta;
 

@@ -1,6 +1,9 @@
 import { graphql } from '../graphql/generated';
 import { parseConfigFile } from '../options/config/readConfigFile';
-import { OperationResultWithMeta } from './github/v4/client/graphqlClient';
+import {
+  GitHubGraphQLError,
+  OperationResultWithMeta,
+} from './github/v4/client/graphqlClient';
 import { logger } from './logger';
 
 export const RemoteConfigHistoryFragment = graphql(`
@@ -39,16 +42,14 @@ export function isMissingConfigFileException(
   result: OperationResultWithMeta<unknown>,
 ): boolean {
   const data = result.data;
-  const errors = result.error?.graphQLErrors;
+  const errors = (result.error?.graphQLErrors ?? []) as GitHubGraphQLError[];
 
-  const isMissingConfigError =
-    errors?.some((error) => {
-      return (
-        error.path?.includes('remoteConfig') &&
-        // @ts-expect-error
-        error.originalError?.type === 'NOT_FOUND'
-      );
-    }) ?? false;
+  const isMissingConfigError = errors.some((error) => {
+    return (
+      error.path?.includes('remoteConfig') &&
+      error.originalError?.type === 'NOT_FOUND'
+    );
+  });
 
   const isMissingConfigFileException = isMissingConfigError && data != null;
   return isMissingConfigFileException;
