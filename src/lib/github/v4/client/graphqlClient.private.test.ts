@@ -1,6 +1,10 @@
 import { graphql } from '../../../../graphql/generated';
 import { getDevAccessToken } from '../../../../test/private/getDevAccessToken';
-import { OperationResultWithMeta, getGraphQLClient } from './graphqlClient';
+import {
+  GitHubGraphQLError,
+  OperationResultWithMeta,
+  getGraphQLClient,
+} from './graphqlClient';
 
 const getViewerQuery = graphql(`
   query GetViewer {
@@ -84,10 +88,10 @@ describe('graphqlClient', () => {
     });
 
     it('includes error type', async () => {
-      //@ts-expect-error
-      expect(result.error?.graphQLErrors[0].originalError.type).toBe(
-        'NOT_FOUND',
-      );
+      expect(
+        (result.error?.graphQLErrors[0] as GitHubGraphQLError).originalError
+          ?.type,
+      ).toBe('NOT_FOUND');
     });
 
     it('includes graphql errors', async () => {

@@ -1,6 +1,17 @@
+import { GraphQLError } from '@0no-co/graphql.web';
 import { fetchExchange, Client, OperationResult } from '@urql/core';
 import type { ValidConfigOptions } from '../../../../options/options';
 import { responseMetaInterceptorExchange } from './responseMetaInterceptorExchange';
+
+export interface GitHubGraphQLError extends GraphQLError {
+  type?: 'FORBIDDEN';
+  extensions: { saml_failure?: boolean };
+  originalError:
+    | ({
+        type?: 'NOT_FOUND';
+      } & GraphQLError['originalError'])
+    | undefined;
+}
 
 export interface OperationResultWithMeta<Data = any>
   extends OperationResult<Data> {

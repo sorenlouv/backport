@@ -2,7 +2,10 @@ import { isEmpty, difference } from 'lodash';
 import { maybe } from '../../../utils/maybe';
 import { getGlobalConfigPath } from '../../env';
 import { logger } from '../../logger';
-import { OperationResultWithMeta } from './client/graphqlClient';
+import {
+  GitHubGraphQLError,
+  OperationResultWithMeta,
+} from './client/graphqlClient';
 
 export function getInvalidAccessTokenMessage({
   result,
@@ -22,13 +25,16 @@ export function getInvalidAccessTokenMessage({
     }
   }
 
-  const { statusCode, error } = result;
+  const { statusCode } = result;
+
+  const graphQLErrors = (result.error?.graphQLErrors ??
+    []) as GitHubGraphQLError[];
+
   switch (statusCode) {
     case 200: {
-      const repoNotFound = error?.graphQLErrors.some(
+      const repoNotFound = graphQLErrors.some(
         ({ originalError, path }) =>
-          //@ts-expect-error
-          originalError.type === 'NOT_FOUND' &&
+          originalError?.type === 'NOT_FOUND' &&
           path?.join('.') === 'repository',
       );
 
@@ -51,9 +57,8 @@ export function getInvalidAccessTokenMessage({
         return `The repository "${repoOwner}/${repoName}" doesn't exist`;
       }
 
-      const repoAccessForbidden = result.error?.graphQLErrors.some(
-        // @ts-expect-error
-        ({ originalError }) => originalError.type === 'FORBIDDEN',
+      const repoAccessForbidden = graphQLErrors.some(
+        ({ extensions }) => extensions.saml_failure === true,
       );
 
       const ssoAuthUrl = getSSOAuthUrl(ssoHeader);
