@@ -390,7 +390,7 @@ describe('git.private', () => {
           ['cherry-pick', '3a0934d1f646e4a50571cb4b137ad2b08d2e7b18'],
           cwd,
         );
-      } catch (e) {
+      } catch {
         // swallow
       }
 

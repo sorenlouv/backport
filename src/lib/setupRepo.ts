@@ -1,4 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 import del = require('del');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 import apm = require('elastic-apm-node');
 import { ValidConfigOptions } from '../options/options';
 import { BackportError } from './BackportError';

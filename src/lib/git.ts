@@ -93,6 +93,7 @@ export async function getLocalConfigFileCommitDate({ cwd }: { cwd: string }) {
       return timestamp;
     }
   } catch (e) {
+    logger.debug(`Could not retrieve commit date for .backportrc.json: ${e}`);
     return;
   }
 }
@@ -108,6 +109,7 @@ export async function isLocalConfigFileUntracked({ cwd }: { cwd: string }) {
 
     return !!stdout;
   } catch (e) {
+    logger.debug(`Could not check if .backportrc.json is untracked: ${e}`);
     return;
   }
 }
@@ -122,6 +124,7 @@ export async function isLocalConfigFileModified({ cwd }: { cwd: string }) {
 
     return !!stdout;
   } catch (e) {
+    logger.debug(`Could not check if .backportrc.json is modified: ${e}`);
     return false;
   }
 }
@@ -144,6 +147,7 @@ export async function getRepoInfoFromGitRemotes({ cwd }: { cwd: string }) {
       return { repoOwner, repoName };
     });
   } catch (e) {
+    logger.debug(`An error occurred while retrieving git remotes: ${e}`);
     return [];
   }
 }
@@ -220,7 +224,7 @@ export async function addRemote(
       cwd,
     );
   } catch (e) {
-    // note: swallowing error
+    logger.debug(`Could not add remote "${remoteName}": ${e}`);
     return;
   }
 }
@@ -538,7 +542,9 @@ export async function createBackportBranch({
     try {
       await spawnPromise('git', ['branch', '-D', tmpBranchName], cwd);
     } catch (e) {
-      // swallow error
+      logger.debug(
+        `Could not delete temporary branch "${tmpBranchName}": ${e}`,
+      );
     }
 
     // fetch commits for source branch

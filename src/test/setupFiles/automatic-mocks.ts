@@ -9,14 +9,11 @@ import * as packageVersionModule from '../../utils/packageVersion';
 
 disableApm();
 
-/* eslint-disable @typescript-eslint/no-empty-function */
-
 jest.mock('find-up', () => {
   return jest.fn(async () => '/path/to/project/config');
 });
 
 // @ts-expect-error
-// eslint-disable-next-line no-import-assign
 packageVersionModule.UNMOCKED_PACKAGE_VERSION =
   packageVersionModule.getPackageVersion();
 
