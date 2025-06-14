@@ -1,6 +1,6 @@
 import os from 'os';
 import * as logger from '../lib/logger';
-import * as globalConfig from '../options/config/globalConfig';
+import * as globalConfig from '../options/config/global-config';
 import { postinstall } from './postinstall';
 
 describe('postinstall', () => {

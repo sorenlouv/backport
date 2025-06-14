@@ -1,5 +1,5 @@
-import { getDevAccessToken } from '../../private/getDevAccessToken';
-import { runBackportViaCli } from './runBackportViaCli';
+import { getDevAccessToken } from '../../private/get-dev-access-token';
+import { runBackportViaCli } from './run-backport-via-cli';
 
 const accessToken = getDevAccessToken();
 jest.setTimeout(15_000);

@@ -4,8 +4,8 @@
  */
 
 import { disableApm } from '../../lib/apm';
-import { registerHandlebarsHelpers } from '../../lib/registerHandlebarsHelpers';
-import * as packageVersionModule from '../../utils/packageVersion';
+import { registerHandlebarsHelpers } from '../../lib/register-handlebars-helpers';
+import * as packageVersionModule from '../../utils/package-version';
 
 disableApm();
 

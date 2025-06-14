@@ -2,19 +2,19 @@ import path, { resolve as pathResolve } from 'path';
 import { uniq, isEmpty } from 'lodash';
 import { ora } from '../lib/ora';
 import type { ValidConfigOptions } from '../options/options';
-import { filterNil } from '../utils/filterEmpty';
-import { BackportError } from './BackportError';
+import { filterNil } from '../utils/filter-empty';
 import type { CommitAuthor } from './author';
+import { BackportError } from './backport-error';
 import {
   spawnPromise,
   SpawnError,
   spawnStream,
 } from './child-process-promisified';
 import { getRepoPath } from './env';
-import { getShortSha } from './github/commitFormatters';
+import { getShortSha } from './github/commit-formatters';
 import { logger } from './logger';
-import type { TargetPullRequest } from './sourceCommit/getPullRequestStates';
-import type { Commit } from './sourceCommit/parseSourceCommit';
+import type { TargetPullRequest } from './sourceCommit/get-pull-request-states';
+import type { Commit } from './sourceCommit/parse-source-commit';
 
 export function getRemoteUrl(
   { repoName, accessToken, gitHostname = 'github.com' }: ValidConfigOptions,
