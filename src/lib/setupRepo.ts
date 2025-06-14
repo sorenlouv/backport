@@ -46,7 +46,15 @@ export async function setupRepo(options: ValidConfigOptions) {
 
       const cloneRepoSpan = apm.startSpan('Get target branches');
       await cloneRepo(
-        { sourcePath, targetPath: repoPath },
+        {
+          sourcePath,
+          targetPath: repoPath,
+          shallow: typeof options.shallow === 'number' && options.shallow > 0,
+          depth:
+            typeof options.shallow === 'number' && options.shallow > 0
+              ? options.shallow
+              : 50,
+        },
         (progress: number) => {
           spinner.text = `${progress}% ${spinnerCloneText}`;
         },

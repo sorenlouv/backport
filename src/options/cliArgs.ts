@@ -426,6 +426,19 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       type: 'boolean',
     })
 
+    .option('shallow', {
+      description:
+        'Use shallow clone to speed up repository setup (optionally specify depth, default: 50)',
+      type: 'number',
+      default: false,
+      coerce: (value) => {
+        // Handle --shallow (boolean) or --shallow=30 (number)
+        if (value === true) return 50; // Default depth
+        if (value === false) return false;
+        return value; // Return the user-specified depth
+      },
+    })
+
     .alias('version', 'v')
     .help()
     .exitProcess(!processArgs.includes('--noExitProcess'))
