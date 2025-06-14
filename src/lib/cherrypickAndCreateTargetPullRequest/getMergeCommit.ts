@@ -1,5 +1,5 @@
-import { Commit } from '../../entrypoint.api';
-import { ValidConfigOptions } from '../../options/options';
+import type { Commit } from '../../entrypoint.api';
+import type { ValidConfigOptions } from '../../options/options';
 import { getIsMergeCommit, getShasInMergeCommit } from '../git';
 import { fetchCommitBySha } from '../github/v4/fetchCommits/fetchCommitBySha';
 

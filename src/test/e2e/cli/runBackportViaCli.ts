@@ -1,4 +1,5 @@
-import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
+import type { ChildProcessWithoutNullStreams } from 'child_process';
+import { spawn } from 'child_process';
 import path from 'path';
 import { debounce } from 'lodash';
 import stripAnsi from 'strip-ansi';
@@ -17,7 +18,7 @@ type RunBackportOptions = {
   keepAlive?: boolean;
 };
 
-export function runBackportViaCli(
+export async function runBackportViaCli(
   backportArgs: string[],
   runBackportOptions: RunBackportOptions = {},
 ) {
@@ -27,7 +28,7 @@ export function runBackportViaCli(
     filename: __filename,
     specname: randomString,
   });
-  resetSandbox(sandboxPath);
+  await resetSandbox(sandboxPath);
 
   const cmdArgs = [
     '--transpile-only',

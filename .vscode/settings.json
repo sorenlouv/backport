@@ -13,7 +13,8 @@
     "github-schema.graphql": true,
     "LICENSE.txt": true
   },
-  "editor.formatOnSave": false,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
@@ -21,5 +22,5 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "files.associations": {
     "*.yaml": "home-assistant"
-  },
+  }
 }

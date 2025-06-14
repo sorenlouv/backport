@@ -1,8 +1,8 @@
 import stripAnsi from 'strip-ansi';
-import { ValidConfigOptions } from '../../options/options';
+import type { ValidConfigOptions } from '../../options/options';
 import * as git from '../git';
 import * as fetchCommitsByAuthorModule from '../github/v4/fetchCommits/fetchCommitsByAuthor';
-import { TargetPullRequest } from '../sourceCommit/getPullRequestStates';
+import type { TargetPullRequest } from '../sourceCommit/getPullRequestStates';
 import { getCommitsWithoutBackports } from './getCommitsWithoutBackports';
 
 describe('getCommitsWithoutBackports', () => {

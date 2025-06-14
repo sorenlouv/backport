@@ -1,4 +1,4 @@
-import winston from 'winston';
+import type winston from 'winston';
 
 export interface TargetBranchChoice {
   name: string;

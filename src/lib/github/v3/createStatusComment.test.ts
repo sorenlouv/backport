@@ -1,9 +1,9 @@
 import nock from 'nock';
-import {
+import type {
   BackportResponse,
   BackportSuccessResponse,
 } from '../../../backportRun';
-import { ValidConfigOptions } from '../../../options/options';
+import type { ValidConfigOptions } from '../../../options/options';
 import { BackportError } from '../../BackportError';
 import { setAccessToken } from '../../logger';
 import { createStatusComment, getCommentBody } from './createStatusComment';

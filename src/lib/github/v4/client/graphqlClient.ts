@@ -1,5 +1,6 @@
-import { GraphQLError } from '@0no-co/graphql.web';
-import { fetchExchange, Client, OperationResult } from '@urql/core';
+import type { GraphQLError } from '@0no-co/graphql.web';
+import type { OperationResult } from '@urql/core';
+import { fetchExchange, Client } from '@urql/core';
 import type { ValidConfigOptions } from '../../../../options/options';
 import { responseMetaInterceptorExchange } from './responseMetaInterceptorExchange';
 

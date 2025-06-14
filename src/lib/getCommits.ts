@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { ValidConfigOptions } from '../options/options';
+import type { ValidConfigOptions } from '../options/options';
 import { BackportError } from './BackportError';
 import { getFirstLine, getShortSha } from './github/commitFormatters';
 import { fetchCommitsByPullNumber } from './github/v4/fetchCommits/fetchCommitByPullNumber';

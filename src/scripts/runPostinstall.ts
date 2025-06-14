@@ -1,3 +1,3 @@
 import { postinstall } from './postinstall';
 
-postinstall();
+void postinstall();

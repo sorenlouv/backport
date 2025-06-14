@@ -1,7 +1,7 @@
 import yargs from 'yargs';
 import yargsParser from 'yargs-parser';
 import { excludeUndefined } from '../utils/excludeUndefined';
-import { ConfigFileOptions } from './ConfigOptions';
+import type { ConfigFileOptions } from './ConfigOptions';
 import { defaultConfigOptions } from './options';
 
 export type OptionsFromCliArgs = ReturnType<typeof getOptionsFromCliArgs>;
@@ -436,7 +436,6 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
     // don't kill process upon error
     // and don't log error to console
     .fail((msg, err) => {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (err) {
         throw err;
       }

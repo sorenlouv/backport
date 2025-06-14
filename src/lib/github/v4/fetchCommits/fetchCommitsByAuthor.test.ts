@@ -1,12 +1,12 @@
 import nock from 'nock';
-import {
+import type {
   AuthorIdQuery,
   AuthorIdQueryVariables,
   CommitsByAuthorQuery,
   CommitsByAuthorQueryVariables,
 } from '../../../../graphql/generated/graphql';
 import { mockUrqlRequest } from '../../../../test/nockHelpers';
-import { Commit } from '../../../sourceCommit/parseSourceCommit';
+import type { Commit } from '../../../sourceCommit/parseSourceCommit';
 import { commitsByAuthorMock } from '../mocks/commitsByAuthorMock';
 import { fetchCommitsByAuthor } from './fetchCommitsByAuthor';
 

@@ -1,7 +1,7 @@
 import { Octokit } from '@octokit/rest';
 import apm from 'elastic-apm-node';
-import { BackportResponse } from '../../../backportRun';
-import { ValidConfigOptions } from '../../../options/options';
+import type { BackportResponse } from '../../../backportRun';
+import type { ValidConfigOptions } from '../../../options/options';
 import { getPackageVersion } from '../../../utils/packageVersion';
 import { BackportError } from '../../BackportError';
 import { logger, redactAccessToken } from '../../logger';

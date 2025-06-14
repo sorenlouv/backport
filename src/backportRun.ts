@@ -1,5 +1,6 @@
 import chalk from 'chalk';
-import apm, { Transaction } from 'elastic-apm-node';
+import type { Transaction } from 'elastic-apm-node';
+import apm from 'elastic-apm-node';
 import { BackportError } from './lib/BackportError';
 import { disableApm } from './lib/apm';
 import { getLogfilePath } from './lib/env';
@@ -10,20 +11,15 @@ import { GithubV4Exception } from './lib/github/v4/client/graphqlClient';
 import { consoleLog, initLogger } from './lib/logger';
 import { ora } from './lib/ora';
 import { registerHandlebarsHelpers } from './lib/registerHandlebarsHelpers';
-import { runSequentially, Result } from './lib/runSequentially';
+import type { Result } from './lib/runSequentially';
+import { runSequentially } from './lib/runSequentially';
 import { setupRepo } from './lib/setupRepo';
-import { Commit } from './lib/sourceCommit/parseSourceCommit';
-import { ConfigFileOptions } from './options/ConfigOptions';
-import {
-  getRuntimeArguments,
-  getOptionsFromCliArgs,
-  OptionsFromCliArgs,
-} from './options/cliArgs';
-import {
-  getActiveOptionsFormatted,
-  getOptions,
-  ValidConfigOptions,
-} from './options/options';
+import type { Commit } from './lib/sourceCommit/parseSourceCommit';
+import type { ConfigFileOptions } from './options/ConfigOptions';
+import type { OptionsFromCliArgs } from './options/cliArgs';
+import { getRuntimeArguments, getOptionsFromCliArgs } from './options/cliArgs';
+import type { ValidConfigOptions } from './options/options';
+import { getActiveOptionsFormatted, getOptions } from './options/options';
 
 registerHandlebarsHelpers();
 
@@ -213,7 +209,7 @@ function outputError({
     // output
     consoleLog('\n');
     consoleLog(chalk.bold('⚠️  Ouch! An unhandled error occured 😿'));
-    consoleLog(e.stack ? e.stack : e.message);
+    consoleLog(e.stack ?? e.message);
     consoleLog(
       'Please open an issue in https://github.com/sorenlouv/backport/issues or contact me directly on https://twitter.com/sorenlouv',
     );

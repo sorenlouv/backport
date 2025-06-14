@@ -1,5 +1,5 @@
 import { graphql } from '../../../graphql/generated';
-import { ValidConfigOptions } from '../../../options/options';
+import type { ValidConfigOptions } from '../../../options/options';
 import { getGraphQLClient, GithubV4Exception } from './client/graphqlClient';
 import { fetchPullRequestId } from './fetchPullRequestId2';
 

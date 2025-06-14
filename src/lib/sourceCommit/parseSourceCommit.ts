@@ -1,13 +1,11 @@
 import { differenceBy } from 'lodash';
 import { graphql } from '../../graphql/generated';
-import { SourceCommitWithTargetPullRequestFragmentFragment } from '../../graphql/generated/graphql';
-import { ValidConfigOptions } from '../../options/options';
+import type { SourceCommitWithTargetPullRequestFragmentFragment } from '../../graphql/generated/graphql';
+import type { ValidConfigOptions } from '../../options/options';
 import { filterNil } from '../../utils/filterEmpty';
 import { parseRemoteConfigFile } from '../remoteConfig';
-import {
-  TargetPullRequest,
-  getPullRequestStates,
-} from './getPullRequestStates';
+import type { TargetPullRequest } from './getPullRequestStates';
+import { getPullRequestStates } from './getPullRequestStates';
 import { getSourcePullRequest } from './getSourcePullRequest';
 
 export interface Commit {

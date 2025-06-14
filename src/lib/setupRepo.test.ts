@@ -1,7 +1,7 @@
 import os from 'os';
 import del from 'del';
-import { ValidConfigOptions } from '../options/options';
-import { SpyHelper } from '../types/SpyHelper';
+import type { ValidConfigOptions } from '../options/options';
+import type { SpyHelper } from '../types/SpyHelper';
 import * as childProcess from './child-process-promisified';
 import * as gitModule from './git';
 import { oraNonInteractiveMode } from './ora';

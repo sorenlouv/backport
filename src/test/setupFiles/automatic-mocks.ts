@@ -9,8 +9,6 @@ import * as packageVersionModule from '../../utils/packageVersion';
 
 disableApm();
 
-/* eslint-disable @typescript-eslint/no-empty-function */
-
 jest.mock('find-up', () => {
   return jest.fn(async () => '/path/to/project/config');
 });

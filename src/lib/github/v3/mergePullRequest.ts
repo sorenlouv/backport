@@ -1,5 +1,5 @@
 import { Octokit } from '@octokit/rest';
-import { ValidConfigOptions } from '../../../options/options';
+import type { ValidConfigOptions } from '../../../options/options';
 import { logger } from '../../logger';
 
 export function mergePullRequest(

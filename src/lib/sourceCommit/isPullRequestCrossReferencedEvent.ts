@@ -1,4 +1,4 @@
-import { SourcePullRequestNode } from './getSourcePullRequest';
+import type { SourcePullRequestNode } from './getSourcePullRequest';
 
 type TimelineItemEdge = NonNullable<
   NonNullable<SourcePullRequestNode['timelineItems']['edges']>[number]

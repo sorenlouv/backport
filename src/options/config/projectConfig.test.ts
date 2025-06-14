@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import findUp from 'find-up';
-import { SpyHelper } from '../../types/SpyHelper';
+import type { SpyHelper } from '../../types/SpyHelper';
 import { getProjectConfig } from './projectConfig';
 
 describe('getProjectConfig', () => {

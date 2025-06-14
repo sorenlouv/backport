@@ -1,5 +1,5 @@
 import { Octokit } from '@octokit/rest';
-import { SuccessResult } from '../../../entrypoint.api';
+import type { SuccessResult } from '../../../entrypoint.api';
 import { getDevAccessToken } from '../../private/getDevAccessToken';
 import { runBackportViaCli } from './runBackportViaCli';
 

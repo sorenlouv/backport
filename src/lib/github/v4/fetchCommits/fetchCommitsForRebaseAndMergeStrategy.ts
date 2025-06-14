@@ -1,5 +1,5 @@
 import { first } from 'lodash';
-import { Commit } from '../../../../entrypoint.api';
+import type { Commit } from '../../../../entrypoint.api';
 import { graphql } from '../../../../graphql/generated';
 import { getGraphQLClient, GithubV4Exception } from '../client/graphqlClient';
 import { fetchCommitBySha } from './fetchCommitBySha';

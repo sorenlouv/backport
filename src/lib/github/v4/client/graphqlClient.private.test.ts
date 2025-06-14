@@ -1,10 +1,10 @@
 import { graphql } from '../../../../graphql/generated';
 import { getDevAccessToken } from '../../../../test/private/getDevAccessToken';
-import {
+import type {
   GitHubGraphQLError,
   OperationResultWithMeta,
-  getGraphQLClient,
 } from './graphqlClient';
+import { getGraphQLClient } from './graphqlClient';
 
 const getViewerQuery = graphql(`
   query GetViewer {

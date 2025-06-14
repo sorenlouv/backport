@@ -1,6 +1,6 @@
 import { Octokit } from '@octokit/rest';
 import apm from 'elastic-apm-node';
-import { ValidConfigOptions } from '../../../../options/options';
+import type { ValidConfigOptions } from '../../../../options/options';
 import { BackportError } from '../../../BackportError';
 import { logger } from '../../../logger';
 import { ora } from '../../../ora';
@@ -85,7 +85,7 @@ export async function createPullRequest({
 
     spinner.fail();
     throw new BackportError(
-      //@ts-expect-error
+      //@ts-expect-error: assume the error is GithubV3Error
       `Could not create pull request: ${getGithubV3ErrorMessage(e)}`,
     );
   }

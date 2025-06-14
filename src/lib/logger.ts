@@ -59,7 +59,6 @@ function fileTransport({
 // wrapper around console.log
 export function consoleLog(message: string) {
   if (_interactive) {
-    // eslint-disable-next-line no-console
     console.log(redactAccessToken(message));
   }
 }

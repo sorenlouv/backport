@@ -1,4 +1,5 @@
-import { getCommits, backportRun, Commit } from '../entrypoint.api';
+import type { Commit } from '../entrypoint.api';
+import { getCommits, backportRun } from '../entrypoint.api';
 import { getDevAccessToken } from './private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from './sandbox';
 

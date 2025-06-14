@@ -1,5 +1,6 @@
 import { Octokit } from '@octokit/rest';
-import { BackportResponse, backportRun } from '../../../entrypoint.api';
+import type { BackportResponse } from '../../../entrypoint.api';
+import { backportRun } from '../../../entrypoint.api';
 import { getShortSha } from '../../../lib/github/commitFormatters';
 import { getDevAccessToken } from '../../private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from '../../sandbox';

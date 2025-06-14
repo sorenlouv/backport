@@ -1,4 +1,4 @@
-import { ValidConfigOptions } from '../../../options/options';
+import type { ValidConfigOptions } from '../../../options/options';
 import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
 import { validateTargetBranch } from './validateTargetBranch';
 

@@ -1,7 +1,7 @@
 import './lib/apm';
 import apm from 'elastic-apm-node';
 import { backportRun as run } from './backportRun';
-import { BackportResponse } from './backportRun';
+import type { BackportResponse } from './backportRun';
 import { fetchCommitsByPullNumber } from './lib/github/v4/fetchCommits/fetchCommitByPullNumber';
 import { fetchCommitBySha } from './lib/github/v4/fetchCommits/fetchCommitBySha';
 import { fetchCommitsByAuthor } from './lib/github/v4/fetchCommits/fetchCommitsByAuthor';
@@ -9,8 +9,8 @@ import { fetchPullRequestsBySearchQuery } from './lib/github/v4/fetchCommits/fet
 import { getOptionsFromGithub as _getOptionsFromGithub } from './lib/github/v4/getOptionsFromGithub/getOptionsFromGithub';
 import { initLogger } from './lib/logger';
 import type { Commit } from './lib/sourceCommit/parseSourceCommit';
-import { ConfigFileOptions } from './options/ConfigOptions';
-import { ValidConfigOptions } from './options/options';
+import type { ConfigFileOptions } from './options/ConfigOptions';
+import type { ValidConfigOptions } from './options/options';
 import { excludeUndefined } from './utils/excludeUndefined';
 
 // public API

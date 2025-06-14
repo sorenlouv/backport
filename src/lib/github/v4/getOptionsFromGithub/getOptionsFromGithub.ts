@@ -1,7 +1,7 @@
-import { OperationResult } from '@urql/core';
+import type { OperationResult } from '@urql/core';
 import { graphql } from '../../../../graphql/generated';
-import { GithubConfigOptionsQuery } from '../../../../graphql/generated/graphql';
-import { ConfigFileOptions } from '../../../../options/ConfigOptions';
+import type { GithubConfigOptionsQuery } from '../../../../graphql/generated/graphql';
+import type { ConfigFileOptions } from '../../../../options/ConfigOptions';
 import { BackportError } from '../../../BackportError';
 import {
   getLocalConfigFileCommitDate,

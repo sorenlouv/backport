@@ -1,6 +1,8 @@
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 import del = require('del');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 import apm = require('elastic-apm-node');
-import { ValidConfigOptions } from '../options/options';
+import type { ValidConfigOptions } from '../options/options';
 import { BackportError } from './BackportError';
 import { getRepoPath } from './env';
 import {
@@ -30,7 +32,7 @@ export async function setupRepo(options: ValidConfigOptions) {
     try {
       const localRepoPath = await getLocalSourceRepoPath(options);
       const remoteRepoPath = getRemoteUrl(options, options.repoOwner);
-      const sourcePath = localRepoPath ? localRepoPath : remoteRepoPath;
+      const sourcePath = localRepoPath ?? remoteRepoPath;
 
       // show the full path for local repos, but only the host name for remote repos (to avoid showing the access token)
       const sourcePathHumanReadable = !localRepoPath

@@ -1,16 +1,16 @@
 import os from 'os';
 import nock from 'nock';
-import { ValidConfigOptions } from '../../options/options';
+import type { ValidConfigOptions } from '../../options/options';
 import {
   listenForCallsToNockScope,
   mockUrqlRequest,
 } from '../../test/nockHelpers';
-import { SpyHelper } from '../../types/SpyHelper';
+import type { SpyHelper } from '../../types/SpyHelper';
 import * as childProcess from '../child-process-promisified';
-import { TargetBranchResponse } from '../github/v4/validateTargetBranch';
+import type { TargetBranchResponse } from '../github/v4/validateTargetBranch';
 import * as logger from '../logger';
 import * as oraModule from '../ora';
-import { Commit } from '../sourceCommit/parseSourceCommit';
+import type { Commit } from '../sourceCommit/parseSourceCommit';
 import * as autoMergeNowOrLater from './autoMergeNowOrLater';
 import { cherrypickAndCreateTargetPullRequest } from './cherrypickAndCreateTargetPullRequest';
 

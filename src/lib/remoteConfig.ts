@@ -1,6 +1,6 @@
 import { graphql } from '../graphql/generated';
 import { parseConfigFile } from '../options/config/readConfigFile';
-import {
+import type {
   GitHubGraphQLError,
   OperationResultWithMeta,
 } from './github/v4/client/graphqlClient';

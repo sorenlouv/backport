@@ -1,8 +1,8 @@
-import { ValidConfigOptions } from '../../options/options';
+import type { ValidConfigOptions } from '../../options/options';
 import { filterNil } from '../../utils/filterEmpty';
 import { addReviewersToPullRequest } from '../github/v3/addReviewersToPullRequest';
 import { getReviewersFromPullRequests } from '../github/v3/getReviewersFromPullRequests';
-import { Commit } from '../sourceCommit/parseSourceCommit';
+import type { Commit } from '../sourceCommit/parseSourceCommit';
 
 export async function copySourcePullRequestReviewersToTargetPullRequest(
   options: ValidConfigOptions,

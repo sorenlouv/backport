@@ -2,7 +2,7 @@ import { isEmpty, difference } from 'lodash';
 import { maybe } from '../../../utils/maybe';
 import { getGlobalConfigPath } from '../../env';
 import { logger } from '../../logger';
-import {
+import type {
   GitHubGraphQLError,
   OperationResultWithMeta,
 } from './client/graphqlClient';
@@ -38,9 +38,9 @@ export function getInvalidAccessTokenMessage({
           path?.join('.') === 'repository',
       );
 
-      const grantedScopes = result.responseHeaders?.get('x-oauth-scopes') || '';
+      const grantedScopes = result.responseHeaders?.get('x-oauth-scopes') ?? '';
       const requiredScopes =
-        result.responseHeaders?.get('x-accepted-oauth-scopes') || '';
+        result.responseHeaders?.get('x-accepted-oauth-scopes') ?? '';
       const ssoHeader = maybe(result.responseHeaders?.get('x-github-sso'));
 
       if (repoNotFound) {

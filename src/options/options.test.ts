@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import os from 'os';
 import nock from 'nock';
-import {
+import type {
   GithubConfigOptionsQuery,
   RepoOwnerAndNameQuery,
 } from '../graphql/generated/graphql';
@@ -9,7 +9,7 @@ import * as git from '../lib/git';
 import * as logger from '../lib/logger';
 import { mockConfigFiles } from '../test/mockConfigFiles';
 import { mockUrqlRequest } from '../test/nockHelpers';
-import { ConfigFileOptions } from './ConfigOptions';
+import type { ConfigFileOptions } from './ConfigOptions';
 import { getOptions } from './options';
 
 const defaultConfigs = {

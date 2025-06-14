@@ -1,12 +1,10 @@
 import { keyBy, merge, uniqBy, values } from 'lodash';
-import { SourceCommitWithTargetPullRequestFragmentFragment } from '../../graphql/generated/graphql';
-import { ValidConfigOptions } from '../../options/options';
+import type { SourceCommitWithTargetPullRequestFragmentFragment } from '../../graphql/generated/graphql';
+import type { ValidConfigOptions } from '../../options/options';
 import { filterNil } from '../../utils/filterEmpty';
 import { getFirstLine } from '../github/commitFormatters';
-import {
-  SourcePullRequestNode,
-  getSourcePullRequest,
-} from './getSourcePullRequest';
+import type { SourcePullRequestNode } from './getSourcePullRequest';
+import { getSourcePullRequest } from './getSourcePullRequest';
 import { isPullRequestCrossReferencedEvent } from './isPullRequestCrossReferencedEvent';
 
 type CreatedPullRequestState = 'CLOSED' | 'MERGED' | 'OPEN' | 'NOT_CREATED';
@@ -155,7 +153,11 @@ function getCreatedTargetPullRequests(
         sourcePullRequest.number.toString(),
       );
 
-      return didCommitMatch || (titleIncludesMessage && titleIncludesNumber);
+      if (didCommitMatch) {
+        return true;
+      }
+
+      return titleIncludesMessage && titleIncludesNumber;
     })
     .map((item) => {
       const { targetPullRequest } = item.node;

@@ -1,6 +1,6 @@
-import { ValidConfigOptions } from '../../options/options';
+import type { ValidConfigOptions } from '../../options/options';
 import { addLabelsToPullRequest } from '../github/v3/addLabelsToPullRequest';
-import { Commit } from '../sourceCommit/parseSourceCommit';
+import type { Commit } from '../sourceCommit/parseSourceCommit';
 
 export async function copySourcePullRequestLabelsToTargetPullRequest(
   options: ValidConfigOptions,
