@@ -1,5 +1,5 @@
 import { getDevAccessToken } from '../../../../test/private/getDevAccessToken';
-import { Commit } from '../../../sourceCommit/parseSourceCommit';
+import type { Commit } from '../../../sourceCommit/parseSourceCommit';
 import { fetchCommitsByPullNumber } from './fetchCommitByPullNumber';
 
 const accessToken = getDevAccessToken();

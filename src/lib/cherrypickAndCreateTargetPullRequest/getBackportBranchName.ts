@@ -1,6 +1,6 @@
 import Handlebars from 'handlebars';
-import { Commit } from '../../entrypoint.api';
-import { ValidConfigOptions } from '../../options/options';
+import type { Commit } from '../../entrypoint.api';
+import type { ValidConfigOptions } from '../../options/options';
 import { getShortSha } from '../github/commitFormatters';
 
 /*

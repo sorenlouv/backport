@@ -1,7 +1,8 @@
 import { PullRequestState } from '../../graphql/generated/graphql';
-import { ValidConfigOptions } from '../../options/options';
+import type { ValidConfigOptions } from '../../options/options';
 import { getMockSourceCommit } from './getMockSourceCommit';
-import { Commit, parseSourceCommit } from './parseSourceCommit';
+import type { Commit } from './parseSourceCommit';
+import { parseSourceCommit } from './parseSourceCommit';
 
 describe('parseSourceCommit', () => {
   describe('pullNumber', () => {

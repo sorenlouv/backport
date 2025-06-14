@@ -1,11 +1,9 @@
 import { graphql } from '../../../../graphql/generated';
-import { ValidConfigOptions } from '../../../../options/options';
+import type { ValidConfigOptions } from '../../../../options/options';
 import { BackportError } from '../../../BackportError';
 import { isMissingConfigFileException } from '../../../remoteConfig';
-import {
-  Commit,
-  parseSourceCommit,
-} from '../../../sourceCommit/parseSourceCommit';
+import type { Commit } from '../../../sourceCommit/parseSourceCommit';
+import { parseSourceCommit } from '../../../sourceCommit/parseSourceCommit';
 import { GithubV4Exception, getGraphQLClient } from '../client/graphqlClient';
 
 export async function fetchCommitBySha(options: {

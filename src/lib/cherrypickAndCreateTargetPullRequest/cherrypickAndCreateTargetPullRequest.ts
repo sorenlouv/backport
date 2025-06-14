@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { flatten } from 'lodash';
-import { ValidConfigOptions } from '../../options/options';
+import type { ValidConfigOptions } from '../../options/options';
 import { getSourceBranchFromCommits } from '../getSourceBranchFromCommits';
 import {
   createBackportBranch,
@@ -11,16 +11,14 @@ import {
 import { addAssigneesToPullRequest } from '../github/v3/addAssigneesToPullRequest';
 import { addLabelsToPullRequest } from '../github/v3/addLabelsToPullRequest';
 import { addReviewersToPullRequest } from '../github/v3/addReviewersToPullRequest';
-import {
-  createPullRequest,
-  PullRequestPayload,
-} from '../github/v3/getPullRequest/createPullRequest';
+import type { PullRequestPayload } from '../github/v3/getPullRequest/createPullRequest';
+import { createPullRequest } from '../github/v3/getPullRequest/createPullRequest';
 import { getPullRequestBody } from '../github/v3/getPullRequest/getPullRequestBody';
 import { getTitle } from '../github/v3/getPullRequest/getTitle';
 import { validateTargetBranch } from '../github/v4/validateTargetBranch';
 import { consoleLog } from '../logger';
 import { sequentially } from '../sequentially';
-import { Commit } from '../sourceCommit/parseSourceCommit';
+import type { Commit } from '../sourceCommit/parseSourceCommit';
 import { autoMergeNowOrLater } from './autoMergeNowOrLater';
 import { copySourcePullRequestLabelsToTargetPullRequest } from './copySourcePullRequestLabels';
 import { copySourcePullRequestReviewersToTargetPullRequest } from './copySourcePullRequestReviewersToTargetPullRequest';

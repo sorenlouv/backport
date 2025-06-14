@@ -1,5 +1,5 @@
 import { graphql } from '../../../graphql/generated';
-import { ValidConfigOptions } from '../../../options/options';
+import type { ValidConfigOptions } from '../../../options/options';
 import { GithubV4Exception, getGraphQLClient } from './client/graphqlClient';
 
 export async function fetchPullRequestAutoMergeMethod(

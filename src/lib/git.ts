@@ -1,10 +1,10 @@
 import path, { resolve as pathResolve } from 'path';
 import { uniq, isEmpty } from 'lodash';
 import { ora } from '../lib/ora';
-import { ValidConfigOptions } from '../options/options';
+import type { ValidConfigOptions } from '../options/options';
 import { filterNil } from '../utils/filterEmpty';
 import { BackportError } from './BackportError';
-import { CommitAuthor } from './author';
+import type { CommitAuthor } from './author';
 import {
   spawnPromise,
   SpawnError,
@@ -13,8 +13,8 @@ import {
 import { getRepoPath } from './env';
 import { getShortSha } from './github/commitFormatters';
 import { logger } from './logger';
-import { TargetPullRequest } from './sourceCommit/getPullRequestStates';
-import { Commit } from './sourceCommit/parseSourceCommit';
+import type { TargetPullRequest } from './sourceCommit/getPullRequestStates';
+import type { Commit } from './sourceCommit/parseSourceCommit';
 
 export function getRemoteUrl(
   { repoName, accessToken, gitHostname = 'github.com' }: ValidConfigOptions,
@@ -47,14 +47,14 @@ export async function cloneRepo(
     subprocess.stderr.on('data', (data: string) => {
       logger.verbose(data.toString());
       const [, objectReceiveProgress] =
-        data.toString().match(/^Receiving objects:\s+(\d+)%/) || [];
+        data.toString().match(/^Receiving objects:\s+(\d+)%/) ?? [];
 
       if (objectReceiveProgress) {
         progress.objectReceive = parseInt(objectReceiveProgress, 10);
       }
 
       const [, fileUpdateProgress] =
-        data.toString().match(/^Updating files:\s+(\d+)%/) || [];
+        data.toString().match(/^Updating files:\s+(\d+)%/) ?? [];
 
       if (fileUpdateProgress) {
         progress.objectReceive = 100;
@@ -563,7 +563,7 @@ export async function createBackportBranch({
           /'(.+) is not a commit and a branch .+ cannot be created from it/,
         )?.[1];
 
-      const invalidBranch = invalidRemoteRef || invalidCommit;
+      const invalidBranch = invalidRemoteRef ?? invalidCommit;
 
       if (invalidBranch) {
         throw new BackportError(

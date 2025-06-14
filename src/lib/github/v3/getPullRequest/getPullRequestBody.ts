@@ -1,9 +1,9 @@
 import Handlebars from 'handlebars';
-import { ValidConfigOptions } from '../../../../options/options';
+import type { ValidConfigOptions } from '../../../../options/options';
 import { getPackageVersion } from '../../../../utils/packageVersion';
 import { getSourceBranchFromCommits } from '../../../getSourceBranchFromCommits';
 import { logger } from '../../../logger';
-import { Commit } from '../../../sourceCommit/parseSourceCommit';
+import type { Commit } from '../../../sourceCommit/parseSourceCommit';
 import { getFirstLine, getShortSha } from '../../commitFormatters';
 
 export function getPullRequestBody({

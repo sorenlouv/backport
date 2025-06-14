@@ -12,7 +12,6 @@ backportRun({ processArgs, exitCodeOnFailure: true, apmTransaction }).then(
     const { interactive, ls } = getRuntimeArguments(processArgs);
 
     if (!interactive || ls) {
-      // eslint-disable-next-line no-console
       console.log(JSON.stringify(backportResponse));
     }
 

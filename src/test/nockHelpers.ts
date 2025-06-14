@@ -52,7 +52,6 @@ export function listenForCallsToNockScope<TVariables>(
     try {
       calls.push(JSON.parse(bodyString));
     } catch (e) {
-      // eslint-disable-next-line no-console
       console.error('Failed to parse nock request body:', bodyString, e);
       // Push raw body if parsing fails, or handle as appropriate
       calls.push(bodyString as any);

@@ -1,8 +1,9 @@
 import { Octokit } from '@octokit/rest';
 import apm from 'elastic-apm-node';
 import { ora } from '../../../lib/ora';
-import { ValidConfigOptions } from '../../../options/options';
+import type { ValidConfigOptions } from '../../../options/options';
 import { logger } from '../../logger';
+import { GithubV4Exception } from '../v4/client/graphqlClient';
 
 export async function addReviewersToPullRequest(
   {
@@ -43,9 +44,14 @@ export async function addReviewersToPullRequest(
 
     spinner.succeed();
   } catch (e) {
-    //@ts-expect-error
-    const message = e.response?.data?.message;
-    spinner.fail(`Adding reviewers. ${message ? message : ''}`);
+    const message =
+      e instanceof GithubV4Exception
+        ? e.result?.data?.message
+        : e instanceof Error
+          ? e.message
+          : '';
+
+    spinner.fail(`Adding reviewers. ${message}`);
     logger.error(`Could not add reviewers to PR ${pullNumber}`, e);
   } finally {
     span?.end();

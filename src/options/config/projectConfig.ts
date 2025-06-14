@@ -1,6 +1,6 @@
 import path from 'path';
 import findUp from 'find-up';
-import { ConfigFileOptions } from '../ConfigOptions';
+import type { ConfigFileOptions } from '../ConfigOptions';
 import { readConfigFile } from '../config/readConfigFile';
 
 export async function getProjectConfig(

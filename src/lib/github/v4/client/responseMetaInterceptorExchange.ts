@@ -1,7 +1,7 @@
 // headerInterceptorExchange.ts (or your chosen filename)
-import { Exchange } from '@urql/core'; // Removed OperationResult as it's used via OperationResultWithMeta
+import type { Exchange } from '@urql/core'; // Removed OperationResult as it's used via OperationResultWithMeta
 import { pipe, map } from 'wonka';
-import { OperationResultWithMeta } from './graphqlClient';
+import type { OperationResultWithMeta } from './graphqlClient';
 
 interface StoredResponseData {
   headers: Headers;
@@ -22,7 +22,7 @@ export const responseMetaInterceptorExchange: Exchange = ({
       operations$,
       map((operation) => {
         const originalFetch =
-          operation.context.fetch || (client as any).fetch || fetch;
+          operation.context.fetch ?? (client as any).fetch ?? fetch;
 
         const newContext = {
           ...operation.context,

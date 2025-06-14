@@ -1,6 +1,6 @@
 import chalk from 'chalk';
-import { Commit } from '../../entrypoint.api';
-import { ValidConfigOptions } from '../../options/options';
+import type { Commit } from '../../entrypoint.api';
+import type { ValidConfigOptions } from '../../options/options';
 import { getIsCommitInBranch } from '../git';
 import { getFirstLine } from '../github/commitFormatters';
 import { fetchCommitsByAuthor } from '../github/v4/fetchCommits/fetchCommitsByAuthor';

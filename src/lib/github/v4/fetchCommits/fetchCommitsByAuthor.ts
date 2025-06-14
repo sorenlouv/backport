@@ -1,19 +1,14 @@
 import { isEmpty, uniqBy, orderBy, first } from 'lodash';
 import { graphql } from '../../../../graphql/generated';
-import { ValidConfigOptions } from '../../../../options/options';
+import type { ValidConfigOptions } from '../../../../options/options';
 import { filterNil } from '../../../../utils/filterEmpty';
 import { filterUnmergedCommits } from '../../../../utils/filterUnmergedCommits';
 import { BackportError } from '../../../BackportError';
 import { isMissingConfigFileException } from '../../../remoteConfig';
-import {
-  Commit,
-  parseSourceCommit,
-} from '../../../sourceCommit/parseSourceCommit';
-import {
-  getGraphQLClient,
-  GithubV4Exception,
-  OperationResultWithMeta,
-} from '../client/graphqlClient';
+import type { Commit } from '../../../sourceCommit/parseSourceCommit';
+import { parseSourceCommit } from '../../../sourceCommit/parseSourceCommit';
+import type { OperationResultWithMeta } from '../client/graphqlClient';
+import { getGraphQLClient, GithubV4Exception } from '../client/graphqlClient';
 import { fetchAuthorId } from '../fetchAuthorId';
 
 async function fetchByCommitPath({

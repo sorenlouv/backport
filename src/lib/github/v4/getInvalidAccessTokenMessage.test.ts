@@ -1,4 +1,4 @@
-import { OperationResultWithMeta } from './client/graphqlClient';
+import type { OperationResultWithMeta } from './client/graphqlClient';
 import { getInvalidAccessTokenMessage } from './getInvalidAccessTokenMessage';
 
 describe('getInvalidAccessTokenMessage', () => {

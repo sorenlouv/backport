@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Octokit } from '@octokit/rest';
 import { getDevAccessToken } from '../../private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from '../../sandbox';

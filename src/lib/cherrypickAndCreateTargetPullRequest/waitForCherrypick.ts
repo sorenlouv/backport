@@ -1,15 +1,18 @@
 import chalk from 'chalk';
 import { difference, isEmpty } from 'lodash';
-import { BackportError, Commit } from '../../entrypoint.api';
-import { Ora, ora } from '../../lib/ora';
-import { ValidConfigOptions } from '../../options/options';
-import { CommitAuthor, getCommitAuthor } from '../author';
+import type { Commit } from '../../entrypoint.api';
+import { BackportError } from '../../entrypoint.api';
+import type { Ora } from '../../lib/ora';
+import { ora } from '../../lib/ora';
+import type { ValidConfigOptions } from '../../options/options';
+import type { CommitAuthor } from '../author';
+import { getCommitAuthor } from '../author';
 import { spawnPromise } from '../child-process-promisified';
 import { getRepoPath } from '../env';
+import type { ConflictingFiles } from '../git';
 import {
   cherrypick,
   commitChanges,
-  ConflictingFiles,
   getConflictingFiles,
   getUnstagedFiles,
   gitAddAll,

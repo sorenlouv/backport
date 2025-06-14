@@ -1,12 +1,10 @@
 import crypto from 'crypto';
 import { Octokit } from '@octokit/rest';
-import { ValidConfigOptions } from '../../../options/options';
+import type { ValidConfigOptions } from '../../../options/options';
 import { getDevAccessToken } from '../../../test/private/getDevAccessToken';
-import {
-  createPullRequest,
-  PullRequestPayload,
-} from '../v3/getPullRequest/createPullRequest';
-import { GithubV4Exception } from './client/graphqlClient';
+import type { PullRequestPayload } from '../v3/getPullRequest/createPullRequest';
+import { createPullRequest } from '../v3/getPullRequest/createPullRequest';
+import type { GithubV4Exception } from './client/graphqlClient';
 import { disablePullRequestAutoMerge } from './disablePullRequestAutoMerge';
 import {
   enablePullRequestAutoMerge,
@@ -272,7 +270,6 @@ describe('enablePullRequestAutoMerge', () => {
       await resetReference(octokit);
     });
 
-    // eslint-disable-next-line jest/no-disabled-tests
     it.skip('should not be possible to enable auto-merge', async () => {
       let isMissingStatusChecks;
       let errorMessage;
@@ -329,7 +326,6 @@ describe('enablePullRequestAutoMerge', () => {
       await resetReference(octokit);
     });
 
-    // eslint-disable-next-line jest/no-disabled-tests
     it.skip('should not be possible to enable auto-merge', async () => {
       let isMissingStatusChecks;
       let errorMessage;

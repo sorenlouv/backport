@@ -1,13 +1,13 @@
 import { isEmpty, isString } from 'lodash';
-import {
+import type {
   TargetBranchChoice,
   TargetBranchChoiceOrString,
 } from '../options/ConfigOptions';
-import { ValidConfigOptions } from '../options/options';
+import type { ValidConfigOptions } from '../options/options';
 import { BackportError } from './BackportError';
 import { getSourceBranchFromCommits } from './getSourceBranchFromCommits';
 import { promptForTargetBranches } from './prompts';
-import { Commit } from './sourceCommit/parseSourceCommit';
+import type { Commit } from './sourceCommit/parseSourceCommit';
 
 export async function getTargetBranches(
   options: ValidConfigOptions,

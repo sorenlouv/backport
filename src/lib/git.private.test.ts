@@ -2,8 +2,8 @@ import { access } from 'fs/promises';
 import fs from 'fs/promises';
 import path from 'path';
 import makeDir from 'make-dir';
-import { Commit } from '../entrypoint.api';
-import { ValidConfigOptions } from '../options/options';
+import type { Commit } from '../entrypoint.api';
+import type { ValidConfigOptions } from '../options/options';
 import { exec } from '../test/childProcessHelper';
 import { getDevAccessToken } from '../test/private/getDevAccessToken';
 import { getSandboxPath, resetSandbox } from '../test/sandbox';
@@ -760,7 +760,6 @@ async function createAndStageFile({
     await fs.writeFile(path.join(cwd, filename), content);
     await childProcess.spawnPromise('git', ['add', `${filename}`], cwd);
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.log('"createAndStageFile" threw an error', {
       filename,
       content,
@@ -793,7 +792,6 @@ async function getMostRecentCommitMessage(cwd: string) {
     );
     return stdout.trim();
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.log('"getMostRecentCommitMessage" threw an error', cwd);
     throw e;
   }
@@ -807,7 +805,6 @@ async function gitClone(repoUrl: string, cwd: string) {
       cwd,
     );
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.log('Git clone failed');
     throw e;
   }
@@ -817,7 +814,6 @@ async function gitInit(cwd: string) {
   try {
     await childProcess.spawnPromise('git', ['init'], cwd);
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.log('Git init failed');
     throw e;
   }

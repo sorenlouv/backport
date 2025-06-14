@@ -1,8 +1,9 @@
-import {
+import type {
   BackportFailureResponse,
   BackportSuccessResponse,
 } from './backportRun';
-import { backportRun, Commit, getCommits } from './entrypoint.api';
+import type { Commit } from './entrypoint.api';
+import { backportRun, getCommits } from './entrypoint.api';
 import { getFirstLine } from './lib/github/commitFormatters';
 import { getDevAccessToken } from './test/private/getDevAccessToken';
 

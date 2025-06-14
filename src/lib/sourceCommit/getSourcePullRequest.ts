@@ -1,4 +1,4 @@
-import { SourceCommitWithTargetPullRequestFragmentFragment } from '../../graphql/generated/graphql';
+import type { SourceCommitWithTargetPullRequestFragmentFragment } from '../../graphql/generated/graphql';
 
 export type SourcePullRequestNode = NonNullable<
   ReturnType<typeof getSourcePullRequest>

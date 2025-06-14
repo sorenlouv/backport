@@ -1,7 +1,7 @@
 import { homedir } from 'os';
 import path from 'path';
-import { ValidConfigOptions } from '../options/options';
-import { LogLevel } from './logger';
+import type { ValidConfigOptions } from '../options/options';
+import type { LogLevel } from './logger';
 
 export function getBackportDirPath() {
   return path.join(homedir(), '.backport');

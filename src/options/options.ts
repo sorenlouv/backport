@@ -2,18 +2,17 @@ import chalk from 'chalk';
 import { isEmpty } from 'lodash';
 import { BackportError } from '../lib/BackportError';
 import { getGlobalConfigPath } from '../lib/env';
-import {
-  getOptionsFromGithub,
-  OptionsFromGithub,
-} from '../lib/github/v4/getOptionsFromGithub/getOptionsFromGithub';
+import type { OptionsFromGithub } from '../lib/github/v4/getOptionsFromGithub/getOptionsFromGithub';
+import { getOptionsFromGithub } from '../lib/github/v4/getOptionsFromGithub/getOptionsFromGithub';
 import { getRepoOwnerAndNameFromGitRemotes } from '../lib/github/v4/getRepoOwnerAndNameFromGitRemotes';
 import { setAccessToken } from '../lib/logger';
-import { ConfigFileOptions, TargetBranchChoiceOrString } from './ConfigOptions';
-import { OptionsFromCliArgs } from './cliArgs';
-import {
-  getOptionsFromConfigFiles,
-  OptionsFromConfigFiles,
-} from './config/config';
+import type {
+  ConfigFileOptions,
+  TargetBranchChoiceOrString,
+} from './ConfigOptions';
+import type { OptionsFromCliArgs } from './cliArgs';
+import type { OptionsFromConfigFiles } from './config/config';
+import { getOptionsFromConfigFiles } from './config/config';
 
 const PROJECT_CONFIG_DOCS_LINK =
   'https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson';

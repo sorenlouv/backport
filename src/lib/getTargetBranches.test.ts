@@ -1,9 +1,9 @@
-import { TargetBranchChoice } from '../options/ConfigOptions';
-import { ValidConfigOptions } from '../options/options';
-import { SpyHelper } from '../types/SpyHelper';
+import type { TargetBranchChoice } from '../options/ConfigOptions';
+import type { ValidConfigOptions } from '../options/options';
+import type { SpyHelper } from '../types/SpyHelper';
 import { getTargetBranches, getTargetBranchChoices } from './getTargetBranches';
 import * as prompts from './prompts';
-import { Commit } from './sourceCommit/parseSourceCommit';
+import type { Commit } from './sourceCommit/parseSourceCommit';
 
 describe('getTargetBranches', () => {
   let promptSpy: SpyHelper<typeof prompts.promptForTargetBranches>;

@@ -1,4 +1,4 @@
-import { Assign } from 'utility-types';
+import type { Assign } from 'utility-types';
 
 type ExcludeUndefined<T extends Record<string, any>> = Assign<
   T,

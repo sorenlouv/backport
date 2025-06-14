@@ -1,5 +1,5 @@
-import { ConfigFileOptions } from '../ConfigOptions';
-import { OptionsFromCliArgs } from '../cliArgs';
+import type { ConfigFileOptions } from '../ConfigOptions';
+import type { OptionsFromCliArgs } from '../cliArgs';
 import { getGlobalConfig } from './globalConfig';
 import { getProjectConfig } from './projectConfig';
 

@@ -4,10 +4,8 @@ import { filterNil } from '../../../../utils/filterEmpty';
 import { filterUnmergedCommits } from '../../../../utils/filterUnmergedCommits';
 import { BackportError } from '../../../BackportError';
 import { isMissingConfigFileException } from '../../../remoteConfig';
-import {
-  Commit,
-  parseSourceCommit,
-} from '../../../sourceCommit/parseSourceCommit';
+import type { Commit } from '../../../sourceCommit/parseSourceCommit';
+import { parseSourceCommit } from '../../../sourceCommit/parseSourceCommit';
 import { GithubV4Exception, getGraphQLClient } from '../client/graphqlClient';
 
 export async function fetchPullRequestsBySearchQuery(options: {

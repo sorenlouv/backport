@@ -54,7 +54,6 @@ export async function getReviewersFromPullRequests({
     spinner.stop();
     return reviewers;
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.log(e);
     spinner.fail(`Retrieving reviewers failed`);
   }

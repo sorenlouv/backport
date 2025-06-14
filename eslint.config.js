@@ -1,146 +1,126 @@
-const { FlatCompat } = require('@eslint/eslintrc');
 const js = require('@eslint/js');
-const path = require('path');
+const tseslint = require('@typescript-eslint/eslint-plugin');
+const tsparser = require('@typescript-eslint/parser');
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-});
+const nodeGlobals = {
+  process: 'readonly',
+  Buffer: 'readonly',
+  __dirname: 'readonly',
+  __filename: 'readonly',
+  global: 'readonly',
+  console: 'readonly',
+  fetch: 'readonly',
+  Headers: 'readonly',
+  Request: 'readonly',
+  Response: 'readonly',
+};
 
 module.exports = [
-  // Global ignores - these are applied to all files
+  // Global ignores
   {
     ignores: [
       'dist/**',
       'node_modules/**',
       'src/graphql/generated/**',
-      'coverage/**',
-      '*.config.js',
-      'jest.*.js',
       'bin/**',
+      'coverage/**',
     ],
   },
 
-  // Base recommended config
-  js.configs.recommended,
-  
-  // Legacy configs via FlatCompat
-  ...compat.extends(
-    'plugin:@typescript-eslint/recommended',
-    'plugin:jest/recommended',
-    'plugin:prettier/recommended'
-  ),
-  
-  // Configuration for JavaScript files
+  // Config files (CommonJS)
+  {
+    files: ['*.config.js', '.*.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'commonjs',
+      globals: {
+        require: 'readonly',
+        module: 'readonly',
+        exports: 'readonly',
+        ...nodeGlobals,
+      },
+    },
+    ...js.configs.recommended,
+  },
+
+  // JavaScript files
   {
     files: ['**/*.js'],
+    ignores: ['*.config.js', '.*.js'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
-      globals: {
-        NodeJS: true,
-        process: true,
-        console: true,
-        Buffer: true,
-        __dirname: true,
-        __filename: true,
-        module: true,
-        require: true,
-        exports: true,
-        global: true,
-      },
+      globals: nodeGlobals,
     },
-    plugins: {
-      'jest': require('eslint-plugin-jest'),
-      'import': require('eslint-plugin-import'),
-      'prettier': require('eslint-plugin-prettier'),
-    },
-    rules: {
-      // Import ordering rules
-      'import/order': [
-        'error',
-        {
-          alphabetize: { order: 'asc' },
-          'newlines-between': 'never',
-          groups: [
-            'builtin',
-            'external',
-            'internal',
-            'parent',
-            'sibling',
-            'index',
-          ],
-        },
-      ],
-      'no-console': 'error',
-      'prettier/prettier': 'error',
-    },
+    ...js.configs.recommended,
   },
-  
-  // Configuration for TypeScript files
+
+  // TypeScript files
   {
     files: ['**/*.ts'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
-      parser: require('@typescript-eslint/parser'),
+      parser: tsparser,
       parserOptions: {
-        project: ['./tsconfig.eslint.json'],
+        project: './tsconfig.eslint.json',
+      },
+      globals: nodeGlobals,
+    },
+    plugins: {
+      '@typescript-eslint': tseslint,
+    },
+    rules: {
+      ...js.configs.recommended.rules,
+      ...tseslint.configs.recommended.rules,
+
+      // Essential TypeScript rules
+      '@typescript-eslint/no-explicit-any': 'off',      
+      '@typescript-eslint/no-unused-vars': 'error',
+      '@typescript-eslint/prefer-nullish-coalescing': 'error',
+      '@typescript-eslint/prefer-optional-chain': 'error',
+      '@typescript-eslint/consistent-type-imports': 'error',
+
+      // Turn off base rule in favor of TypeScript version
+      'no-unused-vars': 'off',
+    },
+  },
+
+  // Test files - relaxed rules and Jest globals
+  {
+    files: ['**/*.{test,spec}.{js,ts}', '**/test/**/*.{js,ts}'],
+    languageOptions: {
+      parser: tsparser,
+      parserOptions: {
+        project: './tsconfig.eslint.json',
       },
       globals: {
-        NodeJS: true,
-        process: true,
-        console: true,
-        Buffer: true,
-        __dirname: true,
-        __filename: true,
-        module: true,
-        require: true,
-        exports: true,
-        global: true,
+        ...nodeGlobals,
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        jest: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
       },
     },
     plugins: {
-      '@typescript-eslint': require('@typescript-eslint/eslint-plugin'),
-      'jest': require('eslint-plugin-jest'),
-      'import': require('eslint-plugin-import'),
-      'prettier': require('eslint-plugin-prettier'),
+      '@typescript-eslint': tseslint,
     },
     rules: {
-      // Import ordering rules
-      'import/order': [
-        'error',
-        {
-          alphabetize: { order: 'asc' },
-          'newlines-between': 'never',
-          groups: [
-            'builtin',
-            'external',
-            'internal',
-            'parent',
-            'sibling',
-            'index',
-          ],
-        },
-      ],
-      'no-console': 'error',
-
-      // Prefer typescript specific `no-unused-vars` rule
-      'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': ['error'],
-
-      '@typescript-eslint/no-unnecessary-condition': 'error',
-      '@typescript-eslint/prefer-ts-expect-error': 'error',
-
-      // Disabled rules
+      ...js.configs.recommended.rules,
+      ...tseslint.configs.recommended.rules,      
+      '@typescript-eslint/no-explicit-any': 'off',      
       '@typescript-eslint/ban-ts-comment': 'off',
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-use-before-define': 'off',
-
-      // Prettier integration
-      'prettier/prettier': 'error',
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': 'error',
     },
   },
 ];

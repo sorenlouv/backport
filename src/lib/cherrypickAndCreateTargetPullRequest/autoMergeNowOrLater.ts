@@ -1,4 +1,4 @@
-import { ValidConfigOptions } from '../../options/options';
+import type { ValidConfigOptions } from '../../options/options';
 import { mergePullRequest } from '../github/v3/mergePullRequest';
 import { GithubV4Exception } from '../github/v4/client/graphqlClient';
 import {

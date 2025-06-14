@@ -1,4 +1,4 @@
-import { Exchange, Operation, OperationResult } from '@urql/core';
+import type { Exchange, Operation, OperationResult } from '@urql/core';
 import { print } from 'graphql/language/printer';
 import { pipe, tap } from 'wonka';
 import { logger } from '../../../logger';

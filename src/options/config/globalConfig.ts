@@ -3,7 +3,7 @@ import makeDir from 'make-dir';
 import { BackportError } from '../../lib/BackportError';
 import { getBackportDirPath, getGlobalConfigPath } from '../../lib/env';
 import { isErrnoError } from '../../utils/isErrnoError';
-import { ConfigFileOptions } from '../ConfigOptions';
+import type { ConfigFileOptions } from '../ConfigOptions';
 import { readConfigFile } from './readConfigFile';
 
 export async function getGlobalConfig(
