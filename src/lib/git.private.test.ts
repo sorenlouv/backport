@@ -3,8 +3,8 @@ import path from 'path';
 import makeDir from 'make-dir';
 import type { Commit } from '../entrypoint.api';
 import type { ValidConfigOptions } from '../options/options';
-import { exec } from '../test/childProcessHelper';
-import { getDevAccessToken } from '../test/private/getDevAccessToken';
+import { exec } from '../test/child-process-helper';
+import { getDevAccessToken } from '../test/private/get-dev-access-token';
 import { getSandboxPath, resetSandbox } from '../test/sandbox';
 import * as childProcess from './child-process-promisified';
 import {
@@ -23,7 +23,7 @@ import {
   isLocalConfigFileUntracked,
   pushBackportBranch,
 } from './git';
-import { getShortSha } from './github/commitFormatters';
+import { getShortSha } from './github/commit-formatters';
 
 jest.unmock('del');
 jest.unmock('make-dir');

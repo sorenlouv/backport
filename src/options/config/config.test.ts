@@ -1,5 +1,5 @@
 import fs from 'fs/promises';
-import { mockConfigFiles } from '../../test/mockConfigFiles';
+import { mockConfigFiles } from '../../test/mock-config-files';
 import { getOptionsFromConfigFiles } from './config';
 
 describe('getOptionsFromConfigFiles', () => {

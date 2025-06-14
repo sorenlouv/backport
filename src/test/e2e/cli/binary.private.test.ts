@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import stripAnsi from 'strip-ansi';
 import pkg from '../../../../package.json';
-import { getDevAccessToken } from '../../private/getDevAccessToken';
+import { getDevAccessToken } from '../../private/get-dev-access-token';
 
 const accessToken = getDevAccessToken();
 

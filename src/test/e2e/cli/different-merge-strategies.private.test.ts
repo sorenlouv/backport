@@ -1,9 +1,9 @@
 import fs from 'fs/promises';
-import { exec } from '../../childProcessHelper';
-import { getDevAccessToken } from '../../private/getDevAccessToken';
-import { removeLinesBreaksInConflictingFiles } from '../../replaceStringAndLinebreaks';
+import { exec } from '../../child-process-helper';
+import { getDevAccessToken } from '../../private/get-dev-access-token';
+import { removeLinesBreaksInConflictingFiles } from '../../replace-string-and-linebreaks';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
-import { runBackportViaCli } from './runBackportViaCli';
+import { runBackportViaCli } from './run-backport-via-cli';
 const accessToken = getDevAccessToken();
 
 jest.setTimeout(40_000);

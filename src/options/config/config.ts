@@ -1,7 +1,7 @@
-import type { ConfigFileOptions } from '../ConfigOptions';
-import type { OptionsFromCliArgs } from '../cliArgs';
-import { getGlobalConfig } from './globalConfig';
-import { getProjectConfig } from './projectConfig';
+import type { OptionsFromCliArgs } from '../cli-args';
+import type { ConfigFileOptions } from '../config-options';
+import { getGlobalConfig } from './global-config';
+import { getProjectConfig } from './project-config';
 
 export type OptionsFromConfigFiles = Awaited<
   ReturnType<typeof getOptionsFromConfigFiles>

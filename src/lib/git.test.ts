@@ -1,6 +1,6 @@
 import os from 'os';
 import type { ValidConfigOptions } from '../options/options';
-import type { SpyHelper } from '../types/SpyHelper';
+import type { SpyHelper } from '../types/spy-helper';
 import * as childProcess from './child-process-promisified';
 import {
   addRemote,
@@ -16,7 +16,7 @@ import {
   isLocalConfigFileModified,
   getRepoInfoFromGitRemotes,
 } from './git';
-import type { Commit } from './sourceCommit/parseSourceCommit';
+import type { Commit } from './sourceCommit/parse-source-commit';
 
 beforeEach(() => {
   jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');

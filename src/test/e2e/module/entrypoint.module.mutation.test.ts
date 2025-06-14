@@ -1,8 +1,8 @@
 import { Octokit } from '@octokit/rest';
 import type { BackportResponse } from '../../../entrypoint.api';
 import { backportRun } from '../../../entrypoint.api';
-import { getShortSha } from '../../../lib/github/commitFormatters';
-import { getDevAccessToken } from '../../private/getDevAccessToken';
+import { getShortSha } from '../../../lib/github/commit-formatters';
+import { getDevAccessToken } from '../../private/get-dev-access-token';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
 
 jest.unmock('find-up');

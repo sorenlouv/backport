@@ -7,9 +7,9 @@ import type {
 } from '../graphql/generated/graphql';
 import * as git from '../lib/git';
 import * as logger from '../lib/logger';
-import { mockConfigFiles } from '../test/mockConfigFiles';
-import { mockUrqlRequest } from '../test/nockHelpers';
-import type { ConfigFileOptions } from './ConfigOptions';
+import { mockConfigFiles } from '../test/mock-config-files';
+import { mockUrqlRequest } from '../test/nock-helpers';
+import type { ConfigFileOptions } from './config-options';
 import { getOptions } from './options';
 
 const defaultConfigs = {
