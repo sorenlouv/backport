@@ -1,5 +1,4 @@
-import { access } from 'fs/promises';
-import fs from 'fs/promises';
+import fs, { access } from 'fs/promises';
 import path from 'path';
 import makeDir from 'make-dir';
 import type { Commit } from '../entrypoint.api';
@@ -13,16 +12,16 @@ import {
   cloneRepo,
   commitChanges,
   createBackportBranch,
-  getShasInMergeCommit,
+  deleteRemote,
   getGitProjectRootPath,
   getIsCommitInBranch,
   getIsMergeCommit,
   getLocalConfigFileCommitDate,
   getLocalSourceRepoPath,
+  getShasInMergeCommit,
   isLocalConfigFileModified,
   isLocalConfigFileUntracked,
   pushBackportBranch,
-  deleteRemote,
 } from './git';
 import { getShortSha } from './github/commitFormatters';
 
