@@ -18,7 +18,7 @@ type RunBackportOptions = {
   keepAlive?: boolean;
 };
 
-export function runBackportViaCli(
+export async function runBackportViaCli(
   backportArgs: string[],
   runBackportOptions: RunBackportOptions = {},
 ) {
@@ -28,7 +28,7 @@ export function runBackportViaCli(
     filename: __filename,
     specname: randomString,
   });
-  resetSandbox(sandboxPath);
+  await resetSandbox(sandboxPath);
 
   const cmdArgs = [
     '--transpile-only',

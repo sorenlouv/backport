@@ -76,11 +76,12 @@ module.exports = [
       ...tseslint.configs.recommended.rules,
 
       // Essential TypeScript rules
-      '@typescript-eslint/no-explicit-any': 'off',      
+      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': 'error',
       '@typescript-eslint/prefer-nullish-coalescing': 'error',
       '@typescript-eslint/prefer-optional-chain': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
+      '@typescript-eslint/no-floating-promises': 'error',
 
       // Turn off base rule in favor of TypeScript version
       'no-unused-vars': 'off',
@@ -117,8 +118,8 @@ module.exports = [
     },
     rules: {
       ...js.configs.recommended.rules,
-      ...tseslint.configs.recommended.rules,      
-      '@typescript-eslint/no-explicit-any': 'off',      
+      ...tseslint.configs.recommended.rules,
+      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/ban-ts-comment': 'off',
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'error',

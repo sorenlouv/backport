@@ -600,7 +600,7 @@ describe('git.private', () => {
       subDirectory = `${sandboxPath}/foo-dir`;
       await resetSandbox(sandboxPath);
       await gitInit(sandboxPath);
-      makeDir(subDirectory);
+      await makeDir(subDirectory);
     });
 
     it('returns the root dir', async () => {

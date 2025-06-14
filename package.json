@@ -26,7 +26,7 @@
     "prepare": "husky install",
     "prepublishOnly": "rm -rf ./dist/ && yarn && yarn lint && yarn build",
     "lint-and-test": "yarn lint && yarn test-all",
-    "lint": "tsc --noEmit --incremental && eslint './**/*.{ts,js}' --fix",
+    "lint": "tsc --noEmit --incremental && eslint './**/*.{ts,js}' --fix --cache",
     "start": "NODE_ENV=development ts-node --transpile-only ./src/entrypoint.cli.ts",
     "test-all": "jest --config ./jest.config.all.ts",
     "test-mutation": "jest --config ./jest.config.mutation.ts",
