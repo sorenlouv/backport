@@ -1,6 +1,7 @@
 const js = require('@eslint/js');
 const tseslint = require('@typescript-eslint/eslint-plugin');
 const tsparser = require('@typescript-eslint/parser');
+const importPlugin = require('eslint-plugin-import');
 
 const nodeGlobals = {
   process: 'readonly',
@@ -70,10 +71,22 @@ module.exports = [
     },
     plugins: {
       '@typescript-eslint': tseslint,
+      import: importPlugin,
     },
     rules: {
       ...js.configs.recommended.rules,
       ...tseslint.configs.recommended.rules,
+
+      // Import organization
+      'import/order': [
+        'error',
+        {
+          alphabetize: { order: 'asc' },
+          'newlines-between': 'never',
+          groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+        },
+      ],
+      'import/no-duplicates': 'error',
 
       // Essential TypeScript rules
       '@typescript-eslint/no-explicit-any': 'off',
