@@ -14,6 +14,7 @@ jest.mock('find-up', () => {
 });
 
 // @ts-expect-error
+// eslint-disable-next-line no-import-assign
 packageVersionModule.UNMOCKED_PACKAGE_VERSION =
   packageVersionModule.getPackageVersion();
 

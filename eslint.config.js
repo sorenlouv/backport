@@ -13,6 +13,7 @@ const nodeGlobals = {
   Headers: 'readonly',
   Request: 'readonly',
   Response: 'readonly',
+  NodeJS: 'readonly',
 };
 
 module.exports = [
