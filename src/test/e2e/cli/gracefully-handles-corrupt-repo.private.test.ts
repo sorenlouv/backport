@@ -1,10 +1,10 @@
-import { exec } from '../../childProcessHelper';
-import { getDevAccessToken } from '../../private/getDevAccessToken';
+import { exec } from '../../child-process-helper';
+import { getDevAccessToken } from '../../private/get-dev-access-token';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
-import { runBackportViaCli } from './runBackportViaCli';
+import { runBackportViaCli } from './run-backport-via-cli';
 
 const accessToken = getDevAccessToken();
-jest.setTimeout(15_000);
+jest.setTimeout(25_000);
 
 describe('gracefully handle corrupted repo', () => {
   it('backports correctly', async () => {

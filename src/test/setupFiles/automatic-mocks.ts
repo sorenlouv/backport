@@ -3,9 +3,11 @@
  * It will be run once per test file
  */
 
-import * as packageVersionModule from '../../utils/packageVersion';
+import { disableApm } from '../../lib/apm';
+import { registerHandlebarsHelpers } from '../../lib/register-handlebars-helpers';
+import * as packageVersionModule from '../../utils/package-version';
 
-/* eslint-disable @typescript-eslint/no-empty-function */
+disableApm();
 
 jest.mock('find-up', () => {
   return jest.fn(async () => '/path/to/project/config');
@@ -14,10 +16,11 @@ jest.mock('find-up', () => {
 // @ts-expect-error
 // eslint-disable-next-line no-import-assign
 packageVersionModule.UNMOCKED_PACKAGE_VERSION =
-  packageVersionModule.PACKAGE_VERSION;
-// @ts-expect-error
-// eslint-disable-next-line no-import-assign
-packageVersionModule.PACKAGE_VERSION = '1.2.3-mocked';
+  packageVersionModule.getPackageVersion();
+
+jest
+  .spyOn(packageVersionModule, 'getPackageVersion')
+  .mockReturnValue('1.2.3-mocked');
 
 jest.mock('make-dir', () => {
   return jest.fn(() => Promise.resolve('/some/path'));
@@ -45,3 +48,5 @@ jest.mock('../../lib/logger', () => {
     logger,
   };
 });
+
+registerHandlebarsHelpers();

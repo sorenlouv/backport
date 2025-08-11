@@ -1,19 +1,16 @@
 import chalk from 'chalk';
-import inquirer, {
-  CheckboxQuestion,
-  ListQuestion,
-  ConfirmQuestion,
-} from 'inquirer';
+import type { CheckboxQuestion, ListQuestion, ConfirmQuestion } from 'inquirer';
+import inquirer from 'inquirer';
 import { isEmpty, repeat } from 'lodash';
 import terminalLink from 'terminal-link';
-import { TargetBranchChoice } from '../options/ConfigOptions';
+import type { TargetBranchChoice } from '../options/config-options';
 import {
   stripPullNumber,
   getFirstLine,
   getShortSha,
-} from './github/commitFormatters';
-import { TargetPullRequest } from './sourceCommit/getPullRequestStates';
-import { Commit } from './sourceCommit/parseSourceCommit';
+} from './github/commit-formatters';
+import type { TargetPullRequest } from './sourceCommit/get-pull-request-states';
+import type { Commit } from './sourceCommit/parse-source-commit';
 
 type Question = CheckboxQuestion | ListQuestion | ConfirmQuestion;
 

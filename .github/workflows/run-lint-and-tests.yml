@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [22.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -25,12 +25,11 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
 
       - run: git config --global user.email "backportci@users.noreply.github.com "
       - run: git config --global user.name "Backport CI"
       - run: yarn
+      - run: yarn build
       - run: yarn lint
-      - run: yarn tsc
       - run: yarn test
       - run: ACCESS_TOKEN=${{ secrets.GH_ACCESS_TOKEN }} yarn test-private

@@ -1,9 +1,9 @@
 import fs from 'fs/promises';
-import { exec } from '../../childProcessHelper';
-import { getDevAccessToken } from '../../private/getDevAccessToken';
-import { replaceStringAndLinebreaks } from '../../replaceStringAndLinebreaks';
+import { exec } from '../../child-process-helper';
+import { getDevAccessToken } from '../../private/get-dev-access-token';
+import { removeLinesBreaksInConflictingFiles } from '../../replace-string-and-linebreaks';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
-import { runBackportViaCli } from './runBackportViaCli';
+import { runBackportViaCli } from './run-backport-via-cli';
 const accessToken = getDevAccessToken();
 
 jest.setTimeout(40_000);
@@ -181,11 +181,10 @@ View pull request: this-is-a-dry-run"
         timeoutSeconds: 5,
       });
 
-      output = replaceStringAndLinebreaks({
-        haystack: res.output,
-        stringBefore: sandboxPath,
-        stringAfter: '<SANDBOX_PATH>',
-      });
+      output = removeLinesBreaksInConflictingFiles(res.output).replaceAll(
+        sandboxPath,
+        '<SANDBOX_PATH>',
+      );
     });
 
     it('has the right output', async () => {
@@ -207,17 +206,11 @@ The commit could not be backported due to conflicts
 Please fix the conflicts in <SANDBOX_PATH>
 ? Fix the following conflicts manually:
 
-Conflicting files:
- - <SANDBOX_PATH>/new-fi
-le-added-with-many-merge-commits.txt
-
+Conflicting files: - <SANDBOX_PATH>/new-file-added-with-many-merge-commits.txt
 
 Press ENTER when the conflicts are resolved and files are staged (Y/n) ? Fix the following conflicts manually:
 
-Conflicting files:
- - <SANDBOX_PATH>/new-fi
-le-added-with-many-merge-commits.txt
-
+Conflicting files: - <SANDBOX_PATH>/new-file-added-with-many-merge-commits.txt
 
 Press ENTER when the conflicts are resolved and files are staged Yes
 ✔ Cherry-picking: Merge strategy: First of many merges

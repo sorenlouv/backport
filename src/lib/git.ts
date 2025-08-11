@@ -1,20 +1,20 @@
 import path, { resolve as pathResolve } from 'path';
 import { uniq, isEmpty } from 'lodash';
 import { ora } from '../lib/ora';
-import { ValidConfigOptions } from '../options/options';
-import { filterNil } from '../utils/filterEmpty';
-import { BackportError } from './BackportError';
-import { CommitAuthor } from './author';
+import type { ValidConfigOptions } from '../options/options';
+import { filterNil } from '../utils/filter-empty';
+import type { CommitAuthor } from './author';
+import { BackportError } from './backport-error';
 import {
   spawnPromise,
   SpawnError,
   spawnStream,
 } from './child-process-promisified';
 import { getRepoPath } from './env';
-import { getShortSha } from './github/commitFormatters';
+import { getShortSha } from './github/commit-formatters';
 import { logger } from './logger';
-import { TargetPullRequest } from './sourceCommit/getPullRequestStates';
-import { Commit } from './sourceCommit/parseSourceCommit';
+import type { TargetPullRequest } from './sourceCommit/get-pull-request-states';
+import type { Commit } from './sourceCommit/parse-source-commit';
 
 export function getRemoteUrl(
   { repoName, accessToken, gitHostname = 'github.com' }: ValidConfigOptions,
@@ -47,14 +47,14 @@ export async function cloneRepo(
     subprocess.stderr.on('data', (data: string) => {
       logger.verbose(data.toString());
       const [, objectReceiveProgress] =
-        data.toString().match(/^Receiving objects:\s+(\d+)%/) || [];
+        data.toString().match(/^Receiving objects:\s+(\d+)%/) ?? [];
 
       if (objectReceiveProgress) {
         progress.objectReceive = parseInt(objectReceiveProgress, 10);
       }
 
       const [, fileUpdateProgress] =
-        data.toString().match(/^Updating files:\s+(\d+)%/) || [];
+        data.toString().match(/^Updating files:\s+(\d+)%/) ?? [];
 
       if (fileUpdateProgress) {
         progress.objectReceive = 100;
@@ -93,6 +93,7 @@ export async function getLocalConfigFileCommitDate({ cwd }: { cwd: string }) {
       return timestamp;
     }
   } catch (e) {
+    logger.debug(`Could not retrieve commit date for .backportrc.json: ${e}`);
     return;
   }
 }
@@ -108,6 +109,7 @@ export async function isLocalConfigFileUntracked({ cwd }: { cwd: string }) {
 
     return !!stdout;
   } catch (e) {
+    logger.debug(`Could not check if .backportrc.json is untracked: ${e}`);
     return;
   }
 }
@@ -122,6 +124,7 @@ export async function isLocalConfigFileModified({ cwd }: { cwd: string }) {
 
     return !!stdout;
   } catch (e) {
+    logger.debug(`Could not check if .backportrc.json is modified: ${e}`);
     return false;
   }
 }
@@ -144,6 +147,7 @@ export async function getRepoInfoFromGitRemotes({ cwd }: { cwd: string }) {
       return { repoOwner, repoName };
     });
   } catch (e) {
+    logger.debug(`An error occurred while retrieving git remotes: ${e}`);
     return [];
   }
 }
@@ -220,7 +224,7 @@ export async function addRemote(
       cwd,
     );
   } catch (e) {
-    // note: swallowing error
+    logger.debug(`Could not add remote "${remoteName}": ${e}`);
     return;
   }
 }
@@ -538,7 +542,9 @@ export async function createBackportBranch({
     try {
       await spawnPromise('git', ['branch', '-D', tmpBranchName], cwd);
     } catch (e) {
-      // swallow error
+      logger.debug(
+        `Could not delete temporary branch "${tmpBranchName}": ${e}`,
+      );
     }
 
     // fetch commits for source branch
@@ -557,7 +563,7 @@ export async function createBackportBranch({
           /'(.+) is not a commit and a branch .+ cannot be created from it/,
         )?.[1];
 
-      const invalidBranch = invalidRemoteRef || invalidCommit;
+      const invalidBranch = invalidRemoteRef ?? invalidCommit;
 
       if (invalidBranch) {
         throw new BackportError(

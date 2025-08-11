@@ -1,9 +1,9 @@
 import apm from 'elastic-apm-node';
-//@ts-expect-error
+//@ts-expect-error: using private API from elastic-apm-node
 import { NoopApmClient } from 'elastic-apm-node/lib/apm-client/noop-apm-client';
 import { accessTokenReplacer } from './logger';
 
-const environment = process.env.NODE_ENV || 'production-cli';
+const environment = process.env.NODE_ENV ?? 'production-cli';
 
 apm
   .start({
@@ -14,7 +14,6 @@ apm
     logLevel: 'off',
     captureBody: 'all',
     errorOnAbortedRequests: false,
-    logUncaughtExceptions: false,
     environment,
   })
   // remove access token
@@ -24,8 +23,8 @@ apm
 
 export function disableApm() {
   // hack to disable APM telemetry after loaded config
-  //@ts-expect-error
+  //@ts-expect-error: using private API from elastic-apm-node
   apm._apmClient.destroy();
-  //@ts-expect-error
+  //@ts-expect-error: using private API from elastic-apm-node
   apm._apmClient = new NoopApmClient();
 }

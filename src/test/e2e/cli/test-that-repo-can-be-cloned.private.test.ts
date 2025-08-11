@@ -1,8 +1,7 @@
-import { exec } from '../../childProcessHelper';
-import { getDevAccessToken } from '../../private/getDevAccessToken';
-import { replaceStringAndLinebreaks } from '../../replaceStringAndLinebreaks';
+import { exec } from '../../child-process-helper';
+import { getDevAccessToken } from '../../private/get-dev-access-token';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
-import { runBackportViaCli } from './runBackportViaCli';
+import { runBackportViaCli } from './run-backport-via-cli';
 const accessToken = getDevAccessToken();
 jest.setTimeout(15_000);
 
@@ -105,11 +104,7 @@ View pull request: this-is-a-dry-run"
       const { output } = await run();
 
       expect(
-        replaceStringAndLinebreaks({
-          haystack: output,
-          stringBefore: sourceRepo,
-          stringAfter: '<SOURCE_REPO>',
-        }),
+        output.replaceAll('\n', '').replaceAll(sourceRepo, '<SOURCE_REPO>'),
       ).toContain(
         '✔ 100% Cloning repository from <SOURCE_REPO> (one-time operation)',
       );

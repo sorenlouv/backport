@@ -1,7 +1,7 @@
 import { Octokit } from '@octokit/rest';
-import { SuccessResult } from '../../../entrypoint.api';
-import { getDevAccessToken } from '../../private/getDevAccessToken';
-import { runBackportViaCli } from './runBackportViaCli';
+import type { SuccessResult } from '../../../entrypoint.api';
+import { getDevAccessToken } from '../../private/get-dev-access-token';
+import { runBackportViaCli } from './run-backport-via-cli';
 
 const accessToken = getDevAccessToken();
 const octokit = new Octokit({ auth: accessToken });

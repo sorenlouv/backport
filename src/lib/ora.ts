@@ -1,6 +1,5 @@
 import oraOriginal from 'ora';
 
-/* eslint-disable @typescript-eslint/no-empty-function */
 export const oraNonInteractiveMode = {
   start: () => oraNonInteractiveMode,
   succeed: () => {},

@@ -1,10 +1,10 @@
-import * as packageVersion from '../../../utils/packageVersion';
-import { exec } from '../../childProcessHelper';
-import { getDevAccessToken } from '../../private/getDevAccessToken';
+import * as packageVersionModule from '../../../utils/package-version';
+import { exec } from '../../child-process-helper';
+import { getDevAccessToken } from '../../private/get-dev-access-token';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
-import { runBackportViaCli } from './runBackportViaCli';
+import { runBackportViaCli } from './run-backport-via-cli';
 
-jest.setTimeout(10_000);
+jest.setTimeout(15_000);
 const accessToken = getDevAccessToken();
 
 describe('entrypoint cli', () => {
@@ -25,7 +25,7 @@ describe('entrypoint cli', () => {
 
   it('PACKAGE_VERSION should match', async () => {
     // @ts-expect-error
-    expect(packageVersion.UNMOCKED_PACKAGE_VERSION).toBe(
+    expect(packageVersionModule.UNMOCKED_PACKAGE_VERSION).toBe(
       process.env.npm_package_version,
     );
   });

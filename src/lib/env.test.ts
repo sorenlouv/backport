@@ -1,5 +1,5 @@
 import os from 'os';
-import { ValidConfigOptions } from '../options/options';
+import type { ValidConfigOptions } from '../options/options';
 import { getGlobalConfigPath, getRepoPath } from './env';
 
 describe('env', () => {

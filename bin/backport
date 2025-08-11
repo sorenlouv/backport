@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('../dist/entrypoint.cli.js')
+require('../dist/src/entrypoint.cli.js')

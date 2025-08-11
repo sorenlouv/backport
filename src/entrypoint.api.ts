@@ -1,36 +1,36 @@
 import './lib/apm';
 import apm from 'elastic-apm-node';
-import { backportRun as run } from './backportRun';
-import { BackportResponse } from './backportRun';
-import { fetchCommitsByPullNumber } from './lib/github/v4/fetchCommits/fetchCommitByPullNumber';
-import { fetchCommitBySha } from './lib/github/v4/fetchCommits/fetchCommitBySha';
-import { fetchCommitsByAuthor } from './lib/github/v4/fetchCommits/fetchCommitsByAuthor';
-import { fetchPullRequestsBySearchQuery } from './lib/github/v4/fetchCommits/fetchPullRequestsBySearchQuery';
-import { getOptionsFromGithub as _getOptionsFromGithub } from './lib/github/v4/getOptionsFromGithub/getOptionsFromGithub';
+import { backportRun as run } from './backport-run';
+import type { BackportResponse } from './backport-run';
+import { fetchCommitsByPullNumber } from './lib/github/v4/fetchCommits/fetch-commit-by-pull-number';
+import { fetchCommitBySha } from './lib/github/v4/fetchCommits/fetch-commit-by-sha';
+import { fetchCommitsByAuthor } from './lib/github/v4/fetchCommits/fetch-commits-by-author';
+import { fetchPullRequestsBySearchQuery } from './lib/github/v4/fetchCommits/fetch-pull-requests-by-search-query';
+import { getOptionsFromGithub as _getOptionsFromGithub } from './lib/github/v4/getOptionsFromGithub/get-options-from-github';
 import { initLogger } from './lib/logger';
-import type { Commit } from './lib/sourceCommit/parseSourceCommit';
-import { ConfigFileOptions } from './options/ConfigOptions';
-import { ValidConfigOptions } from './options/options';
-import { excludeUndefined } from './utils/excludeUndefined';
+import type { Commit } from './lib/sourceCommit/parse-source-commit';
+import type { ConfigFileOptions } from './options/config-options';
+import type { ValidConfigOptions } from './options/options';
+import { excludeUndefined } from './utils/exclude-undefined';
 
 // public API
 export type {
   HandledErrorResult,
   SuccessResult,
   UnhandledErrorResult,
-} from './runSequentially';
+} from './lib/run-sequentially';
 export type {
   BackportAbortResponse,
   BackportFailureResponse,
   BackportResponse,
   BackportSuccessResponse,
-} from './backportRun';
-export type { Commit } from './lib/sourceCommit/parseSourceCommit';
-export type { ConfigFileOptions } from './options/ConfigOptions';
-export { getTargetBranchFromLabel } from './lib/sourceCommit/getPullRequestStates';
-export { BackportError } from './lib/BackportError';
-export { getGlobalConfig } from './options/config/globalConfig';
-export { getProjectConfig } from './options/config/projectConfig';
+} from './backport-run';
+export type { Commit } from './lib/sourceCommit/parse-source-commit';
+export type { ConfigFileOptions } from './options/config-options';
+export { getTargetBranchFromLabel } from './lib/sourceCommit/get-pull-request-states';
+export { BackportError } from './lib/backport-error';
+export { getGlobalConfig } from './options/config/global-config';
+export { getProjectConfig } from './options/config/project-config';
 
 // wrap `getOptionsFromGithub` with logger
 export function getOptionsFromGithub(

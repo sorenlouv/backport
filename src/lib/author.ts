@@ -1,5 +1,5 @@
-import { Commit } from '../entrypoint.api';
-import { ValidConfigOptions } from '../options/options';
+import type { Commit } from '../entrypoint.api';
+import type { ValidConfigOptions } from '../options/options';
 
 export type CommitAuthor = { name: string; email: string };
 export function getCommitAuthor({
@@ -17,7 +17,7 @@ export function getCommitAuthor({
   }
 
   return {
-    name: options.gitAuthorName ?? commit.author.name,
-    email: options.gitAuthorEmail ?? commit.author.email,
+    name: options.gitAuthorName ?? commit.author!.name!,
+    email: options.gitAuthorEmail ?? commit.author!.email!,
   };
 }

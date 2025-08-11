@@ -1,11 +1,10 @@
-import { access } from 'fs/promises';
-import fs from 'fs/promises';
+import fs, { access } from 'fs/promises';
 import path from 'path';
 import makeDir from 'make-dir';
-import { Commit } from '../entrypoint.api';
-import { ValidConfigOptions } from '../options/options';
-import { exec } from '../test/childProcessHelper';
-import { getDevAccessToken } from '../test/private/getDevAccessToken';
+import type { Commit } from '../entrypoint.api';
+import type { ValidConfigOptions } from '../options/options';
+import { exec } from '../test/child-process-helper';
+import { getDevAccessToken } from '../test/private/get-dev-access-token';
 import { getSandboxPath, resetSandbox } from '../test/sandbox';
 import * as childProcess from './child-process-promisified';
 import {
@@ -13,18 +12,18 @@ import {
   cloneRepo,
   commitChanges,
   createBackportBranch,
-  getShasInMergeCommit,
+  deleteRemote,
   getGitProjectRootPath,
   getIsCommitInBranch,
   getIsMergeCommit,
   getLocalConfigFileCommitDate,
   getLocalSourceRepoPath,
+  getShasInMergeCommit,
   isLocalConfigFileModified,
   isLocalConfigFileUntracked,
   pushBackportBranch,
-  deleteRemote,
 } from './git';
-import { getShortSha } from './github/commitFormatters';
+import { getShortSha } from './github/commit-formatters';
 
 jest.unmock('del');
 jest.unmock('make-dir');
@@ -390,7 +389,7 @@ describe('git.private', () => {
           ['cherry-pick', '3a0934d1f646e4a50571cb4b137ad2b08d2e7b18'],
           cwd,
         );
-      } catch (e) {
+      } catch {
         // swallow
       }
 
@@ -600,7 +599,7 @@ describe('git.private', () => {
       subDirectory = `${sandboxPath}/foo-dir`;
       await resetSandbox(sandboxPath);
       await gitInit(sandboxPath);
-      makeDir(subDirectory);
+      await makeDir(subDirectory);
     });
 
     it('returns the root dir', async () => {
@@ -760,7 +759,6 @@ async function createAndStageFile({
     await fs.writeFile(path.join(cwd, filename), content);
     await childProcess.spawnPromise('git', ['add', `${filename}`], cwd);
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.log('"createAndStageFile" threw an error', {
       filename,
       content,
@@ -793,7 +791,6 @@ async function getMostRecentCommitMessage(cwd: string) {
     );
     return stdout.trim();
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.log('"getMostRecentCommitMessage" threw an error', cwd);
     throw e;
   }
@@ -807,7 +804,6 @@ async function gitClone(repoUrl: string, cwd: string) {
       cwd,
     );
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.log('Git clone failed');
     throw e;
   }
@@ -817,7 +813,6 @@ async function gitInit(cwd: string) {
   try {
     await childProcess.spawnPromise('git', ['init'], cwd);
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.log('Git init failed');
     throw e;
   }

@@ -1,7 +1,7 @@
-import { getDevAccessToken } from '../../private/getDevAccessToken';
-import { replaceStringAndLinebreaks } from '../../replaceStringAndLinebreaks';
+import { getDevAccessToken } from '../../private/get-dev-access-token';
+import { removeLinesBreaksInConflictingFiles } from '../../replace-string-and-linebreaks';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
-import { runBackportViaCli } from './runBackportViaCli';
+import { runBackportViaCli } from './run-backport-via-cli';
 
 const accessToken = getDevAccessToken();
 jest.setTimeout(15_000);
@@ -84,11 +84,10 @@ describe('interactive error handling', () => {
     );
 
     expect(
-      replaceStringAndLinebreaks({
-        haystack: output,
-        stringBefore: backportDir,
-        stringAfter: '<BACKPORT_DIR>',
-      }),
+      removeLinesBreaksInConflictingFiles(output).replaceAll(
+        backportDir,
+        '<BACKPORT_DIR>',
+      ),
     ).toMatchInlineSnapshot(`
 "repo: backport-org/repo-with-conflicts 🔹 sourceBranch: main 🔹 pullNumber: 12 🔹 author: sorenlouv
 
@@ -105,10 +104,7 @@ Hint: Before fixing the conflicts manually you should consider backporting the f
 
 ? Fix the following conflicts manually:
 
-Conflicting files:
- - <BACKPORT_DIR>/l
-a-liga.md
-
+Conflicting files: - <BACKPORT_DIR>/la-liga.md
 
 Press ENTER when the conflicts are resolved and files are staged (Y/n)"
 `);

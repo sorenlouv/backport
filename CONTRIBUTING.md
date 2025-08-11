@@ -10,7 +10,7 @@ yarn start --branch 6.1 --repo backport-org/backport-demo --all
 This will build backport continously and link it, so it can accessed with `backport` command globally
 
 ```
-yarn tsc && sudo chmod +x bin/backport && yarn unlink; yarn link && yarn tsc --watch
+yarn build && sudo chmod +x bin/backport && yarn unlink; yarn link && yarn tsc --watch
 ```
 
 **Remove linked backport**
