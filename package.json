@@ -73,7 +73,7 @@
     "graphql": "^16.11.0",
     "graphql-tag": "^2.12.6",
     "handlebars": "^4.7.8",
-    "inquirer": "^8.2.5",
+    "inquirer": "^8.2.7",
     "lodash": "^4.17.21",
     "make-dir": "^3.1.0",
     "ora": "^5.4.1",
