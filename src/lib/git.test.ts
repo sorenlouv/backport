@@ -517,6 +517,9 @@ describe('cherrypick', () => {
       )
 
       // mock getUnstagedFiles
+      .mockResolvedValueOnce({ stdout: '', stderr: '', code: 0, cmdArgs: [] })
+
+      // mock getStagedFiles
       .mockResolvedValueOnce({ stdout: '', stderr: '', code: 0, cmdArgs: [] });
 
     expect(
@@ -618,6 +621,118 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
         commitAuthor,
       }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"non-cherrypick error"`);
+  });
+
+  it('should handle rerere auto-resolved conflicts', async () => {
+    const spawnSpy = jest.spyOn(childProcess, 'spawnPromise');
+
+    spawnSpy.mockImplementation(async (cmd, args) => {
+      if (args.includes('cherry-pick')) {
+        throw new childProcess.SpawnError({
+          code: 1,
+          cmdArgs: ['cherry-pick', '-x', 'abcd'],
+          stdout: '',
+          stderr: 'error: could not apply abc1234... some commit message',
+        });
+      }
+
+      const isDiff = args.includes('--no-pager') && args.includes('diff');
+
+      // Mock getConflictingFiles (git diff --check) - no conflicts found
+      if (isDiff && args.includes('--check')) {
+        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+      }
+
+      // Mock getUnstagedFiles (git diff --name-only) - no unstaged files
+      if (
+        isDiff &&
+        args.includes('--name-only') &&
+        !args.includes('--cached')
+      ) {
+        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+      }
+
+      // Mock getStagedFiles (git diff --name-only --cached) - has staged files
+      if (isDiff && args.includes('--name-only') && args.includes('--cached')) {
+        return {
+          stdout: 'resolved-file.txt\nother-file.js',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        };
+      }
+
+      throw new Error(`Unexpected git command: ${cmd} ${args.join(' ')}`);
+    });
+
+    expect(
+      await cherrypick({
+        options,
+        sha: 'abcd',
+        commitAuthor,
+      }),
+    ).toEqual({
+      conflictingFiles: [],
+      unstagedFiles: [],
+      needsResolving: false,
+    });
+  });
+
+  it('should require manual resolution when rerere did not resolve conflicts', async () => {
+    const spawnSpy = jest.spyOn(childProcess, 'spawnPromise');
+
+    spawnSpy.mockImplementation(async (cmd, args) => {
+      // Mock cherry-pick command failing
+      if (args.includes('cherry-pick')) {
+        throw new childProcess.SpawnError({
+          code: 1,
+          cmdArgs: ['cherry-pick', '-x', 'abcd'],
+          stdout: '',
+          stderr: 'error: could not apply abc1234... some commit message',
+        });
+      }
+
+      // Mock getConflictingFiles (git diff --check) - conflicts found
+      if (args.includes('--check')) {
+        throw new childProcess.SpawnError({
+          code: 2,
+          cmdArgs: ['--no-pager', 'diff', '--check'],
+          stdout:
+            'conflicting-file.txt:1: leftover conflict marker\nconflicting-file.txt:3: leftover conflict marker',
+          stderr: '',
+        });
+      }
+
+      // Mock getUnstagedFiles (git diff --name-only) - no unstaged files
+      if (args.includes('--name-only') && !args.includes('--cached')) {
+        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+      }
+
+      // Mock getStagedFiles (git diff --name-only --cached) - no staged files
+      if (args.includes('--name-only') && args.includes('--cached')) {
+        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+      }
+
+      throw new Error(`Unexpected git command: ${cmd} ${args.join(' ')}`);
+    });
+
+    expect(
+      await cherrypick({
+        options,
+        sha: 'abcd',
+        commitAuthor,
+      }),
+    ).toEqual({
+      conflictingFiles: [
+        {
+          absolute:
+            '/myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt',
+          relative: 'conflicting-file.txt',
+        },
+      ],
+      needsResolving: true,
+      unstagedFiles: [],
+    });
   });
 });
 
