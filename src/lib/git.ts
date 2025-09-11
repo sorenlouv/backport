@@ -351,10 +351,30 @@ export async function cherrypick({
       const isCherryPickError =
         e.context.cmdArgs.includes('cherry-pick') && e.context.code > 0;
       if (isCherryPickError) {
-        const [conflictingFiles, unstagedFiles] = await Promise.all([
-          getConflictingFiles(options),
-          getUnstagedFiles(options),
-        ]);
+        const [conflictingFiles, unstagedFiles, stagedFiles] =
+          await Promise.all([
+            getConflictingFiles(options),
+            getUnstagedFiles(options),
+            getStagedFiles(options),
+          ]);
+
+        // Check if rerere has resolved conflicts automatically
+        // If there are staged files but no conflict files or unstaged files,
+        // rerere likely resolved them automatically
+        if (
+          !isEmpty(stagedFiles) &&
+          isEmpty(conflictingFiles) &&
+          isEmpty(unstagedFiles)
+        ) {
+          logger.info(
+            'Git rerere appears to have resolved conflicts automatically',
+          );
+          return {
+            conflictingFiles: [],
+            unstagedFiles: [],
+            needsResolving: false,
+          };
+        }
 
         if (!isEmpty(conflictingFiles) || !isEmpty(unstagedFiles))
           return { conflictingFiles, unstagedFiles, needsResolving: true };
@@ -479,13 +499,15 @@ export async function getConflictingFiles(options: ValidConfigOptions) {
   }
 }
 
-// retrieve the list of files that could not be cleanly merged
-export async function getUnstagedFiles(options: ValidConfigOptions) {
+async function getFilesFromDiff(
+  options: ValidConfigOptions,
+  isStaged: boolean,
+) {
   const repoPath = getRepoPath(options);
   const cwd = repoPath;
   const res = await spawnPromise(
     'git',
-    ['--no-pager', 'diff', '--name-only'],
+    ['--no-pager', 'diff', '--name-only', ...(isStaged ? ['--cached'] : [])],
     cwd,
   );
   const files = res.stdout
@@ -494,6 +516,16 @@ export async function getUnstagedFiles(options: ValidConfigOptions) {
     .map((file) => pathResolve(repoPath, file));
 
   return uniq(files);
+}
+
+// retrieve the list of files that could not be cleanly merged
+export async function getUnstagedFiles(options: ValidConfigOptions) {
+  return getFilesFromDiff(options, false);
+}
+
+// retrieve the list of files that are staged and ready to be committed
+export async function getStagedFiles(options: ValidConfigOptions) {
+  return getFilesFromDiff(options, true);
 }
 
 // How the commit flows:
