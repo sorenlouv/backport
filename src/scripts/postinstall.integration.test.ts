@@ -30,10 +30,6 @@ describe('postinstall (integration)', () => {
     const packDir = fs.mkdtempSync(path.join(os.tmpdir(), 'backport-pack-'));
     tarballPath = path.join(packDir, 'backport.tgz');
 
-    console.log(`repoRoot: ${repoRoot}`);
-    console.log(`workDir: ${workDir}`);
-    console.log(`tarballPath: ${tarballPath}`);
-
     // 2. Pack the project to a predictable filename inside a temp directory
     execSync(`yarn pack --filename ${tarballPath}`, {
       cwd: repoRoot,
