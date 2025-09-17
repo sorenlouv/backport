@@ -351,13 +351,47 @@ export async function cherrypick({
       const isCherryPickError =
         e.context.cmdArgs.includes('cherry-pick') && e.context.code > 0;
       if (isCherryPickError) {
-        const [conflictingFiles, unstagedFiles] = await Promise.all([
-          getConflictingFiles(options),
-          getUnstagedFiles(options),
-        ]);
+        const [conflictingFiles, unstagedFiles, rerereConfig] =
+          await Promise.all([
+            getConflictingFiles(options),
+            getUnstagedFiles(options),
+            getRerereConfig(options),
+          ]);
 
-        if (!isEmpty(conflictingFiles) || !isEmpty(unstagedFiles))
+        const noConflicts = isEmpty(conflictingFiles);
+        const hasUnstaged = !isEmpty(unstagedFiles);
+
+        if (rerereConfig.enabled && noConflicts) {
+          const stagedFiles = await getStagedFiles(options);
+          const hasStaged = !isEmpty(stagedFiles);
+
+          if (rerereConfig.autoUpdate && hasStaged && !hasUnstaged) {
+            logger.info(
+              'Git rerere resolved conflicts and staged files automatically',
+            );
+            return {
+              conflictingFiles: [],
+              unstagedFiles: [],
+              needsResolving: false,
+            };
+          }
+
+          if (!rerereConfig.autoUpdate && hasUnstaged) {
+            logger.info(
+              'Git rerere resolved conflicts (files remain unmerged. Please stage manually)',
+            );
+            return {
+              conflictingFiles: [],
+              unstagedFiles,
+              needsResolving: true,
+            };
+          }
+        }
+
+        // Standard resolution path
+        if (!noConflicts || hasUnstaged) {
           return { conflictingFiles, unstagedFiles, needsResolving: true };
+        }
       }
     }
 
@@ -479,13 +513,15 @@ export async function getConflictingFiles(options: ValidConfigOptions) {
   }
 }
 
-// retrieve the list of files that could not be cleanly merged
-export async function getUnstagedFiles(options: ValidConfigOptions) {
+async function getFilesFromDiff(
+  options: ValidConfigOptions,
+  isStaged: boolean,
+) {
   const repoPath = getRepoPath(options);
   const cwd = repoPath;
   const res = await spawnPromise(
     'git',
-    ['--no-pager', 'diff', '--name-only'],
+    ['--no-pager', 'diff', '--name-only', ...(isStaged ? ['--cached'] : [])],
     cwd,
   );
   const files = res.stdout
@@ -494,6 +530,47 @@ export async function getUnstagedFiles(options: ValidConfigOptions) {
     .map((file) => pathResolve(repoPath, file));
 
   return uniq(files);
+}
+
+// retrieve the list of files that could not be cleanly merged
+export function getUnstagedFiles(options: ValidConfigOptions) {
+  return getFilesFromDiff(options, false);
+}
+
+// retrieve the list of files that are staged and ready to be committed
+export function getStagedFiles(options: ValidConfigOptions) {
+  return getFilesFromDiff(options, true);
+}
+
+// check if git rerere is enabled and what configuration it has
+export async function getRerereConfig(options: ValidConfigOptions): Promise<{
+  enabled: boolean;
+  autoUpdate: boolean;
+}> {
+  const cwd = getRepoPath(options);
+
+  const getConfigValue = async (key: string): Promise<boolean> => {
+    try {
+      const res = await spawnPromise(
+        'git',
+        ['config', '--type=bool', '--get', key],
+        cwd,
+      );
+      return JSON.parse(res.stdout.trim());
+    } catch {
+      return false;
+    }
+  };
+
+  const [enabled, autoUpdate] = await Promise.all([
+    getConfigValue('rerere.enabled'),
+    getConfigValue('rerere.autoUpdate'),
+  ]);
+
+  return {
+    enabled,
+    autoUpdate,
+  };
 }
 
 // How the commit flows:

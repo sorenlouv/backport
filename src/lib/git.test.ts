@@ -15,6 +15,8 @@ import {
   isLocalConfigFileUntracked,
   isLocalConfigFileModified,
   getRepoInfoFromGitRemotes,
+  getRerereConfig,
+  getStagedFiles,
 } from './git';
 import type { Commit } from './sourceCommit/parse-source-commit';
 
@@ -42,7 +44,7 @@ describe('getUnstagedFiles', () => {
       repoName: 'kibana',
     } as ValidConfigOptions;
 
-    await expect(await getUnstagedFiles(options)).toEqual([
+    await expect(getUnstagedFiles(options)).resolves.toEqual([
       '/myHomeDir/.backport/repositories/elastic/kibana/conflicting-file.txt',
       '/myHomeDir/.backport/repositories/elastic/kibana/conflicting-file2.txt',
     ]);
@@ -61,7 +63,44 @@ describe('getUnstagedFiles', () => {
       repoName: 'kibana',
     } as ValidConfigOptions;
 
-    await expect(await getUnstagedFiles(options)).toEqual([]);
+    await expect(getUnstagedFiles(options)).resolves.toEqual([]);
+  });
+});
+
+describe('getStagedFiles', () => {
+  it('should split lines and remove empty', async () => {
+    jest.spyOn(childProcess, 'spawnPromise').mockResolvedValueOnce({
+      stdout: 'staged-file.txt\nstaged-file2.txt\n',
+      stderr: '',
+      code: 0,
+      cmdArgs: [],
+    });
+
+    const options = {
+      repoOwner: 'elastic',
+      repoName: 'kibana',
+    } as ValidConfigOptions;
+
+    await expect(getStagedFiles(options)).resolves.toEqual([
+      '/myHomeDir/.backport/repositories/elastic/kibana/staged-file.txt',
+      '/myHomeDir/.backport/repositories/elastic/kibana/staged-file2.txt',
+    ]);
+  });
+
+  it('should not error on empty', async () => {
+    jest.spyOn(childProcess, 'spawnPromise').mockResolvedValueOnce({
+      stdout: '',
+      stderr: '',
+      code: 0,
+      cmdArgs: [],
+    });
+
+    const options = {
+      repoOwner: 'elastic',
+      repoName: 'kibana',
+    } as ValidConfigOptions;
+
+    await expect(getStagedFiles(options)).resolves.toEqual([]);
   });
 });
 
@@ -517,6 +556,9 @@ describe('cherrypick', () => {
       )
 
       // mock getUnstagedFiles
+      .mockResolvedValueOnce({ stdout: '', stderr: '', code: 0, cmdArgs: [] })
+
+      // mock getStagedFiles
       .mockResolvedValueOnce({ stdout: '', stderr: '', code: 0, cmdArgs: [] });
 
     expect(
@@ -618,6 +660,414 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
         commitAuthor,
       }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(`"non-cherrypick error"`);
+  });
+
+  it('should return needsResolve:false when rerere.enabled + rerere.autoUpdate and all files are staged', async () => {
+    const spawnSpy = jest.spyOn(childProcess, 'spawnPromise');
+
+    spawnSpy.mockImplementation(async (cmd, args) => {
+      if (args.includes('cherry-pick')) {
+        throw new childProcess.SpawnError({
+          code: 1,
+          cmdArgs: ['cherry-pick', '-x', 'abcd'],
+          stdout: '',
+          stderr: 'error: could not apply abc1234... some commit message',
+        });
+      }
+
+      const isDiff = args.includes('--no-pager') && args.includes('diff');
+
+      // Mock getConflictingFiles (git diff --check) - no conflicts found
+      if (isDiff && args.includes('--check')) {
+        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+      }
+
+      // Mock getUnstagedFiles (git diff --name-only) - no unstaged files
+      if (
+        isDiff &&
+        args.includes('--name-only') &&
+        !args.includes('--cached')
+      ) {
+        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+      }
+
+      // Mock getStagedFiles (git diff --name-only --cached) - has staged files
+      if (isDiff && args.includes('--name-only') && args.includes('--cached')) {
+        return {
+          stdout: 'resolved-file.txt\nother-file.js',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        };
+      }
+
+      // Mock rerere config - enabled with autoUpdate
+      if (args.includes('config') && args.includes('rerere.enabled')) {
+        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+      }
+
+      if (args.includes('config') && args.includes('rerere.autoUpdate')) {
+        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+      }
+
+      throw new Error(`Unexpected git command: ${cmd} ${args.join(' ')}`);
+    });
+
+    expect(
+      await cherrypick({
+        options,
+        sha: 'abcd',
+        commitAuthor,
+      }),
+    ).toEqual({
+      conflictingFiles: [],
+      unstagedFiles: [],
+      needsResolving: false,
+    });
+  });
+
+  it('should return needsResolving:true when rerere.enabled && autoUpdate && mixed staged + unstaged', async () => {
+    const base = '/myHomeDir/.backport/repositories/elastic/kibana';
+    const spawnSpy = jest.spyOn(childProcess, 'spawnPromise');
+    spawnSpy.mockImplementation(async (cmd, args) => {
+      if (args.includes('cherry-pick')) {
+        throw new childProcess.SpawnError({
+          code: 1,
+          cmdArgs: ['cherry-pick', '-x', 'abcd'],
+          stdout: '',
+          stderr: 'error: could not apply abc1234... some commit message',
+        });
+      }
+      const isDiff = args.includes('--no-pager') && args.includes('diff');
+
+      // getConflictingFiles: none
+      if (isDiff && args.includes('--check')) {
+        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+      }
+      // getUnstagedFiles: has one unstaged file
+      if (
+        isDiff &&
+        args.includes('--name-only') &&
+        !args.includes('--cached')
+      ) {
+        return { stdout: 'u1\n', stderr: '', code: 0, cmdArgs: args };
+      }
+      // getStagedFiles: has staged file(s)
+      if (isDiff && args.includes('--name-only') && args.includes('--cached')) {
+        return { stdout: 's1\n', stderr: '', code: 0, cmdArgs: args };
+      }
+      // rerere.enabled=true, rerere.autoUpdate=true
+      if (args.includes('config') && args.includes('rerere.enabled')) {
+        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+      }
+      if (args.includes('config') && args.includes('rerere.autoUpdate')) {
+        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+      }
+
+      throw new Error(`Unexpected git command: ${cmd} ${args.join(' ')}`);
+    });
+
+    await expect(
+      cherrypick({ options, sha: 'abcd', commitAuthor }),
+    ).resolves.toEqual({
+      conflictingFiles: [],
+      unstagedFiles: [`${base}/u1`],
+      needsResolving: true,
+    });
+  });
+
+  it('should return needsResolving:true when rerere.enabled && !autoUpdate and unstaged present (no conflicts)', async () => {
+    const base = '/myHomeDir/.backport/repositories/elastic/kibana';
+    const spawnSpy = jest.spyOn(childProcess, 'spawnPromise');
+    spawnSpy.mockImplementation(async (cmd, args) => {
+      if (args.includes('cherry-pick')) {
+        throw new childProcess.SpawnError({
+          code: 1,
+          cmdArgs: ['cherry-pick', '-x', 'abcd'],
+          stdout: '',
+          stderr: 'error: could not apply abc1234... some commit message',
+        });
+      }
+      const isDiff = args.includes('--no-pager') && args.includes('diff');
+
+      // getConflictingFiles: clean (no conflicts found)
+      if (isDiff && args.includes('--check')) {
+        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+      }
+
+      // getUnstagedFiles: has unstaged paths
+      if (
+        isDiff &&
+        args.includes('--name-only') &&
+        !args.includes('--cached')
+      ) {
+        return { stdout: 'a.txt\nb.md\n', stderr: '', code: 0, cmdArgs: args };
+      }
+
+      // getStagedFiles: none staged
+      if (isDiff && args.includes('--name-only') && args.includes('--cached')) {
+        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+      }
+
+      // rerere.enabled=true, rerere.autoUpdate=false
+      if (args.includes('config') && args.includes('rerere.enabled')) {
+        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+      }
+      if (args.includes('config') && args.includes('rerere.autoUpdate')) {
+        return { stdout: 'false\n', stderr: '', code: 0, cmdArgs: args };
+      }
+
+      throw new Error(`Unexpected git command: ${cmd} ${args.join(' ')}`);
+    });
+
+    await expect(
+      cherrypick({ options, sha: 'abcd', commitAuthor }),
+    ).resolves.toEqual({
+      conflictingFiles: [],
+      unstagedFiles: [`${base}/a.txt`, `${base}/b.md`],
+      needsResolving: true,
+    });
+  });
+
+  it('should rethrow cherry-pick error when rerere.enabled && autoUpdate && no staged and no unstaged files (no conflicts)', async () => {
+    const spawnSpy = jest.spyOn(childProcess, 'spawnPromise');
+    spawnSpy.mockImplementation(async (cmd, args) => {
+      if (args.includes('cherry-pick')) {
+        throw new childProcess.SpawnError({
+          code: 1,
+          cmdArgs: ['cherry-pick', '-x', 'abcd'],
+          stdout: '',
+          stderr: 'error: could not apply abc1234... some commit message',
+        });
+      }
+      const isDiff = args.includes('--no-pager') && args.includes('diff');
+
+      // getConflictingFiles: clean
+      if (isDiff && args.includes('--check')) {
+        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+      }
+      // getUnstagedFiles: none
+      if (
+        isDiff &&
+        args.includes('--name-only') &&
+        !args.includes('--cached')
+      ) {
+        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+      }
+      // getStagedFiles: none
+      if (isDiff && args.includes('--name-only') && args.includes('--cached')) {
+        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+      }
+      // rerere.enabled=true, rerere.autoUpdate=true
+      if (args.includes('config') && args.includes('rerere.enabled')) {
+        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+      }
+      if (args.includes('config') && args.includes('rerere.autoUpdate')) {
+        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+      }
+
+      throw new Error(`Unexpected git command: ${cmd} ${args.join(' ')}`);
+    });
+
+    await expect(
+      cherrypick({ options, sha: 'abcd', commitAuthor }),
+    ).rejects.toThrow(/could not apply/);
+  });
+
+  it('should return needsResolving:true when rerere.enabled && !autoUpdate with mixed staged and unstaged', async () => {
+    const base = '/myHomeDir/.backport/repositories/elastic/kibana';
+    const spawnSpy = jest.spyOn(childProcess, 'spawnPromise');
+    spawnSpy.mockImplementation(async (cmd, args) => {
+      if (args.includes('cherry-pick')) {
+        throw new childProcess.SpawnError({
+          code: 1,
+          cmdArgs: ['cherry-pick', '-x', 'abcd'],
+          stdout: '',
+          stderr: 'error: could not apply abc1234... some commit message',
+        });
+      }
+      const isDiff = args.includes('--no-pager') && args.includes('diff');
+
+      // getConflictingFiles: clean
+      if (isDiff && args.includes('--check')) {
+        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+      }
+      // getUnstagedFiles: has entries
+      if (
+        isDiff &&
+        args.includes('--name-only') &&
+        !args.includes('--cached')
+      ) {
+        return { stdout: 'u1\nu2\n', stderr: '', code: 0, cmdArgs: args };
+      }
+      // getStagedFiles: also has entries (mixed state)
+      if (isDiff && args.includes('--name-only') && args.includes('--cached')) {
+        return { stdout: 's1\n', stderr: '', code: 0, cmdArgs: args };
+      }
+      // rerere.enabled=true, rerere.autoUpdate=false
+      if (args.includes('config') && args.includes('rerere.enabled')) {
+        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+      }
+      if (args.includes('config') && args.includes('rerere.autoUpdate')) {
+        return { stdout: 'false\n', stderr: '', code: 0, cmdArgs: args };
+      }
+
+      throw new Error(`Unexpected git command: ${cmd} ${args.join(' ')}`);
+    });
+
+    await expect(
+      cherrypick({ options, sha: 'abcd', commitAuthor }),
+    ).resolves.toEqual({
+      conflictingFiles: [],
+      unstagedFiles: [`${base}/u1`, `${base}/u2`],
+      needsResolving: true,
+    });
+  });
+
+  it('should return needsResolving:true when conflicts are present (regardless of rerere)', async () => {
+    const base = '/myHomeDir/.backport/repositories/elastic/kibana';
+    const spawnSpy = jest.spyOn(childProcess, 'spawnPromise');
+
+    spawnSpy.mockImplementation(async (cmd, args) => {
+      if (args.includes('cherry-pick')) {
+        throw new childProcess.SpawnError({
+          code: 1,
+          cmdArgs: ['cherry-pick', '-x', 'abcd'],
+          stdout: '',
+          stderr: 'error: could not apply abc1234... some commit message',
+        });
+      }
+      const isDiff = args.includes('--no-pager') && args.includes('diff');
+
+      // getConflictingFiles: has entries
+      if (isDiff && args.includes('--check')) {
+        throw new childProcess.SpawnError({
+          code: 2,
+          cmdArgs: args,
+          stdout: 'left.txt:1: leftover conflict marker\n',
+          stderr: '',
+        });
+      }
+      // getUnstagedFiles: none
+      if (
+        isDiff &&
+        args.includes('--name-only') &&
+        !args.includes('--cached')
+      ) {
+        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+      }
+      // getStagedFiles: none
+      if (isDiff && args.includes('--name-only') && args.includes('--cached')) {
+        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+      }
+      // rerere.enabled=true, rerere.autoUpdate=true
+      if (args.includes('config') && args.includes('rerere.enabled')) {
+        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+      }
+      if (args.includes('config') && args.includes('rerere.autoUpdate')) {
+        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+      }
+
+      throw new Error(`Unexpected git command: ${cmd} ${args.join(' ')}`);
+    });
+
+    await expect(
+      cherrypick({ options, sha: 'abcd', commitAuthor }),
+    ).resolves.toEqual({
+      conflictingFiles: [
+        { absolute: `${base}/left.txt`, relative: 'left.txt' },
+      ],
+      unstagedFiles: [],
+      needsResolving: true,
+    });
+  });
+
+  it('should return needsResolving:true and unstaged present (regardless of rerere)', async () => {
+    const base = '/myHomeDir/.backport/repositories/elastic/kibana';
+    const spawnSpy = jest.spyOn(childProcess, 'spawnPromise');
+    spawnSpy.mockImplementation(async (cmd, args) => {
+      if (args.includes('cherry-pick')) {
+        throw new childProcess.SpawnError({
+          code: 1,
+          cmdArgs: ['cherry-pick', '-x', 'abcd'],
+          stdout: '',
+          stderr: 'error: could not apply abc1234... some commit message',
+        });
+      }
+      const isDiff = args.includes('--no-pager') && args.includes('diff');
+
+      // getConflictingFiles: clean
+      if (isDiff && args.includes('--check')) {
+        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+      }
+      // getUnstagedFiles: has entries
+      if (
+        isDiff &&
+        args.includes('--name-only') &&
+        !args.includes('--cached')
+      ) {
+        return { stdout: 'x\n', stderr: '', code: 0, cmdArgs: args };
+      }
+      // getStagedFiles: not needed but return none
+      if (isDiff && args.includes('--name-only') && args.includes('--cached')) {
+        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+      }
+      // rerere.enabled=false; rerere.autoUpdate=false
+      if (args.includes('config') && args.includes('rerere.enabled')) {
+        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+      }
+      if (args.includes('config') && args.includes('rerere.autoUpdate')) {
+        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+      }
+
+      throw new Error(`Unexpected git command: ${cmd} ${args.join(' ')}`);
+    });
+
+    await expect(
+      cherrypick({ options, sha: 'abcd', commitAuthor }),
+    ).resolves.toEqual({
+      conflictingFiles: [],
+      unstagedFiles: [`${base}/x`],
+      needsResolving: true,
+    });
+  });
+});
+
+describe('getRerereConfig', () => {
+  const options = {
+    repoOwner: 'elastic',
+    repoName: 'kibana',
+  } as ValidConfigOptions;
+
+  it('parses booleans from git config canonical output', async () => {
+    const spy = jest.spyOn(childProcess, 'spawnPromise');
+    // rerere.enabled -> true
+    spy.mockResolvedValueOnce({
+      stdout: 'true\n',
+      stderr: '',
+      code: 0,
+      cmdArgs: [],
+    });
+    // rerere.autoUpdate -> false
+    spy.mockResolvedValueOnce({
+      stdout: 'false\n',
+      stderr: '',
+      code: 0,
+      cmdArgs: [],
+    });
+
+    const cfg = await getRerereConfig(options as ValidConfigOptions);
+    expect(cfg).toEqual({ enabled: true, autoUpdate: false });
+  });
+
+  it('returns false when keys are missing or unreadable', async () => {
+    const spy = jest.spyOn(childProcess, 'spawnPromise');
+    // Simulate missing keys by rejecting
+    spy.mockRejectedValueOnce(new Error('not found'));
+    spy.mockRejectedValueOnce(new Error('not found'));
+
+    const cfg = await getRerereConfig(options as ValidConfigOptions);
+    expect(cfg).toEqual({ enabled: false, autoUpdate: false });
   });
 });
 

@@ -64,7 +64,7 @@ function getPromise(
   }
 
   const {
-    timeoutSeconds = 3,
+    timeoutSeconds = 10,
     waitForString,
     showOra,
     keepAlive,

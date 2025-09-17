@@ -79,7 +79,6 @@ describe('interactive error handling', () => {
       ],
       {
         waitForString: 'Press ENTER when the conflicts',
-        timeoutSeconds: 5,
       },
     );
 

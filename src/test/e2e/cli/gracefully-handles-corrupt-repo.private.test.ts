@@ -23,7 +23,6 @@ describe('gracefully handle corrupted repo', () => {
       ],
       {
         showOra: true,
-        timeoutSeconds: 10,
       },
     );
 
@@ -42,7 +41,6 @@ describe('gracefully handle corrupted repo', () => {
       ],
       {
         showOra: true,
-        timeoutSeconds: 10,
       },
     );
 
