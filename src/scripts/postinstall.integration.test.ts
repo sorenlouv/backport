@@ -37,7 +37,7 @@ describe('postinstall (integration)', () => {
     // 2. Pack the project to a predictable filename inside a temp directory
     execSync(`yarn pack --filename ${tarballPath}`, {
       cwd: repoRoot,
-      stdio: 'inherit',
+      stdio: 'ignore',
     });
 
     // 3. Create consumer project working directory
@@ -58,7 +58,7 @@ describe('postinstall (integration)', () => {
         // Override HOME so os.homedir() inside the installed package resolves here
         HOME: fakeHomeDir,
       },
-      stdio: 'inherit',
+      stdio: 'ignore',
     });
   });
 
@@ -93,7 +93,7 @@ describe('postinstall (integration)', () => {
         ...process.env,
         HOME: newFakeHomeDir,
       },
-      stdio: 'inherit',
+      stdio: 'ignore',
     });
 
     // Config file should still have our custom content
