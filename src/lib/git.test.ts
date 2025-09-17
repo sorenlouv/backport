@@ -726,6 +726,56 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
     });
   });
 
+  it('should return needsResolving:true when rerere.enabled && autoUpdate && mixed staged + unstaged', async () => {
+    const base = '/myHomeDir/.backport/repositories/elastic/kibana';
+    const spawnSpy = jest.spyOn(childProcess, 'spawnPromise');
+    spawnSpy.mockImplementation(async (cmd, args) => {
+      if (args.includes('cherry-pick')) {
+        throw new childProcess.SpawnError({
+          code: 1,
+          cmdArgs: ['cherry-pick', '-x', 'abcd'],
+          stdout: '',
+          stderr: 'error: could not apply abc1234... some commit message',
+        });
+      }
+      const isDiff = args.includes('--no-pager') && args.includes('diff');
+
+      // getConflictingFiles: none
+      if (isDiff && args.includes('--check')) {
+        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+      }
+      // getUnstagedFiles: has one unstaged file
+      if (
+        isDiff &&
+        args.includes('--name-only') &&
+        !args.includes('--cached')
+      ) {
+        return { stdout: 'u1\n', stderr: '', code: 0, cmdArgs: args };
+      }
+      // getStagedFiles: has staged file(s)
+      if (isDiff && args.includes('--name-only') && args.includes('--cached')) {
+        return { stdout: 's1\n', stderr: '', code: 0, cmdArgs: args };
+      }
+      // rerere.enabled=true, rerere.autoUpdate=true
+      if (args.includes('config') && args.includes('rerere.enabled')) {
+        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+      }
+      if (args.includes('config') && args.includes('rerere.autoUpdate')) {
+        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+      }
+
+      throw new Error(`Unexpected git command: ${cmd} ${args.join(' ')}`);
+    });
+
+    await expect(
+      cherrypick({ options, sha: 'abcd', commitAuthor }),
+    ).resolves.toEqual({
+      conflictingFiles: [],
+      unstagedFiles: [`${base}/u1`],
+      needsResolving: true,
+    });
+  });
+
   it('should return needsResolving:true when rerere.enabled && !autoUpdate and unstaged present (no conflicts)', async () => {
     const base = '/myHomeDir/.backport/repositories/elastic/kibana';
     const spawnSpy = jest.spyOn(childProcess, 'spawnPromise');
