@@ -18,7 +18,7 @@
   "main": "./dist/src/entrypoint.api.js",
   "types": "dist/src/entrypoint.api.d.ts",
   "bin": {
-    "backport": "./bin/backport"
+    "backport": "bin/backport"
   },
   "license": "Apache-2.0",
   "scripts": {
