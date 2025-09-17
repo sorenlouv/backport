@@ -22,7 +22,7 @@
   },
   "license": "Apache-2.0",
   "scripts": {
-    "postinstall": "test -f ./dist/src/scripts/runPostinstall.js && node ./dist/src/scripts/runPostinstall.js || echo 'Dist folder missing'",
+    "postinstall": "test -f ./dist/src/scripts/run-postinstall.js && node ./dist/src/scripts/run-postinstall.js || echo 'Dist folder missing'",
     "prepare": "husky",
     "prepublishOnly": "rm -rf ./dist/ && yarn && yarn lint && yarn build",
     "lint-and-test": "yarn lint && yarn test-all",
