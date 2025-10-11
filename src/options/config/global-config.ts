@@ -68,6 +68,8 @@ function getConfigTemplate() {
   return `{
     // Create a personal access token here: https://github.com/settings/tokens
     // Must have "Repo: Full control of private repositories"
+    // You can use environment variables with the syntax \${VARIABLE_NAME}
+    // For example: "accessToken": "\${GITHUB_ACCESS_TOKEN}"
     "accessToken": ""
   }`;
 }
