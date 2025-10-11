@@ -148,6 +148,25 @@ export async function backportRun({
 
     await createStatusComment({ options, backportResponse });
 
+    // Check if any successful backports had conflicts
+    const hasAnyConflicts = results.some(
+      (r) => r.status === 'success' && r.hasConflicts,
+    );
+
+    // Only change exit code for conflicts while in CLI mode (non-interactive) with failOnConflicts enabled
+    if (
+      exitCodeOnFailure &&
+      hasAnyConflicts &&
+      !options.interactive &&
+      options.commitConflicts &&
+      options.failOnConflicts
+    ) {
+      process.exitCode = 1;
+      consoleLog(
+        '\nBackport completed with merge conflicts. PRs created but exit code set to 1.',
+      );
+    }
+
     return backportResponse;
   } catch (e) {
     spinner.stop();

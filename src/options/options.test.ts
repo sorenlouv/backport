@@ -214,6 +214,8 @@ describe('getOptions', () => {
       backportBinary: 'backport',
       cherrypickRef: true,
       commitConflicts: false,
+      conflictLabel: 'merge-conflict',
+      failOnConflicts: true,
       commitPaths: [],
       cwd: expect.any(String),
       dateSince: null,
