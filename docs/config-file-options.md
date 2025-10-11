@@ -19,6 +19,14 @@ Example:
 }
 ```
 
+Or using environment variables:
+
+```json
+{
+  "accessToken": "${GITHUB_ACCESS_TOKEN}"
+}
+```
+
 #### `accessToken` **required**
 
 Personal access token.
@@ -103,6 +111,29 @@ The array can contain branch names as strings or objects that also contains the 
   ]
 }
 ```
+
+## Environment Variables
+
+Both global and project config files support environment variable substitution
+using the syntax `${VARIABLE_NAME}`.
+
+**Example:**
+
+```json
+{
+  "accessToken": "${GITHUB_ACCESS_TOKEN}",
+  "repoOwner": "${REPO_OWNER}",
+  "repoName": "my-repo"
+}
+```
+
+When backport reads the configuration, it will replace
+`${GITHUB_ACCESS_TOKEN}` with the value of the `GITHUB_ACCESS_TOKEN`
+environment variable.
+
+**Important:** If an environment variable is not defined or is empty, backport
+will fail with a clear error message. This ensures you catch configuration
+issues early rather than experiencing cryptic API errors later.
 
 ## General configuration options
 
