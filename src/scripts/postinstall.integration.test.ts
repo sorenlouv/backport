@@ -24,6 +24,21 @@ describe('postinstall (integration)', () => {
   // Building & packing can be slow
   jest.setTimeout(120_000);
 
+  // Helper to get the actual yarn binary path, resolving asdf shims if needed
+  const getYarnCommand = (): string => {
+    try {
+      const asdfYarnPath = execSync('asdf which yarn', {
+        encoding: 'utf8',
+      }).trim();
+      if (asdfYarnPath && fs.existsSync(asdfYarnPath)) {
+        return asdfYarnPath;
+      }
+    } catch {
+      // asdf not available or yarn not managed by asdf, use 'yarn' from PATH
+    }
+    return 'yarn';
+  };
+
   beforeAll(() => {
     const repoRoot = path.resolve(__dirname, '../..');
     workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'backport-consumer-'));
@@ -47,13 +62,10 @@ describe('postinstall (integration)', () => {
     fs.mkdirSync(fakeHomeDir, { recursive: true });
 
     // 5. Install the packed tarball (this should trigger postinstall)
-    execSync(`yarn add file:${tarballPath}`, {
+    const yarnCommand = getYarnCommand();
+    execSync(`HOME=${fakeHomeDir} ${yarnCommand} add file:${tarballPath}`, {
       cwd: workDir,
-      env: {
-        ...process.env,
-        // Override HOME so os.homedir() inside the installed package resolves here
-        HOME: fakeHomeDir,
-      },
+      shell: '/bin/bash',
       stdio: 'ignore',
     });
   });
@@ -83,12 +95,10 @@ describe('postinstall (integration)', () => {
     fs.writeFileSync(configPath, customContent);
 
     // Install again with the new HOME
-    execSync(`yarn add file:${tarballPath}`, {
+    const yarnCommand = getYarnCommand();
+    execSync(`HOME=${newFakeHomeDir} ${yarnCommand} add file:${tarballPath}`, {
       cwd: workDir,
-      env: {
-        ...process.env,
-        HOME: newFakeHomeDir,
-      },
+      shell: '/bin/bash',
       stdio: 'ignore',
     });
 
