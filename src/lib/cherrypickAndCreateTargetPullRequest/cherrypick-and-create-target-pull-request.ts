@@ -35,7 +35,12 @@ export async function cherrypickAndCreateTargetPullRequest({
   options: ValidConfigOptions;
   commits: Commit[];
   targetBranch: string;
-}): Promise<{ url: string; number: number; didUpdate: boolean }> {
+}): Promise<{
+  url: string;
+  number: number;
+  didUpdate: boolean;
+  hasConflicts: boolean;
+}> {
   const backportBranch = getBackportBranchName({
     options,
     targetBranch,
@@ -135,6 +140,15 @@ export async function cherrypickAndCreateTargetPullRequest({
     );
   }
 
+  // add conflict label if there are conflicts
+  if (hasAnyCommitWithConflicts && options.commitConflicts) {
+    await addLabelsToPullRequest({
+      ...options,
+      pullNumber: targetPullRequest.number,
+      labels: [options.conflictLabel],
+    });
+  }
+
   // make PR auto mergable
   if (options.autoMerge && !hasAnyCommitWithConflicts) {
     await autoMergeNowOrLater(options, targetPullRequest.number);
@@ -157,5 +171,5 @@ export async function cherrypickAndCreateTargetPullRequest({
 
   consoleLog(`View pull request: ${targetPullRequest.url}`);
 
-  return targetPullRequest;
+  return { ...targetPullRequest, hasConflicts: hasAnyCommitWithConflicts };
 }

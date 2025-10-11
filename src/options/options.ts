@@ -33,6 +33,8 @@ export const defaultConfigOptions = {
   cherrypickRef: true,
   commitConflicts: false,
   commitPaths: [] as Array<string>,
+  conflictLabel: 'merge-conflict',
+  failOnConflicts: true,
   copySourcePRLabels: false,
   copySourcePRReviewers: false,
   cwd: process.cwd(),

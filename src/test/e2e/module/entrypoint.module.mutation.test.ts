@@ -4,6 +4,11 @@ import { backportRun } from '../../../entrypoint.api';
 import { getShortSha } from '../../../lib/github/commit-formatters';
 import { getDevAccessToken } from '../../private/get-dev-access-token';
 import { getSandboxPath, resetSandbox } from '../../sandbox';
+import {
+  closePullRequest,
+  fetchPullRequest,
+  setupConflictingCommits,
+} from '../github-helpers';
 
 jest.unmock('find-up');
 jest.unmock('del');
@@ -80,6 +85,7 @@ describe('entrypoint.module', () => {
         results: [
           {
             didUpdate: false,
+            hasConflicts: false,
             pullRequestNumber: expect.any(Number),
             pullRequestUrl: expect.stringContaining(
               'https://github.com/backport-org/integration-test/pull/',
@@ -207,6 +213,7 @@ describe('entrypoint.module', () => {
         results: [
           {
             didUpdate: false,
+            hasConflicts: false,
             pullRequestNumber: expect.any(Number),
             pullRequestUrl: expect.stringContaining(
               'https://github.com/backport-org/integration-test/pull/',
@@ -331,6 +338,7 @@ describe('entrypoint.module', () => {
         results: [
           {
             didUpdate: false,
+            hasConflicts: false,
             pullRequestNumber: expect.any(Number),
             pullRequestUrl: expect.stringContaining(
               'https://github.com/backport-org/integration-test/pull/',
@@ -466,3 +474,169 @@ async function resetState(accessToken: string) {
 
   await resetSandbox(sandboxPath);
 }
+
+describe('conflict handling with commitConflicts enabled', () => {
+  let res: BackportResponse;
+  let pullRequestResponse:
+    | Awaited<ReturnType<typeof octokit.pulls.get>>
+    | undefined;
+  const timestamp = Date.now();
+
+  describe('when conflicts occur and are committed', () => {
+    const fileName = `conflict-test-${timestamp}.txt`;
+
+    beforeAll(async () => {
+      const { conflictCommitSha } = await setupConflictingCommits({
+        octokit,
+        owner: REPO_OWNER,
+        repo: REPO_NAME,
+        fileName,
+        targetBranch: '7.x',
+        resetState: () => resetState(accessToken),
+      });
+
+      res = await backportRun({
+        options: {
+          dir: sandboxPath,
+          accessToken,
+          repoOwner: REPO_OWNER,
+          repoName: REPO_NAME,
+          sha: conflictCommitSha,
+          targetBranches: ['7.x'],
+          commitConflicts: true,
+          conflictLabel: 'merge-conflict',
+          failOnConflicts: true,
+          interactive: false,
+        },
+      });
+
+      pullRequestResponse = await fetchPullRequest({
+        octokit,
+        owner: REPO_OWNER,
+        repo: REPO_NAME,
+        res,
+      });
+    });
+
+    afterAll(async () => {
+      await closePullRequest({
+        octokit,
+        owner: REPO_OWNER,
+        repo: REPO_NAME,
+        res,
+      });
+    });
+
+    it('returns hasConflicts: true in the result', () => {
+      expect(res.status).toBe('success');
+      if (res.status === 'success') {
+        expect(res.results).toHaveLength(1);
+        expect(res.results[0].status).toBe('success');
+        if (res.results[0].status === 'success') {
+          expect(res.results[0].hasConflicts).toBe(true);
+        }
+      }
+    });
+
+    it('creates pull request successfully despite conflicts', () => {
+      expect(res.status).toBe('success');
+      if (res.status === 'success' && res.results[0].status === 'success') {
+        expect(res.results[0].pullRequestUrl).toContain(
+          `https://github.com/${REPO_OWNER}/${REPO_NAME}/pull/`,
+        );
+        expect(res.results[0].pullRequestNumber).toEqual(expect.any(Number));
+      }
+    });
+
+    it('adds the merge-conflict label to the pull request', () => {
+      expect(pullRequestResponse).toBeDefined();
+      if (pullRequestResponse) {
+        const labels = pullRequestResponse.data.labels.map((l) => l.name);
+        expect(labels).toContain('merge-conflict');
+      }
+    });
+
+    it('pull request is in open state', () => {
+      expect(pullRequestResponse).toBeDefined();
+      if (pullRequestResponse) {
+        expect(pullRequestResponse.data.state).toBe('open');
+      }
+    });
+
+    it('pull request title contains target branch', () => {
+      expect(pullRequestResponse).toBeDefined();
+      if (pullRequestResponse) {
+        expect(pullRequestResponse.data.title).toContain('[7.x]');
+      }
+    });
+  });
+
+  describe('when using custom conflict label', () => {
+    const fileName = `conflict-custom-${timestamp}.txt`;
+
+    beforeAll(async () => {
+      const { conflictCommitSha } = await setupConflictingCommits({
+        octokit,
+        owner: REPO_OWNER,
+        repo: REPO_NAME,
+        fileName,
+        targetBranch: '7.x',
+        resetState: () => resetState(accessToken),
+      });
+
+      res = await backportRun({
+        options: {
+          dir: sandboxPath,
+          accessToken,
+          repoOwner: REPO_OWNER,
+          repoName: REPO_NAME,
+          sha: conflictCommitSha,
+          targetBranches: ['7.x'],
+          commitConflicts: true,
+          conflictLabel: 'needs-resolution',
+          failOnConflicts: false,
+          interactive: false,
+        },
+      });
+
+      pullRequestResponse = await fetchPullRequest({
+        octokit,
+        owner: REPO_OWNER,
+        repo: REPO_NAME,
+        res,
+      });
+    });
+
+    afterAll(async () => {
+      await closePullRequest({
+        octokit,
+        owner: REPO_OWNER,
+        repo: REPO_NAME,
+        res,
+      });
+    });
+
+    it('adds the custom conflict label', () => {
+      expect(pullRequestResponse).toBeDefined();
+      if (pullRequestResponse) {
+        const labels = pullRequestResponse.data.labels.map((l) => l.name);
+        expect(labels).toContain('needs-resolution');
+        expect(labels).not.toContain('merge-conflict');
+      }
+    });
+
+    it('returns hasConflicts: true', () => {
+      expect(res.status).toBe('success');
+      if (res.status === 'success' && res.results[0].status === 'success') {
+        expect(res.results[0].hasConflicts).toBe(true);
+      }
+    });
+
+    it('creates PR successfully with failOnConflicts: false', () => {
+      expect(res.status).toBe('success');
+      if (res.status === 'success' && res.results[0].status === 'success') {
+        expect(res.results[0].pullRequestUrl).toBeTruthy();
+      }
+    });
+  });
+});
