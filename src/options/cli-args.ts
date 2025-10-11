@@ -75,6 +75,18 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       type: 'boolean',
     })
 
+    .option('conflictLabel', {
+      description:
+        'Label to add to PRs with conflicts. Only used when `commitConflicts` is true. Defaults to "merge-conflict"',
+      type: 'string',
+    })
+
+    .option('failOnConflicts', {
+      description:
+        'Exit with non-zero code when conflicts are detected (even if PR is created). Only takes effect in `non-interactive` mode when `commitConflicts` is true. Defaults to true',
+      type: 'boolean',
+    })
+
     .option('cwd', {
       hidden: true,
       description: 'Path to source repo',

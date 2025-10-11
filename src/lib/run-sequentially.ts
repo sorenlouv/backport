@@ -10,6 +10,7 @@ import type { Commit } from './sourceCommit/parse-source-commit';
 export type SuccessResult = {
   status: 'success';
   didUpdate: boolean;
+  hasConflicts: boolean;
   targetBranch: string;
   pullRequestUrl: string;
   pullRequestNumber: number;
@@ -46,7 +47,7 @@ export async function runSequentially({
     logger.info(`Backporting ${JSON.stringify(commits)} to ${targetBranch}`);
     const span = apm.startSpan('Cherrypick commits to target branch');
     try {
-      const { number, url, didUpdate } =
+      const { number, url, didUpdate, hasConflicts } =
         await cherrypickAndCreateTargetPullRequest({
           options,
           commits,
@@ -57,6 +58,7 @@ export async function runSequentially({
         targetBranch,
         status: 'success',
         didUpdate,
+        hasConflicts,
         pullRequestUrl: url,
         pullRequestNumber: number,
       });

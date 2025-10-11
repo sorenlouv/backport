@@ -208,11 +208,74 @@ _Note: backslashes must be escaped._
 
 #### `commitConflicts`
 
-When running backport on CI (aka in non-interactive mode) any commit conflicts will result in the backport being aborted. When `commitConflicts: true` even files with conflicts will be committed and a backport PR created. It is then up to a user to manually resolve the conflict, If auto-merge is enabled, this will be disabled for this PR specifically to avoid merging unresolved conflicts.
+When running backport on CI (aka in non-interactive mode) any commit conflicts
+will result in the backport being aborted. When `commitConflicts: true` even
+files with conflicts will be committed and a backport PR created. It is then
+up to a user to manually resolve the conflict. If auto-merge is enabled, this
+will be disabled for this PR specifically to avoid merging unresolved
+conflicts.
+
+When `commitConflicts: true`, PRs with conflicts will automatically be labeled
+with the `conflictLabel` (see below), making them easy to identify and track.
+
+**Note:** Conflict markers (e.g., `<<<<<<< HEAD`) will be committed as plain
+text. Ensure you have CI checks in place to detect these markers and prevent
+accidental merges.
 
 ```json
 {
   "commitConflicts": true
+}
+```
+
+#### `conflictLabel`
+
+The label to add to pull requests that have merge conflicts when
+`commitConflicts: true`. This makes it easy to identify PRs that need manual
+conflict resolution.
+
+Default: `"merge-conflict"`
+
+```json
+{
+  "conflictLabel": "needs-manual-resolution"
+}
+```
+
+#### `failOnConflicts`
+
+**Important:** This option only applies when `commitConflicts: true`. It
+controls the exit code behavior for PRs created with conflicts.
+
+**Default conflict behavior** (when `commitConflicts: false`):
+
+- Conflicts encountered → Backport process aborted → No PR created → Exit code
+  1 ✅
+
+**With `commitConflicts: true` AND `failOnConflicts: true`** (recommended):
+
+- Conflicts encountered → Conflicts committed → PR created with conflict
+  markers → Exit code 1 ✅
+- Result: GitHub Action shows as **FAILED** (red), making conflicts visible to
+  developers
+
+**With `commitConflicts: true` AND `failOnConflicts: false`**:
+
+- Conflicts encountered → Conflicts committed → PR created with conflict
+  markers → Exit code 0 ⚠️
+- Result: GitHub Action shows as **SUCCESS** (green), conflicts may be
+  overlooked
+
+This option only takes effect in non-interactive mode when `commitConflicts:
+true`.
+
+Default: `true`
+
+```json
+{
+  "commitConflicts": true,
+  // Set to false only if you want successful exit despite conflicts
+  "failOnConflicts": false
 }
 ```
 
