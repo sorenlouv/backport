@@ -1,6 +1,7 @@
-import baseConfig from './jest.config';
+import type { Config } from 'jest';
+import baseConfig from './jest.config.ts';
 
-const config = {
+const config: Config = {
   ...baseConfig,
 
   // only include (private) tests that cannot run on CI because they require credentials and thus exclude external contributors

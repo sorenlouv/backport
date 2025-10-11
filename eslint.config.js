@@ -26,6 +26,7 @@ module.exports = [
       'src/graphql/generated/**',
       'bin/**',
       'coverage/**',
+      '.tsbuildinfo/**',
     ],
   },
 
@@ -57,9 +58,48 @@ module.exports = [
     ...js.configs.recommended,
   },
 
+  // Jest config files - use separate tsconfig that allows .ts extensions
+  {
+    files: ['jest.config*.ts'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      parser: tsparser,
+      parserOptions: {
+        project: './tsconfig.jest-config.json',
+      },
+      globals: nodeGlobals,
+    },
+    plugins: {
+      '@typescript-eslint': tseslint,
+      import: importPlugin,
+    },
+    rules: {
+      ...js.configs.recommended.rules,
+      ...tseslint.configs.recommended.rules,
+      'import/order': [
+        'error',
+        {
+          alphabetize: { order: 'asc' },
+          'newlines-between': 'never',
+          groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+        },
+      ],
+      'import/no-duplicates': 'error',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': 'error',
+      '@typescript-eslint/prefer-nullish-coalescing': 'error',
+      '@typescript-eslint/prefer-optional-chain': 'error',
+      '@typescript-eslint/consistent-type-imports': 'error',
+      '@typescript-eslint/no-floating-promises': 'error',
+      'no-unused-vars': 'off',
+    },
+  },
+
   // TypeScript files
   {
     files: ['**/*.ts'],
+    ignores: ['jest.config*.ts'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
