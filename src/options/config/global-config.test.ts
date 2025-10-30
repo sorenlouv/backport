@@ -66,6 +66,24 @@ describe('config', () => {
       );
     });
 
+    it('should include BACKPORT_ACCESS_TOKEN documentation in template', async () => {
+      jest.spyOn(fs, 'writeFile').mockResolvedValueOnce(undefined);
+      jest.spyOn(fs, 'chmod').mockResolvedValueOnce();
+      jest
+        .spyOn(fs, 'readFile')
+        .mockResolvedValueOnce(JSON.stringify({ accessToken: 'test' }));
+
+      await getGlobalConfig();
+
+      // Verify the template includes documentation about BACKPORT_ACCESS_TOKEN
+      const writeFileCall = (fs.writeFile as jest.Mock).mock.calls[0];
+      const template = writeFileCall[1];
+
+      expect(template).toContain('BACKPORT_ACCESS_TOKEN');
+      expect(template).toContain('environment variable');
+      expect(template).toContain('accessToken');
+    });
+
     it('should not fail if config already exists', async () => {
       const err = new Error();
       (err as any).code = 'EEXIST';

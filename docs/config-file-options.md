@@ -19,13 +19,7 @@ Example:
 }
 ```
 
-Or using environment variables:
-
-```json
-{
-  "accessToken": "${GITHUB_ACCESS_TOKEN}"
-}
-```
+**Note:** If `accessToken` is not set in the config file, `backport` will automatically use the `BACKPORT_ACCESS_TOKEN` environment variable as a fallback. This is particularly useful in CI/CD environments where you want to keep secrets out of version control.
 
 #### `accessToken` **required**
 
@@ -114,26 +108,15 @@ The array can contain branch names as strings or objects that also contains the 
 
 ## Environment Variables
 
-Both global and project config files support environment variable substitution
-using the syntax `${VARIABLE_NAME}`.
+`backport` automatically uses the `BACKPORT_ACCESS_TOKEN` environment variable as a fallback when `accessToken` is not set in the config file or is empty. This allows you to keep secrets out of version control while still being able to share configuration files across teams.
 
 **Example:**
 
-```json
-{
-  "accessToken": "${GITHUB_ACCESS_TOKEN}",
-  "repoOwner": "${REPO_OWNER}",
-  "repoName": "my-repo"
-}
+```bash
+export BACKPORT_ACCESS_TOKEN="ghp_your_token_here"
+
+backport
 ```
-
-When backport reads the configuration, it will replace
-`${GITHUB_ACCESS_TOKEN}` with the value of the `GITHUB_ACCESS_TOKEN`
-environment variable.
-
-**Important:** If an environment variable is not defined or is empty, backport
-will fail with a clear error message. This ensures you catch configuration
-issues early rather than experiencing cryptic API errors later.
 
 ## General configuration options
 

@@ -2,177 +2,150 @@ import fs from 'fs/promises';
 import { BackportError } from '../../lib/backport-error';
 import { parseConfigFile, readConfigFile } from './read-config-file';
 
-const originalEnv = process.env;
-
-beforeEach(() => {
-  jest.resetModules();
-  process.env = { ...originalEnv };
-});
-
-afterEach(() => {
-  process.env = originalEnv;
-});
-
 describe('parseConfigFile', () => {
-  describe('when environment variables are used', () => {
-    describe('and a single environment variable is defined', () => {
-      it('should substitute the environment variable', () => {
-        process.env.GITHUB_ACCESS_TOKEN = 'ghp_mytoken123';
-
-        const config = parseConfigFile(`{
-          "accessToken": "\${GITHUB_ACCESS_TOKEN}",
-          "repoOwner": "elastic",
-          "repoName": "kibana"
-        }`);
-
-        expect(config).toEqual({
-          accessToken: 'ghp_mytoken123',
-          repoOwner: 'elastic',
-          repoName: 'kibana',
-        });
-      });
-    });
-
-    describe('and multiple environment variables are defined', () => {
-      it('should substitute all environment variables', () => {
-        process.env.ACCESS_TOKEN = 'token123';
-        process.env.REPO_OWNER = 'myorg';
-        process.env.REPO_NAME = 'myrepo';
-        process.env.EDITOR = 'code';
-
-        const config = parseConfigFile(`{
-          "accessToken": "\${ACCESS_TOKEN}",
-          "repoOwner": "\${REPO_OWNER}",
-          "repoName": "\${REPO_NAME}",
-          "editor": "\${EDITOR}"
-        }`);
-
-        expect(config).toEqual({
-          accessToken: 'token123',
-          repoOwner: 'myorg',
-          repoName: 'myrepo',
-          editor: 'code',
-        });
-      });
-    });
-
-    describe('and environment variable has whitespace in placeholder', () => {
-      it('should trim and substitute the environment variable', () => {
-        process.env.TOKEN = 'my-token';
-
-        const config = parseConfigFile('{"accessToken": "${ TOKEN }"}');
-
-        expect(config).toEqual({
-          accessToken: 'my-token',
-        });
-      });
-    });
-
-    describe('when environment variable is not defined', () => {
-      it('should throw BackportError with clear message', () => {
-        expect(() => {
-          parseConfigFile(`{
-            "accessToken": "\${UNDEFINED_TOKEN}",
-            "repoOwner": "elastic"
-          }`);
-        }).toThrow(BackportError);
-
-        expect(() => {
-          parseConfigFile(`{
-            "accessToken": "\${UNDEFINED_TOKEN}",
-            "repoOwner": "elastic"
-          }`);
-        }).toThrow(
-          'Environment variable "UNDEFINED_TOKEN" is not defined.\n\n' +
-            'Please set the environment variable or use a literal value in your config file.',
-        );
-      });
-    });
-
-    describe('when environment variable is empty', () => {
-      it('should throw BackportError with clear message', () => {
-        process.env.EMPTY_VAR = '';
-
-        expect(() => {
-          parseConfigFile('{"accessToken": "${EMPTY_VAR}"}');
-        }).toThrow(BackportError);
-
-        expect(() => {
-          parseConfigFile('{"accessToken": "${EMPTY_VAR}"}');
-        }).toThrow(
-          'Environment variable "EMPTY_VAR" is empty.\n\n' +
-            'Please set a valid value for the environment variable or use a literal value in your config file.',
-        );
-      });
-    });
-
-    describe('and environment variable contains special characters', () => {
-      it('should substitute the value correctly', () => {
-        process.env.SPECIAL_TOKEN =
-          'ghp_token-with-dashes_and_underscores123!@#$%';
-
-        const config = parseConfigFile('{"accessToken": "${SPECIAL_TOKEN}"}');
-
-        expect(config).toEqual({
-          accessToken: 'ghp_token-with-dashes_and_underscores123!@#$%',
-        });
-      });
-    });
-
-    describe('and invalid placeholder syntax is used', () => {
-      it('should not substitute invalid placeholders', () => {
-        const config = parseConfigFile(`{
-          "value": "$INVALID",
-          "another": "$(ALSO_INVALID)"
-        }`);
-
-        expect(config).toEqual({
-          value: '$INVALID',
-          another: '$(ALSO_INVALID)',
-        });
-      });
-    });
-  });
-
   describe('when JSON contains comments', () => {
-    describe('and environment variables are used', () => {
-      it('should strip comments and substitute environment variables', () => {
-        process.env.MY_TOKEN = 'token123';
+    it('should strip comments', () => {
+      const config = parseConfigFile(`{
+        // This is my access token
+        "accessToken": "token123",
+        /* Multi-line
+           comment */
+        "repoOwner": "myorg"
+      }`);
 
-        const config = parseConfigFile(`{
-          // This is my access token
-          "accessToken": "\${MY_TOKEN}",
-          /* Multi-line
-             comment */
-          "repoOwner": "myorg"
-        }`);
-
-        expect(config).toEqual({
-          accessToken: 'token123',
-          repoOwner: 'myorg',
-        });
+      expect(config).toEqual({
+        accessToken: 'token123',
+        repoOwner: 'myorg',
       });
     });
   });
 
   describe('when backward compatibility options are used', () => {
-    describe('and environment variables are present', () => {
-      it('should handle environment variables with deprecated config options', () => {
-        process.env.TOKEN = 'mytoken';
+    it('should handle deprecated config options', () => {
+      const config = parseConfigFile(`{
+        "accessToken": "token",
+        "upstream": "owner/repo",
+        "branches": ["main", "7.x"]
+      }`);
 
-        const config = parseConfigFile(`{
-          "accessToken": "\${TOKEN}",
-          "upstream": "owner/repo",
-          "branches": ["main", "7.x"]
-        }`);
-
-        expect(config).toEqual({
-          accessToken: 'mytoken',
-          repoOwner: 'owner',
-          repoName: 'repo',
-          targetBranchChoices: ['main', '7.x'],
-        });
+      expect(config).toEqual({
+        accessToken: 'token',
+        repoOwner: 'owner',
+        repoName: 'repo',
+        targetBranchChoices: ['main', '7.x'],
       });
+    });
+  });
+
+  describe('zod validation', () => {
+    it('should validate and accept valid config', () => {
+      const config = parseConfigFile(`{
+        "accessToken": "token123",
+        "repoOwner": "elastic",
+        "repoName": "kibana",
+        "autoMergeMethod": "squash",
+        "fork": true,
+        "targetBranches": ["7.x", "8.0"]
+      }`);
+
+      expect(config).toEqual({
+        accessToken: 'token123',
+        repoOwner: 'elastic',
+        repoName: 'kibana',
+        autoMergeMethod: 'squash',
+        fork: true,
+        targetBranches: ['7.x', '8.0'],
+      });
+    });
+
+    it('should reject invalid enum values', () => {
+      expect(() =>
+        parseConfigFile(`{
+          "autoMergeMethod": "invalid-method"
+        }`),
+      ).toThrow('Invalid configuration');
+    });
+
+    it('should reject invalid types', () => {
+      expect(() =>
+        parseConfigFile(`{
+          "fork": "not-a-boolean"
+        }`),
+      ).toThrow('Invalid configuration');
+    });
+
+    it('should reject invalid array items', () => {
+      expect(() =>
+        parseConfigFile(`{
+          "targetBranches": [123, 456]
+        }`),
+      ).toThrow('Invalid configuration');
+    });
+
+    it('should include config in error message for debugging', () => {
+      expect(() =>
+        parseConfigFile(`{
+          "autoMergeMethod": "bad-value"
+        }`),
+      ).toThrow('Config:');
+    });
+
+    it('should allow optional fields to be omitted', () => {
+      const config = parseConfigFile(`{
+        "accessToken": "token"
+      }`);
+
+      expect(config).toEqual({
+        accessToken: 'token',
+      });
+    });
+
+    it('should validate branchLabelMapping as record', () => {
+      const config = parseConfigFile(`{
+        "branchLabelMapping": {
+          "^v8.2.0$": "v8.2.0",
+          "^v7.x$": "v7.x"
+        }
+      }`);
+
+      expect(config.branchLabelMapping).toEqual({
+        '^v8.2.0$': 'v8.2.0',
+        '^v7.x$': 'v7.x',
+      });
+    });
+
+    it('should allow unknown properties (loose schema)', () => {
+      const config = parseConfigFile(`{
+        "accessToken": "token",
+        "someUnknownField": "value"
+      }`);
+
+      // Should not throw - loose schema allows extra properties
+      expect(config.accessToken).toEqual('token');
+    });
+
+    it('should allow config without accessToken key at all', () => {
+      const config = parseConfigFile(`{
+        "repoOwner": "elastic",
+        "repoName": "kibana"
+      }`);
+
+      expect(config).toEqual({
+        repoOwner: 'elastic',
+        repoName: 'kibana',
+      });
+      expect(config.accessToken).toBeUndefined();
+    });
+
+    it('should allow config with only non-accessToken fields', () => {
+      const config = parseConfigFile(`{
+        "targetBranches": ["7.x", "8.0"],
+        "fork": true
+      }`);
+
+      expect(config.accessToken).toBeUndefined();
+      expect(config.targetBranches).toEqual(['7.x', '8.0']);
+      expect(config.fork).toEqual(true);
     });
   });
 });
@@ -183,110 +156,39 @@ describe('readConfigFile', () => {
   });
 
   describe('when reading a config file', () => {
-    describe('and environment variables are used', () => {
-      it('should read file and substitute environment variables', async () => {
-        process.env.MY_ACCESS_TOKEN = 'ghp_secret123';
-
-        jest.spyOn(fs, 'readFile').mockResolvedValue(
-          JSON.stringify({
-            accessToken: '${MY_ACCESS_TOKEN}',
-            repoOwner: 'elastic',
-            repoName: 'kibana',
-          }),
-        );
-
-        const config = await readConfigFile('/path/to/config.json');
-
-        expect(fs.readFile).toHaveBeenCalledWith(
-          '/path/to/config.json',
-          'utf8',
-        );
-        expect(config).toEqual({
-          accessToken: 'ghp_secret123',
+    it('should read file and parse JSON', async () => {
+      jest.spyOn(fs, 'readFile').mockResolvedValue(
+        JSON.stringify({
+          accessToken: 'token123',
           repoOwner: 'elastic',
           repoName: 'kibana',
-        });
+        }),
+      );
+
+      const config = await readConfigFile('/path/to/config.json');
+
+      expect(fs.readFile).toHaveBeenCalledWith('/path/to/config.json', 'utf8');
+      expect(config).toEqual({
+        accessToken: 'token123',
+        repoOwner: 'elastic',
+        repoName: 'kibana',
       });
     });
 
     describe('and file contains comments', () => {
-      describe('and environment variables are used', () => {
-        it('should strip comments and substitute environment variables', async () => {
-          process.env.GITHUB_TOKEN = 'token456';
-
-          jest.spyOn(fs, 'readFile').mockResolvedValue(`{
-            // Access token from environment
-            "accessToken": "\${GITHUB_TOKEN}",
-            "repoOwner": "myorg"
-          }`);
-
-          const config = await readConfigFile('/path/to/.backportrc.json');
-
-          expect(config).toEqual({
-            accessToken: 'token456',
-            repoOwner: 'myorg',
-          });
-        });
-      });
-    });
-
-    describe('and multiple environment variables are used', () => {
-      it('should substitute all environment variables', async () => {
-        process.env.ACCESS_TOKEN = 'token789';
-        process.env.OWNER = 'testorg';
-        process.env.REPO = 'testrepo';
-
+      it('should strip comments', async () => {
         jest.spyOn(fs, 'readFile').mockResolvedValue(`{
-          "accessToken": "\${ACCESS_TOKEN}",
-          "repoOwner": "\${OWNER}",
-          "repoName": "\${REPO}"
+          // Access token
+          "accessToken": "token456",
+          "repoOwner": "myorg"
         }`);
 
-        const config = await readConfigFile('/config.json');
+        const config = await readConfigFile('/path/to/.backportrc.json');
 
         expect(config).toEqual({
-          accessToken: 'token789',
-          repoOwner: 'testorg',
-          repoName: 'testrepo',
+          accessToken: 'token456',
+          repoOwner: 'myorg',
         });
-      });
-    });
-
-    describe('when environment variable is not defined', () => {
-      it('should throw BackportError with clear message', async () => {
-        jest.spyOn(fs, 'readFile').mockResolvedValue(`{
-          "accessToken": "\${UNDEFINED_VAR}",
-          "repoOwner": "elastic"
-        }`);
-
-        await expect(readConfigFile('/config.json')).rejects.toThrow(
-          BackportError,
-        );
-
-        await expect(readConfigFile('/config.json')).rejects.toThrow(
-          'Environment variable "UNDEFINED_VAR" is not defined.\n\n' +
-            'Please set the environment variable or use a literal value in your config file.',
-        );
-      });
-    });
-
-    describe('when environment variable is empty', () => {
-      it('should throw BackportError with clear message', async () => {
-        process.env.EMPTY_VAR = '';
-
-        jest.spyOn(fs, 'readFile').mockResolvedValue(`{
-          "accessToken": "\${EMPTY_VAR}",
-          "repoOwner": "elastic"
-        }`);
-
-        await expect(readConfigFile('/config.json')).rejects.toThrow(
-          BackportError,
-        );
-
-        await expect(readConfigFile('/config.json')).rejects.toThrow(
-          'Environment variable "EMPTY_VAR" is empty.\n\n' +
-            'Please set a valid value for the environment variable or use a literal value in your config file.',
-        );
       });
     });
 
@@ -317,59 +219,20 @@ describe('readConfigFile', () => {
     });
 
     describe('and backward compatibility options are used', () => {
-      describe('and environment variables are present', () => {
-        it('should handle environment variables with deprecated options', async () => {
-          process.env.TOKEN = 'compat-token';
+      it('should handle deprecated options', async () => {
+        jest.spyOn(fs, 'readFile').mockResolvedValue(`{
+          "accessToken": "token",
+          "upstream": "owner/repo",
+          "branches": ["main", "develop"]
+        }`);
 
-          jest.spyOn(fs, 'readFile').mockResolvedValue(`{
-            "accessToken": "\${TOKEN}",
-            "upstream": "owner/repo",
-            "branches": ["main", "develop"]
-          }`);
+        const config = await readConfigFile('/config.json');
 
-          const config = await readConfigFile('/config.json');
-
-          expect(config).toEqual({
-            accessToken: 'compat-token',
-            repoOwner: 'owner',
-            repoName: 'repo',
-            targetBranchChoices: ['main', 'develop'],
-          });
-        });
-      });
-    });
-
-    describe('and using a real-world config format', () => {
-      describe('and multiple environment variables are present', () => {
-        it('should handle complex config with comments and mixed content', async () => {
-          process.env.GITHUB_ACCESS_TOKEN = 'ghp_realtoken';
-          process.env.EDITOR_COMMAND = 'vim';
-
-          jest.spyOn(fs, 'readFile').mockResolvedValue(`{
-            // Create a personal access token here: https://github.com/settings/tokens
-            // Must have "Repo: Full control of private repositories"
-            "accessToken": "\${GITHUB_ACCESS_TOKEN}",
-
-            // Optional editor
-            "editor": "\${EDITOR_COMMAND}",
-
-            // Repository settings
-            "repoOwner": "elastic",
-            "repoName": "kibana",
-            "targetBranchChoices": ["8.x", "7.x"]
-          }`);
-
-          const config = await readConfigFile(
-            '/home/user/.backport/config.json',
-          );
-
-          expect(config).toEqual({
-            accessToken: 'ghp_realtoken',
-            editor: 'vim',
-            repoOwner: 'elastic',
-            repoName: 'kibana',
-            targetBranchChoices: ['8.x', '7.x'],
-          });
+        expect(config).toEqual({
+          accessToken: 'token',
+          repoOwner: 'owner',
+          repoName: 'repo',
+          targetBranchChoices: ['main', 'develop'],
         });
       });
     });

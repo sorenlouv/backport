@@ -2,6 +2,7 @@ import yargs from 'yargs';
 import yargsParser from 'yargs-parser';
 import { excludeUndefined } from '../utils/exclude-undefined';
 import type { ConfigFileOptions } from './config-options';
+import { partialConfigSchema } from './config-schema';
 import { defaultConfigOptions } from './options';
 
 export type OptionsFromCliArgs = ReturnType<typeof getOptionsFromCliArgs>;
@@ -485,7 +486,7 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
     restOptions.repoName,
   ];
 
-  return excludeUndefined({
+  const parsedOptions = excludeUndefined({
     ...restOptions,
 
     // repoName and repoOwner
@@ -518,6 +519,9 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
     interactive: nonInteractive === true ? false : undefined,
     telemetry: noTelemetry === true ? false : undefined,
   });
+
+  // Validate with zod schema (passthrough allows extra fields, so this is safe)
+  return partialConfigSchema.parse(parsedOptions);
 }
 
 export function getRuntimeArguments(

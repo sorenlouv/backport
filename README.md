@@ -74,15 +74,7 @@ Add personal access token to [global config](/docs/config-file-options.md#global
 }
 ```
 
-Or use environment variables
-
-```js
-// ~/.backport/config.json
-{
-  "accessToken": "${GITHUB_ACCESS_TOKEN}"
-}
-```
-
+Or use the `BACKPORT_ACCESS_TOKEN` environment variable (no config file changes needed).
 See [Environment Variables](/docs/config-file-options.md#environment-variables) for more details.
 
 Run:
