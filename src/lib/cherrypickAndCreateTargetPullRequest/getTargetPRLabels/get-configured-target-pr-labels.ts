@@ -1,31 +1,13 @@
-import { uniq } from 'lodash';
-import type { Commit } from '../../entrypoint.api';
-import { filterNil } from '../../utils/filter-empty';
-import { getSourceBranchFromCommits } from '../get-source-branch-from-commits';
-import { logger } from '../logger';
+import type { Commit } from '../../../entrypoint.api';
+import { filterNil } from '../../../utils/filter-empty';
+import { getSourceBranchFromCommits } from '../../get-source-branch-from-commits';
+import { logger } from '../../logger';
 
-export function getTargetPRLabels({
-  interactive,
-  targetPRLabels,
-  commits,
-  targetBranch,
-}: {
-  interactive: boolean;
-  targetPRLabels: string[];
-  commits: Commit[];
-  targetBranch: string;
-}) {
-  const labels = getLabels({
-    commits,
-    targetBranch,
-    targetPRLabels,
-    interactive,
-  });
-
-  return uniq(labels);
-}
-
-function getLabels({
+// Resolve labels defined in configuration (`targetPRLabels`) into their concrete
+// values for the current target branch. This includes expanding regex captures,
+// replacing template placeholders and skipping dynamic labels when we lack
+// branch mapping context in interactive mode.
+export function getConfiguredTargetPRLabels({
   commits,
   targetBranch,
   targetPRLabels,

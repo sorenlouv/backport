@@ -20,11 +20,10 @@ import { consoleLog } from '../logger';
 import { sequentially } from '../sequentially';
 import type { Commit } from '../sourceCommit/parse-source-commit';
 import { autoMergeNowOrLater } from './auto-merge-now-or-later';
-import { copySourcePullRequestLabelsToTargetPullRequest } from './copy-source-pull-request-labels';
 import { copySourcePullRequestReviewersToTargetPullRequest } from './copy-source-pull-request-reviewers-to-target-pull-request';
 import { getBackportBranchName } from './get-backport-branch-name';
 import { getMergeCommits } from './get-merge-commit';
-import { getTargetPRLabels } from './get-target-prlabels';
+import { getTargetPRLabels } from './getTargetPRLabels/get-target-prlabels';
 import { waitForCherrypick } from './wait-for-cherrypick';
 
 export async function cherrypickAndCreateTargetPullRequest({
@@ -111,28 +110,21 @@ export async function cherrypickAndCreateTargetPullRequest({
     );
   }
 
-  // add labels to target pull request
-  if (options.targetPRLabels.length > 0) {
-    const labels = getTargetPRLabels({
-      interactive: options.interactive,
-      targetPRLabels: options.targetPRLabels,
-      commits,
-      targetBranch,
-    });
+  const targetPRLabels = getTargetPRLabels({
+    interactive: options.interactive,
+    targetPRLabels: options.targetPRLabels,
+    copySourcePRLabels: options.copySourcePRLabels,
+    commits,
+    targetBranch,
+  });
 
+  // add labels to target pull request
+  if (targetPRLabels.length > 0) {
     await addLabelsToPullRequest({
       ...options,
       pullNumber: targetPullRequest.number,
-      labels,
+      labels: targetPRLabels,
     });
-  }
-
-  if (options.copySourcePRLabels) {
-    await copySourcePullRequestLabelsToTargetPullRequest(
-      options,
-      commits,
-      targetPullRequest.number,
-    );
   }
 
   // make PR auto mergable

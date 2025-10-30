@@ -1,5 +1,5 @@
-import type { Commit } from '../../entrypoint.api';
-import { getTargetPRLabels } from './get-target-prlabels';
+import type { Commit } from '../../../entrypoint.api';
+import { getConfiguredTargetPRLabels } from './get-configured-target-pr-labels';
 
 const commits: Commit[] = [
   {
@@ -25,7 +25,6 @@ const commits: Commit[] = [
     },
     sourceBranch: 'master',
     targetPullRequestStates: [
-      // PR to 7.11 branch was created automatically using the label `backport-to-7.11`
       {
         url: 'https://github.com/elastic/kibana/pull/88289',
         number: 88289,
@@ -39,8 +38,6 @@ const commits: Commit[] = [
           message: 'Fix major bug (#88188) (#88289)',
         },
       },
-
-      // PR to 7.x branch was created manually (not via labels) and does not contain branchLabelMappingKey
       {
         url: 'https://github.com/elastic/kibana/pull/88288',
         number: 88288,
@@ -55,10 +52,10 @@ const commits: Commit[] = [
   },
 ];
 
-describe('getTargetPRLabels', () => {
+describe('getConfiguredTargetPRLabels', () => {
   describe('replaces template values', () => {
     it('replaces {{targetBranch}}', () => {
-      const labels = getTargetPRLabels({
+      const labels = getConfiguredTargetPRLabels({
         interactive: false,
         commits,
         targetPRLabels: ['backported-to-{{targetBranch}}'],
@@ -68,7 +65,7 @@ describe('getTargetPRLabels', () => {
     });
 
     it('replaces {{sourceBranch}}', () => {
-      const labels = getTargetPRLabels({
+      const labels = getConfiguredTargetPRLabels({
         interactive: false,
         commits,
         targetPRLabels: ['backported-from-{{sourceBranch}}'],
@@ -78,101 +75,71 @@ describe('getTargetPRLabels', () => {
     });
   });
 
-  describe('when label is static', () => {
-    describe('and when interactive=false', () => {
-      it('adds static label for 7.11', () => {
-        const labels = getTargetPRLabels({
+  describe('static labels', () => {
+    it('keeps static labels regardless of interactivity', () => {
+      expect(
+        getConfiguredTargetPRLabels({
           interactive: false,
           commits,
           targetPRLabels: ['some-static-label'],
           targetBranch: '7.11',
-        });
-        expect(labels).toEqual(['some-static-label']);
-      });
+        }),
+      ).toEqual(['some-static-label']);
 
-      it('adds static label for 7.x', () => {
-        const labels = getTargetPRLabels({
-          interactive: false,
-          commits,
-          targetPRLabels: ['some-static-label'],
-          targetBranch: '7.x',
-        });
-        expect(labels).toEqual(['some-static-label']);
-      });
-    });
-
-    describe('and when interactive=true', () => {
-      it('adds static label for 7.x', () => {
-        const labels = getTargetPRLabels({
+      expect(
+        getConfiguredTargetPRLabels({
           interactive: true,
           commits,
-          targetPRLabels: ['backport'],
-          targetBranch: '7.x',
-        });
-        expect(labels).toEqual(['backport']);
-      });
+          targetPRLabels: ['some-static-label'],
+          targetBranch: '7.11',
+        }),
+      ).toEqual(['some-static-label']);
     });
   });
 
-  describe('when label is dynamic', () => {
-    describe('and when interactive=false', () => {
-      it('adds dynamic label for 7.11', () => {
-        const labels = getTargetPRLabels({
+  describe('dynamic labels', () => {
+    it('applies dynamic label when branch mapping is available', () => {
+      expect(
+        getConfiguredTargetPRLabels({
           interactive: false,
           commits,
           targetPRLabels: ['backport-$1'],
           targetBranch: '7.11',
-        });
-        expect(labels).toEqual(['backport-7.11']);
-      });
+        }),
+      ).toEqual(['backport-7.11']);
     });
 
-    describe('when interactive=true', () => {
-      it('adds dynamic label for 7.11', () => {
-        const labels = getTargetPRLabels({
-          interactive: false,
-          commits,
-          targetPRLabels: ['backport-$1'],
-          targetBranch: '7.11',
-        });
-        expect(labels).toEqual(['backport-7.11']);
-      });
-
-      it('does not add dynamic label for 7.x', () => {
-        const labels = getTargetPRLabels({
+    it('drops dynamic label when interactive and mapping is missing', () => {
+      expect(
+        getConfiguredTargetPRLabels({
           interactive: true,
           commits,
           targetPRLabels: ['backport-$1'],
           targetBranch: '7.x',
-        });
-        expect(labels).toEqual([]);
-      });
+        }),
+      ).toEqual([]);
     });
   });
 
   describe('multiple dynamic labels', () => {
-    describe('interactive=false', () => {
-      it('adds dynamic and static labels for 7.11', () => {
-        const labels = getTargetPRLabels({
+    it('keeps resolved labels and drops unresolved ones based on interactivity', () => {
+      expect(
+        getConfiguredTargetPRLabels({
           interactive: false,
           commits,
           targetPRLabels: ['backport-$1', '$1', 'my-static-label'],
           targetBranch: '7.11',
-        });
-        expect(labels).toEqual(['backport-7.11', '7.11', 'my-static-label']);
-      });
-    });
+        }),
+      ).toEqual(['backport-7.11', '7.11', 'my-static-label']);
 
-    describe('interactive=true', () => {
-      it('only add the static labels for 7.x', () => {
-        const labels = getTargetPRLabels({
+      expect(
+        getConfiguredTargetPRLabels({
           interactive: true,
           commits,
           targetPRLabels: ['backport-$1', '$1', 'my-static-label'],
           targetBranch: '7.x',
-        });
-        expect(labels).toEqual(['my-static-label']);
-      });
+        }),
+      ).toEqual(['my-static-label']);
     });
   });
 });

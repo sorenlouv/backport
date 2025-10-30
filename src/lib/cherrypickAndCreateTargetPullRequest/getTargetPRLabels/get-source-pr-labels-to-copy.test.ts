@@ -1,5 +1,5 @@
-import type { Commit } from '../sourceCommit/parse-source-commit';
-import { getLabelsToCopy } from './copy-source-pull-request-labels';
+import type { Commit } from '../../sourceCommit/parse-source-commit';
+import { getSourcePRLabelsToCopy } from './get-source-pr-labels-to-copy';
 
 const commits: Commit[] = [
   {
@@ -13,7 +13,12 @@ const commits: Commit[] = [
       sha: 'abc123',
     },
     sourcePullRequest: {
-      labels: ['development', 'version-33', 'release_note:fix'],
+      labels: [
+        'development',
+        'version-33',
+        'release_note:fix',
+        'backport-to-7.x',
+      ],
       number: 123,
       title: 'Some fix',
       url: 'https://github.com/example/repo/pull/123',
@@ -36,7 +41,7 @@ const commits: Commit[] = [
 
 describe('getLabelsToCopy', () => {
   it('copies no labels when option is false', () => {
-    const labels = getLabelsToCopy({
+    const labels = getSourcePRLabelsToCopy({
       commits,
       copySourcePRLabels: false,
     });
@@ -44,15 +49,23 @@ describe('getLabelsToCopy', () => {
   });
 
   it('copies all non-backport labels when option is true', () => {
-    const labels = getLabelsToCopy({
+    const labels = getSourcePRLabelsToCopy({
       commits,
       copySourcePRLabels: true,
     });
     expect(labels).toEqual(['development', 'version-33', 'release_note:fix']);
   });
 
+  it('allows regex to target backport labels when provided', () => {
+    const labels = getSourcePRLabelsToCopy({
+      commits,
+      copySourcePRLabels: ['^backport-to-7'],
+    });
+    expect(labels).toEqual(['backport-to-7.x']);
+  });
+
   it('copies labels matching provided regex patterns', () => {
-    const labels = getLabelsToCopy({
+    const labels = getSourcePRLabelsToCopy({
       commits,
       copySourcePRLabels: ['^version-\\d+$', '^release_note:\\w+$'],
     });
@@ -60,7 +73,7 @@ describe('getLabelsToCopy', () => {
   });
 
   it('does not copy labels when no labels match the regex patterns', () => {
-    const labels = getLabelsToCopy({
+    const labels = getSourcePRLabelsToCopy({
       commits,
       copySourcePRLabels: ['^release-only$'],
     });
@@ -68,7 +81,7 @@ describe('getLabelsToCopy', () => {
   });
 
   it('supports single regex string configuration', () => {
-    const labels = getLabelsToCopy({
+    const labels = getSourcePRLabelsToCopy({
       commits,
       copySourcePRLabels: '^release_note:\\w+$',
     });
