@@ -2,6 +2,7 @@ import { execSync, spawnSync } from 'child_process';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+import { getYarnCommand } from '../test/integration-test-helpers';
 
 // Integration test to verify that the `bin` field in package.json exposes a working `backport` CLI.
 // Strategy:
@@ -35,7 +36,8 @@ describe('binary backport file', () => {
     tarballPath = path.join(packDir, 'backport.tgz');
 
     // pack project; rely on repo having been built as with other integration tests
-    execSync(`yarn pack --filename ${tarballPath}`, {
+    const yarnCommand = getYarnCommand();
+    execSync(`${yarnCommand} pack --filename ${tarballPath}`, {
       cwd: repoRoot,
       stdio: 'ignore',
     });
@@ -47,7 +49,11 @@ describe('binary backport file', () => {
     );
 
     // install tarball (this creates node_modules/.bin/backport symlink / shim)
-    execSync(`yarn add file:${tarballPath}`, { cwd: workDir, stdio: 'ignore' });
+    // Use resolved yarn binary to avoid asdf shim issues
+    execSync(`${yarnCommand} add file:${tarballPath}`, {
+      cwd: workDir,
+      stdio: 'ignore',
+    });
 
     binPath = path.join(workDir, 'node_modules', '.bin', 'backport');
   });
