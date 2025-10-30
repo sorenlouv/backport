@@ -38,7 +38,7 @@ The CLI options will override the [config-file-options.md](/docs/config-file-opt
 | --reviewer              |                    | Add reviewer to the target PR                                               |                           |
 | --sha                   |                    | Sha of commit to backport                                                   |                           |
 | --signoff               | -s                 | Pass the --signoff option to the cherry-pick command                        | false                     |
-| --copySourcePRLabels    |                    | Copy labels from source PR to the target PR                                 | false                     |
+| --copySourcePRLabels    |                    | Copy labels from source PR to the target PR (regex support via config)      | false                     |
 | --copySourcePRReviewers |                    | Copy reviewers from source PR to the target PR                              | false                     |
 | --backportBranchName    |                    | Name template to use for the branch name of the backport                    |                           |
 | --source-branch         |                    | Specify a non-default branch to backport from                               |                           |

@@ -7,23 +7,50 @@ export async function copySourcePullRequestLabelsToTargetPullRequest(
   commits: Commit[],
   pullNumber: number,
 ) {
-  const labels = getNonBackportLabels(commits);
+  const labels = getLabelsToCopy({
+    commits,
+    copySourcePRLabels: options.copySourcePRLabels,
+  });
+
   if (labels.length > 0) {
     await addLabelsToPullRequest({ ...options, pullNumber, labels });
   }
 }
 
-function getNonBackportLabels(commits: Commit[]) {
-  return commits.flatMap((commit) => {
+export function getLabelsToCopy({
+  commits,
+  copySourcePRLabels,
+}: {
+  commits: Commit[];
+  copySourcePRLabels: ValidConfigOptions['copySourcePRLabels'];
+}) {
+  const labels = commits.flatMap((commit) => {
     if (!commit.sourcePullRequest) {
       return [];
     }
 
     const backportLabels = commit.targetPullRequestStates.map((pr) => pr.label);
-    const labels = commit.sourcePullRequest.labels.filter(
+    const sourceLabels = commit.sourcePullRequest.labels.filter(
       (label) => !backportLabels.includes(label),
     );
 
-    return labels;
+    return sourceLabels;
   });
+
+  if (copySourcePRLabels === true) {
+    return labels;
+  }
+
+  const patterns = Array.isArray(copySourcePRLabels)
+    ? copySourcePRLabels
+    : typeof copySourcePRLabels === 'string'
+      ? [copySourcePRLabels]
+      : [];
+
+  if (patterns.length === 0) {
+    return [];
+  }
+
+  const regexes = patterns.map((pattern) => new RegExp(pattern));
+  return labels.filter((label) => regexes.some((regex) => regex.test(label)));
 }

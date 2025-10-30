@@ -33,7 +33,7 @@ export const defaultConfigOptions = {
   cherrypickRef: true,
   commitConflicts: false,
   commitPaths: [] as Array<string>,
-  copySourcePRLabels: false,
+  copySourcePRLabels: false as boolean | string | string[],
   copySourcePRReviewers: false,
   cwd: process.cwd(),
   dateSince: null,

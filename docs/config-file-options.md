@@ -490,11 +490,17 @@ Assign the same reviewers to the target pull request that were assigned to the o
 
 #### `copySourcePRLabels`
 
-Copies all labels from the original (source) pull request to the backport (target) pull request.
+Copy labels from the original (source) pull request to the backport (target) pull request. When set to `true`, every non-backport label is copied. To copy only specific labels, provide one or more regular expressions; labels that match at least one pattern will be copied. (default: `false`)
 
 ```json
 {
-  "copySourcePRLabels": false
+  "copySourcePRLabels": true
+}
+```
+
+```json
+{
+  "copySourcePRLabels": ["^version-\\d+$", "^release_note:\\w+$"]
 }
 ```
 
