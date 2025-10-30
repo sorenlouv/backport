@@ -84,7 +84,8 @@
     "winston": "^3.17.0",
     "wonka": "^6.3.5",
     "yargs": "^17.7.2",
-    "yargs-parser": "^21.1.1"
+    "yargs-parser": "^21.1.1",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@0no-co/graphqlsp": "^1.12.16",

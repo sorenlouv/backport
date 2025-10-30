@@ -68,8 +68,8 @@ function getConfigTemplate() {
   return `{
     // Create a personal access token here: https://github.com/settings/tokens
     // Must have "Repo: Full control of private repositories"
-    // You can use environment variables with the syntax \${VARIABLE_NAME}
-    // For example: "accessToken": "\${GITHUB_ACCESS_TOKEN}"
+    // Alternatively, you can set the BACKPORT_ACCESS_TOKEN environment variable
+    // and leave this empty or remove this line entirely - backport will use it automatically
     "accessToken": ""
   }`;
 }
