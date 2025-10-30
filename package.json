@@ -29,8 +29,8 @@
     "lint": "tsc --noEmit --incremental && eslint './**/*.{ts,js}' --fix --cache",
     "start": "NODE_ENV=development ts-node --transpile-only ./src/entrypoint.cli.ts",
     "test-all": "jest --config ./jest.config.all.ts",
-    "test-mutation": "jest --config ./jest.config.mutation.ts",
-    "test-private": "jest --config ./jest.config.private.ts",
+    "test-mutation": "jest --config ./jest.config.mutation.ts --runInBand",
+    "test-private": "jest --config ./jest.config.private.ts --runInBand",
     "test": "jest",
     "codegen": "graphql-codegen --config codegen.ts",
     "build": "yarn codegen && tsc --incremental"
