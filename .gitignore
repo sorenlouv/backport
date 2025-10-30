@@ -7,3 +7,4 @@
 /.env
 /src/graphql
 /.eslintcache
+/.tsbuildinfo

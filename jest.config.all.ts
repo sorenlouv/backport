@@ -1,6 +1,10 @@
-import baseConfig from './jest.config';
+/**
+ * @jest-config-loader-options {"compilerOptions":{"allowImportingTsExtensions":true}}
+ */
+import type { Config } from 'jest';
+import baseConfig from './jest.config.ts';
 
-const config = {
+const config: Config = {
   ...baseConfig,
   modulePathIgnorePatterns: [],
 };
