@@ -3,6 +3,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { parseConfigFile } from '../options/config/read-config-file';
+import { getYarnCommand } from '../test/integration-test-helpers';
 
 // This test performs an end-to-end verification that the published package's
 // postinstall script executes and creates the expected ~/.backport/config.json
@@ -31,7 +32,8 @@ describe('postinstall (integration)', () => {
     tarballPath = path.join(packDir, 'backport.tgz');
 
     // 2. Pack the project to a predictable filename inside a temp directory
-    execSync(`yarn pack --filename ${tarballPath}`, {
+    const yarnCommand = getYarnCommand();
+    execSync(`${yarnCommand} pack --filename ${tarballPath}`, {
       cwd: repoRoot,
       stdio: 'ignore',
     });
@@ -47,7 +49,8 @@ describe('postinstall (integration)', () => {
     fs.mkdirSync(fakeHomeDir, { recursive: true });
 
     // 5. Install the packed tarball (this should trigger postinstall)
-    execSync(`yarn add file:${tarballPath}`, {
+    // Use resolved yarn binary to avoid asdf shim issues when HOME is overridden
+    execSync(`${yarnCommand} add file:${tarballPath}`, {
       cwd: workDir,
       env: {
         ...process.env,
@@ -83,7 +86,9 @@ describe('postinstall (integration)', () => {
     fs.writeFileSync(configPath, customContent);
 
     // Install again with the new HOME
-    execSync(`yarn add file:${tarballPath}`, {
+    // Use resolved yarn binary to avoid asdf shim issues when HOME is overridden
+    const yarnCommand = getYarnCommand();
+    execSync(`${yarnCommand} add file:${tarballPath}`, {
       cwd: workDir,
       env: {
         ...process.env,
