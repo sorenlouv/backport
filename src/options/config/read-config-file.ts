@@ -4,6 +4,7 @@ import { BackportError } from '../../lib/backport-error';
 import { logger } from '../../lib/logger';
 import { excludeUndefined } from '../../utils/exclude-undefined';
 import type { ConfigFileOptions } from '../config-options';
+import { partialConfigSchema } from '../config-schema';
 
 export async function readConfigFile(
   filepath: string,
@@ -14,11 +15,13 @@ export async function readConfigFile(
     return parseConfigFile(fileContents);
   } catch (e) {
     logger.debug(e);
+
     throw new BackportError(
       `"${filepath}" contains invalid JSON:\n\n${fileContents}`,
     );
   }
 }
+
 // ensure backwards compatability when config options are renamed
 export function parseConfigFile(fileContents: string): ConfigFileOptions {
   const configWithoutComments = stripJsonComments(fileContents);
@@ -27,7 +30,7 @@ export function parseConfigFile(fileContents: string): ConfigFileOptions {
 
   const { repoName, repoOwner } = parseUpstream(upstream, config);
 
-  return excludeUndefined({
+  const parsedConfig = excludeUndefined({
     ...config,
 
     // `branches` was renamed `targetBranchChoices`
@@ -43,6 +46,18 @@ export function parseConfigFile(fileContents: string): ConfigFileOptions {
     // `labels` was renamed `targetPRLabels`
     targetPRLabels: config.targetPRLabels ?? labels,
   });
+
+  // Validate with zod schema
+  try {
+    return partialConfigSchema.parse(parsedConfig) as ConfigFileOptions;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new BackportError(
+        `Invalid configuration: ${error.message}\n\nConfig: ${JSON.stringify(parsedConfig, null, 2)}`,
+      );
+    }
+    throw error;
+  }
 }
 
 function parseUpstream(
