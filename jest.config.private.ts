@@ -1,3 +1,6 @@
+/**
+ * @jest-config-loader-options {"compilerOptions":{"allowImportingTsExtensions":true}}
+ */
 import type { Config } from 'jest';
 import baseConfig from './jest.config.ts';
 
