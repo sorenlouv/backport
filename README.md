@@ -1,9 +1,9 @@
 <div align="center">
-	<img src="https://user-images.githubusercontent.com/209966/148229483-9f867a20-da7d-4cff-8c52-fcb27d482b89.png" height="200">
-	<p>
+ <img src="https://user-images.githubusercontent.com/209966/148229483-9f867a20-da7d-4cff-8c52-fcb27d482b89.png" height="200">
+ <p>
     <b>A CLI tool that automates the process of backporting commits.</b>
-	</p>
-	<br>
+ </p>
+ <br>
 </div>
 
 ## 🎉 New: The Backport Tool as a Github Action 🎉
@@ -74,6 +74,9 @@ Add personal access token to [global config](/docs/config-file-options.md#global
 }
 ```
 
+Or use the `BACKPORT_ACCESS_TOKEN` environment variable (no config file changes needed).
+See [Environment Variables](/docs/config-file-options.md#environment-variables) for more details.
+
 Run:
 
 ```
@@ -100,7 +103,7 @@ This tools is for anybody who is working on a codebase where they have to mainta
 
 `backport` is a CLI tool that will let you backport commit(s) interactively and then cherry-pick and create pull requests automatically. `backport` will perform all git operations in a temporary folder (`~/.backport/repositories/`) separate from your working directory, thereby never interfering with any unstages changes your might have.
 
-### Features:
+### Features
 
 - interactively backport one or more commits to one or more branches with an intuitive UI
 - ability to see which commits have been backported and to which branches
