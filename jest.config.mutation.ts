@@ -1,6 +1,10 @@
-import baseConfig from './jest.config';
+/**
+ * @jest-config-loader-options {"compilerOptions":{"allowImportingTsExtensions":true}}
+ */
+import type { Config } from 'jest';
+import baseConfig from './jest.config.ts';
 
-const config = {
+const config: Config = {
   ...baseConfig,
 
   // only include "mutation" tests that cannot run on in parallel (like they are on CI) because they mutate shared state
