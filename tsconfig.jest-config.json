@@ -1,22 +1,11 @@
 {
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "target": "ES2021",
-    "lib": ["ES2021", "DOM"],
-    "module": "CommonJS",
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "noImplicitThis": true,
-    "alwaysStrict": true,
-    "noUnusedLocals": true,
-    "esModuleInterop": true,
-    "useUnknownInCatchVariables": true,
-    "resolveJsonModule": true,
-    "forceConsistentCasingInFileNames": true,
     "allowImportingTsExtensions": true,
-    "emitDeclarationOnly": true,
     "composite": true,
+    "emitDeclarationOnly": true,
     "outDir": "./.tsbuildinfo/jest-config"
   },
-  "include": ["jest.config*.ts"]
+  "include": ["jest.config*.ts"],
+  "exclude": []
 }
