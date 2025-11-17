@@ -11,10 +11,12 @@ The CLI options will override the [config-file-options.md](/docs/config-file-opt
 | --auto-assign           |                    | Assign current user to the target PR                                        | false                     |
 | --branch                | -b                 | Target branch to backport to                                                |                           |
 | --commit-conflicts      |                    | Commit conflicts instead of aborting. Only takes effect in `non-interactive | false                     |
+| --conflict-label        |                    | Label to add to PRs with conflicts when `commitConflicts` is true           | merge-conflict            |
 | --config-file           |                    | Custom path to project config file (.backportrc.json)                       |                           |
 | --dir                   |                    | Clone repository into custom directory                                      | ~/.backport/repositories/ |
 | --dry-run               |                    | Perform backport without pushing to Github                                  | false                     |
 | --editor                |                    | Editor (eg. `code`) to open and resolve conflicts                           | nano                      |
+| --fail-on-conflicts     |                    | Exit code 1 when PR created with conflicts (requires `commitConflicts`)     | true                      |
 | --fork                  |                    | Create backports in fork repo                                               | true                      |
 | --git-hostname          |                    | Hostname for Git                                                            | github.com                |
 | --interactive           |                    | Enable interactive prompts                                                  | true                      |

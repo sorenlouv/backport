@@ -31,8 +31,10 @@ type Options = Partial<{
   cherrypickRef: boolean;
   commitConflicts: boolean;
   commitPaths: string[];
+  conflictLabel: string;
   copySourcePRLabels: boolean | string | string[];
   copySourcePRReviewers: boolean;
+  failOnConflicts: boolean;
   details: boolean;
   dir: string;
   draft: boolean;

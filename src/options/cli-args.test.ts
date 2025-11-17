@@ -232,6 +232,56 @@ describe('getOptionsFromCliArgs', () => {
     });
   });
 
+  describe('conflictLabel', () => {
+    it('should be undefined by default', () => {
+      const res = getOptionsFromCliArgs([]);
+      expect(res.conflictLabel).toBe(undefined);
+    });
+
+    it('should accept custom conflict label', () => {
+      const res = getOptionsFromCliArgs([
+        '--conflict-label',
+        'my-conflict-label',
+      ]);
+      expect(res.conflictLabel).toBe('my-conflict-label');
+    });
+
+    it('should accept camelCase version', () => {
+      const res = getOptionsFromCliArgs([
+        '--conflictLabel',
+        'needs-resolution',
+      ]);
+      expect(res.conflictLabel).toBe('needs-resolution');
+    });
+  });
+
+  describe('failOnConflicts', () => {
+    it('should be undefined by default', () => {
+      const res = getOptionsFromCliArgs([]);
+      expect(res.failOnConflicts).toBe(undefined);
+    });
+
+    it('should set to true with flag', () => {
+      const res = getOptionsFromCliArgs(['--fail-on-conflicts']);
+      expect(res.failOnConflicts).toBe(true);
+    });
+
+    it('should set to false with explicit value', () => {
+      const res = getOptionsFromCliArgs(['--fail-on-conflicts', 'false']);
+      expect(res.failOnConflicts).toBe(false);
+    });
+
+    it('should set to true with explicit value', () => {
+      const res = getOptionsFromCliArgs(['--fail-on-conflicts', 'true']);
+      expect(res.failOnConflicts).toBe(true);
+    });
+
+    it('should accept camelCase version', () => {
+      const res = getOptionsFromCliArgs(['--failOnConflicts', 'true']);
+      expect(res.failOnConflicts).toBe(true);
+    });
+  });
+
   describe('mainline', () => {
     it('should default to 1', () => {
       const argv = ['--mainline'];
