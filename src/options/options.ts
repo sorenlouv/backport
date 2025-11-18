@@ -129,19 +129,16 @@ export async function getOptions({
 async function getRequiredOptions(combined: OptionsFromConfigAndCli) {
   const { accessToken, repoName, repoOwner, globalConfigFile } = combined;
 
-  const resolvedAccessToken =
+  const trimmedAccessToken =
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-    accessToken?.trim() ||
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-    process.env.BACKPORT_ACCESS_TOKEN?.trim() ||
-    undefined;
+    accessToken?.trim() || process.env.BACKPORT_ACCESS_TOKEN?.trim();
 
-  if (resolvedAccessToken && repoName && repoOwner) {
-    return { accessToken: resolvedAccessToken, repoName, repoOwner };
+  if (trimmedAccessToken && repoName && repoOwner) {
+    return { accessToken: trimmedAccessToken, repoName, repoOwner };
   }
 
   // require access token
-  if (!resolvedAccessToken) {
+  if (!trimmedAccessToken) {
     const globalConfigPath = getGlobalConfigPath(globalConfigFile);
     throw new BackportError(
       `Please update your config file: "${globalConfigPath}".\nIt must contain a valid "accessToken".\n\nRead more: ${GLOBAL_CONFIG_DOCS_LINK}`,
@@ -152,7 +149,7 @@ async function getRequiredOptions(combined: OptionsFromConfigAndCli) {
   const gitRemote = await getRepoOwnerAndNameFromGitRemotes({
     cwd: combined.cwd,
     githubApiBaseUrlV4: combined.githubApiBaseUrlV4,
-    accessToken: resolvedAccessToken,
+    accessToken: trimmedAccessToken,
   });
 
   if (!gitRemote.repoName || !gitRemote.repoOwner) {
@@ -162,7 +159,7 @@ async function getRequiredOptions(combined: OptionsFromConfigAndCli) {
   }
 
   return {
-    accessToken: resolvedAccessToken,
+    accessToken: trimmedAccessToken,
     repoName: gitRemote.repoName,
     repoOwner: gitRemote.repoOwner,
   };

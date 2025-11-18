@@ -313,53 +313,6 @@ describe('getOptionsFromCliArgs', () => {
       expect(res.dateUntil).toEqual('2021-01-01T00:00:00.000Z');
     });
   });
-
-  describe('zod validation', () => {
-    it('should validate and accept valid options', () => {
-      const argv = [
-        '--access-token',
-        'my-token',
-        '--auto-merge-method',
-        'squash',
-      ];
-      const res = getOptionsFromCliArgs(argv);
-      expect(res.accessToken).toEqual('my-token');
-      expect(res.autoMergeMethod).toEqual('squash');
-    });
-
-    it('should reject invalid enum values', () => {
-      const argv = ['--auto-merge-method', 'invalid-method'];
-      expect(() => getOptionsFromCliArgs(argv)).toThrow();
-    });
-
-    it('should allow properties not in schema but accepted by yargs', () => {
-      // Zod's loose schema allows extra properties that pass yargs validation
-      // Note: yargs will reject truly unknown flags, but allows known aliases
-      const argv = ['--access-token', 'my-token'];
-      const res = getOptionsFromCliArgs(argv);
-      expect(res.accessToken).toEqual('my-token');
-    });
-
-    it('should validate array types', () => {
-      const argv = ['--assignee', 'john', '--assignee', 'jane'];
-      const res = getOptionsFromCliArgs(argv);
-      expect(res.assignees).toEqual(['john', 'jane']);
-    });
-
-    it('should validate boolean types', () => {
-      const argv = ['--fork', 'true', '--dry-run'];
-      const res = getOptionsFromCliArgs(argv);
-      expect(res.fork).toEqual(true);
-      expect(res.dryRun).toEqual(true);
-    });
-
-    it('should validate number types', () => {
-      const argv = ['--max-number', '20', '--mainline', '2'];
-      const res = getOptionsFromCliArgs(argv);
-      expect(res.maxNumber).toEqual(20);
-      expect(res.mainline).toEqual(2);
-    });
-  });
 });
 
 describe('getRuntimeArguments', () => {

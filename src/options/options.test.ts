@@ -62,13 +62,10 @@ describe('getOptions', () => {
 
       beforeEach(() => {
         process.env = { ...originalEnv };
-        mockGithubConfigOptions({
-          viewerLogin: 'testuser',
-        });
       });
 
       afterEach(() => {
-        process.env = originalEnv;
+        delete process.env.BACKPORT_ACCESS_TOKEN;
       });
 
       describe('when accessToken is missing from config', () => {
