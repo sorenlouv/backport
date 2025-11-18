@@ -14,11 +14,13 @@ export async function readConfigFile(
     return parseConfigFile(fileContents);
   } catch (e) {
     logger.debug(e);
+
     throw new BackportError(
       `"${filepath}" contains invalid JSON:\n\n${fileContents}`,
     );
   }
 }
+
 // ensure backwards compatability when config options are renamed
 export function parseConfigFile(fileContents: string): ConfigFileOptions {
   const configWithoutComments = stripJsonComments(fileContents);

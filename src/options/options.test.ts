@@ -24,12 +24,9 @@ const defaultConfigs = {
 };
 
 describe('getOptions', () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.clearAllMocks();
     nock.cleanAll();
-  });
-
-  beforeEach(() => {
     mockConfigFiles(defaultConfigs);
     jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
     jest.spyOn(fs, 'writeFile').mockResolvedValue();
@@ -58,6 +55,144 @@ describe('getOptions', () => {
 
         Read more: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson"
       `);
+    });
+
+    describe('when BACKPORT_ACCESS_TOKEN environment variable is set', () => {
+      const originalEnv = process.env;
+
+      beforeEach(() => {
+        process.env = { ...originalEnv };
+      });
+
+      afterEach(() => {
+        delete process.env.BACKPORT_ACCESS_TOKEN;
+      });
+
+      describe('when accessToken is missing from config', () => {
+        it('should use BACKPORT_ACCESS_TOKEN as fallback', async () => {
+          process.env.BACKPORT_ACCESS_TOKEN = 'env-token-123';
+
+          mockConfigFiles({
+            projectConfig: defaultConfigs.projectConfig,
+            globalConfig: { accessToken: undefined },
+          });
+
+          const options = await getOptions({
+            optionsFromCliArgs: {},
+            optionsFromModule: {},
+          });
+
+          expect(options.accessToken).toBe('env-token-123');
+        });
+      });
+
+      describe('when accessToken is empty string in config', () => {
+        it('should use BACKPORT_ACCESS_TOKEN as fallback', async () => {
+          process.env.BACKPORT_ACCESS_TOKEN = 'env-token-456';
+
+          mockConfigFiles({
+            projectConfig: defaultConfigs.projectConfig,
+            globalConfig: { accessToken: '' },
+          });
+
+          const options = await getOptions({
+            optionsFromCliArgs: {},
+            optionsFromModule: {},
+          });
+
+          expect(options.accessToken).toBe('env-token-456');
+        });
+      });
+
+      describe('when accessToken is set in config', () => {
+        it('should prefer config accessToken over BACKPORT_ACCESS_TOKEN', async () => {
+          process.env.BACKPORT_ACCESS_TOKEN = 'env-token-should-not-be-used';
+
+          mockConfigFiles({
+            projectConfig: defaultConfigs.projectConfig,
+            globalConfig: { accessToken: 'config-token-789' },
+          });
+
+          const options = await getOptions({
+            optionsFromCliArgs: {},
+            optionsFromModule: {},
+          });
+
+          expect(options.accessToken).toBe('config-token-789');
+        });
+      });
+
+      describe('when accessToken is whitespace-only in config', () => {
+        it('should use BACKPORT_ACCESS_TOKEN as fallback', async () => {
+          process.env.BACKPORT_ACCESS_TOKEN = 'env-token-whitespace';
+
+          mockConfigFiles({
+            projectConfig: defaultConfigs.projectConfig,
+            globalConfig: { accessToken: '   ' },
+          });
+
+          const options = await getOptions({
+            optionsFromCliArgs: {},
+            optionsFromModule: {},
+          });
+
+          expect(options.accessToken).toBe('env-token-whitespace');
+        });
+      });
+
+      describe('when BACKPORT_ACCESS_TOKEN has whitespace', () => {
+        it('should trim the env var value', async () => {
+          process.env.BACKPORT_ACCESS_TOKEN = '  env-token-trimmed  ';
+
+          mockConfigFiles({
+            projectConfig: defaultConfigs.projectConfig,
+            globalConfig: { accessToken: undefined },
+          });
+
+          const options = await getOptions({
+            optionsFromCliArgs: {},
+            optionsFromModule: {},
+          });
+
+          expect(options.accessToken).toBe('env-token-trimmed');
+        });
+      });
+
+      describe('when accessToken is provided via CLI', () => {
+        it('should prefer CLI over config and env var', async () => {
+          process.env.BACKPORT_ACCESS_TOKEN = 'env-token-should-not-be-used';
+
+          mockConfigFiles({
+            projectConfig: defaultConfigs.projectConfig,
+            globalConfig: { accessToken: 'config-token-should-not-be-used' },
+          });
+
+          const options = await getOptions({
+            optionsFromCliArgs: { accessToken: 'cli-token-wins' },
+            optionsFromModule: {},
+          });
+
+          expect(options.accessToken).toBe('cli-token-wins');
+        });
+      });
+
+      describe('when both accessToken and BACKPORT_ACCESS_TOKEN are empty', () => {
+        it('should throw error', async () => {
+          process.env.BACKPORT_ACCESS_TOKEN = '';
+
+          mockConfigFiles({
+            projectConfig: defaultConfigs.projectConfig,
+            globalConfig: { accessToken: '' },
+          });
+
+          await expect(() =>
+            getOptions({
+              optionsFromCliArgs: {},
+              optionsFromModule: {},
+            }),
+          ).rejects.toThrow('It must contain a valid "accessToken"');
+        });
+      });
     });
 
     it('when `targetBranches`, `targetBranchChoices` and `branchLabelMapping` are all empty', async () => {
