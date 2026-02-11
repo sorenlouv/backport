@@ -32,6 +32,7 @@ export const defaultConfigOptions = {
   backportBinary: 'backport',
   cherrypickRef: true,
   commitConflicts: false,
+  theirsFixConflicts: false,
   commitPaths: [] as Array<string>,
   copySourcePRLabels: false as boolean | string | string[],
   copySourcePRReviewers: false,

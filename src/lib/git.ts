@@ -286,16 +286,27 @@ export async function getShasInMergeCommit(
   }
 }
 
+export async function cherrypickAbort({
+  options,
+}: {
+  options: ValidConfigOptions;
+}) {
+  const cwd = getRepoPath(options);
+  return spawnPromise('git', ['cherry-pick', '--abort'], cwd);
+}
+
 export async function cherrypick({
   options,
   sha,
   mergedTargetPullRequest,
   commitAuthor,
+  strategyOption,
 }: {
   options: ValidConfigOptions;
   sha: string;
   mergedTargetPullRequest?: TargetPullRequest;
   commitAuthor: CommitAuthor;
+  strategyOption?: string;
 }): Promise<{
   conflictingFiles: { absolute: string; relative: string }[];
   unstagedFiles: string[];
@@ -312,6 +323,7 @@ export async function cherrypick({
       : []),
     ...(options.cherrypickRef === false ? [] : ['-x']),
     ...(options.signoff ? ['--signoff'] : []),
+    ...(strategyOption ? ['--strategy-option', strategyOption] : []),
     sha,
   ];
 

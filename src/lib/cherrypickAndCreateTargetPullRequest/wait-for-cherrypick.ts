@@ -12,6 +12,7 @@ import { getRepoPath } from '../env';
 import type { ConflictingFiles } from '../git';
 import {
   cherrypick,
+  cherrypickAbort,
   commitChanges,
   getConflictingFiles,
   getUnstagedFiles,
@@ -119,6 +120,19 @@ async function cherrypickAndHandleConflicts({
       return { hasCommitsWithConflicts: false };
     }
     autoResolveSpinner.fail();
+  }
+
+  // abort and retry cherry-pick with --strategy-option=theirs
+  if (!options.interactive && options.theirsFixConflicts) {
+    await cherrypickAbort({ options });
+    await cherrypick({
+      options,
+      sha: commit.sourceCommit.sha,
+      mergedTargetPullRequest,
+      commitAuthor,
+      strategyOption: 'theirs',
+    });
+    return { hasCommitsWithConflicts: true };
   }
 
   // commits with conflicts should be committed and pushed to the target branch
