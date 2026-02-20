@@ -123,7 +123,7 @@ async function cherrypickAndHandleConflicts({
   }
 
   // abort and retry cherry-pick with --strategy-option=theirs
-  if (!options.interactive && options.theirsFixConflicts) {
+  if (!options.interactive && options.propagateConflicts) {
     await cherrypickAbort({ options });
     await cherrypick({
       options,

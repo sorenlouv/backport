@@ -216,13 +216,13 @@ When running backport on CI (aka in non-interactive mode) any commit conflicts w
 }
 ```
 
-#### `theirsFixConflicts`
+#### `propagateConflicts`
 
-When running backport in non-interactive mode, any cherry-pick conflicts will normally result in the backport being aborted. When `theirsFixConflicts: true`, the failed cherry-pick will be aborted and retried with `--strategy-option=theirs`, which resolves all conflicts in favor of the source commit's version. This produces a clean PR without conflict markers. If auto-merge is enabled, it will be disabled for this PR specifically since the conflict resolution was automatic and may need review.
+When running backport in non-interactive mode, any cherry-pick conflicts will normally result in the backport being aborted. When `propagateConflicts: true`, the failed cherry-pick will be aborted and retried with `--strategy-option=theirs`, which resolves all conflicts in favor of the source commit's version. This produces a clean PR without conflict markers. If auto-merge is enabled, it will be disabled for this PR specifically since the conflict resolution was automatic and may need review.
 
 ```json
 {
-  "theirsFixConflicts": true
+  "propagateConflicts": true
 }
 ```
 

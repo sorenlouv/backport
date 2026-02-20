@@ -75,7 +75,7 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       type: 'boolean',
     })
 
-    .option('theirsFixConflicts', {
+    .option('propagateConflicts', {
       description:
         'Continue past conflicts by resolving them in favor of the source commit. Only takes effect in `non-interactive` mode. Defaults to false',
       type: 'boolean',
