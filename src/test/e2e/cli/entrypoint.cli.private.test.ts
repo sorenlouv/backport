@@ -58,6 +58,10 @@ Options:
       --commitConflicts                               Commit conflicts instead of aborting. Only
                                                       takes effect in \`non-interactive\` mode.
                                                       Defaults to false                    [boolean]
+      --propagateConflicts                            Continue past conflicts by resolving them in
+                                                      favor of the source commit. Only takes effect
+                                                      in \`non-interactive\` mode. Defaults to false
+                                                                                           [boolean]
       --projectConfigFile, --config                   Path to project config                [string]
       --globalConfigFile                              Path to global config                 [string]
       --dateSince, --since                            ISO-8601 date for filtering commits   [string]
