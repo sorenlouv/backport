@@ -59,16 +59,13 @@ const cleanCherrypickResult = {
 describe('waitForCherrypick with autoResolveConflictsWithTheirs', () => {
   let cherrypickSpy: jest.SpyInstance;
   let cherrypickAbortSpy: jest.SpyInstance;
-  let commitChangesSpy: jest.SpyInstance;
 
   beforeEach(() => {
     cherrypickSpy = jest.spyOn(git, 'cherrypick');
     cherrypickAbortSpy = jest
       .spyOn(git, 'cherrypickAbort')
       .mockResolvedValue({ stderr: '', stdout: '', code: 0, cmdArgs: [] });
-    commitChangesSpy = jest
-      .spyOn(git, 'commitChanges')
-      .mockResolvedValue(undefined);
+    jest.spyOn(git, 'commitChanges').mockResolvedValue(undefined);
   });
 
   afterEach(() => {
