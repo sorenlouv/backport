@@ -1053,6 +1053,16 @@ describe('cherrypickAbort', () => {
       '/myHomeDir/.backport/repositories/elastic/kibana',
     );
   });
+
+  it('should throw a BackportError when abort fails', async () => {
+    jest
+      .spyOn(childProcess, 'spawnPromise')
+      .mockRejectedValueOnce(new Error('git cherry-pick --abort failed'));
+
+    await expect(cherrypickAbort({ options })).rejects.toThrow(
+      'Failed to abort cherry-pick before retry',
+    );
+  });
 });
 
 describe('cherrypick with strategyOption', () => {

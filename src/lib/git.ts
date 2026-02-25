@@ -292,7 +292,12 @@ export async function cherrypickAbort({
   options: ValidConfigOptions;
 }) {
   const cwd = getRepoPath(options);
-  return spawnPromise('git', ['cherry-pick', '--abort'], cwd);
+  try {
+    return await spawnPromise('git', ['cherry-pick', '--abort'], cwd);
+  } catch (e) {
+    logger.warn('Failed to abort cherry-pick', e);
+    throw new BackportError('Failed to abort cherry-pick before retry');
+  }
 }
 
 export async function cherrypick({
@@ -306,7 +311,7 @@ export async function cherrypick({
   sha: string;
   mergedTargetPullRequest?: TargetPullRequest;
   commitAuthor: CommitAuthor;
-  strategyOption?: string;
+  strategyOption?: 'ours' | 'theirs';
 }): Promise<{
   conflictingFiles: { absolute: string; relative: string }[];
   unstagedFiles: string[];
