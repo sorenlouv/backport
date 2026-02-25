@@ -342,9 +342,7 @@ describe('git.private', () => {
         cwd,
       });
 
-      expect(async () => {
-        return await commitChanges({ commit, commitAuthor, options });
-      }).not.toThrow();
+      await commitChanges({ commit, commitAuthor, options });
 
       const message = await getMostRecentCommitMessage(cwd);
       expect(message).toBe('Update my-file-1.txt');
