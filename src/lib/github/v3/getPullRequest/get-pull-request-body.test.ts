@@ -512,4 +512,47 @@ Please refer to the [Backport tool documentation](https://github.com/sorenlouv/b
       compileSpy.mockRestore();
     });
   });
+
+  describe('conflict resolution note', () => {
+    it('should not append a note when hasAnyCommitWithConflicts is false', () => {
+      const body = getPullRequestBody({
+        options: {} as ValidConfigOptions,
+        commits,
+        targetBranch: '7.x',
+        hasAnyCommitWithConflicts: false,
+      });
+
+      expect(body).not.toContain('auto-resolved');
+    });
+
+    it('should append a note when hasAnyCommitWithConflicts is true', () => {
+      const body = getPullRequestBody({
+        options: {} as ValidConfigOptions,
+        commits,
+        targetBranch: '7.x',
+        hasAnyCommitWithConflicts: true,
+        unresolvedFiles: [],
+      });
+
+      expect(body).toContain(
+        '**Note:** This PR was created with conflicts auto-resolved in favor of the source commit',
+      );
+      expect(body).toContain('`--strategy-option=theirs`');
+      expect(body).not.toContain('still had unresolved conflicts');
+    });
+
+    it('should list unresolved files when present', () => {
+      const body = getPullRequestBody({
+        options: {} as ValidConfigOptions,
+        commits,
+        targetBranch: '7.x',
+        hasAnyCommitWithConflicts: true,
+        unresolvedFiles: ['la-liga.md', 'premier-league.md'],
+      });
+
+      expect(body).toContain('still had unresolved conflicts after the retry');
+      expect(body).toContain('`la-liga.md`');
+      expect(body).toContain('`premier-league.md`');
+    });
+  });
 });

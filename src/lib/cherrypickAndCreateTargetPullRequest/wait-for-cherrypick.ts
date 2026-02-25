@@ -12,6 +12,7 @@ import { getRepoPath } from '../env';
 import type { ConflictingFiles } from '../git';
 import {
   cherrypick,
+  cherrypickAbort,
   commitChanges,
   getConflictingFiles,
   getUnstagedFiles,
@@ -22,18 +23,23 @@ import { consoleLog, logger } from '../logger';
 import { confirmPrompt } from '../prompts';
 import { getCommitsWithoutBackports } from './get-commits-without-backports';
 
+export type CherrypickResult = {
+  hasCommitsWithConflicts: boolean;
+  unresolvedFiles: string[];
+};
+
 export async function waitForCherrypick(
   options: ValidConfigOptions,
   commit: Commit,
   targetBranch: string,
-): Promise<{ hasCommitsWithConflicts: boolean }> {
+): Promise<CherrypickResult> {
   const spinnerText = `Cherry-picking: ${chalk.greenBright(
     getFirstLine(commit.sourceCommit.message),
   )}`;
   const cherrypickSpinner = ora(options.interactive, spinnerText).start();
   const commitAuthor = getCommitAuthor({ options, commit });
 
-  const { hasCommitsWithConflicts } = await cherrypickAndHandleConflicts({
+  const result = await cherrypickAndHandleConflicts({
     options,
     commit,
     commitAuthor,
@@ -50,7 +56,7 @@ export async function waitForCherrypick(
 
     cherrypickSpinner.succeed();
 
-    return { hasCommitsWithConflicts };
+    return result;
   } catch (e) {
     cherrypickSpinner.fail();
     throw e;
@@ -69,7 +75,7 @@ async function cherrypickAndHandleConflicts({
   commitAuthor: CommitAuthor;
   targetBranch: string;
   cherrypickSpinner: Ora;
-}): Promise<{ hasCommitsWithConflicts: boolean }> {
+}): Promise<CherrypickResult> {
   const mergedTargetPullRequest = commit.targetPullRequestStates.find(
     (pr) => pr.state === 'MERGED' && pr.branch === targetBranch,
   );
@@ -88,7 +94,7 @@ async function cherrypickAndHandleConflicts({
 
     // no conflicts encountered
     if (!needsResolving) {
-      return { hasCommitsWithConflicts: false };
+      return { hasCommitsWithConflicts: false, unresolvedFiles: [] };
     }
     // cherrypick failed due to conflicts
     cherrypickSpinner.fail();
@@ -116,16 +122,45 @@ async function cherrypickAndHandleConflicts({
     // conflicts were automatically resolved
     if (didAutoFix) {
       autoResolveSpinner.succeed();
-      return { hasCommitsWithConflicts: false };
+      return { hasCommitsWithConflicts: false, unresolvedFiles: [] };
     }
     autoResolveSpinner.fail();
+  }
+
+  // abort and retry cherry-pick with --strategy-option=theirs
+  if (!options.interactive && options.autoResolveConflictsWithTheirs) {
+    if (options.commitConflicts) {
+      logger.warn(
+        'Both "autoResolveConflictsWithTheirs" and "commitConflicts" are enabled. Using "autoResolveConflictsWithTheirs".',
+      );
+    }
+    await cherrypickAbort({ options });
+    const retryResult = await cherrypick({
+      options,
+      sha: commit.sourceCommit.sha,
+      mergedTargetPullRequest,
+      commitAuthor,
+      strategyOption: 'theirs',
+    });
+
+    const unresolvedFiles = retryResult.needsResolving
+      ? retryResult.conflictingFiles.map((f) => f.relative)
+      : [];
+
+    if (unresolvedFiles.length > 0) {
+      logger.warn(
+        `Cherry-pick retry with --strategy-option=theirs still has unresolved files: ${unresolvedFiles.join(', ')}`,
+      );
+    }
+
+    return { hasCommitsWithConflicts: true, unresolvedFiles };
   }
 
   // commits with conflicts should be committed and pushed to the target branch
   if (!options.interactive && options.commitConflicts) {
     await gitAddAll({ options });
     await commitChanges({ options, commit, commitAuthor });
-    return { hasCommitsWithConflicts: true };
+    return { hasCommitsWithConflicts: true, unresolvedFiles: [] };
   }
 
   const conflictingFilesRelative = conflictingFiles
@@ -191,7 +226,7 @@ async function cherrypickAndHandleConflicts({
     unstagedFiles,
   });
 
-  return { hasCommitsWithConflicts: false };
+  return { hasCommitsWithConflicts: false, unresolvedFiles: [] };
 }
 
 async function listConflictingAndUnstagedFiles({

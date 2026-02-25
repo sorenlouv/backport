@@ -10,10 +10,14 @@ export function getPullRequestBody({
   options,
   commits,
   targetBranch,
+  hasAnyCommitWithConflicts = false,
+  unresolvedFiles = [],
 }: {
   options: ValidConfigOptions;
   commits: Commit[];
   targetBranch: string;
+  hasAnyCommitWithConflicts?: boolean;
+  unresolvedFiles?: string[];
 }) {
   const commitMessagesAsString = commits
     .map((c) => {
@@ -66,20 +70,42 @@ export function getPullRequestBody({
     // replace package version
     .replaceAll('{{PACKAGE_VERSION}}', getPackageVersion());
 
+  let body: string;
   try {
     const template = Handlebars.compile(prDescription, { noEscape: true });
-    const res = template({
+    body = template({
       sourcePullRequest: commits[0].sourcePullRequest, // assume that all commits are from the same PR
       commits,
     });
-
-    return res;
   } catch (e) {
     logger.error('Could not compile PR description', e);
-    return prDescription
+    body = prDescription
       .replaceAll('{{{{raw}}}}', '')
       .replaceAll('{{{{/raw}}}}', '');
   }
+
+  if (hasAnyCommitWithConflicts) {
+    body += getConflictResolutionNote(unresolvedFiles);
+  }
+
+  return body;
+}
+
+function getConflictResolutionNote(unresolvedFiles: string[]): string {
+  const base =
+    '\n\n---\n' +
+    '**Note:** This PR was created with conflicts auto-resolved in favor of the source commit ' +
+    '(`--strategy-option=theirs`). Please review the changes carefully.';
+
+  if (unresolvedFiles.length === 0) {
+    return base;
+  }
+
+  const fileList = unresolvedFiles.map((f) => `\n - \`${f}\``).join('');
+  return (
+    base +
+    `\n\nThe following files still had unresolved conflicts after the retry:${fileList}`
+  );
 }
 
 function stripMarkdownComments(str: string): string {

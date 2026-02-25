@@ -60,6 +60,42 @@ describe('entrypoint.module', () => {
       });
     });
 
+    describe('when running into merge conflict with autoResolveConflictsWithTheirs=true', () => {
+      let response: BackportSuccessResponse;
+      beforeAll(async () => {
+        response = (await backportRun({
+          options: {
+            repoOwner: 'backport-org',
+            repoName: 'repo-with-conflicts',
+            interactive: false,
+            accessToken,
+            pullNumber: 12,
+            targetBranches: ['7.x'],
+            autoResolveConflictsWithTheirs: true,
+            dryRun: true,
+          },
+        })) as BackportSuccessResponse;
+      });
+
+      it('should have overall status=success', () => {
+        expect(response.status).toBe('success');
+      });
+
+      it('should succeed instead of returning a conflict error', () => {
+        expect(response.results[0].status).toBe('success');
+      });
+
+      it('should return a dry-run pull request url', () => {
+        expect(response.results[0]).toEqual(
+          expect.objectContaining({
+            status: 'success',
+            pullRequestUrl: 'this-is-a-dry-run',
+            targetBranch: '7.x',
+          }),
+        );
+      });
+    });
+
     describe('when target branch in branchLabelMapping is invalid', () => {
       let response: BackportSuccessResponse;
       beforeAll(async () => {

@@ -8,6 +8,7 @@ import {
   commitChanges,
   deleteRemote,
   cherrypick,
+  cherrypickAbort,
   getConflictingFiles,
   createBackportBranch,
   pushBackportBranch,
@@ -1030,6 +1031,89 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
       unstagedFiles: [`${base}/x`],
       needsResolving: true,
     });
+  });
+});
+
+describe('cherrypickAbort', () => {
+  const options = {
+    repoOwner: 'elastic',
+    repoName: 'kibana',
+  } as ValidConfigOptions;
+
+  it('should call git cherry-pick --abort', async () => {
+    const spy = jest
+      .spyOn(childProcess, 'spawnPromise')
+      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] });
+
+    await cherrypickAbort({ options });
+
+    expect(spy).toHaveBeenCalledWith(
+      'git',
+      ['cherry-pick', '--abort'],
+      '/myHomeDir/.backport/repositories/elastic/kibana',
+    );
+  });
+
+  it('should throw a BackportError when abort fails', async () => {
+    jest
+      .spyOn(childProcess, 'spawnPromise')
+      .mockRejectedValueOnce(new Error('git cherry-pick --abort failed'));
+
+    await expect(cherrypickAbort({ options })).rejects.toThrow(
+      'Failed to abort cherry-pick before retry',
+    );
+  });
+});
+
+describe('cherrypick with strategyOption', () => {
+  const options = {
+    repoOwner: 'elastic',
+    repoName: 'kibana',
+  } as ValidConfigOptions;
+
+  it('should include --strategy-option when strategyOption is provided', async () => {
+    const spawnSpy = jest
+      .spyOn(childProcess, 'spawnPromise')
+      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] });
+
+    await cherrypick({
+      options,
+      sha: 'abcd',
+      commitAuthor,
+      strategyOption: 'theirs',
+    });
+
+    const args = spawnSpy.mock.calls[0];
+    expect(args).toEqual([
+      'git',
+      [
+        '-c',
+        'user.name="Soren L"',
+        '-c',
+        'user.email="soren@mail.dk"',
+        'cherry-pick',
+        '-x',
+        '--strategy-option',
+        'theirs',
+        'abcd',
+      ],
+      '/myHomeDir/.backport/repositories/elastic/kibana',
+    ]);
+  });
+
+  it('should not include --strategy-option when strategyOption is not provided', async () => {
+    const spawnSpy = jest
+      .spyOn(childProcess, 'spawnPromise')
+      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] });
+
+    await cherrypick({
+      options,
+      sha: 'abcd',
+      commitAuthor,
+    });
+
+    const args = spawnSpy.mock.calls[0][1] as string[];
+    expect(args).not.toContain('--strategy-option');
   });
 });
 

@@ -61,6 +61,7 @@ export async function cherrypickAndCreateTargetPullRequest({
   const hasAnyCommitWithConflicts = cherrypickResults.some(
     (r) => r.hasCommitsWithConflicts,
   );
+  const unresolvedFiles = cherrypickResults.flatMap((r) => r.unresolvedFiles);
 
   if (!options.dryRun) {
     await pushBackportBranch({ options, backportBranch });
@@ -71,7 +72,13 @@ export async function cherrypickAndCreateTargetPullRequest({
     owner: options.repoOwner,
     repo: options.repoName,
     title: getTitle({ options, commits, targetBranch }),
-    body: getPullRequestBody({ options, commits, targetBranch }),
+    body: getPullRequestBody({
+      options,
+      commits,
+      targetBranch,
+      hasAnyCommitWithConflicts,
+      unresolvedFiles,
+    }),
     head: `${repoForkOwner}:${backportBranch}`, // eg. sorenlouv:backport/7.x/pr-75007
     base: targetBranch, // eg. 7.x
     draft: options.draft,

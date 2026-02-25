@@ -73,6 +73,14 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       description:
         'Commit conflicts instead of aborting. Only takes effect in `non-interactive` mode. Defaults to false',
       type: 'boolean',
+      conflicts: ['autoResolveConflictsWithTheirs'],
+    })
+
+    .option('autoResolveConflictsWithTheirs', {
+      description:
+        'Continue past conflicts by resolving them in favor of the source commit. Only takes effect in `non-interactive` mode. Defaults to false',
+      type: 'boolean',
+      conflicts: ['commitConflicts'],
     })
 
     .option('cwd', {
