@@ -58,7 +58,7 @@ Options:
       --commitConflicts                               Commit conflicts instead of aborting. Only
                                                       takes effect in \`non-interactive\` mode.
                                                       Defaults to false                    [boolean]
-      --propagateConflicts                            Continue past conflicts by resolving them in
+      --autoResolveConflictsWithTheirs                           Continue past conflicts by resolving them in
                                                       favor of the source commit. Only takes effect
                                                       in \`non-interactive\` mode. Defaults to false
                                                                                            [boolean]

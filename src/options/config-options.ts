@@ -30,7 +30,7 @@ type Options = Partial<{
   backportBranchName: string;
   cherrypickRef: boolean;
   commitConflicts: boolean;
-  propagateConflicts: boolean;
+  autoResolveConflictsWithTheirs: boolean;
   commitPaths: string[];
   copySourcePRLabels: boolean | string | string[];
   copySourcePRReviewers: boolean;
