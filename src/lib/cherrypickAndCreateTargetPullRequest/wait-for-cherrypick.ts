@@ -124,6 +124,11 @@ async function cherrypickAndHandleConflicts({
 
   // abort and retry cherry-pick with --strategy-option=theirs
   if (!options.interactive && options.autoResolveConflictsWithTheirs) {
+    if (options.commitConflicts) {
+      logger.warn(
+        'Both "autoResolveConflictsWithTheirs" and "commitConflicts" are enabled. Using "autoResolveConflictsWithTheirs".',
+      );
+    }
     await cherrypickAbort({ options });
     await cherrypick({
       options,
