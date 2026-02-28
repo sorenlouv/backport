@@ -84,9 +84,7 @@ describe('getOptionsFromCliArgs', () => {
       const res = getOptionsFromCliArgs(argv);
 
       expect(res.pullNumber).toEqual(1337);
-
-      //@ts-expect-error
-      expect(res.pr).toBe(undefined);
+      expect(res).not.toHaveProperty('pr');
     });
   });
 

@@ -19,6 +19,8 @@ Example:
 }
 ```
 
+**Note:** If `accessToken` is not set in the config file, `backport` will automatically use the `BACKPORT_ACCESS_TOKEN` environment variable as a fallback. This is particularly useful in CI/CD environments where you want to keep secrets out of version control.
+
 #### `accessToken` **required**
 
 Personal access token.
@@ -102,6 +104,18 @@ The array can contain branch names as strings or objects that also contains the 
     "6.0"
   ]
 }
+```
+
+## Environment Variables
+
+`backport` automatically uses the `BACKPORT_ACCESS_TOKEN` environment variable as a fallback when `accessToken` is not set in the config file or is empty. This allows you to keep secrets out of version control while still being able to share configuration files across teams.
+
+**Example:**
+
+```bash
+export BACKPORT_ACCESS_TOKEN="ghp_your_token_here"
+
+backport
 ```
 
 ## General configuration options
