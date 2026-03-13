@@ -1,10 +1,12 @@
+import { fileURLToPath } from 'node:url';
 import { homedir } from 'os';
 import path, { resolve } from 'path';
 import del from 'del';
 import makeDir from 'make-dir';
+import { vi } from 'vitest';
 
-jest.unmock('make-dir');
-jest.unmock('del');
+vi.unmock('make-dir');
+vi.unmock('del');
 
 export const SANDBOX_PATH = `${homedir()}/.backport_testing/`;
 
@@ -15,7 +17,11 @@ export function getSandboxPath({
   filename: string;
   specname?: string;
 }) {
-  const baseFilename = getFilenameWithoutExtension(filename);
+  // Support both file paths and import.meta.url
+  const resolvedPath = filename.startsWith('file:')
+    ? fileURLToPath(filename)
+    : filename;
+  const baseFilename = getFilenameWithoutExtension(resolvedPath);
   return resolve(
     `${SANDBOX_PATH}/${baseFilename}${specname ? `/${specname}` : ''}`,
   );

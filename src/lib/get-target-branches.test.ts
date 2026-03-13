@@ -1,20 +1,20 @@
-import type { TargetBranchChoice } from '../options/config-options';
-import type { ValidConfigOptions } from '../options/options';
+import type { TargetBranchChoice } from '../options/config-options.js';
+import type { ValidConfigOptions } from '../options/options.js';
 import type { SpyHelper } from '../types/spy-helper';
 import {
   getTargetBranches,
   getTargetBranchChoices,
-} from './get-target-branches';
-import * as prompts from './prompts';
-import type { Commit } from './sourceCommit/parse-source-commit';
+} from './get-target-branches.js';
+import * as prompts from './prompts.js';
+import type { Commit } from './sourceCommit/parse-source-commit.js';
 
 describe('getTargetBranches', () => {
   let promptSpy: SpyHelper<typeof prompts.promptForTargetBranches>;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
-    promptSpy = jest
+    promptSpy = vi
       .spyOn(prompts, 'promptForTargetBranches')
       .mockResolvedValueOnce(['branchA']);
   });

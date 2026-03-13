@@ -173,7 +173,7 @@ Default: `merge`
 
 #### `backportBinary`
 
-The official way to run backport is by installing it globally and running `backport`. There are however many other ways to run it. It can be installed locally and then run with `npx backport`/`yarn backport` or wrapped in a custom script and run like a node.js application `node scripts/backport`.
+The official way to run backport is by installing it globally and running `backport`. There are however many other ways to run it. It can be installed locally and then run with `npx backport` or wrapped in a custom script and run like a node.js application `node scripts/backport`.
 
 If you are using a non-standard way to run backport it is useful to add that here, to ensure that the Github comments posted by the backport tool includes the correct command.
 

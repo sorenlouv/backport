@@ -1,5 +1,5 @@
-import type { Commit } from '../../sourceCommit/parse-source-commit';
-import { getSourcePRLabelsToCopy } from './get-source-pr-labels-to-copy';
+import type { Commit } from '../../sourceCommit/parse-source-commit.js';
+import { getSourcePRLabelsToCopy } from './get-source-pr-labels-to-copy.js';
 
 const commits: Commit[] = [
   {

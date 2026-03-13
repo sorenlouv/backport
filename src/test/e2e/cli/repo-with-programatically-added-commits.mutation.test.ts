@@ -1,15 +1,15 @@
 import { Octokit } from '@octokit/rest';
-import { getDevAccessToken } from '../../private/get-dev-access-token';
-import { getSandboxPath, resetSandbox } from '../../sandbox';
-import { runBackportViaCli } from './run-backport-via-cli';
+import { getDevAccessToken } from '../../private/get-dev-access-token.js';
+import { getSandboxPath, resetSandbox } from '../../sandbox.js';
+import { runBackportViaCli } from './run-backport-via-cli.js';
 
-jest.setTimeout(25_000);
+vi.setConfig({ testTimeout: 25_000 });
 const accessToken = getDevAccessToken();
 const octokit = new Octokit({ auth: accessToken });
 
 describe('Programatically add new commits', () => {
   it('should backport commits added after the first run', async () => {
-    const sandboxPath = getSandboxPath({ filename: __filename });
+    const sandboxPath = getSandboxPath({ filename: import.meta.filename });
     await resetSandbox(sandboxPath);
 
     // first run: backport should clone the repo

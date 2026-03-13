@@ -1,7 +1,7 @@
 import Handlebars from 'handlebars';
-import type { Commit } from '../../entrypoint.api';
-import type { ValidConfigOptions } from '../../options/options';
-import { getShortSha } from '../github/commit-formatters';
+import type { Commit } from '../../entrypoint.api.js';
+import type { ValidConfigOptions } from '../../options/options.js';
+import { getShortSha } from '../github/commit-formatters.js';
 
 /*
  * Returns the name of the backport branch without remote name

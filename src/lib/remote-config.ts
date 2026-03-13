@@ -1,10 +1,10 @@
-import { graphql } from '../graphql/generated';
-import { parseConfigFile } from '../options/config/read-config-file';
+import { graphql } from '../graphql/generated/index.js';
+import { parseConfigFile } from '../options/config/read-config-file.js';
 import type {
   GitHubGraphQLError,
   OperationResultWithMeta,
-} from './github/v4/client/graphql-client';
-import { logger } from './logger';
+} from './github/v4/client/graphql-client.js';
+import { logger } from './logger.js';
 
 export const RemoteConfigHistoryFragment = graphql(`
   fragment RemoteConfigHistoryFragment on Commit {

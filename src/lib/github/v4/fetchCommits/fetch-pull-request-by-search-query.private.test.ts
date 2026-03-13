@@ -1,6 +1,6 @@
-import { getDevAccessToken } from '../../../../test/private/get-dev-access-token';
-import type { Commit } from '../../../sourceCommit/parse-source-commit';
-import { fetchPullRequestsBySearchQuery } from './fetch-pull-requests-by-search-query';
+import { getDevAccessToken } from '../../../../test/private/get-dev-access-token.js';
+import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
+import { fetchPullRequestsBySearchQuery } from './fetch-pull-requests-by-search-query.js';
 
 const accessToken = getDevAccessToken();
 
@@ -21,11 +21,11 @@ describe('fetchPullRequestsBySearchQuery', () => {
 
       await expect(fetchPullRequestsBySearchQuery(options)).rejects
         .toThrowErrorMatchingInlineSnapshot(`
-              "No commits found for query:
-                  type:pr is:merged sort:created-desc repo:backport-org/backport-e2e author:sorenlouv base:master label:non-existing
+        [BackportError: No commits found for query:
+            type:pr is:merged sort:created-desc repo:backport-org/backport-e2e author:sorenlouv base:master label:non-existing
 
-              Use \`--all\` to see commits by all users or \`--author=<username>\` for commits from a specific user"
-            `);
+        Use \`--all\` to see commits by all users or \`--author=<username>\` for commits from a specific user]
+      `);
     });
   });
 

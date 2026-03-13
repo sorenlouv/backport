@@ -1,12 +1,12 @@
 import fs, { access } from 'fs/promises';
 import path from 'path';
 import makeDir from 'make-dir';
-import type { Commit } from '../entrypoint.api';
-import type { ValidConfigOptions } from '../options/options';
-import { exec } from '../test/child-process-helper';
-import { getDevAccessToken } from '../test/private/get-dev-access-token';
-import { getSandboxPath, resetSandbox } from '../test/sandbox';
-import * as childProcess from './child-process-promisified';
+import type { Commit } from '../entrypoint.api.js';
+import type { ValidConfigOptions } from '../options/options.js';
+import { exec } from '../test/child-process-helper.js';
+import { getDevAccessToken } from '../test/private/get-dev-access-token.js';
+import { getSandboxPath, resetSandbox } from '../test/sandbox.js';
+import * as childProcess from './child-process-promisified.js';
 import {
   cherrypick,
   cloneRepo,
@@ -22,11 +22,11 @@ import {
   isLocalConfigFileModified,
   isLocalConfigFileUntracked,
   pushBackportBranch,
-} from './git';
-import { getShortSha } from './github/commit-formatters';
+} from './git.js';
+import { getShortSha } from './github/commit-formatters.js';
 
-jest.unmock('del');
-jest.unmock('make-dir');
+vi.unmock('del');
+vi.unmock('make-dir');
 
 const commitAuthor = { name: 'Soren L', email: 'soren@mail.dk' };
 const accessToken = getDevAccessToken();
@@ -36,7 +36,7 @@ describe('git.private', () => {
     let firstSha: string;
     let secondSha: string;
     const cwd = getSandboxPath({
-      filename: __filename,
+      filename: import.meta.filename,
       specname: 'getIsCommitInBranch',
     });
 
@@ -95,7 +95,7 @@ describe('git.private', () => {
 
   describe('deleteRemote', () => {
     const cwd = getSandboxPath({
-      filename: __filename,
+      filename: import.meta.filename,
       specname: 'deleteRemote',
     });
 
@@ -116,7 +116,7 @@ describe('git.private', () => {
 
   describe('createBackportBranch', () => {
     const cwd = getSandboxPath({
-      filename: __filename,
+      filename: import.meta.filename,
       specname: 'createBackportBranch',
     });
 
@@ -159,7 +159,7 @@ describe('git.private', () => {
 
   describe('pushBackportBranch', () => {
     const cwd = getSandboxPath({
-      filename: __filename,
+      filename: import.meta.filename,
       specname: 'pushBackportBranch',
     });
 
@@ -195,8 +195,8 @@ describe('git.private', () => {
           backportBranch: 'my-backport-branch',
         });
       }).rejects.toThrowErrorMatchingInlineSnapshot(`
-        "Error pushing to https://github.com/sorenlouv/repo-with-conflicts. Repository does not exist. Either fork the repository (https://github.com/sorenlouv/repo-with-conflicts) or disable fork mode via "--no-fork".
-        Read more about fork mode in the docs: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#fork"
+        [BackportError: Error pushing to https://github.com/sorenlouv/repo-with-conflicts. Repository does not exist. Either fork the repository (https://github.com/sorenlouv/repo-with-conflicts) or disable fork mode via "--no-fork".
+        Read more about fork mode in the docs: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#fork]
       `);
     });
   });
@@ -207,7 +207,7 @@ describe('git.private', () => {
     let fourthSha: string;
     let cwd: string;
     const sandboxPath = getSandboxPath({
-      filename: __filename,
+      filename: import.meta.filename,
       specname: 'cherrypick',
     });
 
@@ -324,7 +324,7 @@ describe('git.private', () => {
 
   describe('commitChanges', () => {
     const cwd = getSandboxPath({
-      filename: __filename,
+      filename: import.meta.filename,
       specname: 'commitChanges',
     });
 
@@ -408,7 +408,7 @@ describe('git.private', () => {
 
   describe('cloneRepo', () => {
     const sandboxPath = getSandboxPath({
-      filename: __filename,
+      filename: import.meta.filename,
       specname: 'cloneRepo',
     });
 
@@ -449,7 +449,7 @@ describe('git.private', () => {
     });
 
     it('clones a remote repo and continously updates the progress', async () => {
-      const onProgressSpy = jest.fn();
+      const onProgressSpy = vi.fn();
       await cloneRepo(
         {
           sourcePath: 'https://github.com/backport-org/backport-e2e.git',
@@ -479,7 +479,7 @@ describe('git.private', () => {
 
     beforeEach(async () => {
       cwd = getSandboxPath({
-        filename: __filename,
+        filename: import.meta.filename,
         specname: 'getLocalConfigFileCommitDate',
       });
       await resetSandbox(cwd);
@@ -506,7 +506,7 @@ describe('git.private', () => {
 
     beforeEach(async () => {
       cwd = getSandboxPath({
-        filename: __filename,
+        filename: import.meta.filename,
         specname: 'isLocalConfigFileUntracked',
       });
       await resetSandbox(cwd);
@@ -545,7 +545,7 @@ describe('git.private', () => {
 
     beforeEach(async () => {
       cwd = getSandboxPath({
-        filename: __filename,
+        filename: import.meta.filename,
         specname: 'getLocalSourceRepoPath',
       });
       await resetSandbox(cwd);
@@ -591,7 +591,7 @@ describe('git.private', () => {
 
     beforeEach(async () => {
       sandboxPath = getSandboxPath({
-        filename: __filename,
+        filename: import.meta.filename,
         specname: 'getGitProjectRootPath',
       });
       subDirectory = `${sandboxPath}/foo-dir`;
@@ -612,7 +612,7 @@ describe('git.private', () => {
 
     beforeEach(async () => {
       cwd = getSandboxPath({
-        filename: __filename,
+        filename: import.meta.filename,
         specname: 'isLocalConfigFileModified',
       });
       await resetSandbox(cwd);
@@ -643,7 +643,7 @@ describe('git.private', () => {
     let cwd: string;
     beforeAll(async () => {
       cwd = getSandboxPath({
-        filename: __filename,
+        filename: import.meta.filename,
         specname: 'different-merge-strategies',
       });
       await resetSandbox(cwd);

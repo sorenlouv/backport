@@ -2,13 +2,16 @@ import nock from 'nock';
 import type {
   BackportResponse,
   BackportSuccessResponse,
-} from '../../../backport-run';
-import type { ValidConfigOptions } from '../../../options/options';
-import { BackportError } from '../../backport-error';
-import { setAccessToken } from '../../logger';
-import { createStatusComment, getCommentBody } from './create-status-comment';
+} from '../../../backport-run.js';
+import type { ValidConfigOptions } from '../../../options/options.js';
+import { BackportError } from '../../backport-error.js';
+import { setAccessToken } from '../../logger.js';
+import {
+  createStatusComment,
+  getCommentBody,
+} from './create-status-comment.js';
 
-jest.unmock('../../logger');
+vi.unmock('../../logger');
 
 describe('createStatusComment', () => {
   it('redacts accessToken if it is included in the error message', async () => {

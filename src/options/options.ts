@@ -1,18 +1,18 @@
 import chalk from 'chalk';
-import { isEmpty } from 'lodash';
-import { BackportError } from '../lib/backport-error';
-import { getGlobalConfigPath } from '../lib/env';
-import { getRepoOwnerAndNameFromGitRemotes } from '../lib/github/v4/get-repo-owner-and-name-from-git-remotes';
-import { getOptionsFromGithub } from '../lib/github/v4/getOptionsFromGithub/get-options-from-github';
-import type { OptionsFromGithub } from '../lib/github/v4/getOptionsFromGithub/get-options-from-github';
-import { setAccessToken } from '../lib/logger';
-import type { OptionsFromCliArgs } from './cli-args';
-import type { OptionsFromConfigFiles } from './config/config';
-import { getOptionsFromConfigFiles } from './config/config';
+import { isEmpty } from 'lodash-es';
+import { BackportError } from '../lib/backport-error.js';
+import { getGlobalConfigPath } from '../lib/env.js';
+import { getRepoOwnerAndNameFromGitRemotes } from '../lib/github/v4/get-repo-owner-and-name-from-git-remotes.js';
+import { getOptionsFromGithub } from '../lib/github/v4/getOptionsFromGithub/get-options-from-github.js';
+import type { OptionsFromGithub } from '../lib/github/v4/getOptionsFromGithub/get-options-from-github.js';
+import { setAccessToken } from '../lib/logger.js';
+import type { OptionsFromCliArgs } from './cli-args.js';
+import type { OptionsFromConfigFiles } from './config/config.js';
+import { getOptionsFromConfigFiles } from './config/config.js';
 import type {
   ConfigFileOptions,
   TargetBranchChoiceOrString,
-} from './config-options';
+} from './config-options.js';
 
 const PROJECT_CONFIG_DOCS_LINK =
   'https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson';
@@ -59,7 +59,6 @@ export const defaultConfigOptions = {
   targetBranchChoices: [] as TargetBranchChoiceOrString[],
   targetBranches: [] as string[],
   targetPRLabels: [] as string[],
-  telemetry: true,
 };
 
 export async function getOptions({

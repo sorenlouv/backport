@@ -1,8 +1,8 @@
 import { Octokit } from '@octokit/rest';
-import { flatten, uniq } from 'lodash';
-import { filterNil } from '../../../utils/filter-empty';
-import { logger } from '../../logger';
-import { ora } from '../../ora';
+import { uniq, flatten } from 'lodash-es';
+import { filterNil } from '../../../utils/filter-empty.js';
+import { logger } from '../../logger.js';
+import { ora } from '../../ora.js';
 
 export async function getReviewersFromPullRequests({
   options,

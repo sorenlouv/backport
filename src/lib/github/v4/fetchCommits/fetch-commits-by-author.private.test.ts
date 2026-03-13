@@ -1,6 +1,6 @@
-import { getDevAccessToken } from '../../../../test/private/get-dev-access-token';
-import type { Commit } from '../../../sourceCommit/parse-source-commit';
-import { fetchCommitsByAuthor } from './fetch-commits-by-author';
+import { getDevAccessToken } from '../../../../test/private/get-dev-access-token.js';
+import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
+import { fetchCommitsByAuthor } from './fetch-commits-by-author.js';
 
 const accessToken = getDevAccessToken();
 

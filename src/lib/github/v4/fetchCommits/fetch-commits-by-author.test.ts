@@ -4,11 +4,11 @@ import type {
   AuthorIdQueryVariables,
   CommitsByAuthorQuery,
   CommitsByAuthorQueryVariables,
-} from '../../../../graphql/generated/graphql';
-import { mockUrqlRequest } from '../../../../test/nock-helpers';
-import type { Commit } from '../../../sourceCommit/parse-source-commit';
-import { commitsByAuthorMock } from '../mocks/commits-by-author-mock';
-import { fetchCommitsByAuthor } from './fetch-commits-by-author';
+} from '../../../../graphql/generated/graphql.js';
+import { mockUrqlRequest } from '../../../../test/nock-helpers.js';
+import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
+import { commitsByAuthorMock } from '../mocks/commits-by-author-mock.js';
+import { fetchCommitsByAuthor } from './fetch-commits-by-author.js';
 
 const defaultOptions = {
   accessToken: 'myAccessToken',
@@ -26,7 +26,7 @@ const authorIdMockData = { user: { id: 'myUserId' } } as const;
 
 describe('fetchCommitsByAuthor', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   afterEach(() => {

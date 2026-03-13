@@ -1,5 +1,5 @@
-import type { CommitsByAuthorQuery } from '../../../../graphql/generated/graphql';
-import { PullRequestState } from '../../../../graphql/generated/graphql';
+import type { CommitsByAuthorQuery } from '../../../../graphql/generated/graphql.js';
+import { PullRequestState } from '../../../../graphql/generated/graphql.js';
 
 export const commitsByAuthorMock: CommitsByAuthorQuery = {
   repository: {

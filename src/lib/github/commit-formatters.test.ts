@@ -1,4 +1,4 @@
-import { getFirstLine } from './commit-formatters';
+import { getFirstLine } from './commit-formatters.js';
 
 describe('getFirstCommitMessageLine', () => {
   it('should only return the first line of the message', () => {

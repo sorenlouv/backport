@@ -1,15 +1,16 @@
 import fs from 'fs/promises';
 import findUp from 'find-up';
+import type { MockInstance } from 'vitest';
 import type { SpyHelper } from '../../types/spy-helper';
-import { getProjectConfig } from './project-config';
+import { getProjectConfig } from './project-config.js';
 
 describe('getProjectConfig', () => {
-  afterEach(() => jest.clearAllMocks());
+  afterEach(() => vi.clearAllMocks());
 
   describe('deprecations', () => {
     describe('when specifying deprecated `branches`', () => {
       it('is returned as `targetBranchChoices`', async () => {
-        jest.spyOn(fs, 'readFile').mockResolvedValueOnce(
+        vi.spyOn(fs, 'readFile').mockResolvedValueOnce(
           JSON.stringify({
             repoName: 'kibana',
             repoOwner: 'elastic',
@@ -24,7 +25,7 @@ describe('getProjectConfig', () => {
 
     describe('when specifying deprecated `labels`', () => {
       it('is returned as `targetPRLabels`', async () => {
-        jest.spyOn(fs, 'readFile').mockResolvedValueOnce(
+        vi.spyOn(fs, 'readFile').mockResolvedValueOnce(
           JSON.stringify({
             labels: ['backport'],
           }),
@@ -37,7 +38,7 @@ describe('getProjectConfig', () => {
 
     describe('when specifying deprecated `upstream`', () => {
       it('is split into `repoOwner` and `repoName`', async () => {
-        jest.spyOn(fs, 'readFile').mockResolvedValueOnce(
+        vi.spyOn(fs, 'readFile').mockResolvedValueOnce(
           JSON.stringify({
             upstream: 'elastic/kibana',
           }),
@@ -52,7 +53,7 @@ describe('getProjectConfig', () => {
     describe('when projectConfig is valid', () => {
       let projectConfig: Awaited<ReturnType<typeof getProjectConfig>>;
       beforeEach(async () => {
-        jest.spyOn(fs, 'readFile').mockResolvedValueOnce(
+        vi.spyOn(fs, 'readFile').mockResolvedValueOnce(
           JSON.stringify({
             repoName: 'kibana',
             repoOwner: 'elastic',
@@ -85,7 +86,7 @@ describe('getProjectConfig', () => {
       let spy: SpyHelper<typeof fs.readFile>;
 
       beforeEach(async () => {
-        spy = jest.spyOn(fs, 'readFile').mockResolvedValueOnce(
+        spy = vi.spyOn(fs, 'readFile').mockResolvedValueOnce(
           JSON.stringify({
             repoName: 'kibana',
             repoOwner: 'elastic',
@@ -124,7 +125,7 @@ describe('getProjectConfig', () => {
 
   describe('when projectConfig is empty', () => {
     it('should return empty config', async () => {
-      jest.spyOn(fs, 'readFile').mockResolvedValueOnce('{}');
+      vi.spyOn(fs, 'readFile').mockResolvedValueOnce('{}');
       const projectConfig = await getProjectConfig(undefined, undefined);
       expect(projectConfig).toEqual({});
     });
@@ -132,7 +133,7 @@ describe('getProjectConfig', () => {
 
   describe('when projectConfig is missing', () => {
     it('should return empty config', async () => {
-      (findUp as any as jest.SpyInstance).mockReturnValueOnce(undefined);
+      (findUp as any as MockInstance).mockReturnValueOnce(undefined);
       const projectConfig = await getProjectConfig(undefined, undefined);
       expect(projectConfig).toEqual(undefined);
     });

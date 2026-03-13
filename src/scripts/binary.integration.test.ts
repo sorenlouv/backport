@@ -2,28 +2,26 @@ import { execSync, spawnSync } from 'child_process';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { getYarnCommand } from '../test/integration-test-helpers';
 
 // Integration test to verify that the `bin` field in package.json exposes a working `backport` CLI.
 // Strategy:
-// 1. Pack the current project into a tarball (yarn pack) (assumes build already done by prepublish scripts or tests environment)
-// 2. Create a fresh temp project and install the tarball with yarn add file:<tarball>
+// 1. Pack the current project into a tarball (npm pack)
+// 2. Create a fresh temp project and install the tarball with npm install
 // 3. Assert that node_modules/.bin/backport exists and is executable
 // 4. Run `backport --version` and compare output with package.json version
 // 5. (Smoke) Run `backport --help` to ensure it exits 0 (no interactive prompt)
 
 describe('binary backport file', () => {
   let workDir: string; // consumer project
-  let packDir: string; // directory holding tarball
   let tarballPath: string;
   let version: string;
   let repoRoot: string;
   let binPath: string;
 
-  jest.setTimeout(120_000);
+  vi.setConfig({ testTimeout: 120_000, hookTimeout: 120_000 });
 
   beforeAll(() => {
-    repoRoot = path.resolve(__dirname, '../..');
+    repoRoot = path.resolve(import.meta.dirname, '../..');
 
     // read version early
     const pkgJson = JSON.parse(
@@ -32,15 +30,16 @@ describe('binary backport file', () => {
     version = pkgJson.version;
 
     workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'backport-bin-consumer-'));
-    packDir = fs.mkdtempSync(path.join(os.tmpdir(), 'backport-bin-pack-'));
-    tarballPath = path.join(packDir, 'backport.tgz');
 
-    // pack project; rely on repo having been built as with other integration tests
-    const yarnCommand = getYarnCommand();
-    execSync(`${yarnCommand} pack --filename ${tarballPath}`, {
+    // pack project; npm pack outputs the tarball filename as the last line of stdout
+    const tarballName = execSync('npm pack', {
       cwd: repoRoot,
-      stdio: 'ignore',
-    });
+      encoding: 'utf8',
+    })
+      .trim()
+      .split('\n')
+      .pop()!;
+    tarballPath = path.join(repoRoot, tarballName);
 
     // create consumer package.json
     fs.writeFileSync(
@@ -49,8 +48,7 @@ describe('binary backport file', () => {
     );
 
     // install tarball (this creates node_modules/.bin/backport symlink / shim)
-    // Use resolved yarn binary to avoid asdf shim issues
-    execSync(`${yarnCommand} add file:${tarballPath}`, {
+    execSync(`npm install ${tarballPath}`, {
       cwd: workDir,
       stdio: 'ignore',
     });
@@ -61,7 +59,7 @@ describe('binary backport file', () => {
   afterAll(() => {
     try {
       fs.rmSync(workDir, { recursive: true, force: true });
-      fs.rmSync(packDir, { recursive: true, force: true });
+      if (tarballPath) fs.rmSync(tarballPath, { force: true });
     } catch {
       // ignore cleanup errors
     }

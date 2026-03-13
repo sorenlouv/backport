@@ -1,13 +1,13 @@
-import { isEmpty, isString } from 'lodash';
+import { isEmpty, isString } from 'lodash-es';
 import type {
   TargetBranchChoice,
   TargetBranchChoiceOrString,
-} from '../options/config-options';
-import type { ValidConfigOptions } from '../options/options';
-import { BackportError } from './backport-error';
-import { getSourceBranchFromCommits } from './get-source-branch-from-commits';
-import { promptForTargetBranches } from './prompts';
-import type { Commit } from './sourceCommit/parse-source-commit';
+} from '../options/config-options.js';
+import type { ValidConfigOptions } from '../options/options.js';
+import { BackportError } from './backport-error.js';
+import { getSourceBranchFromCommits } from './get-source-branch-from-commits.js';
+import { promptForTargetBranches } from './prompts.js';
+import type { Commit } from './sourceCommit/parse-source-commit.js';
 
 export async function getTargetBranches(
   options: ValidConfigOptions,

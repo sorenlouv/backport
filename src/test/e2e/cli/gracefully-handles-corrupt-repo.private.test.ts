@@ -1,14 +1,14 @@
-import { exec } from '../../child-process-helper';
-import { getDevAccessToken } from '../../private/get-dev-access-token';
-import { getSandboxPath, resetSandbox } from '../../sandbox';
-import { runBackportViaCli } from './run-backport-via-cli';
+import { exec } from '../../child-process-helper.js';
+import { getDevAccessToken } from '../../private/get-dev-access-token.js';
+import { getSandboxPath, resetSandbox } from '../../sandbox.js';
+import { runBackportViaCli } from './run-backport-via-cli.js';
 
 const accessToken = getDevAccessToken();
-jest.setTimeout(25_000);
+vi.setConfig({ testTimeout: 25_000 });
 
 describe('gracefully handle corrupted repo', () => {
   it('backports correctly', async () => {
-    const sandboxPath = getSandboxPath({ filename: __filename });
+    const sandboxPath = getSandboxPath({ filename: import.meta.filename });
     await resetSandbox(sandboxPath);
 
     // first run: backport should clone the repo

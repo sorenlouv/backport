@@ -1,11 +1,10 @@
-import apm from 'elastic-apm-node';
-import type { ValidConfigOptions } from '../options/options';
-import { BackportError } from './backport-error';
-import { cherrypickAndCreateTargetPullRequest } from './cherrypickAndCreateTargetPullRequest/cherrypick-and-create-target-pull-request';
-import { getLogfilePath } from './env';
-import { logger, consoleLog } from './logger';
-import { sequentially } from './sequentially';
-import type { Commit } from './sourceCommit/parse-source-commit';
+import type { ValidConfigOptions } from '../options/options.js';
+import { BackportError } from './backport-error.js';
+import { cherrypickAndCreateTargetPullRequest } from './cherrypickAndCreateTargetPullRequest/cherrypick-and-create-target-pull-request.js';
+import { getLogfilePath } from './env.js';
+import { logger, consoleLog } from './logger.js';
+import { sequentially } from './sequentially.js';
+import type { Commit } from './sourceCommit/parse-source-commit.js';
 
 export type SuccessResult = {
   status: 'success';
@@ -44,7 +43,6 @@ export async function runSequentially({
 
   await sequentially(targetBranches, async (targetBranch) => {
     logger.info(`Backporting ${JSON.stringify(commits)} to ${targetBranch}`);
-    const span = apm.startSpan('Cherrypick commits to target branch');
     try {
       const { number, url, didUpdate } =
         await cherrypickAndCreateTargetPullRequest({
@@ -60,14 +58,7 @@ export async function runSequentially({
         pullRequestUrl: url,
         pullRequestNumber: number,
       });
-      span?.setOutcome('success');
-      span?.end();
     } catch (e) {
-      span?.setOutcome('failure');
-      span?.setLabel('error_message', (e as Error).message);
-      span?.end();
-      apm.captureError(e as Error);
-
       const isHandledError = e instanceof BackportError;
       if (isHandledError) {
         results.push({

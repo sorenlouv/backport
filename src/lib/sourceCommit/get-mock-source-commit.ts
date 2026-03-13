@@ -2,7 +2,7 @@ import type {
   PullRequestState,
   RemoteConfigHistoryFragmentFragment,
   SourceCommitWithTargetPullRequestFragmentFragment,
-} from '../../graphql/generated/graphql';
+} from '../../graphql/generated/graphql.js';
 
 export function getMockSourceCommit({
   sourceCommit,

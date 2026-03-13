@@ -2,7 +2,7 @@
 /coverage
 /.coveralls.yml
 /dist
-/yarn-error.log
+/npm-debug.log
 .DS_Store
 /.env
 /src/graphql

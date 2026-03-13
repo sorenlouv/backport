@@ -1,5 +1,5 @@
-import { getDevAccessToken } from '../../../test/private/get-dev-access-token';
-import { getReviewersFromPullRequests } from './get-reviewers-from-pull-requests';
+import { getDevAccessToken } from '../../../test/private/get-dev-access-token.js';
+import { getReviewersFromPullRequests } from './get-reviewers-from-pull-requests.js';
 
 const accessToken = getDevAccessToken();
 

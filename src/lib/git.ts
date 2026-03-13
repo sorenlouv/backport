@@ -1,20 +1,20 @@
 import path, { resolve as pathResolve } from 'path';
-import { uniq, isEmpty } from 'lodash';
-import { ora } from '../lib/ora';
-import type { ValidConfigOptions } from '../options/options';
-import { filterNil } from '../utils/filter-empty';
-import type { CommitAuthor } from './author';
-import { BackportError } from './backport-error';
+import { uniq, isEmpty } from 'lodash-es';
+import { ora } from '../lib/ora.js';
+import type { ValidConfigOptions } from '../options/options.js';
+import { filterNil } from '../utils/filter-empty.js';
+import type { CommitAuthor } from './author.js';
+import { BackportError } from './backport-error.js';
 import {
   spawnPromise,
   SpawnError,
   spawnStream,
-} from './child-process-promisified';
-import { getRepoPath } from './env';
-import { getShortSha } from './github/commit-formatters';
-import { logger } from './logger';
-import type { TargetPullRequest } from './sourceCommit/get-pull-request-states';
-import type { Commit } from './sourceCommit/parse-source-commit';
+} from './child-process-promisified.js';
+import { getRepoPath } from './env.js';
+import { getShortSha } from './github/commit-formatters.js';
+import { logger } from './logger.js';
+import type { TargetPullRequest } from './sourceCommit/get-pull-request-states.js';
+import type { Commit } from './sourceCommit/parse-source-commit.js';
 
 export function getRemoteUrl(
   { repoName, accessToken, gitHostname = 'github.com' }: ValidConfigOptions,

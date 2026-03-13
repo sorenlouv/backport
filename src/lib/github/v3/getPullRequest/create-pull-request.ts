@@ -1,11 +1,10 @@
 import { Octokit } from '@octokit/rest';
-import apm from 'elastic-apm-node';
-import type { ValidConfigOptions } from '../../../../options/options';
-import { BackportError } from '../../../backport-error';
-import { logger } from '../../../logger';
-import { ora } from '../../../ora';
-import { fetchExistingPullRequest } from '../../v4/fetch-existing-pull-request';
-import { getGithubV3ErrorMessage } from '../get-github-v3-error-message';
+import type { ValidConfigOptions } from '../../../../options/options.js';
+import { BackportError } from '../../../backport-error.js';
+import { logger } from '../../../logger.js';
+import { ora } from '../../../ora.js';
+import { fetchExistingPullRequest } from '../../v4/fetch-existing-pull-request.js';
+import { getGithubV3ErrorMessage } from '../get-github-v3-error-message.js';
 
 export interface PullRequestPayload {
   owner: string;
@@ -42,8 +41,6 @@ export async function createPullRequest({
     return { didUpdate: false, number: 1337, url: 'this-is-a-dry-run' };
   }
 
-  const span = apm.startSpan('REST: Create pull request');
-
   try {
     const octokit = new Octokit({
       auth: accessToken,
@@ -79,8 +76,6 @@ export async function createPullRequest({
     } catch (e) {
       logger.error('Could not retrieve existing pull request', e);
       // swallow error
-    } finally {
-      span?.end();
     }
 
     spinner.fail();

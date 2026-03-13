@@ -1,8 +1,8 @@
 import type { GraphQLError } from '@0no-co/graphql.web';
 import type { OperationResult } from '@urql/core';
 import { fetchExchange, Client } from '@urql/core';
-import type { ValidConfigOptions } from '../../../../options/options';
-import { responseMetaInterceptorExchange } from './response-meta-interceptor-exchange';
+import type { ValidConfigOptions } from '../../../../options/options.js';
+import { responseMetaInterceptorExchange } from './response-meta-interceptor-exchange.js';
 
 export interface GitHubGraphQLError extends GraphQLError {
   type?: 'FORBIDDEN';
@@ -14,8 +14,9 @@ export interface GitHubGraphQLError extends GraphQLError {
     | undefined;
 }
 
-export interface OperationResultWithMeta<Data = any>
-  extends OperationResult<Data> {
+export interface OperationResultWithMeta<
+  Data = any,
+> extends OperationResult<Data> {
   responseHeaders?: Headers;
   statusCode?: number;
 }

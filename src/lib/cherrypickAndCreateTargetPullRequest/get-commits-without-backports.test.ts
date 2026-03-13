@@ -1,13 +1,13 @@
 import stripAnsi from 'strip-ansi';
-import type { ValidConfigOptions } from '../../options/options';
-import * as git from '../git';
-import * as fetchCommitsByAuthorModule from '../github/v4/fetchCommits/fetch-commits-by-author';
-import type { TargetPullRequest } from '../sourceCommit/get-pull-request-states';
-import { getCommitsWithoutBackports } from './get-commits-without-backports';
+import type { ValidConfigOptions } from '../../options/options.js';
+import * as git from '../git.js';
+import * as fetchCommitsByAuthorModule from '../github/v4/fetchCommits/fetch-commits-by-author.js';
+import type { TargetPullRequest } from '../sourceCommit/get-pull-request-states.js';
+import { getCommitsWithoutBackports } from './get-commits-without-backports.js';
 
 describe('getCommitsWithoutBackports', () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('targetPullRequestStates', () => {
@@ -17,38 +17,39 @@ describe('getCommitsWithoutBackports', () => {
       targetPullRequestStates: TargetPullRequest[];
     }) {
       // simulate 1 unbackported commit
-      jest
-        .spyOn(fetchCommitsByAuthorModule, 'fetchCommitsByAuthor')
-        .mockResolvedValueOnce([
-          {
-            author: {
-              email: 'soren.louv@elastic.co',
-              name: 'Søren Louv-Jansen',
-            },
-            suggestedTargetBranches: [],
-            sourceCommit: {
-              branchLabelMapping: {},
-              committedDate: '10',
+      vi.spyOn(
+        fetchCommitsByAuthorModule,
+        'fetchCommitsByAuthor',
+      ).mockResolvedValueOnce([
+        {
+          author: {
+            email: 'soren.louv@elastic.co',
+            name: 'Søren Louv-Jansen',
+          },
+          suggestedTargetBranches: [],
+          sourceCommit: {
+            branchLabelMapping: {},
+            committedDate: '10',
+            message: 'First commit (#1)',
+            sha: 'xyz',
+          },
+          sourcePullRequest: {
+            labels: [],
+            url: 'https://www.github.com/foo/bar/pull/123',
+            number: 123,
+            title: 'First commit',
+            mergeCommit: {
               message: 'First commit (#1)',
               sha: 'xyz',
             },
-            sourcePullRequest: {
-              labels: [],
-              url: 'https://www.github.com/foo/bar/pull/123',
-              number: 123,
-              title: 'First commit',
-              mergeCommit: {
-                message: 'First commit (#1)',
-                sha: 'xyz',
-              },
-            },
-            targetPullRequestStates: targetPullRequestStates,
-            sourceBranch: 'main',
           },
-        ]);
+          targetPullRequestStates: targetPullRequestStates,
+          sourceBranch: 'main',
+        },
+      ]);
 
       // simulate commit is definitely not backported
-      jest.spyOn(git, 'getIsCommitInBranch').mockResolvedValueOnce(false);
+      vi.spyOn(git, 'getIsCommitInBranch').mockResolvedValueOnce(false);
 
       return getCommitsWithoutBackports({
         options: {} as ValidConfigOptions,
@@ -149,45 +150,46 @@ describe('getCommitsWithoutBackports', () => {
       currentCommitDate: string;
     }) {
       // simulate 1 commit with a pending backport
-      jest
-        .spyOn(fetchCommitsByAuthorModule, 'fetchCommitsByAuthor')
-        .mockResolvedValueOnce([
-          {
-            author: {
-              email: 'soren.louv@elastic.co',
-              name: 'Søren Louv-Jansen',
-            },
-            suggestedTargetBranches: [],
-            sourceCommit: {
-              branchLabelMapping: {},
-              committedDate: offendingCommitDate,
+      vi.spyOn(
+        fetchCommitsByAuthorModule,
+        'fetchCommitsByAuthor',
+      ).mockResolvedValueOnce([
+        {
+          author: {
+            email: 'soren.louv@elastic.co',
+            name: 'Søren Louv-Jansen',
+          },
+          suggestedTargetBranches: [],
+          sourceCommit: {
+            branchLabelMapping: {},
+            committedDate: offendingCommitDate,
+            message: 'First commit (#1)',
+            sha: 'xyz',
+          },
+          sourcePullRequest: {
+            labels: [],
+            number: 123,
+            title: 'First commit',
+            url: 'https://www.github.com/foo/bar/pull/123',
+            mergeCommit: {
               message: 'First commit (#1)',
               sha: 'xyz',
             },
-            sourcePullRequest: {
-              labels: [],
-              number: 123,
-              title: 'First commit',
-              url: 'https://www.github.com/foo/bar/pull/123',
-              mergeCommit: {
-                message: 'First commit (#1)',
-                sha: 'xyz',
-              },
-            },
-            sourceBranch: 'main',
-            targetPullRequestStates: [
-              {
-                state: 'OPEN',
-                branch: '7.x',
-                number: 456,
-                url: 'https://www.github.com/foo/bar/pull/456',
-              },
-            ],
           },
-        ]);
+          sourceBranch: 'main',
+          targetPullRequestStates: [
+            {
+              state: 'OPEN',
+              branch: '7.x',
+              number: 456,
+              url: 'https://www.github.com/foo/bar/pull/456',
+            },
+          ],
+        },
+      ]);
 
       // simulate commit is definitely not backported
-      jest.spyOn(git, 'getIsCommitInBranch').mockResolvedValueOnce(false);
+      vi.spyOn(git, 'getIsCommitInBranch').mockResolvedValueOnce(false);
 
       return getCommitsWithoutBackports({
         options: {} as ValidConfigOptions,
@@ -246,45 +248,46 @@ describe('getCommitsWithoutBackports', () => {
       currentCommitTargetBranch: string;
     }) {
       // return mock commits that also touched the conflicting files
-      jest
-        .spyOn(fetchCommitsByAuthorModule, 'fetchCommitsByAuthor')
-        .mockResolvedValueOnce([
-          {
-            author: {
-              email: 'soren.louv@elastic.co',
-              name: 'Søren Louv-Jansen',
-            },
-            suggestedTargetBranches: [],
-            sourceCommit: {
-              branchLabelMapping: {},
-              committedDate: '10',
+      vi.spyOn(
+        fetchCommitsByAuthorModule,
+        'fetchCommitsByAuthor',
+      ).mockResolvedValueOnce([
+        {
+          author: {
+            email: 'soren.louv@elastic.co',
+            name: 'Søren Louv-Jansen',
+          },
+          suggestedTargetBranches: [],
+          sourceCommit: {
+            branchLabelMapping: {},
+            committedDate: '10',
+            message: 'First commit (#1)',
+            sha: 'xyz',
+          },
+          sourcePullRequest: {
+            labels: [],
+            number: 123,
+            title: 'First commit',
+            url: 'https://www.github.com/foo/bar/pull/123',
+            mergeCommit: {
               message: 'First commit (#1)',
               sha: 'xyz',
             },
-            sourcePullRequest: {
-              labels: [],
-              number: 123,
-              title: 'First commit',
-              url: 'https://www.github.com/foo/bar/pull/123',
-              mergeCommit: {
-                message: 'First commit (#1)',
-                sha: 'xyz',
-              },
-            },
-            sourceBranch: 'main',
-            targetPullRequestStates: [
-              {
-                branch: offendingCommitTargetBranch,
-                state: 'OPEN',
-                url: 'https://www.github.com/foo/bar/pull/456',
-                number: 456,
-              },
-            ],
           },
-        ]);
+          sourceBranch: 'main',
+          targetPullRequestStates: [
+            {
+              branch: offendingCommitTargetBranch,
+              state: 'OPEN',
+              url: 'https://www.github.com/foo/bar/pull/456',
+              number: 456,
+            },
+          ],
+        },
+      ]);
 
       // simulate commit is definitely not backported
-      jest.spyOn(git, 'getIsCommitInBranch').mockResolvedValueOnce(false);
+      vi.spyOn(git, 'getIsCommitInBranch').mockResolvedValueOnce(false);
 
       return getCommitsWithoutBackports({
         options: {} as ValidConfigOptions,
@@ -338,28 +341,29 @@ describe('getCommitsWithoutBackports', () => {
 
   describe("when conflicting commit doesn't have an associated pull request", () => {
     it('should be ignored', async () => {
-      jest
-        .spyOn(fetchCommitsByAuthorModule, 'fetchCommitsByAuthor')
-        .mockResolvedValueOnce([
-          {
-            author: {
-              email: 'soren.louv@elastic.co',
-              name: 'Søren Louv-Jansen',
-            },
-            suggestedTargetBranches: [],
-            sourceCommit: {
-              branchLabelMapping: {},
-              committedDate: '10',
-              sha: 'xyz',
-              message: 'First commit (#1)',
-            },
-            targetPullRequestStates: [],
-            sourceBranch: 'main',
+      vi.spyOn(
+        fetchCommitsByAuthorModule,
+        'fetchCommitsByAuthor',
+      ).mockResolvedValueOnce([
+        {
+          author: {
+            email: 'soren.louv@elastic.co',
+            name: 'Søren Louv-Jansen',
           },
-        ]);
+          suggestedTargetBranches: [],
+          sourceCommit: {
+            branchLabelMapping: {},
+            committedDate: '10',
+            sha: 'xyz',
+            message: 'First commit (#1)',
+          },
+          targetPullRequestStates: [],
+          sourceBranch: 'main',
+        },
+      ]);
 
       // simulate commit is definitely not backported
-      jest.spyOn(git, 'getIsCommitInBranch').mockResolvedValueOnce(false);
+      vi.spyOn(git, 'getIsCommitInBranch').mockResolvedValueOnce(false);
 
       const commitsWithoutBackports = await getCommitsWithoutBackports({
         options: {} as ValidConfigOptions,

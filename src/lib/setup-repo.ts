@@ -1,10 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-import del = require('del');
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-import apm = require('elastic-apm-node');
-import type { ValidConfigOptions } from '../options/options';
-import { BackportError } from './backport-error';
-import { getRepoPath } from './env';
+import del from 'del';
+import type { ValidConfigOptions } from '../options/options.js';
+import { BackportError } from './backport-error.js';
+import { getRepoPath } from './env.js';
 import {
   addRemote,
   cloneRepo,
@@ -12,9 +9,9 @@ import {
   getGitProjectRootPath,
   getLocalSourceRepoPath,
   getRemoteUrl,
-} from './git';
-import { logger } from './logger';
-import { ora } from './ora';
+} from './git.js';
+import { logger } from './logger.js';
+import { ora } from './ora.js';
 
 export async function setupRepo(options: ValidConfigOptions) {
   const repoPath = getRepoPath(options);
@@ -44,15 +41,12 @@ export async function setupRepo(options: ValidConfigOptions) {
 
       await del(repoPath, { force: true });
 
-      const cloneRepoSpan = apm.startSpan('Get target branches');
       await cloneRepo(
         { sourcePath, targetPath: repoPath },
         (progress: number) => {
           spinner.text = `${progress}% ${spinnerCloneText}`;
         },
       );
-      cloneRepoSpan?.setLabel('local_clone', !!localRepoPath);
-      cloneRepoSpan?.end();
 
       spinner.succeed(`100% ${spinnerCloneText}`);
     } catch (e) {

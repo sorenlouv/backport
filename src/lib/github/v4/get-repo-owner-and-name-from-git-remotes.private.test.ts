@@ -1,9 +1,9 @@
-import { exec } from '../../../test/child-process-helper';
-import { getDevAccessToken } from '../../../test/private/get-dev-access-token';
-import { getSandboxPath, resetSandbox } from '../../../test/sandbox';
-import { getRepoOwnerAndNameFromGitRemotes } from './get-repo-owner-and-name-from-git-remotes';
+import { exec } from '../../../test/child-process-helper.js';
+import { getDevAccessToken } from '../../../test/private/get-dev-access-token.js';
+import { getSandboxPath, resetSandbox } from '../../../test/sandbox.js';
+import { getRepoOwnerAndNameFromGitRemotes } from './get-repo-owner-and-name-from-git-remotes.js';
 
-const sandboxPath = getSandboxPath({ filename: __filename });
+const sandboxPath = getSandboxPath({ filename: import.meta.filename });
 const accessToken = getDevAccessToken();
 
 describe('fetchRemoteProjectConfig', () => {

@@ -1,19 +1,19 @@
 import { Octokit } from '@octokit/rest';
-import type { BackportResponse } from '../../../entrypoint.api';
-import { backportRun } from '../../../entrypoint.api';
-import { getShortSha } from '../../../lib/github/commit-formatters';
-import { getDevAccessToken } from '../../private/get-dev-access-token';
-import { getSandboxPath, resetSandbox } from '../../sandbox';
+import type { BackportResponse } from '../../../entrypoint.api.js';
+import { backportRun } from '../../../entrypoint.api.js';
+import { getShortSha } from '../../../lib/github/commit-formatters.js';
+import { getDevAccessToken } from '../../private/get-dev-access-token.js';
+import { getSandboxPath, resetSandbox } from '../../sandbox.js';
 
-jest.unmock('find-up');
-jest.unmock('del');
-jest.unmock('make-dir');
+vi.unmock('find-up');
+vi.unmock('del');
+vi.unmock('make-dir');
 
-jest.setTimeout(25_000);
+vi.setConfig({ testTimeout: 25_000 });
 
 const accessToken = getDevAccessToken();
 const octokit = new Octokit({ auth: accessToken });
-const sandboxPath = getSandboxPath({ filename: __filename });
+const sandboxPath = getSandboxPath({ filename: import.meta.filename });
 
 // repo
 const REPO_OWNER = 'backport-org';

@@ -1,7 +1,7 @@
-import { uniq } from 'lodash';
-import type { Commit } from '../../../entrypoint.api';
-import { getConfiguredTargetPRLabels } from './get-configured-target-pr-labels';
-import { getSourcePRLabelsToCopy } from './get-source-pr-labels-to-copy';
+import { uniq } from 'lodash-es';
+import type { Commit } from '../../../entrypoint.api.js';
+import { getConfiguredTargetPRLabels } from './get-configured-target-pr-labels.js';
+import { getSourcePRLabelsToCopy } from './get-source-pr-labels-to-copy.js';
 
 export function getTargetPRLabels({
   interactive,

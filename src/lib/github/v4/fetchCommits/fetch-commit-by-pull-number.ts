@@ -1,11 +1,14 @@
-import { graphql } from '../../../../graphql/generated';
-import type { ValidConfigOptions } from '../../../../options/options';
-import { BackportError } from '../../../backport-error';
-import { isMissingConfigFileException } from '../../../remote-config';
-import type { Commit } from '../../../sourceCommit/parse-source-commit';
-import { GithubV4Exception, getGraphQLClient } from '../client/graphql-client';
-import { fetchCommitBySha } from './fetch-commit-by-sha';
-import { fetchCommitsForRebaseAndMergeStrategy } from './fetch-commits-for-rebase-and-merge-strategy';
+import { graphql } from '../../../../graphql/generated/index.js';
+import type { ValidConfigOptions } from '../../../../options/options.js';
+import { BackportError } from '../../../backport-error.js';
+import { isMissingConfigFileException } from '../../../remote-config.js';
+import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
+import {
+  GithubV4Exception,
+  getGraphQLClient,
+} from '../client/graphql-client.js';
+import { fetchCommitBySha } from './fetch-commit-by-sha.js';
+import { fetchCommitsForRebaseAndMergeStrategy } from './fetch-commits-for-rebase-and-merge-strategy.js';
 
 export async function fetchCommitsByPullNumber(options: {
   accessToken: string;

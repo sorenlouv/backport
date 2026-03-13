@@ -1,13 +1,13 @@
 import fs from 'fs/promises';
-import { mockConfigFiles } from '../../test/mock-config-files';
-import { getOptionsFromConfigFiles } from './config';
+import { mockConfigFiles } from '../../test/mock-config-files.js';
+import { getOptionsFromConfigFiles } from './config.js';
 
 describe('getOptionsFromConfigFiles', () => {
   let res: Awaited<ReturnType<typeof getOptionsFromConfigFiles>>;
 
   beforeEach(async () => {
-    jest.spyOn(fs, 'writeFile').mockResolvedValueOnce(undefined);
-    jest.spyOn(fs, 'chmod').mockResolvedValue();
+    vi.spyOn(fs, 'writeFile').mockResolvedValueOnce(undefined);
+    vi.spyOn(fs, 'chmod').mockResolvedValue();
     mockConfigFiles({
       globalConfig: { accessToken: 'abc', editor: 'vim' },
       projectConfig: { repoName: 'kibana', repoOwner: 'elastic' },

@@ -1,7 +1,7 @@
 import nock from 'nock';
-import { PullRequestState } from '../../graphql/generated/graphql';
-import { getMockSourceCommit } from './get-mock-source-commit';
-import { getPullRequestStates } from './get-pull-request-states';
+import { PullRequestState } from '../../graphql/generated/graphql.js';
+import { getMockSourceCommit } from './get-mock-source-commit.js';
+import { getPullRequestStates } from './get-pull-request-states.js';
 
 describe('getPullRequestStates', () => {
   afterEach(() => {

@@ -6,15 +6,17 @@
     }
   ],
   "include": ["src/**/*"],
-  "exclude": ["src/graphql/generated/graphql.ts"],
+  "exclude": ["src/graphql/generated/graphql.ts", "src/**/*.test.ts", "src/test"],
   "compilerOptions": {
     "declaration": true,
-    "target": "ES2021",
+    "target": "ES2024",
     "lib": [
-      "ES2021", 
+      "ES2024",
       "DOM" // needed by wonka
     ],
-    "module": "CommonJS",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "rootDir": ".",
     "outDir": "./dist",
     "forceConsistentCasingInFileNames": true,
 
@@ -30,5 +32,6 @@
     "useUnknownInCatchVariables": true,
     "sourceMap": true,
     "resolveJsonModule": true,
+    "skipLibCheck": true,
   }
 }

@@ -1,13 +1,11 @@
-const js = require('@eslint/js');
-const tseslint = require('@typescript-eslint/eslint-plugin');
-const tsparser = require('@typescript-eslint/parser');
-const importPlugin = require('eslint-plugin-import');
+import js from '@eslint/js';
+import tseslint from '@typescript-eslint/eslint-plugin';
+import tsparser from '@typescript-eslint/parser';
+import importPlugin from 'eslint-plugin-import';
 
 const nodeGlobals = {
   process: 'readonly',
   Buffer: 'readonly',
-  __dirname: 'readonly',
-  __filename: 'readonly',
   global: 'readonly',
   console: 'readonly',
   fetch: 'readonly',
@@ -17,7 +15,7 @@ const nodeGlobals = {
   NodeJS: 'readonly',
 };
 
-module.exports = [
+export default [
   // Global ignores
   {
     ignores: [
@@ -29,18 +27,31 @@ module.exports = [
     ],
   },
 
-  // Config files (CommonJS)
+  // CJS config files (.graphqlrc.js uses require/module.exports)
   {
-    files: ['*.config.js', '.*.js'],
+    files: ['.graphqlrc.js'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'commonjs',
       globals: {
-        require: 'readonly',
-        module: 'readonly',
-        exports: 'readonly',
         ...nodeGlobals,
+        require: 'readonly',
+        module: 'writable',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        exports: 'writable',
       },
+    },
+    ...js.configs.recommended,
+  },
+
+  // ESM config files
+  {
+    files: ['*.config.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: nodeGlobals,
     },
     ...js.configs.recommended,
   },
@@ -101,7 +112,7 @@ module.exports = [
     },
   },
 
-  // Test files - relaxed rules and Jest globals
+  // Test files - relaxed rules and Vitest globals
   {
     files: ['**/*.{test,spec}.{js,ts}', '**/test/**/*.{js,ts}'],
     languageOptions: {
@@ -119,7 +130,7 @@ module.exports = [
         afterEach: 'readonly',
         beforeAll: 'readonly',
         afterAll: 'readonly',
-        jest: 'readonly',
+        vi: 'readonly',
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
         setInterval: 'readonly',

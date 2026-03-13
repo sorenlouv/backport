@@ -1,9 +1,10 @@
-import type { Commit } from '../../entrypoint.api';
-import { BackportError } from '../../entrypoint.api';
-import type { ValidConfigOptions } from '../../options/options';
-import * as git from '../git';
-import { logger } from '../logger';
-import { waitForCherrypick } from './wait-for-cherrypick';
+import type { MockInstance } from 'vitest';
+import type { Commit } from '../../entrypoint.api.js';
+import { BackportError } from '../../entrypoint.api.js';
+import type { ValidConfigOptions } from '../../options/options.js';
+import * as git from '../git.js';
+import { logger } from '../logger.js';
+import { waitForCherrypick } from './wait-for-cherrypick.js';
 
 const commitAuthor = { name: 'Test User', email: 'test@test.com' };
 
@@ -57,19 +58,19 @@ const cleanCherrypickResult = {
 };
 
 describe('waitForCherrypick with autoResolveConflictsWithTheirs', () => {
-  let cherrypickSpy: jest.SpyInstance;
-  let cherrypickAbortSpy: jest.SpyInstance;
+  let cherrypickSpy: MockInstance;
+  let cherrypickAbortSpy: MockInstance;
 
   beforeEach(() => {
-    cherrypickSpy = jest.spyOn(git, 'cherrypick');
-    cherrypickAbortSpy = jest
+    cherrypickSpy = vi.spyOn(git, 'cherrypick');
+    cherrypickAbortSpy = vi
       .spyOn(git, 'cherrypickAbort')
       .mockResolvedValue({ stderr: '', stdout: '', code: 0, cmdArgs: [] });
-    jest.spyOn(git, 'commitChanges').mockResolvedValue(undefined);
+    vi.spyOn(git, 'commitChanges').mockResolvedValue(undefined);
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('should abort and retry with theirs when cherry-pick has conflicts', async () => {

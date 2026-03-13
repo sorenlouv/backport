@@ -1,5 +1,5 @@
-import type { Commit } from '../../../entrypoint.api';
-import { getConfiguredTargetPRLabels } from './get-configured-target-pr-labels';
+import type { Commit } from '../../../entrypoint.api.js';
+import { getConfiguredTargetPRLabels } from './get-configured-target-pr-labels.js';
 
 const commits: Commit[] = [
   {

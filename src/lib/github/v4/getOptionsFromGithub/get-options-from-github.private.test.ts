@@ -1,12 +1,12 @@
 import os from 'os';
-import { getDevAccessToken } from '../../../../test/private/get-dev-access-token';
-import { getOptionsFromGithub } from './get-options-from-github';
+import { getDevAccessToken } from '../../../../test/private/get-dev-access-token.js';
+import { getOptionsFromGithub } from './get-options-from-github.js';
 
 const accessToken = getDevAccessToken();
 
 describe('getOptionsFromGithub', () => {
   beforeAll(async () => {
-    jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
+    vi.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
   });
 
   describe('access token', () => {

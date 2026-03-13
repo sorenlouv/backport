@@ -1,8 +1,11 @@
-import { first } from 'lodash';
-import { graphql } from '../../../graphql/generated';
-import type { ValidConfigOptions } from '../../../options/options';
-import type { PullRequestPayload } from '../v3/getPullRequest/create-pull-request';
-import { getGraphQLClient, GithubV4Exception } from './client/graphql-client';
+import { first } from 'lodash-es';
+import { graphql } from '../../../graphql/generated/index.js';
+import type { ValidConfigOptions } from '../../../options/options.js';
+import type { PullRequestPayload } from '../v3/getPullRequest/create-pull-request.js';
+import {
+  getGraphQLClient,
+  GithubV4Exception,
+} from './client/graphql-client.js';
 
 export async function fetchExistingPullRequest({
   options,

@@ -1,11 +1,11 @@
-import { isEmpty, difference } from 'lodash';
-import { maybe } from '../../../utils/maybe';
-import { getGlobalConfigPath } from '../../env';
-import { logger } from '../../logger';
+import { isEmpty, difference } from 'lodash-es';
+import { maybe } from '../../../utils/maybe.js';
+import { getGlobalConfigPath } from '../../env.js';
+import { logger } from '../../logger.js';
 import type {
   GitHubGraphQLError,
   OperationResultWithMeta,
-} from './client/graphql-client';
+} from './client/graphql-client.js';
 
 export function getInvalidAccessTokenMessage({
   result,

@@ -1,15 +1,15 @@
 import chalk from 'chalk';
-import { difference, isEmpty } from 'lodash';
-import type { Commit } from '../../entrypoint.api';
-import { BackportError } from '../../entrypoint.api';
-import type { Ora } from '../../lib/ora';
-import { ora } from '../../lib/ora';
-import type { ValidConfigOptions } from '../../options/options';
-import type { CommitAuthor } from '../author';
-import { getCommitAuthor } from '../author';
-import { spawnPromise } from '../child-process-promisified';
-import { getRepoPath } from '../env';
-import type { ConflictingFiles } from '../git';
+import { isEmpty, difference } from 'lodash-es';
+import type { Commit } from '../../entrypoint.api.js';
+import { BackportError } from '../../entrypoint.api.js';
+import type { Ora } from '../../lib/ora.js';
+import { ora } from '../../lib/ora.js';
+import type { ValidConfigOptions } from '../../options/options.js';
+import type { CommitAuthor } from '../author.js';
+import { getCommitAuthor } from '../author.js';
+import { spawnPromise } from '../child-process-promisified.js';
+import { getRepoPath } from '../env.js';
+import type { ConflictingFiles } from '../git.js';
 import {
   cherrypick,
   cherrypickAbort,
@@ -17,11 +17,11 @@ import {
   getConflictingFiles,
   getUnstagedFiles,
   gitAddAll,
-} from '../git';
-import { getFirstLine } from '../github/commit-formatters';
-import { consoleLog, logger } from '../logger';
-import { confirmPrompt } from '../prompts';
-import { getCommitsWithoutBackports } from './get-commits-without-backports';
+} from '../git.js';
+import { getFirstLine } from '../github/commit-formatters.js';
+import { consoleLog, logger } from '../logger.js';
+import { confirmPrompt } from '../prompts.js';
+import { getCommitsWithoutBackports } from './get-commits-without-backports.js';
 
 export type CherrypickResult = {
   hasCommitsWithConflicts: boolean;

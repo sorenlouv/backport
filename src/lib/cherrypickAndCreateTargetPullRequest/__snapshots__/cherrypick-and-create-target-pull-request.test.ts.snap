@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`cherrypickAndCreateTargetPullRequest when commit has a pull request reference should make correct git commands 1`] = `
+exports[`cherrypickAndCreateTargetPullRequest > when commit has a pull request reference > should make correct git commands 1`] = `
 [
   [
     "git",

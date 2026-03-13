@@ -1,15 +1,18 @@
-import { isEmpty, uniqBy, orderBy, first } from 'lodash';
-import { graphql } from '../../../../graphql/generated';
-import type { ValidConfigOptions } from '../../../../options/options';
-import { filterNil } from '../../../../utils/filter-empty';
-import { filterUnmergedCommits } from '../../../../utils/filter-unmerged-commits';
-import { BackportError } from '../../../backport-error';
-import { isMissingConfigFileException } from '../../../remote-config';
-import type { Commit } from '../../../sourceCommit/parse-source-commit';
-import { parseSourceCommit } from '../../../sourceCommit/parse-source-commit';
-import type { OperationResultWithMeta } from '../client/graphql-client';
-import { getGraphQLClient, GithubV4Exception } from '../client/graphql-client';
-import { fetchAuthorId } from '../fetch-author-id';
+import { isEmpty, first, uniqBy, orderBy } from 'lodash-es';
+import { graphql } from '../../../../graphql/generated/index.js';
+import type { ValidConfigOptions } from '../../../../options/options.js';
+import { filterNil } from '../../../../utils/filter-empty.js';
+import { filterUnmergedCommits } from '../../../../utils/filter-unmerged-commits.js';
+import { BackportError } from '../../../backport-error.js';
+import { isMissingConfigFileException } from '../../../remote-config.js';
+import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
+import { parseSourceCommit } from '../../../sourceCommit/parse-source-commit.js';
+import type { OperationResultWithMeta } from '../client/graphql-client.js';
+import {
+  getGraphQLClient,
+  GithubV4Exception,
+} from '../client/graphql-client.js';
+import { fetchAuthorId } from '../fetch-author-id.js';
 
 async function fetchByCommitPath({
   options,

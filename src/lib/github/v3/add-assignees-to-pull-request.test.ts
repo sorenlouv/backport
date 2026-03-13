@@ -1,5 +1,5 @@
 import nock from 'nock';
-import { addAssigneesToPullRequest } from './add-assignees-to-pull-request';
+import { addAssigneesToPullRequest } from './add-assignees-to-pull-request.js';
 
 describe('addAssigneesToPullRequest', () => {
   it('should add assignees to PR', async () => {

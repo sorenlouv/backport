@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: 'Branch'     
+        description: 'Branch'
         required: true
         default: 'main'
   push:
@@ -28,8 +28,8 @@ jobs:
 
       - run: git config --global user.email "backportci@users.noreply.github.com "
       - run: git config --global user.name "Backport CI"
-      - run: yarn
-      - run: yarn build
-      - run: yarn lint
-      - run: yarn test
-      - run: ACCESS_TOKEN=${{ secrets.GH_ACCESS_TOKEN }} yarn test-private
+      - run: npm ci
+      - run: npm run build
+      - run: npm run lint
+      - run: npm test
+      - run: ACCESS_TOKEN=${{ secrets.GH_ACCESS_TOKEN }} npm run test-private

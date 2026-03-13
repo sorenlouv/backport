@@ -1,7 +1,10 @@
-import { graphql } from '../../../graphql/generated';
-import type { ValidConfigOptions } from '../../../options/options';
-import { getGraphQLClient, GithubV4Exception } from './client/graphql-client';
-import { fetchPullRequestId } from './fetch-pull-request-id2';
+import { graphql } from '../../../graphql/generated/index.js';
+import type { ValidConfigOptions } from '../../../options/options.js';
+import {
+  getGraphQLClient,
+  GithubV4Exception,
+} from './client/graphql-client.js';
+import { fetchPullRequestId } from './fetch-pull-request-id2.js';
 
 export async function enablePullRequestAutoMerge(
   options: ValidConfigOptions,

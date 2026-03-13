@@ -1,11 +1,11 @@
-import { keyBy, merge, uniqBy, values } from 'lodash';
-import type { SourceCommitWithTargetPullRequestFragmentFragment } from '../../graphql/generated/graphql';
-import type { ValidConfigOptions } from '../../options/options';
-import { filterNil } from '../../utils/filter-empty';
-import { getFirstLine } from '../github/commit-formatters';
-import type { SourcePullRequestNode } from './get-source-pull-request';
-import { getSourcePullRequest } from './get-source-pull-request';
-import { isPullRequestCrossReferencedEvent } from './is-pull-request-cross-referenced-event';
+import { merge, keyBy, values, uniqBy } from 'lodash-es';
+import type { SourceCommitWithTargetPullRequestFragmentFragment } from '../../graphql/generated/graphql.js';
+import type { ValidConfigOptions } from '../../options/options.js';
+import { filterNil } from '../../utils/filter-empty.js';
+import { getFirstLine } from '../github/commit-formatters.js';
+import type { SourcePullRequestNode } from './get-source-pull-request.js';
+import { getSourcePullRequest } from './get-source-pull-request.js';
+import { isPullRequestCrossReferencedEvent } from './is-pull-request-cross-referenced-event.js';
 
 type CreatedPullRequestState = 'CLOSED' | 'MERGED' | 'OPEN' | 'NOT_CREATED';
 type CreatedPullRequest = {

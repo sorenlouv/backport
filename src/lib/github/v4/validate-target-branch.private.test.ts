@@ -1,6 +1,6 @@
-import type { ValidConfigOptions } from '../../../options/options';
-import { getDevAccessToken } from '../../../test/private/get-dev-access-token';
-import { validateTargetBranch } from './validate-target-branch';
+import type { ValidConfigOptions } from '../../../options/options.js';
+import { getDevAccessToken } from '../../../test/private/get-dev-access-token.js';
+import { validateTargetBranch } from './validate-target-branch.js';
 
 const accessToken = getDevAccessToken();
 
