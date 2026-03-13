@@ -24,6 +24,7 @@ export default [
       'src/graphql/generated/**',
       'bin/**',
       'coverage/**',
+      '.claude/**',
     ],
   },
 
