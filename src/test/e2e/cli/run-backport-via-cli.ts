@@ -5,7 +5,7 @@ import { debounce } from 'lodash-es';
 import stripAnsi from 'strip-ansi';
 import { getSandboxPath, resetSandbox, SANDBOX_PATH } from '../../sandbox.js';
 
-const tsNodeBinary = path.resolve('./node_modules/.bin/ts-node');
+const tsxBinary = path.resolve('./node_modules/.bin/tsx');
 const entrypointFile = path.resolve('./src/entrypoint.cli.ts');
 
 vi.setConfig({ testTimeout: 15_000 });
@@ -31,7 +31,6 @@ export async function runBackportViaCli(
   await resetSandbox(sandboxPath);
 
   const cmdArgs = [
-    '--transpile-only',
     entrypointFile,
     `--log-file-path=${SANDBOX_PATH}/backport.log`,
     ...(backportArgs.some((arg) => arg.includes('--dir'))
@@ -40,7 +39,7 @@ export async function runBackportViaCli(
     ...backportArgs,
   ];
 
-  const proc = spawn(tsNodeBinary, cmdArgs, { cwd: runBackportOptions.cwd });
+  const proc = spawn(tsxBinary, cmdArgs, { cwd: runBackportOptions.cwd });
   return getPromise(proc, runBackportOptions, cmdArgs, chunks);
 }
 
@@ -81,7 +80,7 @@ function getPromise(
     const postponeTimeout = debounce(
       () => {
         const formattedChunks = formatChunk(chunks);
-        const cmd = [tsNodeBinary, ...cmdArgs].join(' ');
+        const cmd = [tsxBinary, ...cmdArgs].join(' ');
         reject(
           waitForString
             ? `Expectation '${waitForString}' not found within ${timeoutSeconds} second in:\n\n${formattedChunks}\n\nCommand: ${cmd}`
