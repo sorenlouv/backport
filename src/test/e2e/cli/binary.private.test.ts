@@ -1,16 +1,16 @@
 import { spawnSync } from 'child_process';
+import fs from 'fs';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import fs from 'fs';
 import path from 'path';
 import stripAnsi from 'strip-ansi';
+import { getDevAccessToken } from '../../private/get-dev-access-token.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(
   readFileSync(join(__dirname, '../../../../package.json'), 'utf-8'),
 );
-import { getDevAccessToken } from '../../private/get-dev-access-token.js';
 
 const accessToken = getDevAccessToken();
 

@@ -27,9 +27,27 @@ export default [
     ],
   },
 
-  // Config files
+  // CJS config files (.graphqlrc.js uses require/module.exports)
   {
-    files: ['*.config.js', '.*.js'],
+    files: ['.graphqlrc.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'commonjs',
+      globals: {
+        ...nodeGlobals,
+        require: 'readonly',
+        module: 'writable',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        exports: 'writable',
+      },
+    },
+    ...js.configs.recommended,
+  },
+
+  // ESM config files
+  {
+    files: ['*.config.js'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
