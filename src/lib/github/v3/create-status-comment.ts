@@ -189,14 +189,11 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
     (r) => r.status === 'success',
   );
 
-  let header = '';
-  if (didAllBackportsSucceed) {
-    header = '## 💚 All backports created successfully';
-  } else if (didAnyBackportsSucceed) {
-    header = '## 💔 Some backports could not be created';
-  } else {
-    header = '## 💔 All backports failed';
-  }
+  const header = didAllBackportsSucceed
+    ? '## 💚 All backports created successfully'
+    : didAnyBackportsSucceed
+      ? '## 💔 Some backports could not be created'
+      : '## 💔 All backports failed';
 
   const autoMergeMessage =
     autoMerge && didAnyBackportsSucceed
