@@ -6,7 +6,7 @@ import { runBackportViaCli } from './run-backport-via-cli.js';
 const accessToken = getDevAccessToken();
 const octokit = new Octokit({ auth: accessToken });
 
-vi.setConfig({ testTimeout: 25_000 });
+vi.setConfig({ testTimeout: 25_000, hookTimeout: 60_000 });
 
 describe('backport-org/repo-with-reviewed-pull-requests', () => {
   let pullRequest: Awaited<ReturnType<typeof getPullRequest>>;
