@@ -4,13 +4,13 @@ import nock from 'nock';
 import type {
   GithubConfigOptionsQuery,
   RepoOwnerAndNameQuery,
-} from '../graphql/generated/graphql';
-import * as git from '../lib/git';
-import * as logger from '../lib/logger';
-import { mockConfigFiles } from '../test/mock-config-files';
-import { mockUrqlRequest } from '../test/nock-helpers';
-import type { ConfigFileOptions } from './config-options';
-import { getOptions } from './options';
+} from '../graphql/generated/graphql.js';
+import * as git from '../lib/git.js';
+import * as logger from '../lib/logger.js';
+import { mockConfigFiles } from '../test/mock-config-files.js';
+import { mockUrqlRequest } from '../test/nock-helpers.js';
+import type { ConfigFileOptions } from './config-options.js';
+import { getOptions } from './options.js';
 
 const defaultConfigs = {
   projectConfig: {
@@ -25,15 +25,15 @@ const defaultConfigs = {
 
 describe('getOptions', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     nock.cleanAll();
   });
 
   beforeEach(() => {
     mockConfigFiles(defaultConfigs);
-    jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
-    jest.spyOn(fs, 'writeFile').mockResolvedValue();
-    jest.spyOn(fs, 'chmod').mockResolvedValue();
+    vi.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
+    vi.spyOn(fs, 'writeFile').mockResolvedValue();
+    vi.spyOn(fs, 'chmod').mockResolvedValue();
   });
 
   describe('should throw', () => {
@@ -52,12 +52,9 @@ describe('getOptions', () => {
           optionsFromCliArgs: {},
           optionsFromModule: {},
         }),
-      ).rejects.toThrowErrorMatchingInlineSnapshot(`
-        "Please update your config file: "/myHomeDir/.backport/config.json".
-        It must contain a valid "accessToken".
-
-        Read more: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson"
-      `);
+      ).rejects.toThrow(
+        'Please update your config file: "/myHomeDir/.backport/config.json".\nIt must contain a valid "accessToken".',
+      );
     });
 
     it('when `targetBranches`, `targetBranchChoices` and `branchLabelMapping` are all empty', async () => {
@@ -69,11 +66,7 @@ describe('getOptions', () => {
 
       await expect(() =>
         getOptions({ optionsFromCliArgs: {}, optionsFromModule: {} }),
-      ).rejects.toThrowErrorMatchingInlineSnapshot(`
-        "Please specify a target branch: "--branch 6.1".
-
-        Read more: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson"
-      `);
+      ).rejects.toThrow('Please specify a target branch: "--branch 6.1".');
     });
 
     describe('whe option is an empty string', () => {
@@ -83,9 +76,7 @@ describe('getOptions', () => {
             optionsFromCliArgs: {},
             optionsFromModule: { repoForkOwner: '', author: 'sorenlouv' },
           }),
-        ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `""repoForkOwner" cannot be empty!"`,
-        );
+        ).rejects.toThrow('"repoForkOwner" cannot be empty!');
       });
 
       it('throws for "author"', async () => {
@@ -94,9 +85,7 @@ describe('getOptions', () => {
             optionsFromCliArgs: {},
             optionsFromModule: { author: '' },
           }),
-        ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `""author" cannot be empty!"`,
-        );
+        ).rejects.toThrow('"author" cannot be empty!');
       });
 
       it('throws for "accessToken"', async () => {
@@ -105,12 +94,9 @@ describe('getOptions', () => {
             optionsFromCliArgs: {},
             optionsFromModule: { accessToken: '' },
           }),
-        ).rejects.toThrowErrorMatchingInlineSnapshot(`
-          "Please update your config file: "/myHomeDir/.backport/config.json".
-          It must contain a valid "accessToken".
-
-          Read more: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson"
-        `);
+        ).rejects.toThrow(
+          'Please update your config file: "/myHomeDir/.backport/config.json".\nIt must contain a valid "accessToken".',
+        );
       });
     });
 
@@ -120,15 +106,13 @@ describe('getOptions', () => {
       });
 
       it('should throw if there are no remotes', async () => {
-        jest.spyOn(git, 'getRepoInfoFromGitRemotes').mockResolvedValue([]);
+        vi.spyOn(git, 'getRepoInfoFromGitRemotes').mockResolvedValue([]);
 
         await expect(() =>
           getOptions({ optionsFromCliArgs: {}, optionsFromModule: {} }),
-        ).rejects.toThrowErrorMatchingInlineSnapshot(`
-          "Please specify a repository: "--repo elastic/kibana".
-
-          Read more: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson"
-        `);
+        ).rejects.toThrow(
+          'Please specify a repository: "--repo elastic/kibana".',
+        );
       });
 
       it('should get repoName from the remote', async () => {
@@ -138,9 +122,9 @@ describe('getOptions', () => {
           repoName: 'kibana',
         });
 
-        jest
-          .spyOn(git, 'getRepoInfoFromGitRemotes')
-          .mockResolvedValue([{ repoName: 'kibana', repoOwner: 'sorenlouv' }]);
+        vi.spyOn(git, 'getRepoInfoFromGitRemotes').mockResolvedValue([
+          { repoName: 'kibana', repoOwner: 'sorenlouv' },
+        ]);
 
         const options = await getOptions({
           optionsFromCliArgs: {},
@@ -248,7 +232,6 @@ describe('getOptions', () => {
       targetBranchChoices: ['7.9', '8.0'],
       targetBranches: [],
       targetPRLabels: [],
-      telemetry: true,
     });
   });
 

@@ -1,5 +1,8 @@
-import { graphql } from '../../../graphql/generated';
-import { getGraphQLClient, GithubV4Exception } from './client/graphql-client';
+import { graphql } from '../../../graphql/generated/index.js';
+import {
+  getGraphQLClient,
+  GithubV4Exception,
+} from './client/graphql-client.js';
 
 export async function fetchAuthorId({
   accessToken,

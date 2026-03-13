@@ -1,12 +1,12 @@
 import fs from 'fs/promises';
-import { exec } from '../../child-process-helper';
-import { getDevAccessToken } from '../../private/get-dev-access-token';
-import { removeLinesBreaksInConflictingFiles } from '../../replace-string-and-linebreaks';
-import { getSandboxPath, resetSandbox } from '../../sandbox';
-import { runBackportViaCli } from './run-backport-via-cli';
+import { exec } from '../../child-process-helper.js';
+import { getDevAccessToken } from '../../private/get-dev-access-token.js';
+import { removeLinesBreaksInConflictingFiles } from '../../replace-string-and-linebreaks.js';
+import { getSandboxPath, resetSandbox } from '../../sandbox.js';
+import { runBackportViaCli } from './run-backport-via-cli.js';
 const accessToken = getDevAccessToken();
 
-jest.setTimeout(40_000);
+vi.setConfig({ testTimeout: 40_000 });
 
 describe('different-merge-strategies', () => {
   it('list all commits regardless how they were merged', async () => {
@@ -51,7 +51,7 @@ describe('different-merge-strategies', () => {
     let output: string;
     let sandboxPath: string;
     beforeAll(async () => {
-      sandboxPath = getSandboxPath({ filename: __filename });
+      sandboxPath = getSandboxPath({ filename: import.meta.filename });
       await resetSandbox(sandboxPath);
 
       const res = await runBackportViaCli(
@@ -119,7 +119,7 @@ View pull request: this-is-a-dry-run"
   describe('when selecting a merge commit with two commits', () => {
     let sandboxPath: string;
     beforeAll(async () => {
-      sandboxPath = getSandboxPath({ filename: __filename });
+      sandboxPath = getSandboxPath({ filename: import.meta.filename });
       await resetSandbox(sandboxPath);
       await runBackportViaCli(
         [
@@ -147,7 +147,7 @@ View pull request: this-is-a-dry-run"
     let sandboxPath: string;
     let output: string;
     beforeAll(async () => {
-      sandboxPath = getSandboxPath({ filename: __filename });
+      sandboxPath = getSandboxPath({ filename: import.meta.filename });
       await resetSandbox(sandboxPath);
       const proc = await runBackportViaCli(
         [
@@ -251,7 +251,7 @@ View pull request: this-is-a-dry-run"
     let sandboxPath: string;
     let output: string;
     beforeAll(async () => {
-      sandboxPath = getSandboxPath({ filename: __filename });
+      sandboxPath = getSandboxPath({ filename: import.meta.filename });
       await resetSandbox(sandboxPath);
       const res = await runBackportViaCli(
         [

@@ -1,7 +1,10 @@
-import { graphql } from '../../../graphql/generated';
-import { BackportError } from '../../backport-error';
-import { ora } from '../../ora';
-import { GithubV4Exception, getGraphQLClient } from './client/graphql-client';
+import { graphql } from '../../../graphql/generated/index.js';
+import { BackportError } from '../../backport-error.js';
+import { ora } from '../../ora.js';
+import {
+  GithubV4Exception,
+  getGraphQLClient,
+} from './client/graphql-client.js';
 
 export interface TargetBranchResponse {
   repository: { ref: { id: string } | null };

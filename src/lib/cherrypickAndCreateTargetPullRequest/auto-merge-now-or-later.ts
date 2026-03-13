@@ -1,12 +1,12 @@
-import type { ValidConfigOptions } from '../../options/options';
-import { mergePullRequest } from '../github/v3/merge-pull-request';
-import { GithubV4Exception } from '../github/v4/client/graphql-client';
+import type { ValidConfigOptions } from '../../options/options.js';
+import { mergePullRequest } from '../github/v3/merge-pull-request.js';
+import { GithubV4Exception } from '../github/v4/client/graphql-client.js';
 import {
   enablePullRequestAutoMerge,
   isMissingStatusChecksError,
-} from '../github/v4/enable-pull-request-auto-merge';
-import { logger } from '../logger';
-import { ora } from '../ora';
+} from '../github/v4/enable-pull-request-auto-merge.js';
+import { logger } from '../logger.js';
+import { ora } from '../ora.js';
 
 export async function autoMergeNowOrLater(
   options: ValidConfigOptions,

@@ -1,6 +1,6 @@
 import stripAnsi from 'strip-ansi';
-import { getChoicesForCommitPrompt } from './prompts';
-import type { Commit } from './sourceCommit/parse-source-commit';
+import { getChoicesForCommitPrompt } from './prompts.js';
+import type { Commit } from './sourceCommit/parse-source-commit.js';
 
 describe('prompt', () => {
   describe('getChoicesForCommitPrompt', () => {

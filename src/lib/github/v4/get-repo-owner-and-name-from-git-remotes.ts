@@ -1,8 +1,11 @@
-import { graphql } from '../../../graphql/generated';
-import { maybe } from '../../../utils/maybe';
-import { getRepoInfoFromGitRemotes } from '../../git';
-import { logger } from '../../logger';
-import { getGraphQLClient, GithubV4Exception } from './client/graphql-client';
+import { graphql } from '../../../graphql/generated/index.js';
+import { maybe } from '../../../utils/maybe.js';
+import { getRepoInfoFromGitRemotes } from '../../git.js';
+import { logger } from '../../logger.js';
+import {
+  getGraphQLClient,
+  GithubV4Exception,
+} from './client/graphql-client.js';
 
 // This method should be used to get the origin owner (instead of a fork owner)
 export async function getRepoOwnerAndNameFromGitRemotes({

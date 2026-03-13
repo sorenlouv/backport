@@ -1,10 +1,10 @@
 import os from 'os';
-import type { ValidConfigOptions } from '../options/options';
-import { getGlobalConfigPath, getRepoPath } from './env';
+import type { ValidConfigOptions } from '../options/options.js';
+import { getGlobalConfigPath, getRepoPath } from './env.js';
 
 describe('env', () => {
   beforeEach(() => {
-    jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
+    vi.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
   });
 
   describe('getGlobalConfigPath', () => {

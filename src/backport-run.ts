@@ -1,25 +1,25 @@
 import chalk from 'chalk';
-import type { Transaction } from 'elastic-apm-node';
-import apm from 'elastic-apm-node';
-import { disableApm } from './lib/apm';
-import { BackportError } from './lib/backport-error';
-import { getLogfilePath } from './lib/env';
-import { getCommits } from './lib/get-commits';
-import { getTargetBranches } from './lib/get-target-branches';
-import { createStatusComment } from './lib/github/v3/create-status-comment';
-import { GithubV4Exception } from './lib/github/v4/client/graphql-client';
-import { consoleLog, initLogger } from './lib/logger';
-import { ora } from './lib/ora';
-import { registerHandlebarsHelpers } from './lib/register-handlebars-helpers';
-import type { Result } from './lib/run-sequentially';
-import { runSequentially } from './lib/run-sequentially';
-import { setupRepo } from './lib/setup-repo';
-import type { Commit } from './lib/sourceCommit/parse-source-commit';
-import type { OptionsFromCliArgs } from './options/cli-args';
-import { getRuntimeArguments, getOptionsFromCliArgs } from './options/cli-args';
-import type { ConfigFileOptions } from './options/config-options';
-import type { ValidConfigOptions } from './options/options';
-import { getActiveOptionsFormatted, getOptions } from './options/options';
+import { BackportError } from './lib/backport-error.js';
+import { getLogfilePath } from './lib/env.js';
+import { getCommits } from './lib/get-commits.js';
+import { getTargetBranches } from './lib/get-target-branches.js';
+import { createStatusComment } from './lib/github/v3/create-status-comment.js';
+import { GithubV4Exception } from './lib/github/v4/client/graphql-client.js';
+import { consoleLog, initLogger } from './lib/logger.js';
+import { ora } from './lib/ora.js';
+import { registerHandlebarsHelpers } from './lib/register-handlebars-helpers.js';
+import type { Result } from './lib/run-sequentially.js';
+import { runSequentially } from './lib/run-sequentially.js';
+import { setupRepo } from './lib/setup-repo.js';
+import type { Commit } from './lib/sourceCommit/parse-source-commit.js';
+import type { OptionsFromCliArgs } from './options/cli-args.js';
+import {
+  getRuntimeArguments,
+  getOptionsFromCliArgs,
+} from './options/cli-args.js';
+import type { ConfigFileOptions } from './options/config-options.js';
+import type { ValidConfigOptions } from './options/options.js';
+import { getActiveOptionsFormatted, getOptions } from './options/options.js';
 
 registerHandlebarsHelpers();
 
@@ -48,20 +48,15 @@ export type BackportResponse =
   | BackportFailureResponse
   | BackportAbortResponse;
 
-let _apmTransaction: apm.Transaction | null;
-
 export async function backportRun({
   processArgs,
   optionsFromModule = {},
   exitCodeOnFailure,
-  apmTransaction,
 }: {
   processArgs: string[];
   optionsFromModule?: ConfigFileOptions;
   exitCodeOnFailure: boolean;
-  apmTransaction: Transaction | null;
 }): Promise<BackportResponse> {
-  _apmTransaction = apmTransaction;
   const { interactive, logFilePath } = getRuntimeArguments(
     processArgs,
     optionsFromModule,
@@ -72,7 +67,6 @@ export async function backportRun({
   try {
     optionsFromCliArgs = getOptionsFromCliArgs(processArgs);
   } catch (e) {
-    apm.captureError(e as Error);
     if (e instanceof Error) {
       consoleLog(e.message);
       consoleLog(`Run "backport --help" to see all options`);
@@ -94,51 +88,29 @@ export async function backportRun({
   try {
     options = await getOptions({ optionsFromCliArgs, optionsFromModule });
 
-    if (!options.telemetry) {
-      disableApm();
-    }
-
-    apmTransaction?.setLabel('cli_options', JSON.stringify(optionsFromCliArgs));
-    Object.entries(options).forEach(([key, value]) => {
-      apmTransaction?.setLabel(`option__${key}`, JSON.stringify(value));
-    });
-
     logger.info('Backporting options', options);
     spinner.stop();
 
     consoleLog(getActiveOptionsFormatted(options));
 
-    const commitsSpan = apm.startSpan(`Get commits`);
     commits = await getCommits(options);
-    commitsSpan?.setLabel('commit_count', commits.length);
-    commitsSpan?.end();
     logger.info('Commits', commits);
 
     if (options.ls) {
       return { status: 'success', commits, results: [] } as BackportResponse;
     }
 
-    const targetBranchesSpan = apm.startSpan('Get target branches');
     const targetBranches = await getTargetBranches(options, commits);
-    targetBranchesSpan?.setLabel(
-      'target-branches-count',
-      targetBranches.length,
-    );
-    targetBranchesSpan?.end();
     logger.info('Target branches', targetBranches);
 
-    const setupRepoSpan = apm.startSpan('Setup repository');
     await setupRepo(options);
-    setupRepoSpan?.end();
 
-    const backportCommitsSpan = apm.startSpan('Backport commits');
     const results = await runSequentially({
       options,
       commits,
       targetBranches,
     });
     logger.info('Results', results);
-    backportCommitsSpan?.end();
 
     const backportResponse: BackportResponse = {
       status: 'success',
@@ -220,29 +192,3 @@ function outputError({
     );
   }
 }
-
-let didFlush = false;
-
-process.on('exit', () => {
-  if (!didFlush) {
-    didFlush = true;
-    _apmTransaction?.end('exit');
-    apm.flush(() => process.exit());
-  }
-});
-
-process.on('uncaughtException', () => {
-  if (!didFlush) {
-    didFlush = true;
-    _apmTransaction?.end('exit');
-    apm.flush(() => process.exit());
-  }
-});
-
-process.on('SIGINT', () => {
-  if (!didFlush) {
-    didFlush = true;
-    _apmTransaction?.end('SIGINT');
-    apm.flush(() => process.exit());
-  }
-});

@@ -1,13 +1,13 @@
 import chalk from 'chalk';
-import type { ValidConfigOptions } from '../options/options';
-import { BackportError } from './backport-error';
-import { getFirstLine, getShortSha } from './github/commit-formatters';
-import { fetchCommitsByPullNumber } from './github/v4/fetchCommits/fetch-commit-by-pull-number';
-import { fetchCommitBySha } from './github/v4/fetchCommits/fetch-commit-by-sha';
-import { fetchCommitsByAuthor } from './github/v4/fetchCommits/fetch-commits-by-author';
-import { fetchPullRequestsBySearchQuery } from './github/v4/fetchCommits/fetch-pull-requests-by-search-query';
-import { ora } from './ora';
-import { promptForCommits } from './prompts';
+import type { ValidConfigOptions } from '../options/options.js';
+import { BackportError } from './backport-error.js';
+import { getFirstLine, getShortSha } from './github/commit-formatters.js';
+import { fetchCommitsByPullNumber } from './github/v4/fetchCommits/fetch-commit-by-pull-number.js';
+import { fetchCommitBySha } from './github/v4/fetchCommits/fetch-commit-by-sha.js';
+import { fetchCommitsByAuthor } from './github/v4/fetchCommits/fetch-commits-by-author.js';
+import { fetchPullRequestsBySearchQuery } from './github/v4/fetchCommits/fetch-pull-requests-by-search-query.js';
+import { ora } from './ora.js';
+import { promptForCommits } from './prompts.js';
 
 function getOraPersistsOption(question: string, answer: string) {
   return {

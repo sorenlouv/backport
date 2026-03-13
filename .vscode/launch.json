@@ -8,8 +8,8 @@
       "type": "node",
       "request": "launch",
       "name": "Run file",
-      "program": "${workspaceRoot}/node_modules/.bin/ts-node",
-      "args": ["--transpile-only", "${file}"],
+      "program": "${file}",
+      "runtimeArgs": ["--import", "tsx"],
       "console": "integratedTerminal"
     },
     {
@@ -17,7 +17,7 @@
       "request": "launch",
       "name": "Run (basic)",
       "program": "${workspaceRoot}/src/entrypoint.cli.ts",
-      "runtimeArgs": ["-r", "ts-node/register/transpile-only"],
+      "runtimeArgs": ["--import", "tsx"],
       "args": ["--repo=elastic/kibana"],
       "console": "integratedTerminal"
     },
@@ -26,28 +26,18 @@
       "request": "launch",
       "name": "Run (many args)",
       "program": "${workspaceRoot}/src/entrypoint.cli.ts",
-      "runtimeArgs": ["-r", "ts-node/register/transpile-only"],
+      "runtimeArgs": ["--import", "tsx"],
       "args": ["--dryRun", "--repo=elastic/kibana", "--maxNumber=100"],
 
       "console": "integratedTerminal"
     },
     {
-      "name": "Jest",
+      "name": "Vitest",
       "type": "node",
       "request": "launch",
-      "args": [
-        "--runInBand",
-        "${file}",
-        "--config",
-        "${workspaceRoot}/jest.config.js"
-      ],
-      "port": 9229,
-      "address": "localhost",
-      "stopOnEntry": false,
-      "runtimeExecutable": null,
-      "sourceMaps": true,
-      "program": "${workspaceRoot}/node_modules/.bin/jest",
-      "runtimeArgs": ["--inspect-brk"],
+      "program": "${workspaceRoot}/node_modules/.bin/vitest",
+      "args": ["run", "${file}"],
+      "console": "integratedTerminal",
       "cwd": "${workspaceRoot}"
     }
   ]

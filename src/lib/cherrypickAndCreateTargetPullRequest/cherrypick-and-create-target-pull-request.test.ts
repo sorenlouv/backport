@@ -1,18 +1,19 @@
+import type { MockInstance } from 'vitest';
 import os from 'os';
 import nock from 'nock';
-import type { ValidConfigOptions } from '../../options/options';
+import type { ValidConfigOptions } from '../../options/options.js';
 import {
   listenForCallsToNockScope,
   mockUrqlRequest,
-} from '../../test/nock-helpers';
+} from '../../test/nock-helpers.js';
 import type { SpyHelper } from '../../types/spy-helper';
-import * as childProcess from '../child-process-promisified';
-import type { TargetBranchResponse } from '../github/v4/validate-target-branch';
-import * as logger from '../logger';
-import * as oraModule from '../ora';
-import type { Commit } from '../sourceCommit/parse-source-commit';
-import * as autoMergeNowOrLater from './auto-merge-now-or-later';
-import { cherrypickAndCreateTargetPullRequest } from './cherrypick-and-create-target-pull-request';
+import * as childProcess from '../child-process-promisified.js';
+import type { TargetBranchResponse } from '../github/v4/validate-target-branch.js';
+import * as logger from '../logger.js';
+import * as oraModule from '../ora.js';
+import type { Commit } from '../sourceCommit/parse-source-commit.js';
+import * as autoMergeNowOrLater from './auto-merge-now-or-later.js';
+import { cherrypickAndCreateTargetPullRequest } from './cherrypick-and-create-target-pull-request.js';
 
 describe('cherrypickAndCreateTargetPullRequest', () => {
   let execSpy: SpyHelper<typeof childProcess.spawnPromise>;
@@ -21,17 +22,17 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
   let autoMergeSpy: SpyHelper<typeof autoMergeNowOrLater.autoMergeNowOrLater>;
 
   beforeEach(() => {
-    jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
+    vi.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
 
-    autoMergeSpy = jest.spyOn(autoMergeNowOrLater, 'autoMergeNowOrLater');
+    autoMergeSpy = vi.spyOn(autoMergeNowOrLater, 'autoMergeNowOrLater');
 
-    execSpy = jest
+    execSpy = vi
       .spyOn(childProcess, 'spawnPromise')
 
       // mock all spawn commands to respond without errors
       .mockResolvedValue({ stdout: '', stderr: '', code: 0, cmdArgs: [] });
 
-    consoleLogSpy = jest.spyOn(logger, 'consoleLog');
+    consoleLogSpy = vi.spyOn(logger, 'consoleLog');
 
     // ensure labels are added
     addLabelsScope = nock('https://api.github.com')
@@ -42,7 +43,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     addLabelsScope.done();
     nock.cleanAll();
   });
@@ -50,7 +51,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
   describe('when commit has a pull request reference', () => {
     let res: Awaited<ReturnType<typeof cherrypickAndCreateTargetPullRequest>>;
     let createPullRequestCalls: unknown[];
-    let oraSpy: jest.SpyInstance;
+    let oraSpy: MockInstance;
 
     beforeEach(async () => {
       const options = {
@@ -137,7 +138,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         .reply(200, { number: 1337, html_url: 'myHtmlUrl' });
       createPullRequestCalls = listenForCallsToNockScope(scope);
 
-      oraSpy = jest.spyOn(oraModule, 'ora');
+      oraSpy = vi.spyOn(oraModule, 'ora');
 
       res = await cherrypickAndCreateTargetPullRequest({
         options,

@@ -1,9 +1,8 @@
 import { Octokit } from '@octokit/rest';
-import apm from 'elastic-apm-node';
-import { ora } from '../../../lib/ora';
-import type { ValidConfigOptions } from '../../../options/options';
-import { logger } from '../../logger';
-import { GithubV4Exception } from '../v4/client/graphql-client';
+import { ora } from '../../../lib/ora.js';
+import type { ValidConfigOptions } from '../../../options/options.js';
+import { logger } from '../../logger.js';
+import { GithubV4Exception } from '../v4/client/graphql-client.js';
 
 export async function addReviewersToPullRequest(
   {
@@ -25,8 +24,6 @@ export async function addReviewersToPullRequest(
     spinner.succeed();
     return;
   }
-
-  const span = apm.startSpan('REST: Request reviewers');
 
   try {
     const octokit = new Octokit({
@@ -53,7 +50,5 @@ export async function addReviewersToPullRequest(
 
     spinner.fail(`Adding reviewers. ${message}`);
     logger.error(`Could not add reviewers to PR ${pullNumber}`, e);
-  } finally {
-    span?.end();
   }
 }

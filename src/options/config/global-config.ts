@@ -1,10 +1,10 @@
-import { chmod, writeFile } from 'fs/promises';
+import fs from 'fs/promises';
 import makeDir from 'make-dir';
-import { BackportError } from '../../lib/backport-error';
-import { getBackportDirPath, getGlobalConfigPath } from '../../lib/env';
-import { isErrnoError } from '../../utils/is-errno-error';
-import type { ConfigFileOptions } from '../config-options';
-import { readConfigFile } from './read-config-file';
+import { BackportError } from '../../lib/backport-error.js';
+import { getBackportDirPath, getGlobalConfigPath } from '../../lib/env.js';
+import { isErrnoError } from '../../utils/is-errno-error.js';
+import type { ConfigFileOptions } from '../config-options.js';
+import { readConfigFile } from './read-config-file.js';
 
 export async function getGlobalConfig(
   globalConfigFile?: string,
@@ -30,7 +30,7 @@ export async function createGlobalConfigAndFolderIfNotExist(
 }
 
 function ensureCorrectPermissions(globalConfigPath: string) {
-  return chmod(globalConfigPath, '600');
+  return fs.chmod(globalConfigPath, '600');
 }
 
 export async function createGlobalConfigIfNotExist(
@@ -38,7 +38,7 @@ export async function createGlobalConfigIfNotExist(
   configTemplate: string,
 ) {
   try {
-    await writeFile(globalConfigPath, configTemplate, {
+    await fs.writeFile(globalConfigPath, configTemplate, {
       flag: 'wx', // create and write file. Error if it already exists
       mode: 0o600, // give the owner read-write privleges, no access for others
     });

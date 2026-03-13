@@ -1,40 +1,41 @@
+import type { MockInstance } from 'vitest';
 import os from 'os';
 import del from 'del';
-import type { ValidConfigOptions } from '../options/options';
+import type { ValidConfigOptions } from '../options/options.js';
 import type { SpyHelper } from '../types/spy-helper';
-import * as childProcess from './child-process-promisified';
-import * as gitModule from './git';
-import { oraNonInteractiveMode } from './ora';
-import { setupRepo } from './setup-repo';
+import * as childProcess from './child-process-promisified.js';
+import * as gitModule from './git.js';
+import { oraNonInteractiveMode } from './ora.js';
+import { setupRepo } from './setup-repo.js';
 
 describe('setupRepo', () => {
   let spawnSpy: SpyHelper<typeof childProcess.spawnPromise>;
 
   beforeEach(() => {
-    jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
+    vi.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
 
-    spawnSpy = jest
+    spawnSpy = vi
       .spyOn(childProcess, 'spawnPromise')
       .mockResolvedValue({ stderr: '', stdout: '', code: 0, cmdArgs: [] });
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('if an error occurs while cloning', () => {
     it('should delete repo', async () => {
       expect.assertions(2);
 
-      jest
-        .spyOn(childProcess, 'spawnStream')
-        .mockImplementation((cmd, cmdArgs) => {
+      vi.spyOn(childProcess, 'spawnStream').mockImplementation(
+        (cmd, cmdArgs) => {
           if (cmdArgs.includes('clone')) {
             throw new Error('Simulated git clone failure');
           }
 
           throw new Error('unknown error');
-        });
+        },
+      );
 
       await expect(
         setupRepo({
@@ -57,15 +58,14 @@ describe('setupRepo', () => {
       let onClose: (code: any, signals?: any) => void;
       let onData: (chunk: any) => void;
 
-      const spinnerTextSpy = jest.spyOn(oraNonInteractiveMode, 'text', 'set');
-      const spinnerSuccessSpy = jest.spyOn(oraNonInteractiveMode, 'succeed');
+      const spinnerTextSpy = vi.spyOn(oraNonInteractiveMode, 'text', 'set');
+      const spinnerSuccessSpy = vi.spyOn(oraNonInteractiveMode, 'succeed');
 
-      jest
-        .spyOn(gitModule, 'getLocalSourceRepoPath')
-        .mockResolvedValue(undefined);
+      vi.spyOn(gitModule, 'getLocalSourceRepoPath').mockResolvedValue(
+        undefined,
+      );
 
-      jest
-        .spyOn(childProcess, 'spawnStream')
+      vi.spyOn(childProcess, 'spawnStream')
         //@ts-expect-error
         .mockImplementation(() => {
           return {
@@ -128,8 +128,7 @@ describe('setupRepo', () => {
   describe('if repo is already cloned', () => {
     function mockGitProjectRootPath(value: string) {
       return (
-        jest
-          .spyOn(childProcess, 'spawnPromise')
+        spawnSpy
           //@ts-expect-error
           .mockImplementationOnce(async (cmd, cmdArgs) => {
             if (cmdArgs.includes('rev-parse')) {
@@ -142,12 +141,12 @@ describe('setupRepo', () => {
     }
 
     beforeEach(async () => {
-      jest.clearAllMocks();
+      spawnSpy.mockClear();
       mockGitProjectRootPath(
         '/myHomeDir/.backport/repositories/elastic/kibana',
       );
 
-      jest.spyOn(gitModule, 'cloneRepo');
+      vi.spyOn(gitModule, 'cloneRepo');
 
       await setupRepo({
         accessToken: 'myAccessToken',
@@ -204,8 +203,7 @@ describe('setupRepo', () => {
   });
 
   function mockGitClone() {
-    jest
-      .spyOn(childProcess, 'spawnStream')
+    vi.spyOn(childProcess, 'spawnStream')
       //@ts-expect-error
       .mockImplementation((cmd, cmdArgs) => {
         if (cmdArgs.includes('clone')) {
@@ -223,9 +221,9 @@ describe('setupRepo', () => {
   }
 
   describe('if repo does not exists locally', () => {
-    let spinnerSuccessSpy: jest.SpyInstance;
+    let spinnerSuccessSpy: MockInstance;
     beforeEach(async () => {
-      spinnerSuccessSpy = jest.spyOn(oraNonInteractiveMode, 'succeed');
+      spinnerSuccessSpy = vi.spyOn(oraNonInteractiveMode, 'succeed');
 
       mockGitClone();
 
@@ -254,13 +252,13 @@ describe('setupRepo', () => {
   });
 
   describe('if repo exists locally', () => {
-    let spinnerSuccessSpy: jest.SpyInstance;
+    let spinnerSuccessSpy: MockInstance;
     beforeEach(async () => {
-      spinnerSuccessSpy = jest.spyOn(oraNonInteractiveMode, 'succeed');
+      spinnerSuccessSpy = vi.spyOn(oraNonInteractiveMode, 'succeed');
 
-      jest
-        .spyOn(gitModule, 'getLocalSourceRepoPath')
-        .mockResolvedValue('/path/to/source/repo');
+      vi.spyOn(gitModule, 'getLocalSourceRepoPath').mockResolvedValue(
+        '/path/to/source/repo',
+      );
 
       mockGitClone();
 

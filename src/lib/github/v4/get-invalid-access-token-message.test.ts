@@ -1,5 +1,5 @@
-import type { OperationResultWithMeta } from './client/graphql-client';
-import { getInvalidAccessTokenMessage } from './get-invalid-access-token-message';
+import type { OperationResultWithMeta } from './client/graphql-client.js';
+import { getInvalidAccessTokenMessage } from './get-invalid-access-token-message.js';
 
 describe('getInvalidAccessTokenMessage', () => {
   describe('when status code is', () => {

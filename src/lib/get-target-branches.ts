@@ -1,20 +1,20 @@
-import { isEmpty, isString } from 'lodash';
+import _ from 'lodash';
 import type {
   TargetBranchChoice,
   TargetBranchChoiceOrString,
-} from '../options/config-options';
-import type { ValidConfigOptions } from '../options/options';
-import { BackportError } from './backport-error';
-import { getSourceBranchFromCommits } from './get-source-branch-from-commits';
-import { promptForTargetBranches } from './prompts';
-import type { Commit } from './sourceCommit/parse-source-commit';
+} from '../options/config-options.js';
+import type { ValidConfigOptions } from '../options/options.js';
+import { BackportError } from './backport-error.js';
+import { getSourceBranchFromCommits } from './get-source-branch-from-commits.js';
+import { promptForTargetBranches } from './prompts.js';
+import type { Commit } from './sourceCommit/parse-source-commit.js';
 
 export async function getTargetBranches(
   options: ValidConfigOptions,
   commits: Commit[],
 ) {
   // target branches already specified (in contrast to letting the user choose from a list)
-  if (!isEmpty(options.targetBranches)) {
+  if (!_.isEmpty(options.targetBranches)) {
     return options.targetBranches;
   }
 
@@ -24,7 +24,7 @@ export async function getTargetBranches(
 
   // require target branches to be specified when when in non-interactive mode
   if (!options.interactive) {
-    if (isEmpty(suggestedTargetBranches)) {
+    if (_.isEmpty(suggestedTargetBranches)) {
       throw new BackportError({ code: 'no-branches-exception' });
     }
 
@@ -55,7 +55,7 @@ export function getTargetBranchChoices(
     options.targetBranchChoices,
   ).filter((choice) => choice.name !== sourceBranch);
 
-  if (isEmpty(targetBranchesChoices)) {
+  if (_.isEmpty(targetBranchesChoices)) {
     throw new BackportError('Missing target branch choices');
   }
 
@@ -80,7 +80,7 @@ function getTargetBranchChoicesAsObject(
   }
 
   return targetBranchChoices.map((choice) => {
-    if (isString(choice)) {
+    if (_.isString(choice)) {
       return {
         name: choice,
         checked: false,

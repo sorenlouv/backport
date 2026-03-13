@@ -1,15 +1,15 @@
-import { exec } from '../../child-process-helper';
-import { getDevAccessToken } from '../../private/get-dev-access-token';
-import { getSandboxPath, resetSandbox } from '../../sandbox';
-import { runBackportViaCli } from './run-backport-via-cli';
+import { exec } from '../../child-process-helper.js';
+import { getDevAccessToken } from '../../private/get-dev-access-token.js';
+import { getSandboxPath, resetSandbox } from '../../sandbox.js';
+import { runBackportViaCli } from './run-backport-via-cli.js';
 const accessToken = getDevAccessToken();
-jest.setTimeout(15_000);
+vi.setConfig({ testTimeout: 15_000 });
 
 describe('test-that-repo-can-be-cloned', () => {
   describe('when local repo does not exist', () => {
     let sandboxPath: string;
     beforeAll(async () => {
-      sandboxPath = getSandboxPath({ filename: __filename });
+      sandboxPath = getSandboxPath({ filename: import.meta.filename });
       await resetSandbox(sandboxPath);
     });
 
@@ -76,7 +76,7 @@ View pull request: this-is-a-dry-run"
     let backportRepo: string;
 
     beforeEach(async () => {
-      const sandboxPath = getSandboxPath({ filename: __filename });
+      const sandboxPath = getSandboxPath({ filename: import.meta.filename });
       await resetSandbox(sandboxPath);
       sourceRepo = `${sandboxPath}/source`;
       backportRepo = `${sandboxPath}/backport`;

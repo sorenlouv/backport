@@ -1,21 +1,24 @@
 import fs from 'fs/promises';
 import os from 'os';
 import makeDir from 'make-dir';
-import { getGlobalConfig, createGlobalConfigIfNotExist } from './global-config';
+import {
+  getGlobalConfig,
+  createGlobalConfigIfNotExist,
+} from './global-config.js';
 
 describe('config', () => {
-  afterEach(() => jest.clearAllMocks());
+  afterEach(() => vi.clearAllMocks());
 
   beforeEach(() => {
-    jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
+    vi.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
   });
 
   describe('getGlobalConfig', () => {
     let res: Awaited<ReturnType<typeof getGlobalConfig>>;
     beforeEach(async () => {
-      jest.spyOn(fs, 'chmod').mockResolvedValueOnce();
-      jest.spyOn(fs, 'writeFile').mockResolvedValueOnce();
-      jest.spyOn(fs, 'readFile').mockResolvedValueOnce(
+      vi.spyOn(fs, 'chmod').mockResolvedValueOnce();
+      vi.spyOn(fs, 'writeFile').mockResolvedValueOnce();
+      vi.spyOn(fs, 'readFile').mockResolvedValueOnce(
         JSON.stringify({
           accessToken: 'myAccessToken',
         }),
@@ -51,7 +54,7 @@ describe('config', () => {
 
   describe('createGlobalConfigIfNotExist', () => {
     it("should create config if it does't exist", async () => {
-      jest.spyOn(fs, 'writeFile').mockResolvedValueOnce(undefined);
+      vi.spyOn(fs, 'writeFile').mockResolvedValueOnce(undefined);
       const didCreate = await createGlobalConfigIfNotExist(
         '/path/to/globalConfig',
         'myConfigTemplate',
@@ -69,7 +72,7 @@ describe('config', () => {
     it('should not fail if config already exists', async () => {
       const err = new Error();
       (err as any).code = 'EEXIST';
-      jest.spyOn(fs, 'writeFile').mockRejectedValueOnce(err);
+      vi.spyOn(fs, 'writeFile').mockRejectedValueOnce(err);
 
       const didCreate = await createGlobalConfigIfNotExist(
         '/path/to/global/config.json',
@@ -82,7 +85,7 @@ describe('config', () => {
     it("should fail gracefully if .backport folder doesn't exist", async () => {
       const err = new Error();
       (err as any).code = 'ENOENT';
-      jest.spyOn(fs, 'writeFile').mockRejectedValueOnce(err);
+      vi.spyOn(fs, 'writeFile').mockRejectedValueOnce(err);
 
       await expect(() =>
         createGlobalConfigIfNotExist(

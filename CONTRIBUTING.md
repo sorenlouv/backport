@@ -3,20 +3,20 @@
 ### Run
 
 ```
-yarn start --branch 6.1 --repo backport-org/backport-demo --all
+npm start -- --branch 6.1 --repo backport-org/backport-demo --all
 ```
 
 **Run `backport` CLI globally**
 This will build backport continously and link it, so it can accessed with `backport` command globally
 
 ```
-yarn build && chmod +x bin/backport && yarn unlink; yarn link && yarn tsc --watch
+npm run build && chmod +x bin/backport && npm link && npx tsc --watch
 ```
 
 **Remove linked backport**
 
 ```
-yarn global remove backport; npm -g uninstall backport; yarn unlink;
+npm uninstall -g backport; npm unlink;
 ```
 
 You can now use `backport` command anywhere, and it'll point to the development version.
@@ -26,17 +26,17 @@ You can now use `backport` command anywhere, and it'll point to the development 
 **Run tests**
 
 ```
-yarn test
+npm test
 ```
 
 **Run tests continously**
 
 ```
-yarn test --watch
+npm test -- --watch
 ```
 
 **Compile typescript continously**
 
 ```
-yarn tsc --watch
+npx tsc --watch
 ```

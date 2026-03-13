@@ -1,37 +1,36 @@
 /*
- * This file is included in `setupFiles` in jest.config.js
+ * This file is included in `setupFiles` in vitest config
  * It will be run once per test file
  */
 
-import { disableApm } from '../../lib/apm';
-import { registerHandlebarsHelpers } from '../../lib/register-handlebars-helpers';
-import * as packageVersionModule from '../../utils/package-version';
+import { vi } from 'vitest';
+import { registerHandlebarsHelpers } from '../../lib/register-handlebars-helpers.js';
+import * as packageVersionModule from '../../utils/package-version.js';
 
-disableApm();
-
-jest.mock('find-up', () => {
-  return jest.fn(async () => '/path/to/project/config');
+vi.mock('find-up', () => {
+  return { default: vi.fn(async () => '/path/to/project/config') };
 });
 
-// @ts-expect-error
-// eslint-disable-next-line no-import-assign
-packageVersionModule.UNMOCKED_PACKAGE_VERSION =
+// Store the real version before mocking, accessible via globalThis
+(globalThis as any).__UNMOCKED_PACKAGE_VERSION__ =
   packageVersionModule.getPackageVersion();
 
-jest
-  .spyOn(packageVersionModule, 'getPackageVersion')
-  .mockReturnValue('1.2.3-mocked');
+vi.spyOn(packageVersionModule, 'getPackageVersion').mockReturnValue(
+  '1.2.3-mocked',
+);
 
-jest.mock('make-dir', () => {
-  return jest.fn(() => Promise.resolve('/some/path'));
+vi.mock('make-dir', () => {
+  return { default: vi.fn(() => Promise.resolve('/some/path')) };
 });
 
-jest.mock('del', () => {
-  return jest.fn(async (path) => `Attempted to delete ${path}`);
+vi.mock('del', () => {
+  return {
+    default: vi.fn(async (path: string) => `Attempted to delete ${path}`),
+  };
 });
 
-jest.mock('../../lib/logger', () => {
-  const spy = jest.fn();
+vi.mock('../../lib/logger', () => {
+  const spy = vi.fn();
   const logger = {
     spy: spy,
     info: (msg: string, meta: unknown) => spy(`[INFO] ${msg}`, meta),
@@ -41,10 +40,10 @@ jest.mock('../../lib/logger', () => {
     debug: (msg: string, meta: unknown) => spy(`[DEBUG] ${msg}`, meta),
   };
   return {
-    initLogger: jest.fn(() => logger),
-    redactAccessToken: jest.fn((str: string) => str),
-    consoleLog: jest.fn(),
-    setAccessToken: jest.fn(),
+    initLogger: vi.fn(() => logger),
+    redactAccessToken: vi.fn((str: string) => str),
+    consoleLog: vi.fn(),
+    setAccessToken: vi.fn(),
     logger,
   };
 });

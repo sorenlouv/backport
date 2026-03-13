@@ -1,16 +1,16 @@
 import chalk from 'chalk';
 import type { CheckboxQuestion, ListQuestion, ConfirmQuestion } from 'inquirer';
 import inquirer from 'inquirer';
-import { isEmpty, repeat } from 'lodash';
+import _ from 'lodash';
 import terminalLink from 'terminal-link';
-import type { TargetBranchChoice } from '../options/config-options';
+import type { TargetBranchChoice } from '../options/config-options.js';
 import {
   stripPullNumber,
   getFirstLine,
   getShortSha,
-} from './github/commit-formatters';
-import type { TargetPullRequest } from './sourceCommit/get-pull-request-states';
-import type { Commit } from './sourceCommit/parse-source-commit';
+} from './github/commit-formatters.js';
+import type { TargetPullRequest } from './sourceCommit/get-pull-request-states.js';
+import type { Commit } from './sourceCommit/parse-source-commit.js';
 
 type Question = CheckboxQuestion | ListQuestion | ConfirmQuestion;
 
@@ -102,7 +102,7 @@ export function getChoicesForCommitPrompt(
   showDetails: boolean,
 ) {
   return commits.map((c, i) => {
-    const leadingWhitespace = repeat(' ', 2 - (i + 1).toString().length);
+    const leadingWhitespace = _.repeat(' ', 2 - (i + 1).toString().length);
     const position = chalk.gray(`${i + 1}.${leadingWhitespace}`);
 
     let name;
@@ -149,7 +149,7 @@ export async function promptForCommits({
   });
 
   const selectedCommits = Array.isArray(res) ? res.reverse() : [res];
-  return isEmpty(selectedCommits)
+  return _.isEmpty(selectedCommits)
     ? promptForCommits({ commitChoices, isMultipleChoice, showDetails })
     : selectedCommits;
 }
@@ -171,7 +171,7 @@ export async function promptForTargetBranches({
 
   const selectedBranches = Array.isArray(res) ? res : [res];
 
-  return isEmpty(selectedBranches)
+  return _.isEmpty(selectedBranches)
     ? promptForTargetBranches({
         targetBranchChoices,
         isMultipleChoice,

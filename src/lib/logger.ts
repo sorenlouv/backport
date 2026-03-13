@@ -1,5 +1,5 @@
 import winston, { format } from 'winston';
-import { getLogfilePath } from './env';
+import { getLogfilePath } from './env.js';
 
 export let logger = winston.createLogger({
   transports: [

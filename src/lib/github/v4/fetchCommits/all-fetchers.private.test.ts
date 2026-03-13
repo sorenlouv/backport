@@ -1,12 +1,12 @@
-import { getDevAccessToken } from '../../../../test/private/get-dev-access-token';
-import type { Commit } from '../../../sourceCommit/parse-source-commit';
-import { fetchCommitsByPullNumber } from './fetch-commit-by-pull-number';
-import { fetchCommitBySha } from './fetch-commit-by-sha';
-import { fetchCommitsByAuthor } from './fetch-commits-by-author';
-import { fetchPullRequestsBySearchQuery } from './fetch-pull-requests-by-search-query';
+import { getDevAccessToken } from '../../../../test/private/get-dev-access-token.js';
+import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
+import { fetchCommitsByPullNumber } from './fetch-commit-by-pull-number.js';
+import { fetchCommitBySha } from './fetch-commit-by-sha.js';
+import { fetchCommitsByAuthor } from './fetch-commits-by-author.js';
+import { fetchPullRequestsBySearchQuery } from './fetch-pull-requests-by-search-query.js';
 
 const accessToken = getDevAccessToken();
-jest.setTimeout(15_000);
+vi.setConfig({ testTimeout: 15_000 });
 
 describe('allFetchers', () => {
   let commitByAuthor: Commit;

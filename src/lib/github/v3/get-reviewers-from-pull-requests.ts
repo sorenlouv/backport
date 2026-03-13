@@ -1,8 +1,8 @@
 import { Octokit } from '@octokit/rest';
-import { flatten, uniq } from 'lodash';
-import { filterNil } from '../../../utils/filter-empty';
-import { logger } from '../../logger';
-import { ora } from '../../ora';
+import _ from 'lodash';
+import { filterNil } from '../../../utils/filter-empty.js';
+import { logger } from '../../logger.js';
+import { ora } from '../../ora.js';
 
 export async function getReviewersFromPullRequests({
   options,
@@ -50,7 +50,7 @@ export async function getReviewersFromPullRequests({
         .filter(filterNil);
     });
 
-    const reviewers = uniq(flatten(await Promise.all(promises)));
+    const reviewers = _.uniq(_.flatten(await Promise.all(promises)));
     spinner.stop();
     return reviewers;
   } catch (e) {

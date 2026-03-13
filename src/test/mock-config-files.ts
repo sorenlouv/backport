@@ -1,5 +1,5 @@
 import fs from 'fs/promises';
-import type { ConfigFileOptions } from '../options/config-options';
+import type { ConfigFileOptions } from '../options/config-options.js';
 
 export function mockConfigFiles({
   projectConfig,
@@ -8,8 +8,7 @@ export function mockConfigFiles({
   projectConfig: ConfigFileOptions;
   globalConfig: ConfigFileOptions;
 }) {
-  jest
-    .spyOn(fs, 'readFile')
+  vi.spyOn(fs, 'readFile')
     //@ts-expect-error
     .mockImplementation(async (filepath: string) => {
       if (filepath === '/path/to/project/config') {

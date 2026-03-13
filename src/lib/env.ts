@@ -1,10 +1,10 @@
-import { homedir } from 'os';
+import os from 'os';
 import path from 'path';
-import type { ValidConfigOptions } from '../options/options';
-import type { LogLevel } from './logger';
+import type { ValidConfigOptions } from '../options/options.js';
+import type { LogLevel } from './logger.js';
 
 export function getBackportDirPath() {
-  return path.join(homedir(), '.backport');
+  return path.join(os.homedir(), '.backport');
 }
 
 export function getLogfilePath({
@@ -17,14 +17,14 @@ export function getLogfilePath({
   if (logFilePath) {
     return path.resolve(logFilePath);
   }
-  return path.join(homedir(), '.backport', `backport.${logLevel}.log`);
+  return path.join(os.homedir(), '.backport', `backport.${logLevel}.log`);
 }
 
 export function getGlobalConfigPath(globalConfigFile: string | undefined) {
   if (globalConfigFile) {
     return path.resolve(globalConfigFile);
   }
-  return path.join(homedir(), '.backport', 'config.json');
+  return path.join(os.homedir(), '.backport', 'config.json');
 }
 
 export function getRepoPath({ repoOwner, repoName, dir }: ValidConfigOptions) {
@@ -32,5 +32,11 @@ export function getRepoPath({ repoOwner, repoName, dir }: ValidConfigOptions) {
     return dir;
   }
 
-  return path.join(homedir(), '.backport', 'repositories', repoOwner, repoName);
+  return path.join(
+    os.homedir(),
+    '.backport',
+    'repositories',
+    repoOwner,
+    repoName,
+  );
 }

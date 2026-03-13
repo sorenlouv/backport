@@ -1,19 +1,19 @@
 import type {
   BackportFailureResponse,
   BackportSuccessResponse,
-} from './backport-run';
-import type { Commit } from './entrypoint.api';
-import { backportRun, getCommits } from './entrypoint.api';
-import { getFirstLine } from './lib/github/commit-formatters';
-import { getDevAccessToken } from './test/private/get-dev-access-token';
+} from './backport-run.js';
+import type { Commit } from './entrypoint.api.js';
+import { backportRun, getCommits } from './entrypoint.api.js';
+import { getFirstLine } from './lib/github/commit-formatters.js';
+import { getDevAccessToken } from './test/private/get-dev-access-token.js';
 
-jest.setTimeout(10_000);
+vi.setConfig({ testTimeout: 10_000 });
 
 const accessToken = getDevAccessToken();
 
-jest.unmock('del');
-jest.unmock('make-dir');
-jest.unmock('find-up');
+vi.unmock('del');
+vi.unmock('make-dir');
+vi.unmock('find-up');
 
 describe('entrypoint.module', () => {
   describe('backportRun', () => {

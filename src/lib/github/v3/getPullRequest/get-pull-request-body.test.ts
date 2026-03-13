@@ -1,7 +1,7 @@
 import Handlebars from 'handlebars';
-import type { Commit } from '../../../../entrypoint.api';
-import type { ValidConfigOptions } from '../../../../options/options';
-import { getPullRequestBody } from './get-pull-request-body';
+import type { Commit } from '../../../../entrypoint.api.js';
+import type { ValidConfigOptions } from '../../../../options/options.js';
+import { getPullRequestBody } from './get-pull-request-body.js';
 
 const commits = [
   {
@@ -486,7 +486,7 @@ Please refer to the [Backport tool documentation](https://github.com/sorenlouv/b
       const compileError = new Error('Simulated compile error');
 
       // Stub Handlebars.compile to throw an error.
-      const compileSpy = jest
+      const compileSpy = vi
         .spyOn(Handlebars, 'compile')
         .mockImplementation(() => {
           throw compileError;

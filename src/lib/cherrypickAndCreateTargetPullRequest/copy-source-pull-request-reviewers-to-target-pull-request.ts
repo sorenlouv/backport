@@ -1,8 +1,8 @@
-import type { ValidConfigOptions } from '../../options/options';
-import { filterNil } from '../../utils/filter-empty';
-import { addReviewersToPullRequest } from '../github/v3/add-reviewers-to-pull-request';
-import { getReviewersFromPullRequests } from '../github/v3/get-reviewers-from-pull-requests';
-import type { Commit } from '../sourceCommit/parse-source-commit';
+import type { ValidConfigOptions } from '../../options/options.js';
+import { filterNil } from '../../utils/filter-empty.js';
+import { addReviewersToPullRequest } from '../github/v3/add-reviewers-to-pull-request.js';
+import { getReviewersFromPullRequests } from '../github/v3/get-reviewers-from-pull-requests.js';
+import type { Commit } from '../sourceCommit/parse-source-commit.js';
 
 export async function copySourcePullRequestReviewersToTargetPullRequest(
   options: ValidConfigOptions,

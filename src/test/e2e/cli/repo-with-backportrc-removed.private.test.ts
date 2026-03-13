@@ -1,5 +1,5 @@
-import { getDevAccessToken } from '../../private/get-dev-access-token';
-import { runBackportViaCli } from './run-backport-via-cli';
+import { getDevAccessToken } from '../../private/get-dev-access-token.js';
+import { runBackportViaCli } from './run-backport-via-cli.js';
 const accessToken = getDevAccessToken();
 
 describe('repo-with-backportrc-removed (missing .backportrc.json config file)', () => {

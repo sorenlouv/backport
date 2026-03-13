@@ -1,6 +1,9 @@
-import { graphql } from '../../../graphql/generated';
-import type { ValidConfigOptions } from '../../../options/options';
-import { getGraphQLClient, GithubV4Exception } from './client/graphql-client';
+import { graphql } from '../../../graphql/generated/index.js';
+import type { ValidConfigOptions } from '../../../options/options.js';
+import {
+  getGraphQLClient,
+  GithubV4Exception,
+} from './client/graphql-client.js';
 
 export async function fetchPullRequestId(
   options: ValidConfigOptions,

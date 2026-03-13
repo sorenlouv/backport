@@ -1,20 +1,23 @@
 import type { OperationResult } from '@urql/core';
-import { graphql } from '../../../../graphql/generated';
-import type { GithubConfigOptionsQuery } from '../../../../graphql/generated/graphql';
-import type { ConfigFileOptions } from '../../../../options/config-options';
-import { BackportError } from '../../../backport-error';
+import { graphql } from '../../../../graphql/generated/index.js';
+import type { GithubConfigOptionsQuery } from '../../../../graphql/generated/graphql.js';
+import type { ConfigFileOptions } from '../../../../options/config-options.js';
+import { BackportError } from '../../../backport-error.js';
 import {
   getLocalConfigFileCommitDate,
   isLocalConfigFileUntracked,
   isLocalConfigFileModified,
-} from '../../../git';
-import { logger } from '../../../logger';
+} from '../../../git.js';
+import { logger } from '../../../logger.js';
 import {
   parseRemoteConfigFile,
   isMissingConfigFileException,
-} from '../../../remote-config';
-import { GithubV4Exception, getGraphQLClient } from '../client/graphql-client';
-import { getInvalidAccessTokenMessage } from '../get-invalid-access-token-message';
+} from '../../../remote-config.js';
+import {
+  GithubV4Exception,
+  getGraphQLClient,
+} from '../client/graphql-client.js';
+import { getInvalidAccessTokenMessage } from '../get-invalid-access-token-message.js';
 
 // fetches the default source branch for the repo (normally "master")
 // startup checks:

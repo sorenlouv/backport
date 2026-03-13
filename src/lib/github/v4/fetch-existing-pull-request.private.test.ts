@@ -1,6 +1,6 @@
-import type { ValidConfigOptions } from '../../../options/options';
-import { getDevAccessToken } from '../../../test/private/get-dev-access-token';
-import { fetchExistingPullRequest } from './fetch-existing-pull-request';
+import type { ValidConfigOptions } from '../../../options/options.js';
+import { getDevAccessToken } from '../../../test/private/get-dev-access-token.js';
+import { fetchExistingPullRequest } from './fetch-existing-pull-request.js';
 
 const accessToken = getDevAccessToken();
 

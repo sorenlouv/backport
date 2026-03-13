@@ -1,19 +1,19 @@
 import os from 'os';
-import * as logger from '../lib/logger';
-import * as globalConfig from '../options/config/global-config';
-import { postinstall } from './postinstall';
+import * as logger from '../lib/logger.js';
+import * as globalConfig from '../options/config/global-config.js';
+import { postinstall } from './postinstall.js';
 
 describe('postinstall', () => {
   beforeEach(() => {
-    jest.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
+    vi.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("should create global config if it doesn't exist", async () => {
-    const createGlobalConfigAndFolderIfNotExistSpy = jest
+    const createGlobalConfigAndFolderIfNotExistSpy = vi
       .spyOn(globalConfig, 'createGlobalConfigAndFolderIfNotExist')
       .mockResolvedValueOnce(true);
 
@@ -25,8 +25,8 @@ describe('postinstall', () => {
   });
 
   it('should not create global config if it already exists', async () => {
-    const consoleSpy = jest.spyOn(console, 'log');
-    const createGlobalConfigAndFolderIfNotExistSpy = jest
+    const consoleSpy = vi.spyOn(console, 'log');
+    const createGlobalConfigAndFolderIfNotExistSpy = vi
       .spyOn(globalConfig, 'createGlobalConfigAndFolderIfNotExist')
       .mockResolvedValueOnce(false);
 

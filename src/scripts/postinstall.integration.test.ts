@@ -2,8 +2,7 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { parseConfigFile } from '../options/config/read-config-file';
-import { getYarnCommand } from '../test/integration-test-helpers';
+import { parseConfigFile } from '../options/config/read-config-file.js';
 
 // This test performs an end-to-end verification that the published package's
 // postinstall script executes and creates the expected ~/.backport/config.json
@@ -11,10 +10,10 @@ import { getYarnCommand } from '../test/integration-test-helpers';
 //
 // It does so by:
 // 1. Building the project (so dist/ exists)
-// 2. Packing the project into a tarball with `yarn pack`
+// 2. Packing the project into a tarball with `npm pack`
 // 3. Creating a temporary consumer project
 // 4. Overriding HOME for the install so the script writes into an isolated dir
-// 5. Installing the packed tarball via `yarn add file:<tarball>`
+// 5. Installing the packed tarball via `npm install`
 // 6. Asserting that ~/.backport/config.json now exists with mode 600
 
 describe('postinstall (integration)', () => {
@@ -23,20 +22,21 @@ describe('postinstall (integration)', () => {
   let tarballPath: string;
 
   // Building & packing can be slow
-  jest.setTimeout(120_000);
+  vi.setConfig({ testTimeout: 120_000, hookTimeout: 120_000 });
 
   beforeAll(() => {
-    const repoRoot = path.resolve(__dirname, '../..');
+    const repoRoot = path.resolve(import.meta.dirname, '../..');
     workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'backport-consumer-'));
-    const packDir = fs.mkdtempSync(path.join(os.tmpdir(), 'backport-pack-'));
-    tarballPath = path.join(packDir, 'backport.tgz');
 
-    // 2. Pack the project to a predictable filename inside a temp directory
-    const yarnCommand = getYarnCommand();
-    execSync(`${yarnCommand} pack --filename ${tarballPath}`, {
+    // 2. Pack the project; npm pack outputs the tarball filename as the last line of stdout
+    const tarballName = execSync('npm pack', {
       cwd: repoRoot,
-      stdio: 'ignore',
-    });
+      encoding: 'utf8',
+    })
+      .trim()
+      .split('\n')
+      .pop()!;
+    tarballPath = path.join(repoRoot, tarballName);
 
     // 3. Create consumer project working directory
     fs.writeFileSync(
@@ -49,8 +49,7 @@ describe('postinstall (integration)', () => {
     fs.mkdirSync(fakeHomeDir, { recursive: true });
 
     // 5. Install the packed tarball (this should trigger postinstall)
-    // Use resolved yarn binary to avoid asdf shim issues when HOME is overridden
-    execSync(`${yarnCommand} add file:${tarballPath}`, {
+    execSync(`npm install ${tarballPath}`, {
       cwd: workDir,
       env: {
         ...process.env,
@@ -59,6 +58,15 @@ describe('postinstall (integration)', () => {
       },
       stdio: 'ignore',
     });
+  });
+
+  afterAll(() => {
+    try {
+      if (tarballPath) fs.rmSync(tarballPath, { force: true });
+      fs.rmSync(workDir, { recursive: true, force: true });
+    } catch {
+      // ignore cleanup errors
+    }
   });
 
   it('creates ~/.backport/config.json', () => {
@@ -86,9 +94,7 @@ describe('postinstall (integration)', () => {
     fs.writeFileSync(configPath, customContent);
 
     // Install again with the new HOME
-    // Use resolved yarn binary to avoid asdf shim issues when HOME is overridden
-    const yarnCommand = getYarnCommand();
-    execSync(`${yarnCommand} add file:${tarballPath}`, {
+    execSync(`npm install ${tarballPath}`, {
       cwd: workDir,
       env: {
         ...process.env,

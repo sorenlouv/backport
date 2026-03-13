@@ -1,4 +1,4 @@
-import { excludeUndefined } from './exclude-undefined';
+import { excludeUndefined } from './exclude-undefined.js';
 
 describe('excludeUndefined', () => {
   it('removes undefined values', () => {

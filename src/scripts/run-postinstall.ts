@@ -1,3 +1,3 @@
-import { postinstall } from './postinstall';
+import { postinstall } from './postinstall.js';
 
 void postinstall();

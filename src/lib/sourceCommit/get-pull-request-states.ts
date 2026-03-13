@@ -1,11 +1,11 @@
-import { keyBy, merge, uniqBy, values } from 'lodash';
-import type { SourceCommitWithTargetPullRequestFragmentFragment } from '../../graphql/generated/graphql';
-import type { ValidConfigOptions } from '../../options/options';
-import { filterNil } from '../../utils/filter-empty';
-import { getFirstLine } from '../github/commit-formatters';
-import type { SourcePullRequestNode } from './get-source-pull-request';
-import { getSourcePullRequest } from './get-source-pull-request';
-import { isPullRequestCrossReferencedEvent } from './is-pull-request-cross-referenced-event';
+import _ from 'lodash';
+import type { SourceCommitWithTargetPullRequestFragmentFragment } from '../../graphql/generated/graphql.js';
+import type { ValidConfigOptions } from '../../options/options.js';
+import { filterNil } from '../../utils/filter-empty.js';
+import { getFirstLine } from '../github/commit-formatters.js';
+import type { SourcePullRequestNode } from './get-source-pull-request.js';
+import { getSourcePullRequest } from './get-source-pull-request.js';
+import { isPullRequestCrossReferencedEvent } from './is-pull-request-cross-referenced-event.js';
 
 type CreatedPullRequestState = 'CLOSED' | 'MERGED' | 'OPEN' | 'NOT_CREATED';
 type CreatedPullRequest = {
@@ -37,8 +37,8 @@ function mergeByKey<T, K>(
   obj2: K[],
   key: string,
 ): Array<(T & Partial<K>) | (K & Partial<T>)> {
-  const merged = merge(keyBy(obj1, key), keyBy(obj2, key));
-  const a = values(merged);
+  const merged = _.merge(_.keyBy(obj1, key), _.keyBy(obj2, key));
+  const a = _.values(merged);
   return a;
 }
 
@@ -198,7 +198,7 @@ function getTargetBranchesFromLabels(
     })
     .filter(filterNil);
 
-  return uniqBy(targetBranchesFromLabels, ({ branch }) => branch);
+  return _.uniqBy(targetBranchesFromLabels, ({ branch }) => branch);
 }
 
 export function getTargetBranchFromLabel({

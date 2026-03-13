@@ -1,5 +1,3 @@
-// eslint-disable-next-line no-undef
-export type SpyHelper<T extends (...args: any[]) => any> = jest.SpyInstance<
-  ReturnType<T>,
-  Parameters<T>
->;
+import type { MockInstance } from 'vitest';
+
+export type SpyHelper<T extends (...args: any[]) => any> = MockInstance<T>;

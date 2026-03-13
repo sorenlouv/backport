@@ -1,7 +1,7 @@
 import type { Exchange, Operation, OperationResult } from '@urql/core';
-import { print } from 'graphql/language/printer';
+import { print } from 'graphql';
 import { pipe, tap } from 'wonka';
-import { logger } from '../../../logger';
+import { logger } from '../../../logger.js';
 
 export const loggingExchange: Exchange =
   ({ forward }) =>

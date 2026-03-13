@@ -1,8 +1,8 @@
-import { getDevAccessToken } from '../../private/get-dev-access-token';
-import { runBackportViaCli } from './run-backport-via-cli';
+import { getDevAccessToken } from '../../private/get-dev-access-token.js';
+import { runBackportViaCli } from './run-backport-via-cli.js';
 
 const accessToken = getDevAccessToken();
-jest.setTimeout(15_000);
+vi.setConfig({ testTimeout: 15_000 });
 
 describe('date filters (dateSince, dateUntil)', () => {
   it(`filters commits by "since" and "until"`, async () => {

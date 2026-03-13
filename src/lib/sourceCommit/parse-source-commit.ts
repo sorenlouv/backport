@@ -1,12 +1,12 @@
-import { differenceBy } from 'lodash';
-import { graphql } from '../../graphql/generated';
-import type { SourceCommitWithTargetPullRequestFragmentFragment } from '../../graphql/generated/graphql';
-import type { ValidConfigOptions } from '../../options/options';
-import { filterNil } from '../../utils/filter-empty';
-import { parseRemoteConfigFile } from '../remote-config';
-import type { TargetPullRequest } from './get-pull-request-states';
-import { getPullRequestStates } from './get-pull-request-states';
-import { getSourcePullRequest } from './get-source-pull-request';
+import _ from 'lodash';
+import { graphql } from '../../graphql/generated/index.js';
+import type { SourceCommitWithTargetPullRequestFragmentFragment } from '../../graphql/generated/graphql.js';
+import type { ValidConfigOptions } from '../../options/options.js';
+import { filterNil } from '../../utils/filter-empty.js';
+import { parseRemoteConfigFile } from '../remote-config.js';
+import type { TargetPullRequest } from './get-pull-request-states.js';
+import { getPullRequestStates } from './get-pull-request-states.js';
+import { getSourcePullRequest } from './get-source-pull-request.js';
 
 export interface Commit {
   author: SourceCommitWithTargetPullRequestFragmentFragment['author'];
@@ -45,7 +45,7 @@ function getSuggestedTargetBranches(
     (pr) => pr.state === 'MERGED',
   );
 
-  return differenceBy(missingPrs, mergedPrs, (pr) => pr.label).map(
+  return _.differenceBy(missingPrs, mergedPrs, (pr) => pr.label).map(
     (pr) => pr.branch,
   );
 }

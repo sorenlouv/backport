@@ -1,16 +1,16 @@
 import crypto from 'crypto';
 import { Octokit } from '@octokit/rest';
-import type { ValidConfigOptions } from '../../../options/options';
-import { getDevAccessToken } from '../../../test/private/get-dev-access-token';
-import type { PullRequestPayload } from '../v3/getPullRequest/create-pull-request';
-import { createPullRequest } from '../v3/getPullRequest/create-pull-request';
-import type { GithubV4Exception } from './client/graphql-client';
-import { disablePullRequestAutoMerge } from './disable-pull-request-auto-merge';
+import type { ValidConfigOptions } from '../../../options/options.js';
+import { getDevAccessToken } from '../../../test/private/get-dev-access-token.js';
+import type { PullRequestPayload } from '../v3/getPullRequest/create-pull-request.js';
+import { createPullRequest } from '../v3/getPullRequest/create-pull-request.js';
+import type { GithubV4Exception } from './client/graphql-client.js';
+import { disablePullRequestAutoMerge } from './disable-pull-request-auto-merge.js';
 import {
   enablePullRequestAutoMerge,
   isMissingStatusChecksError,
-} from './enable-pull-request-auto-merge';
-import { fetchPullRequestAutoMergeMethod } from './fetch-pull-request-auto-merge-method';
+} from './enable-pull-request-auto-merge.js';
+import { fetchPullRequestAutoMergeMethod } from './fetch-pull-request-auto-merge-method.js';
 
 // The test repo requires auto-merge being enabled in options, as well as all merge types enabled (merge, squash, rebase)
 // The test pull requests should be open, and not currently able to be merged (e.g. because it requires an approval),
@@ -20,7 +20,7 @@ const TEST_REPO_NAME = 'repo-with-auto-merge-enabled';
 const INITIAL_SHA = '70aa879411e95b6662f8ddcb80a944fc4444579f';
 const accessToken = getDevAccessToken();
 
-jest.setTimeout(20_000);
+vi.setConfig({ testTimeout: 20_000 });
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 

@@ -1,14 +1,14 @@
-import { readFile } from 'fs/promises';
+import fs from 'fs/promises';
 import stripJsonComments from 'strip-json-comments';
-import { BackportError } from '../../lib/backport-error';
-import { logger } from '../../lib/logger';
-import { excludeUndefined } from '../../utils/exclude-undefined';
-import type { ConfigFileOptions } from '../config-options';
+import { BackportError } from '../../lib/backport-error.js';
+import { logger } from '../../lib/logger.js';
+import { excludeUndefined } from '../../utils/exclude-undefined.js';
+import type { ConfigFileOptions } from '../config-options.js';
 
 export async function readConfigFile(
   filepath: string,
 ): Promise<ConfigFileOptions> {
-  const fileContents = await readFile(filepath, 'utf8');
+  const fileContents = await fs.readFile(filepath, 'utf8');
 
   try {
     return parseConfigFile(fileContents);

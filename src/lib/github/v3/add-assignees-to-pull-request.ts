@@ -1,7 +1,6 @@
 import { Octokit } from '@octokit/rest';
-import apm from 'elastic-apm-node';
-import { ora } from '../../../lib/ora';
-import { logger } from '../../logger';
+import { ora } from '../../../lib/ora.js';
+import { logger } from '../../logger.js';
 
 export async function addAssigneesToPullRequest({
   // options
@@ -39,8 +38,6 @@ export async function addAssigneesToPullRequest({
     return;
   }
 
-  const span = apm.startSpan('REST: Add assignees');
-
   try {
     const octokit = new Octokit({
       auth: accessToken,
@@ -60,7 +57,5 @@ export async function addAssigneesToPullRequest({
     spinner.fail();
 
     logger.info(`Could not add assignees to PR ${pullNumber}`, e);
-  } finally {
-    span?.end();
   }
 }

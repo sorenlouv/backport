@@ -1,15 +1,18 @@
-import { isEmpty, uniqBy, orderBy, first } from 'lodash';
-import { graphql } from '../../../../graphql/generated';
-import type { ValidConfigOptions } from '../../../../options/options';
-import { filterNil } from '../../../../utils/filter-empty';
-import { filterUnmergedCommits } from '../../../../utils/filter-unmerged-commits';
-import { BackportError } from '../../../backport-error';
-import { isMissingConfigFileException } from '../../../remote-config';
-import type { Commit } from '../../../sourceCommit/parse-source-commit';
-import { parseSourceCommit } from '../../../sourceCommit/parse-source-commit';
-import type { OperationResultWithMeta } from '../client/graphql-client';
-import { getGraphQLClient, GithubV4Exception } from '../client/graphql-client';
-import { fetchAuthorId } from '../fetch-author-id';
+import _ from 'lodash';
+import { graphql } from '../../../../graphql/generated/index.js';
+import type { ValidConfigOptions } from '../../../../options/options.js';
+import { filterNil } from '../../../../utils/filter-empty.js';
+import { filterUnmergedCommits } from '../../../../utils/filter-unmerged-commits.js';
+import { BackportError } from '../../../backport-error.js';
+import { isMissingConfigFileException } from '../../../remote-config.js';
+import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
+import { parseSourceCommit } from '../../../sourceCommit/parse-source-commit.js';
+import type { OperationResultWithMeta } from '../client/graphql-client.js';
+import {
+  getGraphQLClient,
+  GithubV4Exception,
+} from '../client/graphql-client.js';
+import { fetchAuthorId } from '../fetch-author-id.js';
 
 async function fetchByCommitPath({
   options,
@@ -128,7 +131,7 @@ export async function fetchCommitsByAuthor(options: {
   const authorId = await fetchAuthorId(options);
   const responses = (
     await Promise.all(
-      isEmpty(commitPaths)
+      _.isEmpty(commitPaths)
         ? [fetchByCommitPath({ options, authorId, commitPath: null })]
         : commitPaths.map((commitPath) =>
             fetchByCommitPath({ options, authorId, commitPath }),
@@ -137,7 +140,7 @@ export async function fetchCommitsByAuthor(options: {
   ).filter(filterNil);
 
   // we only need to check if the first item is `null` (if the first is `null` they all are)
-  if (first(responses)?.repository?.ref === null) {
+  if (_.first(responses)?.repository?.ref === null) {
     throw new BackportError(
       `The upstream branch "${sourceBranch}" does not exist. Try specifying a different branch with "--source-branch <your-branch>"`,
     );
@@ -160,7 +163,7 @@ export async function fetchCommitsByAuthor(options: {
     .filter(filterNil);
 
   // terminate if not commits were found
-  if (isEmpty(commits)) {
+  if (_.isEmpty(commits)) {
     const pathText =
       commitPaths.length > 0 ? ` touching files in path: "${commitPaths}"` : '';
 
@@ -171,8 +174,8 @@ export async function fetchCommitsByAuthor(options: {
     throw new BackportError(errorText);
   }
 
-  const commitsUnique = uniqBy(commits, (c) => c.sourceCommit.sha);
-  const commitsSorted = orderBy(
+  const commitsUnique = _.uniqBy(commits, (c) => c.sourceCommit.sha);
+  const commitsSorted = _.orderBy(
     commitsUnique,
     (c) => c.sourceCommit.committedDate,
     'desc',

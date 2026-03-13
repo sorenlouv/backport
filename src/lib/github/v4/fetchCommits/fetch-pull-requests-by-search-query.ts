@@ -1,12 +1,15 @@
-import { isEmpty } from 'lodash';
-import { graphql } from '../../../../graphql/generated';
-import { filterNil } from '../../../../utils/filter-empty';
-import { filterUnmergedCommits } from '../../../../utils/filter-unmerged-commits';
-import { BackportError } from '../../../backport-error';
-import { isMissingConfigFileException } from '../../../remote-config';
-import type { Commit } from '../../../sourceCommit/parse-source-commit';
-import { parseSourceCommit } from '../../../sourceCommit/parse-source-commit';
-import { GithubV4Exception, getGraphQLClient } from '../client/graphql-client';
+import _ from 'lodash';
+import { graphql } from '../../../../graphql/generated/index.js';
+import { filterNil } from '../../../../utils/filter-empty.js';
+import { filterUnmergedCommits } from '../../../../utils/filter-unmerged-commits.js';
+import { BackportError } from '../../../backport-error.js';
+import { isMissingConfigFileException } from '../../../remote-config.js';
+import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
+import { parseSourceCommit } from '../../../sourceCommit/parse-source-commit.js';
+import {
+  GithubV4Exception,
+  getGraphQLClient,
+} from '../client/graphql-client.js';
 
 export async function fetchPullRequestsBySearchQuery(options: {
   accessToken: string;
@@ -102,7 +105,7 @@ export async function fetchPullRequestsBySearchQuery(options: {
     .filter(filterNil);
 
   // terminate if not commits were found
-  if (!commits || isEmpty(commits)) {
+  if (!commits || _.isEmpty(commits)) {
     const errorText = author
       ? `No commits found for query:\n    ${searchQuery}\n\nUse \`--all\` to see commits by all users or \`--author=<username>\` for commits from a specific user`
       : `No commits found for query:\n    ${searchQuery}`;

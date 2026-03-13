@@ -1,20 +1,27 @@
 import { spawnSync } from 'child_process';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import fs from 'fs';
 import path from 'path';
 import stripAnsi from 'strip-ansi';
-import pkg from '../../../../package.json';
-import { getDevAccessToken } from '../../private/get-dev-access-token';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const pkg = JSON.parse(
+  readFileSync(join(__dirname, '../../../../package.json'), 'utf-8'),
+);
+import { getDevAccessToken } from '../../private/get-dev-access-token.js';
 
 const accessToken = getDevAccessToken();
 
 describe('CLI “backport” binary', () => {
-  const binPath = path.resolve(__dirname, '../../../../bin/backport');
+  const binPath = path.resolve(import.meta.dirname, '../../../../bin/backport');
 
   beforeAll(() => {
     // ensure dist folder exists
-    const distPath = path.resolve(__dirname, '../../../../dist');
+    const distPath = path.resolve(import.meta.dirname, '../../../../dist');
     if (!fs.existsSync(distPath)) {
-      throw new Error(`Please run "yarn build" before running this test.`);
+      throw new Error(`Please run "npm run build" before running this test.`);
     }
   });
 

@@ -4,14 +4,14 @@ import type {
   BackportAbortResponse,
   BackportFailureResponse,
   BackportSuccessResponse,
-} from '../../../backport-run';
-import type { ConfigFileOptions } from '../../../entrypoint.api';
-import { getDevAccessToken } from '../../private/get-dev-access-token';
-import { getSandboxPath, resetSandbox } from '../../sandbox';
-import { runBackportViaCli } from './run-backport-via-cli';
+} from '../../../backport-run.js';
+import type { ConfigFileOptions } from '../../../entrypoint.api.js';
+import { getDevAccessToken } from '../../private/get-dev-access-token.js';
+import { getSandboxPath, resetSandbox } from '../../sandbox.js';
+import { runBackportViaCli } from './run-backport-via-cli.js';
 
 const accessToken = getDevAccessToken();
-jest.setTimeout(15_000);
+vi.setConfig({ testTimeout: 15_000 });
 
 describe('non interactive (json) error handling', () => {
   it(`when access token is missing`, async () => {
@@ -236,7 +236,7 @@ describe('non interactive (json) error handling', () => {
 });
 
 async function createConfigFile(options: ConfigFileOptions) {
-  const sandboxPath = getSandboxPath({ filename: __filename });
+  const sandboxPath = getSandboxPath({ filename: import.meta.filename });
   await resetSandbox(sandboxPath);
   const configPath = path.join(sandboxPath, 'config.json');
   await fs.writeFile(configPath, JSON.stringify(options));

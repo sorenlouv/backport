@@ -1,14 +1,14 @@
 import type { ChildProcessWithoutNullStreams } from 'child_process';
 import { spawn } from 'child_process';
 import path from 'path';
-import { debounce } from 'lodash';
+import _ from 'lodash';
 import stripAnsi from 'strip-ansi';
-import { getSandboxPath, resetSandbox, SANDBOX_PATH } from '../../sandbox';
+import { getSandboxPath, resetSandbox, SANDBOX_PATH } from '../../sandbox.js';
 
 const tsNodeBinary = path.resolve('./node_modules/.bin/ts-node');
 const entrypointFile = path.resolve('./src/entrypoint.cli.ts');
 
-jest.setTimeout(15_000);
+vi.setConfig({ testTimeout: 15_000 });
 
 type RunBackportOptions = {
   timeoutSeconds?: number;
@@ -25,7 +25,7 @@ export async function runBackportViaCli(
   const chunks = '';
   const randomString = Math.random().toString(36).slice(2);
   const sandboxPath = getSandboxPath({
-    filename: __filename,
+    filename: import.meta.filename,
     specname: randomString,
   });
   await resetSandbox(sandboxPath);
@@ -78,7 +78,7 @@ function getPromise(
       runBackportOptions?: RunBackportOptions,
     ) => Promise<{ output: string }>;
   }>((resolve, reject) => {
-    const postponeTimeout = debounce(
+    const postponeTimeout = _.debounce(
       () => {
         const formattedChunks = formatChunk(chunks);
         const cmd = [tsNodeBinary, ...cmdArgs].join(' ');

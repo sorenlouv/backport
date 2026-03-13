@@ -1,11 +1,11 @@
-import type { Commit } from '../entrypoint.api';
-import { getCommits, backportRun } from '../entrypoint.api';
-import { getDevAccessToken } from './private/get-dev-access-token';
-import { getSandboxPath, resetSandbox } from './sandbox';
+import type { Commit } from '../entrypoint.api.js';
+import { getCommits, backportRun } from '../entrypoint.api.js';
+import { getDevAccessToken } from './private/get-dev-access-token.js';
+import { getSandboxPath, resetSandbox } from './sandbox.js';
 
 const accessToken = getDevAccessToken();
-jest.unmock('find-up');
-jest.setTimeout(20_000);
+vi.unmock('find-up');
+vi.setConfig({ testTimeout: 20_000 });
 
 describe('Handle unbackported pull requests', () => {
   it('shows missing backports for PR number 8', async () => {
@@ -51,7 +51,7 @@ describe('Handle unbackported pull requests', () => {
   });
 
   it('shows that backport failed because PR number 8 was not backported', async () => {
-    const sandboxPath = getSandboxPath({ filename: __filename });
+    const sandboxPath = getSandboxPath({ filename: import.meta.filename });
     await resetSandbox(sandboxPath);
 
     const result = await backportRun({

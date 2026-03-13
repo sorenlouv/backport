@@ -1,10 +1,10 @@
-import { getDevAccessToken } from '../../private/get-dev-access-token';
-import { removeLinesBreaksInConflictingFiles } from '../../replace-string-and-linebreaks';
-import { getSandboxPath, resetSandbox } from '../../sandbox';
-import { runBackportViaCli } from './run-backport-via-cli';
+import { getDevAccessToken } from '../../private/get-dev-access-token.js';
+import { removeLinesBreaksInConflictingFiles } from '../../replace-string-and-linebreaks.js';
+import { getSandboxPath, resetSandbox } from '../../sandbox.js';
+import { runBackportViaCli } from './run-backport-via-cli.js';
 
 const accessToken = getDevAccessToken();
-jest.setTimeout(15_000);
+vi.setConfig({ testTimeout: 15_000 });
 
 describe('interactive error handling', () => {
   it('when branch is missing', async () => {
@@ -65,7 +65,7 @@ describe('interactive error handling', () => {
   });
 
   it(`when encountering conflicts`, async () => {
-    const backportDir = getSandboxPath({ filename: __filename });
+    const backportDir = getSandboxPath({ filename: import.meta.filename });
     await resetSandbox(backportDir);
     const { output } = await runBackportViaCli(
       [

@@ -1,12 +1,14 @@
 import yargs from 'yargs';
 import yargsParser from 'yargs-parser';
-import { excludeUndefined } from '../utils/exclude-undefined';
-import type { ConfigFileOptions } from './config-options';
-import { defaultConfigOptions } from './options';
+import { excludeUndefined } from '../utils/exclude-undefined.js';
+import { getPackageVersion } from '../utils/package-version.js';
+import type { ConfigFileOptions } from './config-options.js';
+import { defaultConfigOptions } from './options.js';
 
 export type OptionsFromCliArgs = ReturnType<typeof getOptionsFromCliArgs>;
 export function getOptionsFromCliArgs(processArgs: readonly string[]) {
-  const yargsInstance = yargs(processArgs)
+  const y = yargs(processArgs);
+  const yargsInstance = y
     .strict()
     .parserConfiguration({
       'strip-dashed': true,
@@ -14,7 +16,7 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       'boolean-negation': false,
     })
     .usage('$0 [args]')
-    .wrap(Math.max(100, Math.min(120, yargs.terminalWidth())))
+    .wrap(Math.max(100, Math.min(120, y.terminalWidth())))
 
     .option('accessToken', {
       alias: 'accesstoken',
@@ -286,11 +288,6 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       conflicts: ['fork', 'repoForkOwner'],
     })
 
-    .option('noTelemetry', {
-      description: 'Disable telemetry',
-      type: 'boolean',
-    })
-
     .option('onlyMissing', {
       description: 'Only list commits with missing or unmerged backports',
       type: 'boolean',
@@ -434,6 +431,7 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       type: 'boolean',
     })
 
+    .version(getPackageVersion())
     .alias('version', 'v')
     .help()
     .exitProcess(!processArgs.includes('--noExitProcess'))
@@ -474,8 +472,6 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
     noVerify,
     verify,
     nonInteractive,
-    noTelemetry,
-
     // array types (should be renamed to plural form)
     assignee,
     path,
@@ -524,7 +520,6 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
     publishStatusCommentOnFailure: noStatusComment === true ? false : undefined,
     publishStatusCommentOnAbort: noStatusComment === true ? false : undefined,
     interactive: nonInteractive === true ? false : undefined,
-    telemetry: noTelemetry === true ? false : undefined,
   });
 }
 

@@ -1,10 +1,9 @@
-import * as packageVersionModule from '../../../utils/package-version';
-import { exec } from '../../child-process-helper';
-import { getDevAccessToken } from '../../private/get-dev-access-token';
-import { getSandboxPath, resetSandbox } from '../../sandbox';
-import { runBackportViaCli } from './run-backport-via-cli';
+import { exec } from '../../child-process-helper.js';
+import { getDevAccessToken } from '../../private/get-dev-access-token.js';
+import { getSandboxPath, resetSandbox } from '../../sandbox.js';
+import { runBackportViaCli } from './run-backport-via-cli.js';
 
-jest.setTimeout(15_000);
+vi.setConfig({ testTimeout: 15_000 });
 const accessToken = getDevAccessToken();
 
 describe('entrypoint cli', () => {
@@ -24,8 +23,7 @@ describe('entrypoint cli', () => {
   });
 
   it('PACKAGE_VERSION should match', async () => {
-    // @ts-expect-error
-    expect(packageVersionModule.UNMOCKED_PACKAGE_VERSION).toBe(
+    expect((globalThis as any).__UNMOCKED_PACKAGE_VERSION__).toBe(
       process.env.npm_package_version,
     );
   });
@@ -139,7 +137,7 @@ Or contact me directly: "
   });
 
   it('lists commits based on .git/config when `repoOwner`/`repoName` is missing', async () => {
-    const sandboxPath = getSandboxPath({ filename: __filename });
+    const sandboxPath = getSandboxPath({ filename: import.meta.filename });
     await resetSandbox(sandboxPath);
     await exec(`git init`, { cwd: sandboxPath });
     await exec(

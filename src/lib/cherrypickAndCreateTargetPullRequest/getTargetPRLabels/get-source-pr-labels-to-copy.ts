@@ -1,5 +1,5 @@
-import type { ValidConfigOptions } from '../../../options/options';
-import type { Commit } from '../../sourceCommit/parse-source-commit';
+import type { ValidConfigOptions } from '../../../options/options.js';
+import type { Commit } from '../../sourceCommit/parse-source-commit.js';
 
 export function getSourcePRLabelsToCopy({
   commits,

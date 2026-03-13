@@ -1,4 +1,4 @@
-import { getRuntimeArguments, getOptionsFromCliArgs } from './cli-args';
+import { getRuntimeArguments, getOptionsFromCliArgs } from './cli-args.js';
 
 describe('getOptionsFromCliArgs', () => {
   describe('yargs settings', () => {
@@ -285,7 +285,7 @@ describe('getOptionsFromCliArgs', () => {
   });
 
   describe('dateSince and dateUntil', () => {
-    it('should always be UTC time (configured globally in jest.config.js)', () => {
+    it('should always be UTC time (configured globally in vitest.config.ts)', () => {
       expect(new Date().getTimezoneOffset()).toBe(0);
     });
 

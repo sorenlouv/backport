@@ -1,9 +1,9 @@
 import Handlebars from 'handlebars';
-import type { ValidConfigOptions } from '../../../../options/options';
-import { getSourceBranchFromCommits } from '../../../get-source-branch-from-commits';
-import { logger } from '../../../logger';
-import type { Commit } from '../../../sourceCommit/parse-source-commit';
-import { getFirstLine } from '../../commit-formatters';
+import type { ValidConfigOptions } from '../../../../options/options.js';
+import { getSourceBranchFromCommits } from '../../../get-source-branch-from-commits.js';
+import { logger } from '../../../logger.js';
+import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
+import { getFirstLine } from '../../commit-formatters.js';
 
 export function getTitle({
   options,

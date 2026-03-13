@@ -1,30 +1,30 @@
 import chalk from 'chalk';
-import { flatten } from 'lodash';
-import type { ValidConfigOptions } from '../../options/options';
-import { getSourceBranchFromCommits } from '../get-source-branch-from-commits';
+import _ from 'lodash';
+import type { ValidConfigOptions } from '../../options/options.js';
+import { getSourceBranchFromCommits } from '../get-source-branch-from-commits.js';
 import {
   createBackportBranch,
   deleteBackportBranch,
   pushBackportBranch,
   getRepoForkOwner,
-} from '../git';
-import { addAssigneesToPullRequest } from '../github/v3/add-assignees-to-pull-request';
-import { addLabelsToPullRequest } from '../github/v3/add-labels-to-pull-request';
-import { addReviewersToPullRequest } from '../github/v3/add-reviewers-to-pull-request';
-import type { PullRequestPayload } from '../github/v3/getPullRequest/create-pull-request';
-import { createPullRequest } from '../github/v3/getPullRequest/create-pull-request';
-import { getPullRequestBody } from '../github/v3/getPullRequest/get-pull-request-body';
-import { getTitle } from '../github/v3/getPullRequest/get-title';
-import { validateTargetBranch } from '../github/v4/validate-target-branch';
-import { consoleLog } from '../logger';
-import { sequentially } from '../sequentially';
-import type { Commit } from '../sourceCommit/parse-source-commit';
-import { autoMergeNowOrLater } from './auto-merge-now-or-later';
-import { copySourcePullRequestReviewersToTargetPullRequest } from './copy-source-pull-request-reviewers-to-target-pull-request';
-import { getBackportBranchName } from './get-backport-branch-name';
-import { getMergeCommits } from './get-merge-commit';
-import { getTargetPRLabels } from './getTargetPRLabels/get-target-prlabels';
-import { waitForCherrypick } from './wait-for-cherrypick';
+} from '../git.js';
+import { addAssigneesToPullRequest } from '../github/v3/add-assignees-to-pull-request.js';
+import { addLabelsToPullRequest } from '../github/v3/add-labels-to-pull-request.js';
+import { addReviewersToPullRequest } from '../github/v3/add-reviewers-to-pull-request.js';
+import type { PullRequestPayload } from '../github/v3/getPullRequest/create-pull-request.js';
+import { createPullRequest } from '../github/v3/getPullRequest/create-pull-request.js';
+import { getPullRequestBody } from '../github/v3/getPullRequest/get-pull-request-body.js';
+import { getTitle } from '../github/v3/getPullRequest/get-title.js';
+import { validateTargetBranch } from '../github/v4/validate-target-branch.js';
+import { consoleLog } from '../logger.js';
+import { sequentially } from '../sequentially.js';
+import type { Commit } from '../sourceCommit/parse-source-commit.js';
+import { autoMergeNowOrLater } from './auto-merge-now-or-later.js';
+import { copySourcePullRequestReviewersToTargetPullRequest } from './copy-source-pull-request-reviewers-to-target-pull-request.js';
+import { getBackportBranchName } from './get-backport-branch-name.js';
+import { getMergeCommits } from './get-merge-commit.js';
+import { getTargetPRLabels } from './getTargetPRLabels/get-target-prlabels.js';
+import { waitForCherrypick } from './wait-for-cherrypick.js';
 
 export async function cherrypickAndCreateTargetPullRequest({
   options,
@@ -51,7 +51,7 @@ export async function cherrypickAndCreateTargetPullRequest({
     backportBranch,
   });
 
-  const commitsFlattened = flatten(
+  const commitsFlattened = _.flatten(
     await Promise.all(commits.map((c) => getMergeCommits(options, c))),
   );
 

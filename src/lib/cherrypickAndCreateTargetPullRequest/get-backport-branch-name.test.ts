@@ -1,6 +1,6 @@
-import type { Commit } from '../../entrypoint.api';
-import type { ValidConfigOptions } from '../../options/options';
-import { getBackportBranchName } from './get-backport-branch-name';
+import type { Commit } from '../../entrypoint.api.js';
+import type { ValidConfigOptions } from '../../options/options.js';
+import { getBackportBranchName } from './get-backport-branch-name.js';
 
 describe('getBackportBranchName', () => {
   describe('when options.backportBranchName is not set', () => {

@@ -1,8 +1,8 @@
-import { PullRequestState } from '../../graphql/generated/graphql';
-import type { ValidConfigOptions } from '../../options/options';
-import { getMockSourceCommit } from './get-mock-source-commit';
-import type { Commit } from './parse-source-commit';
-import { parseSourceCommit } from './parse-source-commit';
+import { PullRequestState } from '../../graphql/generated/graphql.js';
+import type { ValidConfigOptions } from '../../options/options.js';
+import { getMockSourceCommit } from './get-mock-source-commit.js';
+import type { Commit } from './parse-source-commit.js';
+import { parseSourceCommit } from './parse-source-commit.js';
 
 describe('parseSourceCommit', () => {
   describe('pullNumber', () => {

@@ -1,4 +1,4 @@
-import type { Commit } from '../entrypoint.api';
+import type { Commit } from '../entrypoint.api.js';
 
 export function getSourceBranchFromCommits(commits: Commit[]) {
   // sourceBranch should be the same for all commits, so picking `sourceBranch` from the first commit should be fine 🤞

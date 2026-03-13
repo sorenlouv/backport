@@ -1,11 +1,11 @@
-import { isEmpty, difference } from 'lodash';
-import { maybe } from '../../../utils/maybe';
-import { getGlobalConfigPath } from '../../env';
-import { logger } from '../../logger';
+import _ from 'lodash';
+import { maybe } from '../../../utils/maybe.js';
+import { getGlobalConfigPath } from '../../env.js';
+import { logger } from '../../logger.js';
 import type {
   GitHubGraphQLError,
   OperationResultWithMeta,
-} from './client/graphql-client';
+} from './client/graphql-client.js';
 
 export function getInvalidAccessTokenMessage({
   result,
@@ -44,8 +44,8 @@ export function getInvalidAccessTokenMessage({
       const ssoHeader = maybe(result.responseHeaders?.get('x-github-sso'));
 
       if (repoNotFound) {
-        const hasRequiredScopes = isEmpty(
-          difference(requiredScopes.split(','), grantedScopes.split(',')),
+        const hasRequiredScopes = _.isEmpty(
+          _.difference(requiredScopes.split(','), grantedScopes.split(',')),
         );
 
         // user does not have permission to the repo

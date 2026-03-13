@@ -1,10 +1,10 @@
-import { graphql } from '../../../../graphql/generated';
-import { getDevAccessToken } from '../../../../test/private/get-dev-access-token';
+import { graphql } from '../../../../graphql/generated/index.js';
+import { getDevAccessToken } from '../../../../test/private/get-dev-access-token.js';
 import type {
   GitHubGraphQLError,
   OperationResultWithMeta,
-} from './graphql-client';
-import { getGraphQLClient } from './graphql-client';
+} from './graphql-client.js';
+import { getGraphQLClient } from './graphql-client.js';
 
 const getViewerQuery = graphql(`
   query GetViewer {

@@ -1,7 +1,7 @@
 import Handlebars from 'handlebars';
-import type { Commit } from '../../../../entrypoint.api';
-import type { ValidConfigOptions } from '../../../../options/options';
-import { getTitle } from './get-title';
+import type { Commit } from '../../../../entrypoint.api.js';
+import type { ValidConfigOptions } from '../../../../options/options.js';
+import { getTitle } from './get-title.js';
 
 describe('getTitle', () => {
   const commits = [
@@ -120,7 +120,7 @@ describe('getTitle', () => {
     const compileError = new Error('Simulated compile error');
 
     // Stub Handlebars.compile to throw an error.
-    const compileSpy = jest
+    const compileSpy = vi
       .spyOn(Handlebars, 'compile')
       .mockImplementation(() => {
         throw compileError;
