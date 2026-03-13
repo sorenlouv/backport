@@ -1,7 +1,7 @@
 import js from '@eslint/js';
 import tseslint from '@typescript-eslint/eslint-plugin';
 import tsparser from '@typescript-eslint/parser';
-import importPlugin from 'eslint-plugin-import';
+import importPlugin from 'eslint-plugin-import-x';
 
 const nodeGlobals = {
   process: 'readonly',
@@ -57,6 +57,23 @@ export default [
     ...js.configs.recommended,
   },
 
+  // Config files (CJS - dotfiles like .graphqlrc.js)
+  {
+    files: ['.*.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'commonjs',
+      globals: {
+        ...nodeGlobals,
+        require: 'readonly',
+        module: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+      },
+    },
+    ...js.configs.recommended,
+  },
+
   // JavaScript files
   {
     files: ['**/*.js'],
@@ -83,14 +100,14 @@ export default [
     },
     plugins: {
       '@typescript-eslint': tseslint,
-      import: importPlugin,
+      'import-x': importPlugin,
     },
     rules: {
       ...js.configs.recommended.rules,
       ...tseslint.configs.recommended.rules,
 
       // Import organization
-      'import/order': [
+      'import-x/order': [
         'error',
         {
           alphabetize: { order: 'asc' },
@@ -98,7 +115,7 @@ export default [
           groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
         },
       ],
-      'import/no-duplicates': 'error',
+      'import-x/no-duplicates': 'error',
 
       // Essential TypeScript rules
       '@typescript-eslint/no-explicit-any': 'off',

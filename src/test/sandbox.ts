@@ -1,12 +1,7 @@
+import fs from 'fs/promises';
 import { fileURLToPath } from 'node:url';
 import { homedir } from 'os';
 import path, { resolve } from 'path';
-import del from 'del';
-import makeDir from 'make-dir';
-import { vi } from 'vitest';
-
-vi.unmock('make-dir');
-vi.unmock('del');
 
 export const SANDBOX_PATH = `${homedir()}/.backport_testing/`;
 
@@ -32,8 +27,8 @@ export async function resetSandbox(sandboxPath: string) {
     throw new Error(`sandboxPath "${sandboxPath}" is too short. Reset aborted`);
   }
 
-  await del(sandboxPath, { force: true });
-  await makeDir(sandboxPath);
+  await fs.rm(sandboxPath, { recursive: true, force: true });
+  await fs.mkdir(sandboxPath, { recursive: true });
 }
 
 function getFilenameWithoutExtension(filename: string) {

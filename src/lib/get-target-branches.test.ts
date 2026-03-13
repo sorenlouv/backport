@@ -64,7 +64,10 @@ describe('getTargetBranches', () => {
 
     it('should call prompt with correct args', () => {
       expect(promptSpy).toHaveBeenLastCalledWith({
-        targetBranchChoices: [{ name: 'branchA' }, { name: 'branchB' }],
+        targetBranchChoices: [
+          { name: 'branchA', value: 'branchA' },
+          { name: 'branchB', value: 'branchB' },
+        ],
         isMultipleChoice: false,
       });
     });
@@ -176,10 +179,10 @@ describe('getTargetBranches', () => {
 
     it('should list the correct branches', async () => {
       expect(targetBranchChoices).toEqual([
-        { checked: true, name: '7.x' },
-        { checked: false, name: '7.7' },
-        { checked: false, name: '7.6' },
-        { checked: false, name: '7.5' },
+        { checked: true, name: '7.x', value: '7.x' },
+        { checked: false, name: '7.7', value: '7.7' },
+        { checked: false, name: '7.6', value: '7.6' },
+        { checked: false, name: '7.5', value: '7.5' },
       ]);
     });
 
@@ -192,6 +195,7 @@ describe('getTargetBranches', () => {
     it('should select 7.x', async () => {
       expect(targetBranchChoices).toContainEqual({
         name: '7.x',
+        value: '7.x',
         checked: true,
       });
     });
@@ -264,9 +268,9 @@ describe('getTargetBranchChoices', () => {
     );
 
     expect(branches).toEqual([
-      { checked: false, name: '7.x' },
-      { checked: false, name: '7.8' },
-      { checked: false, name: '7.7' },
+      { checked: false, name: '7.x', value: '7.x' },
+      { checked: false, name: '7.8', value: '7.8' },
+      { checked: false, name: '7.7', value: '7.7' },
     ]);
   });
 
@@ -280,9 +284,9 @@ describe('getTargetBranchChoices', () => {
     );
 
     expect(branches).toEqual([
-      { checked: false, name: '7.x' },
-      { checked: false, name: '7.8' },
-      { checked: true, name: '7.7' },
+      { checked: false, name: '7.x', value: '7.x' },
+      { checked: false, name: '7.8', value: '7.8' },
+      { checked: true, name: '7.7', value: '7.7' },
     ]);
   });
 });

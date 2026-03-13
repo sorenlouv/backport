@@ -1,6 +1,5 @@
+import { checkbox, select, confirm } from '@inquirer/prompts';
 import chalk from 'chalk';
-import type { CheckboxQuestion, ListQuestion, ConfirmQuestion } from 'inquirer';
-import inquirer from 'inquirer';
 import { repeat, isEmpty } from 'lodash-es';
 import terminalLink from 'terminal-link';
 import type { TargetBranchChoice } from '../options/config-options.js';
@@ -11,15 +10,6 @@ import {
 } from './github/commit-formatters.js';
 import type { TargetPullRequest } from './sourceCommit/get-pull-request-states.js';
 import type { Commit } from './sourceCommit/parse-source-commit.js';
-
-type Question = CheckboxQuestion | ListQuestion | ConfirmQuestion;
-
-async function prompt<T = unknown>(options: Question) {
-  const { promptResult } = (await inquirer.prompt([
-    { ...options, name: 'promptResult' },
-  ])) as { promptResult: T };
-  return promptResult;
-}
 
 function getPrStateIcon(state: TargetPullRequest['state']) {
   if (state === 'MERGED') {
@@ -140,13 +130,19 @@ export async function promptForCommits({
 }): Promise<Commit[]> {
   const choices = getChoicesForCommitPrompt(commitChoices, showDetails);
 
-  const res = await prompt<Commit | Commit[]>({
-    loop: false,
-    pageSize: 30,
-    choices: choices,
-    message: 'Select commit',
-    type: isMultipleChoice ? 'checkbox' : 'list',
-  });
+  const res = isMultipleChoice
+    ? await checkbox<Commit>({
+        loop: false,
+        pageSize: 30,
+        choices,
+        message: 'Select commit',
+      })
+    : await select<Commit>({
+        loop: false,
+        pageSize: 30,
+        choices,
+        message: 'Select commit',
+      });
 
   const selectedCommits = Array.isArray(res) ? res.reverse() : [res];
   return isEmpty(selectedCommits)
@@ -161,13 +157,19 @@ export async function promptForTargetBranches({
   targetBranchChoices: TargetBranchChoice[];
   isMultipleChoice: boolean;
 }): Promise<string[]> {
-  const res = await prompt<string | string[]>({
-    loop: false,
-    pageSize: 15,
-    choices: targetBranchChoices,
-    message: 'Select branch',
-    type: isMultipleChoice ? 'checkbox' : 'list',
-  });
+  const res = isMultipleChoice
+    ? await checkbox<string>({
+        loop: false,
+        pageSize: 15,
+        choices: targetBranchChoices,
+        message: 'Select branch',
+      })
+    : await select<string>({
+        loop: false,
+        pageSize: 15,
+        choices: targetBranchChoices,
+        message: 'Select branch',
+      });
 
   const selectedBranches = Array.isArray(res) ? res : [res];
 
@@ -180,5 +182,5 @@ export async function promptForTargetBranches({
 }
 
 export function confirmPrompt(message: string) {
-  return prompt<boolean>({ message, type: 'confirm' });
+  return confirm({ message });
 }

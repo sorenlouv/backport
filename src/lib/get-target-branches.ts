@@ -83,10 +83,11 @@ function getTargetBranchChoicesAsObject(
     if (isString(choice)) {
       return {
         name: choice,
+        value: choice,
         checked: false,
       };
     }
 
-    return choice;
+    return { ...choice, value: choice.name };
   });
 }

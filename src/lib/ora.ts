@@ -1,4 +1,4 @@
-import oraOriginal from 'ora';
+import oraOriginal, { type Ora } from 'ora';
 
 export const oraNonInteractiveMode = {
   start: () => oraNonInteractiveMode,
@@ -7,13 +7,13 @@ export const oraNonInteractiveMode = {
   fail: () => {},
   stopAndPersist: () => {},
   set text(value: string) {},
-} as oraOriginal.Ora;
+} as Ora;
 
 export function ora(
   interactive: boolean | undefined,
   text?: string | undefined,
-): oraOriginal.Ora {
+): Ora {
   return interactive ? oraOriginal({ text }) : oraNonInteractiveMode;
 }
 
-export type Ora = oraOriginal.Ora;
+export type { Ora };

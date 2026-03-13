@@ -1,5 +1,5 @@
 import fs from 'fs/promises';
-import findUp from 'find-up';
+import { findUp } from 'find-up';
 import type { MockInstance } from 'vitest';
 import type { SpyHelper } from '../../types/spy-helper';
 import { getProjectConfig } from './project-config.js';

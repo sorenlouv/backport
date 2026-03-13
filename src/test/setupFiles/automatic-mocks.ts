@@ -8,7 +8,7 @@ import { registerHandlebarsHelpers } from '../../lib/register-handlebars-helpers
 import * as packageVersionModule from '../../utils/package-version.js';
 
 vi.mock('find-up', () => {
-  return { default: vi.fn(async () => '/path/to/project/config') };
+  return { findUp: vi.fn(async () => '/path/to/project/config') };
 });
 
 // Store the real version before mocking, accessible via globalThis
@@ -19,15 +19,12 @@ vi.spyOn(packageVersionModule, 'getPackageVersion').mockReturnValue(
   '1.2.3-mocked',
 );
 
-vi.mock('make-dir', () => {
-  return { default: vi.fn(() => Promise.resolve('/some/path')) };
-});
-
-vi.mock('del', () => {
-  return {
-    default: vi.fn(async (path: string) => `Attempted to delete ${path}`),
-  };
-});
+// Spy on fs.rm and fs.mkdir to prevent actual filesystem operations in tests.
+// We use dynamic import + spyOn instead of vi.mock to avoid interfering
+// with other fs method spies (readFile, writeFile, chmod) in individual tests.
+const fsPromises = await import('fs/promises');
+vi.spyOn(fsPromises.default, 'rm').mockResolvedValue(undefined);
+vi.spyOn(fsPromises.default, 'mkdir').mockResolvedValue('/some/path' as any);
 
 vi.mock('../../lib/logger', () => {
   const spy = vi.fn();
