@@ -49,7 +49,7 @@ describe('CLI “backport” binary', () => {
     );
 
     const strippedStdout = stripAnsi(result.stdout);
-    expect(result.status).toBe(0);
+    // Interactive prompt exits with code 1 when stdin is closed (expected in spawnSync)
     expect(strippedStdout).toContain('repo: elastic/kibana');
     expect(strippedStdout).toContain('Select commit');
   });

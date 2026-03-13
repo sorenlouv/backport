@@ -19,13 +19,6 @@ vi.spyOn(packageVersionModule, 'getPackageVersion').mockReturnValue(
   '1.2.3-mocked',
 );
 
-// Spy on fs.rm and fs.mkdir to prevent actual filesystem operations in tests.
-// We use dynamic import + spyOn instead of vi.mock to avoid interfering
-// with other fs method spies (readFile, writeFile, chmod) in individual tests.
-const fsPromises = await import('fs/promises');
-vi.spyOn(fsPromises.default, 'rm').mockResolvedValue(undefined);
-vi.spyOn(fsPromises.default, 'mkdir').mockResolvedValue('/some/path' as any);
-
 vi.mock('../../lib/logger', () => {
   const spy = vi.fn();
   const logger = {

@@ -18,14 +18,16 @@ describe('date filters (dateSince, dateUntil)', () => {
     );
 
     expect(output).toMatchInlineSnapshot(`
-"repo: backport-org/backport-e2e 🔹 sourceBranch: master 🔹 author: sorenlouv 🔹 since: 2020-08-15T10:00:00.000Z 🔹 until: 2020-08-15T10:30:00.000Z
+      "repo: backport-org/backport-e2e 🔹 sourceBranch: master 🔹 author: sorenlouv 🔹 since: 2020-08-15T10:00:00.000Z 🔹 until: 2020-08-15T10:30:00.000Z
 
-? Select commit (Use arrow keys)
-❯ 1. Bump to 8.0.0  
-  2. Add package.json  
-  3. Update .backportrc.json  
-  4. Create .backportrc.json"
-`);
+      ? Select commit
+      ❯ 1. Bump to 8.0.0
+        2. Add package.json
+        3. Update .backportrc.json
+        4. Create .backportrc.json
+
+      ↑↓ navigate • ⏎ select"
+    `);
   });
 
   it('combined with --pr-filter', async () => {
@@ -42,15 +44,17 @@ describe('date filters (dateSince, dateUntil)', () => {
     });
 
     expect(outputWithoutPrFilter).toMatchInlineSnapshot(`
-"repo: elastic/kibana 🔹 sourceBranch: main 🔹 author: sorenlouv 🔹 autoMerge: true 🔹 since: 2023-09-01T00:00:00.000Z 🔹 until: 2023-10-01T00:00:00.000Z
+      "repo: elastic/kibana 🔹 sourceBranch: main 🔹 author: sorenlouv 🔹 autoMerge: true 🔹 since: 2023-09-01T00:00:00.000Z 🔹 until: 2023-10-01T00:00:00.000Z
 
-? Select commit (Use arrow keys)
-❯ 1. [APM] Add support for versioned APIs in diagnostics tool (#167050)  
-  2. [APM] Add permissions for "input-only" package (#166234)  
-  3. [APM] Add docs for Serverless API tests (#166147)  
-  4. [APM] Paginate big traces (#165584) 8.10 
-  5. [APM] Move index settings persistence to data access plugn (#165560)"
-`);
+      ? Select commit
+      ❯ 1. [APM] Add support for versioned APIs in diagnostics tool (#167050)
+        2. [APM] Add permissions for "input-only" package (#166234)
+        3. [APM] Add docs for Serverless API tests (#166147)
+        4. [APM] Paginate big traces (#165584) 8.10
+        5. [APM] Move index settings persistence to data access plugn (#165560)
+
+      ↑↓ navigate • ⏎ select"
+    `);
 
     const { output: outputWithPrFilter } = await runBackportViaCli(
       [...options, `--pr-filter="label:release_note:fix"`],
@@ -58,10 +62,12 @@ describe('date filters (dateSince, dateUntil)', () => {
     );
 
     expect(outputWithPrFilter).toMatchInlineSnapshot(`
-"repo: elastic/kibana 🔹 sourceBranch: main 🔹 author: sorenlouv 🔹 autoMerge: true 🔹 since: 2023-09-01T00:00:00.000Z 🔹 until: 2023-10-01T00:00:00.000Z
+      "repo: elastic/kibana 🔹 sourceBranch: main 🔹 author: sorenlouv 🔹 autoMerge: true 🔹 since: 2023-09-01T00:00:00.000Z 🔹 until: 2023-10-01T00:00:00.000Z
 
-? Select commit (Use arrow keys)
-❯ 1. [APM] Paginate big traces (#165584) 8.10"
-`);
+      ? Select commit
+      ❯ 1. [APM] Paginate big traces (#165584) 8.10
+
+      ↑↓ navigate • ⏎ select"
+    `);
   });
 });

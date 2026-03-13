@@ -19,6 +19,8 @@ Test scenarios to cover:
 
 ## Tests
 
+- `npm run test-all` — runs **all** test suites (unit + private + mutation). Always use this for final verification.
+- `npm run test-all -- somefile.test.ts` — run a single test file (much faster than running all tests).
 - `*.test.ts` — unit tests, run via `npm test`
 - `*.private.test.ts` — require `ACCESS_TOKEN` env var (GitHub PAT), run via `npm run test-private`
 - `*.mutation.test.ts` — sequential execution (mutate shared state), run via `npm run test-mutation`

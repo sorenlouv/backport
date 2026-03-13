@@ -69,15 +69,16 @@ describe('backport-org/repo-with-changing-branchLabelMapping', () => {
         );
 
         expect(output).toMatchInlineSnapshot(`
-"repo: backport-org/repo-with-changing-branchLabelMapping 🔹 sourceBranch: main 🔹 pullNumber: 6 🔹 author: sorenlouv
+          "repo: backport-org/repo-with-changing-branchLabelMapping 🔹 sourceBranch: main 🔹 pullNumber: 6 🔹 author: sorenlouv
 
-? Select branch (Press <space> to select, <a> to toggle all, <i> to invert 
-selection, and <enter> to proceed)
-❯◯ 8.4
- ◉ 8.3
- ◉ 8.2
- ◉ production"
-`);
+          ? Select branch
+          ❯◯ 8.4
+           ◉ 8.3
+           ◉ 8.2
+           ◉ production
+
+          ↑↓ navigate • space select • a all • i invert • ⏎ submit"
+        `);
       });
     });
   });

@@ -16,5 +16,6 @@ export default defineConfig({
     clearMocks: true,
     snapshotSerializers: ['./src/test/setupFiles/snapshot-serializer-ansi.ts'],
     pool: 'forks',
+    maxWorkers: 1,
   },
 });

@@ -10,6 +10,7 @@ describe('config', () => {
 
   beforeEach(() => {
     vi.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
+    vi.spyOn(fs, 'mkdir').mockResolvedValue(undefined as any);
   });
 
   describe('getGlobalConfig', () => {

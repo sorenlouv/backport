@@ -6,7 +6,7 @@
     }
   ],
   "include": ["src/**/*"],
-  "exclude": ["src/graphql/generated/graphql.ts", "src/**/*.test.ts", "src/test"],
+  "exclude": ["src/graphql/generated/graphql.ts"],
   "compilerOptions": {
     "declaration": true,
     "target": "ES2024",

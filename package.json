@@ -33,14 +33,14 @@
     "prepare": "husky",
     "prepublishOnly": "rm -rf ./dist/ && npm install && npm run lint && npm run build",
     "lint-and-test": "npm run lint && npm run test-all",
-    "lint": "tsc --noEmit --incremental && eslint './**/*.{ts,js}' --fix --cache",
+    "lint": "tsc -p tsconfig.build.json --noEmit --incremental && eslint './**/*.{ts,js}' --fix --cache",
     "start": "NODE_ENV=development tsx ./src/entrypoint.cli.ts",
     "test-all": "vitest run --config ./vitest.config.all.ts",
     "test-mutation": "vitest run --config ./vitest.config.mutation.ts",
     "test-private": "vitest run --config ./vitest.config.private.ts",
     "test": "vitest run",
     "codegen": "graphql-codegen --config codegen.ts && node scripts/fix-generated-imports.js",
-    "build": "npm run codegen && tsc --incremental"
+    "build": "npm run codegen && tsc -p tsconfig.build.json --incremental"
   },
   "lint-staged": {
     "*.ts": [

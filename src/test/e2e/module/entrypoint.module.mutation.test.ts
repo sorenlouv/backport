@@ -9,7 +9,7 @@ vi.unmock('find-up');
 vi.unmock('del');
 vi.unmock('make-dir');
 
-vi.setConfig({ testTimeout: 25_000 });
+vi.setConfig({ testTimeout: 25_000, hookTimeout: 25_000 });
 
 const accessToken = getDevAccessToken();
 const octokit = new Octokit({ auth: accessToken });
