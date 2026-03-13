@@ -3,8 +3,8 @@
  * This ensures nock interceptors are properly cleaned up between test files
  */
 
-import { afterAll } from 'vitest';
 import nock from 'nock';
+import { afterAll } from 'vitest';
 
 // Clean up nock interceptors after each test file
 afterAll(() => {

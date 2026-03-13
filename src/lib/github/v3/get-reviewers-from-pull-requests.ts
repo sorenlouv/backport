@@ -1,5 +1,5 @@
 import { Octokit } from '@octokit/rest';
-import _ from 'lodash';
+import { uniq, flatten } from 'lodash-es';
 import { filterNil } from '../../../utils/filter-empty.js';
 import { logger } from '../../logger.js';
 import { ora } from '../../ora.js';
@@ -50,7 +50,7 @@ export async function getReviewersFromPullRequests({
         .filter(filterNil);
     });
 
-    const reviewers = _.uniq(_.flatten(await Promise.all(promises)));
+    const reviewers = uniq(flatten(await Promise.all(promises)));
     spinner.stop();
     return reviewers;
   } catch (e) {

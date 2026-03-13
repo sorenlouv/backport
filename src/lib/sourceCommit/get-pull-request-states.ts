@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { merge, keyBy, values, uniqBy } from 'lodash-es';
 import type { SourceCommitWithTargetPullRequestFragmentFragment } from '../../graphql/generated/graphql.js';
 import type { ValidConfigOptions } from '../../options/options.js';
 import { filterNil } from '../../utils/filter-empty.js';
@@ -37,8 +37,8 @@ function mergeByKey<T, K>(
   obj2: K[],
   key: string,
 ): Array<(T & Partial<K>) | (K & Partial<T>)> {
-  const merged = _.merge(_.keyBy(obj1, key), _.keyBy(obj2, key));
-  const a = _.values(merged);
+  const merged = merge(keyBy(obj1, key), keyBy(obj2, key));
+  const a = values(merged);
   return a;
 }
 
@@ -198,7 +198,7 @@ function getTargetBranchesFromLabels(
     })
     .filter(filterNil);
 
-  return _.uniqBy(targetBranchesFromLabels, ({ branch }) => branch);
+  return uniqBy(targetBranchesFromLabels, ({ branch }) => branch);
 }
 
 export function getTargetBranchFromLabel({

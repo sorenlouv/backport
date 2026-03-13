@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import _ from 'lodash';
+import { flatten } from 'lodash-es';
 import type { ValidConfigOptions } from '../../options/options.js';
 import { getSourceBranchFromCommits } from '../get-source-branch-from-commits.js';
 import {
@@ -51,7 +51,7 @@ export async function cherrypickAndCreateTargetPullRequest({
     backportBranch,
   });
 
-  const commitsFlattened = _.flatten(
+  const commitsFlattened = flatten(
     await Promise.all(commits.map((c) => getMergeCommits(options, c))),
   );
 

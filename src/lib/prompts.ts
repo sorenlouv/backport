@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import type { CheckboxQuestion, ListQuestion, ConfirmQuestion } from 'inquirer';
 import inquirer from 'inquirer';
-import _ from 'lodash';
+import { repeat, isEmpty } from 'lodash-es';
 import terminalLink from 'terminal-link';
 import type { TargetBranchChoice } from '../options/config-options.js';
 import {
@@ -102,7 +102,7 @@ export function getChoicesForCommitPrompt(
   showDetails: boolean,
 ) {
   return commits.map((c, i) => {
-    const leadingWhitespace = _.repeat(' ', 2 - (i + 1).toString().length);
+    const leadingWhitespace = repeat(' ', 2 - (i + 1).toString().length);
     const position = chalk.gray(`${i + 1}.${leadingWhitespace}`);
 
     let name;
@@ -149,7 +149,7 @@ export async function promptForCommits({
   });
 
   const selectedCommits = Array.isArray(res) ? res.reverse() : [res];
-  return _.isEmpty(selectedCommits)
+  return isEmpty(selectedCommits)
     ? promptForCommits({ commitChoices, isMultipleChoice, showDetails })
     : selectedCommits;
 }
@@ -171,7 +171,7 @@ export async function promptForTargetBranches({
 
   const selectedBranches = Array.isArray(res) ? res : [res];
 
-  return _.isEmpty(selectedBranches)
+  return isEmpty(selectedBranches)
     ? promptForTargetBranches({
         targetBranchChoices,
         isMultipleChoice,

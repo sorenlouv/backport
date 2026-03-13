@@ -1,5 +1,5 @@
 import path, { resolve as pathResolve } from 'path';
-import _ from 'lodash';
+import { uniq, isEmpty } from 'lodash-es';
 import { ora } from '../lib/ora.js';
 import type { ValidConfigOptions } from '../options/options.js';
 import { filterNil } from '../utils/filter-empty.js';
@@ -142,7 +142,7 @@ export async function getRepoInfoFromGitRemotes({ cwd }: { cwd: string }) {
       })
       .filter(filterNil);
 
-    return _.uniq(remotes).map((remote) => {
+    return uniq(remotes).map((remote) => {
       const [repoOwner, repoName] = remote.split('/');
       return { repoOwner, repoName };
     });
@@ -375,12 +375,12 @@ export async function cherrypick({
             getRerereConfig(options),
           ]);
 
-        const noConflicts = _.isEmpty(conflictingFiles);
-        const hasUnstaged = !_.isEmpty(unstagedFiles);
+        const noConflicts = isEmpty(conflictingFiles);
+        const hasUnstaged = !isEmpty(unstagedFiles);
 
         if (rerereConfig.enabled && noConflicts) {
           const stagedFiles = await getStagedFiles(options);
-          const hasStaged = !_.isEmpty(stagedFiles);
+          const hasStaged = !isEmpty(stagedFiles);
 
           if (rerereConfig.autoUpdate && hasStaged && !hasUnstaged) {
             logger.info(
@@ -515,7 +515,7 @@ export async function getConflictingFiles(options: ValidConfigOptions) {
           return filename;
         });
 
-      const uniqueFiles = _.uniq(files);
+      const uniqueFiles = uniq(files);
 
       return uniqueFiles.map((file) => {
         return {
@@ -546,7 +546,7 @@ async function getFilesFromDiff(
     .filter((file) => !!file)
     .map((file) => pathResolve(repoPath, file));
 
-  return _.uniq(files);
+  return uniq(files);
 }
 
 // retrieve the list of files that could not be cleanly merged

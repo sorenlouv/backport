@@ -1,6 +1,6 @@
 import type { OperationResult } from '@urql/core';
-import { graphql } from '../../../../graphql/generated/index.js';
 import type { GithubConfigOptionsQuery } from '../../../../graphql/generated/graphql.js';
+import { graphql } from '../../../../graphql/generated/index.js';
 import type { ConfigFileOptions } from '../../../../options/config-options.js';
 import { BackportError } from '../../../backport-error.js';
 import {

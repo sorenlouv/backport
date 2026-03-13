@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { isEmpty, first, uniqBy, orderBy } from 'lodash-es';
 import { graphql } from '../../../../graphql/generated/index.js';
 import type { ValidConfigOptions } from '../../../../options/options.js';
 import { filterNil } from '../../../../utils/filter-empty.js';
@@ -131,7 +131,7 @@ export async function fetchCommitsByAuthor(options: {
   const authorId = await fetchAuthorId(options);
   const responses = (
     await Promise.all(
-      _.isEmpty(commitPaths)
+      isEmpty(commitPaths)
         ? [fetchByCommitPath({ options, authorId, commitPath: null })]
         : commitPaths.map((commitPath) =>
             fetchByCommitPath({ options, authorId, commitPath }),
@@ -140,7 +140,7 @@ export async function fetchCommitsByAuthor(options: {
   ).filter(filterNil);
 
   // we only need to check if the first item is `null` (if the first is `null` they all are)
-  if (_.first(responses)?.repository?.ref === null) {
+  if (first(responses)?.repository?.ref === null) {
     throw new BackportError(
       `The upstream branch "${sourceBranch}" does not exist. Try specifying a different branch with "--source-branch <your-branch>"`,
     );
@@ -163,7 +163,7 @@ export async function fetchCommitsByAuthor(options: {
     .filter(filterNil);
 
   // terminate if not commits were found
-  if (_.isEmpty(commits)) {
+  if (isEmpty(commits)) {
     const pathText =
       commitPaths.length > 0 ? ` touching files in path: "${commitPaths}"` : '';
 
@@ -174,8 +174,8 @@ export async function fetchCommitsByAuthor(options: {
     throw new BackportError(errorText);
   }
 
-  const commitsUnique = _.uniqBy(commits, (c) => c.sourceCommit.sha);
-  const commitsSorted = _.orderBy(
+  const commitsUnique = uniqBy(commits, (c) => c.sourceCommit.sha);
+  const commitsSorted = orderBy(
     commitsUnique,
     (c) => c.sourceCommit.committedDate,
     'desc',

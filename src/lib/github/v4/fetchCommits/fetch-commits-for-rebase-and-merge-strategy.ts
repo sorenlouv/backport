@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { first } from 'lodash-es';
 import type { Commit } from '../../../../entrypoint.api.js';
 import { graphql } from '../../../../graphql/generated/index.js';
 import {
@@ -103,7 +103,7 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
       c?.node?.message === commitsInPullRequest[i]?.node?.commit.message;
 
     const hasSamePullNumber =
-      _.first(c?.node?.associatedPullRequests?.edges)?.node?.number ===
+      first(c?.node?.associatedPullRequests?.edges)?.node?.number ===
       pullRequestNode.number;
 
     return hasSameCommittedDate && hasSameCommitMessages && hasSamePullNumber;

@@ -1,7 +1,7 @@
 import type { ChildProcessWithoutNullStreams } from 'child_process';
 import { spawn } from 'child_process';
 import path from 'path';
-import _ from 'lodash';
+import { debounce } from 'lodash-es';
 import stripAnsi from 'strip-ansi';
 import { getSandboxPath, resetSandbox, SANDBOX_PATH } from '../../sandbox.js';
 
@@ -78,7 +78,7 @@ function getPromise(
       runBackportOptions?: RunBackportOptions,
     ) => Promise<{ output: string }>;
   }>((resolve, reject) => {
-    const postponeTimeout = _.debounce(
+    const postponeTimeout = debounce(
       () => {
         const formattedChunks = formatChunk(chunks);
         const cmd = [tsNodeBinary, ...cmdArgs].join(' ');

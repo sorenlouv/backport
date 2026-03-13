@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { first } from 'lodash-es';
 import { graphql } from '../../../graphql/generated/index.js';
 import type { ValidConfigOptions } from '../../../options/options.js';
 import type { PullRequestPayload } from '../v3/getPullRequest/create-pull-request.js';
@@ -59,7 +59,7 @@ export async function fetchExistingPullRequest({
     throw new GithubV4Exception(result);
   }
 
-  const existingPullRequest = _.first(
+  const existingPullRequest = first(
     result.data?.repository?.ref?.associatedPullRequests.edges,
   );
 

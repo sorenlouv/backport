@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { isEmpty, isString } from 'lodash-es';
 import type {
   TargetBranchChoice,
   TargetBranchChoiceOrString,
@@ -14,7 +14,7 @@ export async function getTargetBranches(
   commits: Commit[],
 ) {
   // target branches already specified (in contrast to letting the user choose from a list)
-  if (!_.isEmpty(options.targetBranches)) {
+  if (!isEmpty(options.targetBranches)) {
     return options.targetBranches;
   }
 
@@ -24,7 +24,7 @@ export async function getTargetBranches(
 
   // require target branches to be specified when when in non-interactive mode
   if (!options.interactive) {
-    if (_.isEmpty(suggestedTargetBranches)) {
+    if (isEmpty(suggestedTargetBranches)) {
       throw new BackportError({ code: 'no-branches-exception' });
     }
 
@@ -55,7 +55,7 @@ export function getTargetBranchChoices(
     options.targetBranchChoices,
   ).filter((choice) => choice.name !== sourceBranch);
 
-  if (_.isEmpty(targetBranchesChoices)) {
+  if (isEmpty(targetBranchesChoices)) {
     throw new BackportError('Missing target branch choices');
   }
 
@@ -80,7 +80,7 @@ function getTargetBranchChoicesAsObject(
   }
 
   return targetBranchChoices.map((choice) => {
-    if (_.isString(choice)) {
+    if (isString(choice)) {
       return {
         name: choice,
         checked: false,

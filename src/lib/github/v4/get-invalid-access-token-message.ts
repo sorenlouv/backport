@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { isEmpty, difference } from 'lodash-es';
 import { maybe } from '../../../utils/maybe.js';
 import { getGlobalConfigPath } from '../../env.js';
 import { logger } from '../../logger.js';
@@ -44,8 +44,8 @@ export function getInvalidAccessTokenMessage({
       const ssoHeader = maybe(result.responseHeaders?.get('x-github-sso'));
 
       if (repoNotFound) {
-        const hasRequiredScopes = _.isEmpty(
-          _.difference(requiredScopes.split(','), grantedScopes.split(',')),
+        const hasRequiredScopes = isEmpty(
+          difference(requiredScopes.split(','), grantedScopes.split(',')),
         );
 
         // user does not have permission to the repo

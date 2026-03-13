@@ -1,6 +1,6 @@
-import type { MockInstance } from 'vitest';
 import os from 'os';
 import nock from 'nock';
+import type { MockInstance } from 'vitest';
 import type { ValidConfigOptions } from '../../options/options.js';
 import {
   listenForCallsToNockScope,

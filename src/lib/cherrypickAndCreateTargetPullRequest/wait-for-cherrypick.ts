@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import _ from 'lodash';
+import { isEmpty, difference } from 'lodash-es';
 import type { Commit } from '../../entrypoint.api.js';
 import { BackportError } from '../../entrypoint.api.js';
 import type { Ora } from '../../lib/ora.js';
@@ -240,10 +240,10 @@ async function listConflictingAndUnstagedFiles({
   conflictingFiles: string[];
   unstagedFiles: string[];
 }): Promise<void> {
-  const hasUnstagedFiles = !_.isEmpty(
-    _.difference(unstagedFiles, conflictingFiles),
+  const hasUnstagedFiles = !isEmpty(
+    difference(unstagedFiles, conflictingFiles),
   );
-  const hasConflictingFiles = !_.isEmpty(conflictingFiles);
+  const hasConflictingFiles = !isEmpty(conflictingFiles);
 
   if (!hasConflictingFiles && !hasUnstagedFiles) {
     return;

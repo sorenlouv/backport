@@ -1,6 +1,6 @@
-import type { MockInstance } from 'vitest';
 import os from 'os';
 import del from 'del';
+import type { MockInstance } from 'vitest';
 import type { ValidConfigOptions } from '../options/options.js';
 import type { SpyHelper } from '../types/spy-helper';
 import * as childProcess from './child-process-promisified.js';

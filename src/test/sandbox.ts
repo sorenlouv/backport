@@ -1,9 +1,9 @@
-import { vi } from 'vitest';
 import { fileURLToPath } from 'node:url';
 import { homedir } from 'os';
 import path, { resolve } from 'path';
 import del from 'del';
 import makeDir from 'make-dir';
+import { vi } from 'vitest';
 
 vi.unmock('make-dir');
 vi.unmock('del');

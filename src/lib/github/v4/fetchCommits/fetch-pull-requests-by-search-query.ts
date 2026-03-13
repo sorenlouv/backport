@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { isEmpty } from 'lodash-es';
 import { graphql } from '../../../../graphql/generated/index.js';
 import { filterNil } from '../../../../utils/filter-empty.js';
 import { filterUnmergedCommits } from '../../../../utils/filter-unmerged-commits.js';
@@ -105,7 +105,7 @@ export async function fetchPullRequestsBySearchQuery(options: {
     .filter(filterNil);
 
   // terminate if not commits were found
-  if (!commits || _.isEmpty(commits)) {
+  if (!commits || isEmpty(commits)) {
     const errorText = author
       ? `No commits found for query:\n    ${searchQuery}\n\nUse \`--all\` to see commits by all users or \`--author=<username>\` for commits from a specific user`
       : `No commits found for query:\n    ${searchQuery}`;

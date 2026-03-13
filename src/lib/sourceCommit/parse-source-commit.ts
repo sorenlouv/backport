@@ -1,6 +1,6 @@
-import _ from 'lodash';
-import { graphql } from '../../graphql/generated/index.js';
+import { differenceBy } from 'lodash-es';
 import type { SourceCommitWithTargetPullRequestFragmentFragment } from '../../graphql/generated/graphql.js';
+import { graphql } from '../../graphql/generated/index.js';
 import type { ValidConfigOptions } from '../../options/options.js';
 import { filterNil } from '../../utils/filter-empty.js';
 import { parseRemoteConfigFile } from '../remote-config.js';
@@ -45,7 +45,7 @@ function getSuggestedTargetBranches(
     (pr) => pr.state === 'MERGED',
   );
 
-  return _.differenceBy(missingPrs, mergedPrs, (pr) => pr.label).map(
+  return differenceBy(missingPrs, mergedPrs, (pr) => pr.label).map(
     (pr) => pr.branch,
   );
 }
