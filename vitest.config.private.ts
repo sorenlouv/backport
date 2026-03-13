@@ -1,20 +1,25 @@
-import { defineConfig, mergeConfig } from 'vitest/config';
-import baseConfig from './vitest.config.ts';
+import { defineConfig } from 'vitest/config';
 
-export default mergeConfig(
-  baseConfig,
-  defineConfig({
-    test: {
-      // only include (private) tests that cannot run on CI because they require credentials
-      include: ['src/**/*.private.test.ts'],
-      exclude: [],
-      retry: 2,
-      pool: 'forks',
-      poolOptions: {
-        forks: {
-          singleFork: true,
-        },
+// ensure timezone is always in UTC
+process.env.TZ = 'UTC';
+process.env.NODE_ENV = 'test';
+
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'node',
+    // only include (private) tests that cannot run on CI because they require credentials
+    include: ['src/**/*.private.test.ts'],
+    exclude: [],
+    retry: 2,
+    setupFiles: ['./src/test/setupFiles/automatic-mocks.ts'],
+    clearMocks: true,
+    snapshotSerializers: ['./src/test/setupFiles/snapshot-serializer-ansi.ts'],
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
       },
     },
-  }),
-);
+  },
+});

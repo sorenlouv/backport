@@ -1,11 +1,24 @@
-import { defineConfig, mergeConfig } from 'vitest/config';
-import baseConfig from './vitest.config.ts';
+import { defineConfig } from 'vitest/config';
 
-export default mergeConfig(
-  baseConfig,
-  defineConfig({
-    test: {
-      exclude: [],
+// ensure timezone is always in UTC
+process.env.TZ = 'UTC';
+process.env.NODE_ENV = 'test';
+
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'node',
+    include: ['src/**/*.test.ts'],
+    // no exclusions — run all tests including private and mutation
+    exclude: [],
+    setupFiles: ['./src/test/setupFiles/automatic-mocks.ts'],
+    clearMocks: true,
+    snapshotSerializers: ['./src/test/setupFiles/snapshot-serializer-ansi.ts'],
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
     },
-  }),
-);
+  },
+});

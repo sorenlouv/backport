@@ -1,19 +1,24 @@
-import { defineConfig, mergeConfig } from 'vitest/config';
-import baseConfig from './vitest.config.ts';
+import { defineConfig } from 'vitest/config';
 
-export default mergeConfig(
-  baseConfig,
-  defineConfig({
-    test: {
-      // only include "mutation" tests that cannot run in parallel because they mutate shared state
-      include: ['src/**/*.mutation.test.ts'],
-      exclude: [],
-      pool: 'forks',
-      poolOptions: {
-        forks: {
-          singleFork: true,
-        },
+// ensure timezone is always in UTC
+process.env.TZ = 'UTC';
+process.env.NODE_ENV = 'test';
+
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'node',
+    // only include "mutation" tests that cannot run in parallel because they mutate shared state
+    include: ['src/**/*.mutation.test.ts'],
+    exclude: [],
+    setupFiles: ['./src/test/setupFiles/automatic-mocks.ts'],
+    clearMocks: true,
+    snapshotSerializers: ['./src/test/setupFiles/snapshot-serializer-ansi.ts'],
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
       },
     },
-  }),
-);
+  },
+});
