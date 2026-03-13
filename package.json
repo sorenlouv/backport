@@ -40,7 +40,9 @@
     "test-private": "vitest run --config ./vitest.config.private.ts",
     "test": "vitest run",
     "codegen": "graphql-codegen --config codegen.ts && node scripts/fix-generated-imports.js",
-    "build": "npm run codegen && tsc -p tsconfig.build.json --incremental"
+    "build": "npm run codegen && tsc -p tsconfig.build.json --incremental",
+    "graphql:validate": "tsx scripts/graphql-validate.ts",
+    "graphql:execute": "tsx scripts/graphql-execute.ts"
   },
   "lint-staged": {
     "*.ts": [
