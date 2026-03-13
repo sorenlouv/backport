@@ -9,13 +9,13 @@
   "exclude": ["src/graphql/generated/graphql.ts", "src/**/*.test.ts", "src/test"],
   "compilerOptions": {
     "declaration": true,
-    "target": "ES2022",
+    "target": "ES2024",
     "lib": [
-      "ES2022",
+      "ES2024",
       "DOM" // needed by wonka
     ],
-    "module": "Node16",
-    "moduleResolution": "Node16",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "rootDir": ".",
     "outDir": "./dist",
     "forceConsistentCasingInFileNames": true,
