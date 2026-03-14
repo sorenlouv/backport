@@ -15,7 +15,8 @@ export default defineConfig({
     setupFiles: ['./src/test/setupFiles/automatic-mocks.ts'],
     clearMocks: true,
     snapshotSerializers: ['./src/test/setupFiles/snapshot-serializer-ansi.ts'],
+    testTimeout: 15_000,
+    hookTimeout: 15_000,
     pool: 'forks',
-    maxWorkers: 1,
   },
 });

@@ -6,10 +6,12 @@ import type { Commit } from './entrypoint.api.js';
 import { backportRun, getCommits } from './entrypoint.api.js';
 import { getFirstLine } from './lib/github/commit-formatters.js';
 import { getDevAccessToken } from './test/private/get-dev-access-token.js';
+import { getSandboxPath, resetSandbox } from './test/sandbox.js';
 
 vi.setConfig({ testTimeout: 10_000 });
 
 const accessToken = getDevAccessToken();
+const sandboxPath = getSandboxPath({ filename: import.meta.filename });
 
 vi.unmock('del');
 vi.unmock('make-dir');
@@ -17,6 +19,9 @@ vi.unmock('find-up');
 
 describe('entrypoint.module', () => {
   describe('backportRun', () => {
+    beforeAll(async () => {
+      await resetSandbox(sandboxPath);
+    });
     describe('when running into merge conflict', () => {
       let response: BackportSuccessResponse;
       beforeAll(async () => {
@@ -28,6 +33,7 @@ describe('entrypoint.module', () => {
             accessToken,
             pullNumber: 12,
             targetBranches: ['7.x'],
+            dir: sandboxPath,
           },
         })) as BackportSuccessResponse;
       });
@@ -73,6 +79,7 @@ describe('entrypoint.module', () => {
             targetBranches: ['7.x'],
             autoResolveConflictsWithTheirs: true,
             dryRun: true,
+            dir: sandboxPath,
           },
         })) as BackportSuccessResponse;
       });
@@ -109,6 +116,7 @@ describe('entrypoint.module', () => {
             pullNumber: 1,
             repoName: 'repo-with-invalid-target-branch-label',
             repoOwner: 'backport-org',
+            dir: sandboxPath,
           },
         })) as BackportSuccessResponse;
       });
@@ -133,6 +141,7 @@ describe('entrypoint.module', () => {
             interactive: false,
             accessToken,
             pullNumber: 12,
+            dir: sandboxPath,
           },
         })) as BackportFailureResponse;
       });
@@ -158,6 +167,7 @@ describe('entrypoint.module', () => {
             accessToken,
             pullNumber: 8,
             dryRun: true,
+            dir: sandboxPath,
           },
         })) as BackportSuccessResponse;
       });

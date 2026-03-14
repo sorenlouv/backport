@@ -6,7 +6,7 @@ import { getSandboxPath, resetSandbox } from '../../sandbox.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 const accessToken = getDevAccessToken();
 
-vi.setConfig({ testTimeout: 40_000 });
+vi.setConfig({ testTimeout: 40_000, hookTimeout: 40_000 });
 
 describe('different-merge-strategies', () => {
   it('list all commits regardless how they were merged', async () => {
@@ -53,7 +53,10 @@ describe('different-merge-strategies', () => {
     let output: string;
     let sandboxPath: string;
     beforeAll(async () => {
-      sandboxPath = getSandboxPath({ filename: import.meta.filename });
+      sandboxPath = getSandboxPath({
+        filename: import.meta.filename,
+        specname: 'eight-commits',
+      });
       await resetSandbox(sandboxPath);
 
       const res = await runBackportViaCli(
@@ -65,7 +68,7 @@ describe('different-merge-strategies', () => {
           '--pr=9',
           '--dry-run',
         ],
-        { showOra: true },
+        { showOra: true, timeoutSeconds: 30 },
       );
       output = res.output;
     });
@@ -121,7 +124,10 @@ View pull request: this-is-a-dry-run"
   describe('when selecting a merge commit with two commits', () => {
     let sandboxPath: string;
     beforeAll(async () => {
-      sandboxPath = getSandboxPath({ filename: import.meta.filename });
+      sandboxPath = getSandboxPath({
+        filename: import.meta.filename,
+        specname: 'two-commits',
+      });
       await resetSandbox(sandboxPath);
       await runBackportViaCli(
         [
@@ -132,7 +138,7 @@ View pull request: this-is-a-dry-run"
           '--pr=1',
           '--dry-run',
         ],
-        { showOra: true },
+        { showOra: true, timeoutSeconds: 15 },
       );
     });
 
@@ -149,7 +155,10 @@ View pull request: this-is-a-dry-run"
     let sandboxPath: string;
     let output: string;
     beforeAll(async () => {
-      sandboxPath = getSandboxPath({ filename: import.meta.filename });
+      sandboxPath = getSandboxPath({
+        filename: import.meta.filename,
+        specname: 'eight-commits-conflict',
+      });
       await resetSandbox(sandboxPath);
       const proc = await runBackportViaCli(
         [
@@ -164,6 +173,7 @@ View pull request: this-is-a-dry-run"
         {
           keepAlive: true,
           showOra: true,
+          timeoutSeconds: 30,
           waitForString:
             'Press ENTER when the conflicts are resolved and files are staged',
         },
@@ -253,7 +263,10 @@ View pull request: this-is-a-dry-run"
     let sandboxPath: string;
     let output: string;
     beforeAll(async () => {
-      sandboxPath = getSandboxPath({ filename: import.meta.filename });
+      sandboxPath = getSandboxPath({
+        filename: import.meta.filename,
+        specname: 'rebase-and-merge',
+      });
       await resetSandbox(sandboxPath);
       const res = await runBackportViaCli(
         [
@@ -264,7 +277,7 @@ View pull request: this-is-a-dry-run"
           '--pr=21',
           '--dry-run',
         ],
-        { showOra: true },
+        { showOra: true, timeoutSeconds: 15 },
       );
       output = res.output;
     });
