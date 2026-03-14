@@ -12,7 +12,8 @@
       "Bash(git ls-tree:*)",
       "Bash(grep *)",
       "Bash(find *)",
-      "Bash(wc *)"
+      "Bash(wc *)",
+      "Bash(cat *)"
     ]
   },
   "defaultMode": "bypassPermissions",

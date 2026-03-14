@@ -10,7 +10,7 @@ process.on('uncaughtException', (err) => {
     return;
   }
   console.error(err);
-  process.exitCode = 1;
+  process.exit(1);
 });
 
 // this is the entrypoint when running from command line
