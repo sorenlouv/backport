@@ -22,7 +22,10 @@ export const responseMetaInterceptorExchange: Exchange = ({ forward }) => {
 
         const newContext = {
           ...operation.context,
-          fetch: async (input: unknown, init?: unknown): Promise<Response> => {
+          fetch: async (
+            input: RequestInfo | URL,
+            init?: RequestInit,
+          ): Promise<Response> => {
             const response = await originalFetch(input, init);
             // Store both headers and status code when the response is received
             temporaryResponseDataStore.set(operation.key, {
