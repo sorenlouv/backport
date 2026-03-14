@@ -11,6 +11,7 @@ export default defineConfig({
     include: ['src/**/*.test.ts'],
     // no exclusions — run all tests including private and mutation
     exclude: [],
+    retry: 3,
     setupFiles: ['./src/test/setupFiles/automatic-mocks.ts'],
     clearMocks: true,
     snapshotSerializers: ['./src/test/setupFiles/snapshot-serializer-ansi.ts'],

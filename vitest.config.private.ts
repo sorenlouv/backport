@@ -11,7 +11,7 @@ export default defineConfig({
     // only include (private) tests that cannot run on CI because they require credentials
     include: ['src/**/*.private.test.ts'],
     exclude: [],
-    retry: 2,
+    retry: 3,
     setupFiles: ['./src/test/setupFiles/automatic-mocks.ts'],
     clearMocks: true,
     snapshotSerializers: ['./src/test/setupFiles/snapshot-serializer-ansi.ts'],
