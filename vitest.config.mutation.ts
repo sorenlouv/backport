@@ -11,14 +11,12 @@ export default defineConfig({
     // only include "mutation" tests that cannot run in parallel because they mutate shared state
     include: ['src/**/*.mutation.test.ts'],
     exclude: [],
+    retry: 3,
     setupFiles: ['./src/test/setupFiles/automatic-mocks.ts'],
     clearMocks: true,
     snapshotSerializers: ['./src/test/setupFiles/snapshot-serializer-ansi.ts'],
     pool: 'forks',
-    poolOptions: {
-      forks: {
-        singleFork: true,
-      },
-    },
+    maxWorkers: 1,
+    isolate: false,
   },
 });

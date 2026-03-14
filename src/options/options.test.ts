@@ -32,6 +32,7 @@ describe('getOptions', () => {
   beforeEach(() => {
     mockConfigFiles(defaultConfigs);
     vi.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
+    vi.spyOn(fs, 'mkdir').mockResolvedValue(undefined as any);
     vi.spyOn(fs, 'writeFile').mockResolvedValue();
     vi.spyOn(fs, 'chmod').mockResolvedValue();
   });

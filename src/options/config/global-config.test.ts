@@ -1,6 +1,5 @@
 import fs from 'fs/promises';
 import os from 'os';
-import makeDir from 'make-dir';
 import {
   getGlobalConfig,
   createGlobalConfigIfNotExist,
@@ -11,6 +10,7 @@ describe('config', () => {
 
   beforeEach(() => {
     vi.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
+    vi.spyOn(fs, 'mkdir').mockResolvedValue(undefined as any);
   });
 
   describe('getGlobalConfig', () => {
@@ -35,7 +35,9 @@ describe('config', () => {
     });
 
     it("should create .backport folder if it doesn't exist", () => {
-      expect(makeDir).toHaveBeenCalledWith('/myHomeDir/.backport');
+      expect(fs.mkdir).toHaveBeenCalledWith('/myHomeDir/.backport', {
+        recursive: true,
+      });
     });
 
     it('should load config', () => {

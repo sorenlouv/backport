@@ -8,7 +8,7 @@ import { registerHandlebarsHelpers } from '../../lib/register-handlebars-helpers
 import * as packageVersionModule from '../../utils/package-version.js';
 
 vi.mock('find-up', () => {
-  return { default: vi.fn(async () => '/path/to/project/config') };
+  return { findUp: vi.fn(async () => '/path/to/project/config') };
 });
 
 // Store the real version before mocking, accessible via globalThis
@@ -18,16 +18,6 @@ vi.mock('find-up', () => {
 vi.spyOn(packageVersionModule, 'getPackageVersion').mockReturnValue(
   '1.2.3-mocked',
 );
-
-vi.mock('make-dir', () => {
-  return { default: vi.fn(() => Promise.resolve('/some/path')) };
-});
-
-vi.mock('del', () => {
-  return {
-    default: vi.fn(async (path: string) => `Attempted to delete ${path}`),
-  };
-});
 
 vi.mock('../../lib/logger', () => {
   const spy = vi.fn();

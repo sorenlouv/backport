@@ -1,4 +1,4 @@
-import del from 'del';
+import fs from 'fs/promises';
 import type { ValidConfigOptions } from '../options/options.js';
 import { BackportError } from './backport-error.js';
 import { getRepoPath } from './env.js';
@@ -39,7 +39,7 @@ export async function setupRepo(options: ValidConfigOptions) {
       const spinnerCloneText = `Cloning repository from ${sourcePathHumanReadable} (one-time operation)`;
       spinner.text = `0% ${spinnerCloneText}`;
 
-      await del(repoPath, { force: true });
+      await fs.rm(repoPath, { recursive: true, force: true });
 
       await cloneRepo(
         { sourcePath, targetPath: repoPath },
@@ -51,7 +51,7 @@ export async function setupRepo(options: ValidConfigOptions) {
       spinner.succeed(`100% ${spinnerCloneText}`);
     } catch (e) {
       spinner.fail();
-      await del(repoPath, { force: true });
+      await fs.rm(repoPath, { recursive: true, force: true });
       throw e;
     }
   }

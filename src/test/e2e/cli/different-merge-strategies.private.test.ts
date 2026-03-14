@@ -6,7 +6,7 @@ import { getSandboxPath, resetSandbox } from '../../sandbox.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 const accessToken = getDevAccessToken();
 
-vi.setConfig({ testTimeout: 40_000 });
+vi.setConfig({ testTimeout: 40_000, hookTimeout: 40_000 });
 
 describe('different-merge-strategies', () => {
   it('list all commits regardless how they were merged', async () => {
@@ -21,37 +21,42 @@ describe('different-merge-strategies', () => {
     );
 
     expect(output).toMatchInlineSnapshot(`
-"repo: backport-org/different-merge-strategies 🔹 sourceBranch: main 🔹 author: sorenlouv 🔹 maxNumber: 20
+      "repo: backport-org/different-merge-strategies 🔹 sourceBranch: main 🔹 author: sorenlouv 🔹 maxNumber: 20
 
-? Select commit (Use arrow keys)
-❯ 1. Downsides with "Rebase and merge"  
-  2. Add description for "Rebase and merge"  
-  3. Add "Rebase and merge" header  
-  4. Create rebase-and-merge.txt  
-  5. Merge pull request #9 from backport-org/many-merge-commits 7.x 
-  6. Merge strategy: Eighth of many merges 7.x 
-  7. Merge strategy: Seventh of many merges 7.x 
-  8. Merge strategy: Sixth of many merges 7.x 
-  9. Merge strategy: Fifth of many merges 7.x 
-  10.Merge strategy: Fourth of many merges 7.x 
-  11.Merge strategy: Third of many merges 7.x 
-  12.Merge strategy: Second of many merges 7.x 
-  13.Merge strategy: First of many merges 7.x 
-  14.Using squash to merge commits (#3)  
-  15.Rebase strategy: Second commit  
-  16.Rebase strategy: First commit  
-  17.Merge pull request #1 from backport-org/merge-strategy  
-  18.Merge strategy: Second commit  
-  19.Merge strategy: First commit  
-  20.Initial commit"
-`);
+      ? Select commit
+      ❯ 1. Downsides with "Rebase and merge"
+        2. Add description for "Rebase and merge"
+        3. Add "Rebase and merge" header
+        4. Create rebase-and-merge.txt
+        5. Merge pull request #9 from backport-org/many-merge-commits 7.x
+        6. Merge strategy: Eighth of many merges 7.x
+        7. Merge strategy: Seventh of many merges 7.x
+        8. Merge strategy: Sixth of many merges 7.x
+        9. Merge strategy: Fifth of many merges 7.x
+        10.Merge strategy: Fourth of many merges 7.x
+        11.Merge strategy: Third of many merges 7.x
+        12.Merge strategy: Second of many merges 7.x
+        13.Merge strategy: First of many merges 7.x
+        14.Using squash to merge commits (#3)
+        15.Rebase strategy: Second commit
+        16.Rebase strategy: First commit
+        17.Merge pull request #1 from backport-org/merge-strategy
+        18.Merge strategy: Second commit
+        19.Merge strategy: First commit
+        20.Initial commit
+
+      ↑↓ navigate • ⏎ select"
+    `);
   });
 
   describe('when selecting a merge commit with eight commits', () => {
     let output: string;
     let sandboxPath: string;
     beforeAll(async () => {
-      sandboxPath = getSandboxPath({ filename: import.meta.filename });
+      sandboxPath = getSandboxPath({
+        filename: import.meta.filename,
+        specname: 'eight-commits',
+      });
       await resetSandbox(sandboxPath);
 
       const res = await runBackportViaCli(
@@ -63,7 +68,7 @@ describe('different-merge-strategies', () => {
           '--pr=9',
           '--dry-run',
         ],
-        { showOra: true },
+        { showOra: true, timeoutSeconds: 30 },
       );
       output = res.output;
     });
@@ -119,7 +124,10 @@ View pull request: this-is-a-dry-run"
   describe('when selecting a merge commit with two commits', () => {
     let sandboxPath: string;
     beforeAll(async () => {
-      sandboxPath = getSandboxPath({ filename: import.meta.filename });
+      sandboxPath = getSandboxPath({
+        filename: import.meta.filename,
+        specname: 'two-commits',
+      });
       await resetSandbox(sandboxPath);
       await runBackportViaCli(
         [
@@ -130,7 +138,7 @@ View pull request: this-is-a-dry-run"
           '--pr=1',
           '--dry-run',
         ],
-        { showOra: true },
+        { showOra: true, timeoutSeconds: 15 },
       );
     });
 
@@ -147,7 +155,10 @@ View pull request: this-is-a-dry-run"
     let sandboxPath: string;
     let output: string;
     beforeAll(async () => {
-      sandboxPath = getSandboxPath({ filename: import.meta.filename });
+      sandboxPath = getSandboxPath({
+        filename: import.meta.filename,
+        specname: 'eight-commits-conflict',
+      });
       await resetSandbox(sandboxPath);
       const proc = await runBackportViaCli(
         [
@@ -162,6 +173,7 @@ View pull request: this-is-a-dry-run"
         {
           keepAlive: true,
           showOra: true,
+          timeoutSeconds: 30,
           waitForString:
             'Press ENTER when the conflicts are resolved and files are staged',
         },
@@ -187,49 +199,49 @@ View pull request: this-is-a-dry-run"
 
     it('has the right output', async () => {
       expect(output).toMatchInlineSnapshot(`
-"- Initializing...
-repo: backport-org/different-merge-strategies 🔹 sourceBranch: main 🔹 pullNumber: 9 🔹 author: sorenlouv
+        "- Initializing...
+        repo: backport-org/different-merge-strategies 🔹 sourceBranch: main 🔹 pullNumber: 9 🔹 author: sorenlouv
 
-? Select pull request Merge pull request #9 from backport-org/many-merge-commits
-✔ 100% Cloning repository from github.com (one-time operation)
+        ? Select pull request Merge pull request #9 from backport-org/many-merge-commits
+        ✔ 100% Cloning repository from github.com (one-time operation)
 
-Backporting to 7.1:
-- Pulling latest changes
-✔ Pulling latest changes
-- Cherry-picking: Merge strategy: First of many merges
-✖ Cherry-picking: Merge strategy: First of many merges
+        Backporting to 7.1:
+        - Pulling latest changes
+        ✔ Pulling latest changes
+        - Cherry-picking: Merge strategy: First of many merges
+        ✖ Cherry-picking: Merge strategy: First of many merges
 
-The commit could not be backported due to conflicts
+        The commit could not be backported due to conflicts
 
-Please fix the conflicts in <SANDBOX_PATH>
-? Fix the following conflicts manually:
+        Please fix the conflicts in <SANDBOX_PATH>
+        ? Fix the following conflicts manually:
 
-Conflicting files: - <SANDBOX_PATH>/new-file-added-with-many-merge-commits.txt
+        Conflicting files: - <SANDBOX_PATH>/new-file-added-with-many-merge-commits.txt
 
-Press ENTER when the conflicts are resolved and files are staged (Y/n) ? Fix the following conflicts manually:
+        Press ENTER when the conflicts are resolved and files are staged (Y/n)✔ Fix the following conflicts manually:
 
-Conflicting files: - <SANDBOX_PATH>/new-file-added-with-many-merge-commits.txt
+        Conflicting files: - <SANDBOX_PATH>/new-file-added-with-many-merge-commits.txt
 
-Press ENTER when the conflicts are resolved and files are staged Yes
-✔ Cherry-picking: Merge strategy: First of many merges
-- Cherry-picking: Merge strategy: Second of many merges
-✔ Cherry-picking: Merge strategy: Second of many merges
-- Cherry-picking: Merge strategy: Third of many merges
-✔ Cherry-picking: Merge strategy: Third of many merges
-- Cherry-picking: Merge strategy: Fourth of many merges
-✔ Cherry-picking: Merge strategy: Fourth of many merges
-- Cherry-picking: Merge strategy: Fifth of many merges
-✔ Cherry-picking: Merge strategy: Fifth of many merges
-- Cherry-picking: Merge strategy: Sixth of many merges
-✔ Cherry-picking: Merge strategy: Sixth of many merges
-- Cherry-picking: Merge strategy: Seventh of many merges
-✔ Cherry-picking: Merge strategy: Seventh of many merges
-- Cherry-picking: Merge strategy: Eighth of many merges
-✔ Cherry-picking: Merge strategy: Eighth of many merges
-- Creating pull request
-✔ Creating pull request
-View pull request: this-is-a-dry-run"
-`);
+        Press ENTER when the conflicts are resolved and files are staged Yes
+        ✔ Cherry-picking: Merge strategy: First of many merges
+        - Cherry-picking: Merge strategy: Second of many merges
+        ✔ Cherry-picking: Merge strategy: Second of many merges
+        - Cherry-picking: Merge strategy: Third of many merges
+        ✔ Cherry-picking: Merge strategy: Third of many merges
+        - Cherry-picking: Merge strategy: Fourth of many merges
+        ✔ Cherry-picking: Merge strategy: Fourth of many merges
+        - Cherry-picking: Merge strategy: Fifth of many merges
+        ✔ Cherry-picking: Merge strategy: Fifth of many merges
+        - Cherry-picking: Merge strategy: Sixth of many merges
+        ✔ Cherry-picking: Merge strategy: Sixth of many merges
+        - Cherry-picking: Merge strategy: Seventh of many merges
+        ✔ Cherry-picking: Merge strategy: Seventh of many merges
+        - Cherry-picking: Merge strategy: Eighth of many merges
+        ✔ Cherry-picking: Merge strategy: Eighth of many merges
+        - Creating pull request
+        ✔ Creating pull request
+        View pull request: this-is-a-dry-run"
+      `);
     });
 
     it('backports all immediate children of the merge commit', async () => {
@@ -251,7 +263,10 @@ View pull request: this-is-a-dry-run"
     let sandboxPath: string;
     let output: string;
     beforeAll(async () => {
-      sandboxPath = getSandboxPath({ filename: import.meta.filename });
+      sandboxPath = getSandboxPath({
+        filename: import.meta.filename,
+        specname: 'rebase-and-merge',
+      });
       await resetSandbox(sandboxPath);
       const res = await runBackportViaCli(
         [
@@ -262,7 +277,7 @@ View pull request: this-is-a-dry-run"
           '--pr=21',
           '--dry-run',
         ],
-        { showOra: true },
+        { showOra: true, timeoutSeconds: 15 },
       );
       output = res.output;
     });

@@ -88,7 +88,7 @@ function getPromise(
         );
       },
       timeoutSeconds * 1000,
-      { maxWait: 10000 },
+      { maxWait: timeoutSeconds * 1000 },
     );
 
     function formatChunk(data: string) {

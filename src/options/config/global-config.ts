@@ -1,5 +1,4 @@
 import fs from 'fs/promises';
-import makeDir from 'make-dir';
 import { BackportError } from '../../lib/backport-error.js';
 import { getBackportDirPath, getGlobalConfigPath } from '../../lib/env.js';
 import { isErrnoError } from '../../utils/is-errno-error.js';
@@ -18,7 +17,7 @@ export async function createGlobalConfigAndFolderIfNotExist(
   globalConfigPath: string,
 ) {
   // create .backport folder
-  await makeDir(getBackportDirPath());
+  await fs.mkdir(getBackportDirPath(), { recursive: true });
 
   const configTemplate = getConfigTemplate();
   const didCreate = await createGlobalConfigIfNotExist(

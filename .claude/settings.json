@@ -1,6 +1,14 @@
 {
   "permissions": {
-    "allow": ["Bash(yarn *)"]
+    "allow": [
+      "Bash(npx *)",
+      "Bash(npm *)",
+      "Bash(gh *)",
+      "Bash(node *)",
+      "Bash(git add:*)",
+      "Bash(git cherry-pick:*)",
+      "Bash(git commit:*)"
+    ]
   },
   "defaultMode": "bypassPermissions",
   "hooks": {

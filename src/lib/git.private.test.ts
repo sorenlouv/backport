@@ -1,6 +1,5 @@
 import fs, { access } from 'fs/promises';
 import path from 'path';
-import makeDir from 'make-dir';
 import type { Commit } from '../entrypoint.api.js';
 import type { ValidConfigOptions } from '../options/options.js';
 import { exec } from '../test/child-process-helper.js';
@@ -24,9 +23,6 @@ import {
   pushBackportBranch,
 } from './git.js';
 import { getShortSha } from './github/commit-formatters.js';
-
-vi.unmock('del');
-vi.unmock('make-dir');
 
 const commitAuthor = { name: 'Soren L', email: 'soren@mail.dk' };
 const accessToken = getDevAccessToken();
@@ -420,7 +416,7 @@ describe('git.private', () => {
     });
 
     it('clones the repo', async () => {
-      await makeDir(sourceRepo);
+      await fs.mkdir(sourceRepo, { recursive: true });
       await gitInit(sourceRepo);
       await childProcess.spawnPromise(
         'git',
@@ -597,7 +593,7 @@ describe('git.private', () => {
       subDirectory = `${sandboxPath}/foo-dir`;
       await resetSandbox(sandboxPath);
       await gitInit(sandboxPath);
-      await makeDir(subDirectory);
+      await fs.mkdir(subDirectory, { recursive: true });
     });
 
     it('returns the root dir', async () => {

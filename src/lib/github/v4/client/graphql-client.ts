@@ -27,6 +27,7 @@ export function getGraphQLClient({
 }: Pick<ValidConfigOptions, 'githubApiBaseUrlV4' | 'accessToken'>): Client {
   return new Client({
     url: githubApiBaseUrlV4,
+    preferGetMethod: false,
     exchanges: [responseMetaInterceptorExchange, fetchExchange],
     fetchOptions: () => {
       return {

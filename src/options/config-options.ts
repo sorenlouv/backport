@@ -2,6 +2,7 @@ import type winston from 'winston';
 
 export interface TargetBranchChoice {
   name: string;
+  value: string;
   checked?: boolean;
 }
 export type TargetBranchChoiceOrString = string | TargetBranchChoice;

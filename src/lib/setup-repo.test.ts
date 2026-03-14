@@ -1,5 +1,5 @@
+import fs from 'fs/promises';
 import os from 'os';
-import del from 'del';
 import type { MockInstance } from 'vitest';
 import type { ValidConfigOptions } from '../options/options.js';
 import type { SpyHelper } from '../types/spy-helper';
@@ -13,6 +13,7 @@ describe('setupRepo', () => {
 
   beforeEach(() => {
     vi.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
+    vi.spyOn(fs, 'rm').mockResolvedValue(undefined);
 
     spawnSpy = vi
       .spyOn(childProcess, 'spawnPromise')
@@ -46,9 +47,9 @@ describe('setupRepo', () => {
         } as ValidConfigOptions),
       ).rejects.toThrow('Simulated git clone failure');
 
-      expect(del).toHaveBeenCalledWith(
+      expect(fs.rm).toHaveBeenCalledWith(
         '/myHomeDir/.backport/repositories/elastic/kibana',
-        { force: true },
+        { recursive: true, force: true },
       );
     });
   });
@@ -160,7 +161,7 @@ describe('setupRepo', () => {
     });
 
     it('should not delete the existing repo', () => {
-      expect(del).not.toHaveBeenCalled();
+      expect(fs.rm).not.toHaveBeenCalled();
     });
 
     it('should not clone repo', () => {

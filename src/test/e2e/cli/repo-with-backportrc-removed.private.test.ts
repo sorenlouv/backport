@@ -14,17 +14,19 @@ describe('repo-with-backportrc-removed (missing .backportrc.json config file)', 
     );
 
     expect(output).toMatchInlineSnapshot(`
-"repo: backport-org/repo-with-backportrc-removed 🔹 sourceBranch: main 🔹 author: sorenlouv
+      "repo: backport-org/repo-with-backportrc-removed 🔹 sourceBranch: main 🔹 author: sorenlouv
 
-? Select commit (Use arrow keys)
-❯ 1. Rename README.me to README.md  
-  2. Merge pull request #1 from backport-org/add-readme  
-  3. Create README.me  
-  4. Delete .backportrc.json  
-  5. Create .backportrc.json  
-  6. Delete .backportrc.json  
-  7. Create .backportrc.json"
-`);
+      ? Select commit
+      ❯ 1. Rename README.me to README.md
+        2. Merge pull request #1 from backport-org/add-readme
+        3. Create README.me
+        4. Delete .backportrc.json
+        5. Create .backportrc.json
+        6. Delete .backportrc.json
+        7. Create .backportrc.json
+
+      ↑↓ navigate • ⏎ select"
+    `);
   });
 
   it('backports via pr', async () => {
