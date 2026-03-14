@@ -32,9 +32,10 @@ describe('binary backport file', () => {
     workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'backport-bin-consumer-'));
 
     // pack project; npm pack outputs the tarball filename as the last line of stdout
-    const tarballName = execSync('npm pack', {
+    const tarballName = execSync('npm pack --pack-destination .', {
       cwd: repoRoot,
       encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'ignore'],
     })
       .trim()
       .split('\n')
