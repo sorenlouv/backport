@@ -1,10 +1,7 @@
 import { graphql } from '../../../graphql/generated/index.js';
 import { BackportError } from '../../backport-error.js';
 import { ora } from '../../ora.js';
-import {
-  GithubV4Exception,
-  getGraphQLClient,
-} from './client/graphql-client.js';
+import { GithubV4Exception, graphqlRequest } from './client/graphql-client.js';
 
 export interface TargetBranchResponse {
   repository: { ref: { id: string } | null };
@@ -41,8 +38,11 @@ export async function validateTargetBranch({
 
   const spinner = ora(interactive, '').start();
   const variables = { repoOwner, repoName, branchName };
-  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
-  const result = await client.query(query, variables);
+  const result = await graphqlRequest(
+    { accessToken, githubApiBaseUrlV4 },
+    query,
+    variables,
+  );
 
   if (result.error) {
     throw new GithubV4Exception(result);

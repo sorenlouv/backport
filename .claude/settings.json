@@ -7,7 +7,12 @@
       "Bash(node *)",
       "Bash(git add:*)",
       "Bash(git cherry-pick:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git diff*)",
+      "Bash(git ls-tree:*)",
+      "Bash(grep *)",
+      "Bash(find *)",
+      "Bash(wc *)"
     ]
   },
   "defaultMode": "bypassPermissions",

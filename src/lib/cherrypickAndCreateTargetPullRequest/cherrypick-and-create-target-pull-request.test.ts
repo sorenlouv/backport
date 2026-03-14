@@ -4,7 +4,7 @@ import type { MockInstance } from 'vitest';
 import type { ValidConfigOptions } from '../../options/options.js';
 import {
   listenForCallsToNockScope,
-  mockUrqlRequest,
+  mockGraphqlRequest,
 } from '../../test/nock-helpers.js';
 import type { SpyHelper } from '../../types/spy-helper';
 import * as childProcess from '../child-process-promisified.js';
@@ -128,7 +128,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         },
       ];
 
-      mockUrqlRequest<TargetBranchResponse>({
+      mockGraphqlRequest<TargetBranchResponse>({
         operationName: 'GetBranchId',
         body: { data: { repository: { ref: { id: 'foo' } } } },
       });
@@ -250,7 +250,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         },
       ];
 
-      mockUrqlRequest<TargetBranchResponse>({
+      mockGraphqlRequest<TargetBranchResponse>({
         operationName: 'GetBranchId',
         body: { data: { repository: { ref: { id: 'foo' } } } },
       });
@@ -317,7 +317,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         targetPRLabels: ['backport'],
       } as ValidConfigOptions;
 
-      mockUrqlRequest<TargetBranchResponse>({
+      mockGraphqlRequest<TargetBranchResponse>({
         operationName: 'GetBranchId',
         body: { data: { repository: { ref: { id: 'foo' } } } },
       });

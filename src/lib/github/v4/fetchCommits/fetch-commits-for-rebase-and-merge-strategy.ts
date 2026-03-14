@@ -1,10 +1,7 @@
 import { first } from 'lodash-es';
 import type { Commit } from '../../../../entrypoint.api.js';
 import { graphql } from '../../../../graphql/generated/index.js';
-import {
-  getGraphQLClient,
-  GithubV4Exception,
-} from '../client/graphql-client.js';
+import { graphqlRequest, GithubV4Exception } from '../client/graphql-client.js';
 import { fetchCommitBySha } from './fetch-commit-by-sha.js';
 
 export async function fetchCommitsForRebaseAndMergeStrategy(
@@ -72,8 +69,11 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
   `);
 
   const variables = { repoOwner, repoName, pullNumber, commitsTotalCount };
-  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
-  const result = await client.query(query, variables);
+  const result = await graphqlRequest(
+    { accessToken, githubApiBaseUrlV4 },
+    query,
+    variables,
+  );
 
   if (result.error) {
     throw new GithubV4Exception(result);

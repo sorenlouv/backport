@@ -5,7 +5,7 @@ import type {
   CommitsByAuthorQuery,
   CommitsByAuthorQueryVariables,
 } from '../../../../graphql/generated/graphql.js';
-import { mockUrqlRequest } from '../../../../test/nock-helpers.js';
+import { mockGraphqlRequest } from '../../../../test/nock-helpers.js';
 import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
 import { commitsByAuthorMock } from '../mocks/commits-by-author-mock.js';
 import { fetchCommitsByAuthor } from './fetch-commits-by-author.js';
@@ -35,16 +35,18 @@ describe('fetchCommitsByAuthor', () => {
 
   describe('when commit has an associated pull request', () => {
     let res: Commit[];
-    let authorIdCalls: ReturnType<typeof mockUrqlRequest>;
-    let commitsByAuthorCalls: ReturnType<typeof mockUrqlRequest>;
+    let authorIdCalls: ReturnType<typeof mockGraphqlRequest>;
+    let commitsByAuthorCalls: ReturnType<typeof mockGraphqlRequest>;
 
     beforeAll(async () => {
-      authorIdCalls = mockUrqlRequest<AuthorIdQuery, AuthorIdQueryVariables>({
-        operationName: 'AuthorId',
-        body: { data: authorIdMockData },
-      });
+      authorIdCalls = mockGraphqlRequest<AuthorIdQuery, AuthorIdQueryVariables>(
+        {
+          operationName: 'AuthorId',
+          body: { data: authorIdMockData },
+        },
+      );
 
-      commitsByAuthorCalls = mockUrqlRequest<
+      commitsByAuthorCalls = mockGraphqlRequest<
         CommitsByAuthorQuery,
         CommitsByAuthorQueryVariables
       >({
@@ -166,7 +168,7 @@ describe('fetchCommitsByAuthor', () => {
 
   describe('when a custom github api hostname is supplied', () => {
     it('should be used in gql requests', async () => {
-      const authorIdCalls = mockUrqlRequest<
+      const authorIdCalls = mockGraphqlRequest<
         AuthorIdQuery,
         AuthorIdQueryVariables
       >({
@@ -175,7 +177,7 @@ describe('fetchCommitsByAuthor', () => {
         apiBaseUrl: 'http://localhost/my-custom-api',
       });
 
-      const commitsByAuthorCalls = mockUrqlRequest<CommitsByAuthorQuery>({
+      const commitsByAuthorCalls = mockGraphqlRequest<CommitsByAuthorQuery>({
         operationName: 'CommitsByAuthor',
         body: { data: commitsByAuthorMock },
         apiBaseUrl: 'http://localhost/my-custom-api',

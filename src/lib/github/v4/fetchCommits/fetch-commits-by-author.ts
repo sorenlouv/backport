@@ -7,11 +7,7 @@ import { BackportError } from '../../../backport-error.js';
 import { isMissingConfigFileException } from '../../../remote-config.js';
 import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
 import { parseSourceCommit } from '../../../sourceCommit/parse-source-commit.js';
-import type { OperationResultWithMeta } from '../client/graphql-client.js';
-import {
-  getGraphQLClient,
-  GithubV4Exception,
-} from '../client/graphql-client.js';
+import { graphqlRequest, GithubV4Exception } from '../client/graphql-client.js';
 import { fetchAuthorId } from '../fetch-author-id.js';
 
 async function fetchByCommitPath({
@@ -91,14 +87,14 @@ async function fetchByCommitPath({
     dateUntil,
   };
 
-  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
-  const result = await client.query(query, variables);
+  const result = await graphqlRequest(
+    { accessToken, githubApiBaseUrlV4 },
+    query,
+    variables,
+  );
 
   if (result.error) {
-    if (
-      (result as OperationResultWithMeta).statusCode === 502 &&
-      maxNumber > 50
-    ) {
+    if (result.statusCode === 502 && maxNumber > 50) {
       throw new BackportError(
         `The GitHub API returned a 502 error. Try reducing the number of commits to display: "--max-number 20"`,
       );

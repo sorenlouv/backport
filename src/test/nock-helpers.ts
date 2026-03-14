@@ -1,24 +1,22 @@
 import { URL } from 'url';
-import { disableFragmentWarnings } from 'graphql-tag';
 import nock from 'nock';
 
-disableFragmentWarnings();
-
-// Interface for the typical GraphQL request payload Urql sends
 interface GraphQLRequestBody<TVariables = Record<string, any>> {
   query: string;
   variables?: TVariables;
   operationName?: string;
 }
 
-// Interface for the expected structure of captured calls
 export interface CapturedCall<TVariables = Record<string, any>> {
   query: string;
   variables?: TVariables;
   operationName?: string;
 }
 
-export function mockUrqlRequest<TData = any, TVariables = Record<string, any>>({
+export function mockGraphqlRequest<
+  TData = any,
+  TVariables = Record<string, any>,
+>({
   operationName,
   statusCode = 200,
   body,
@@ -53,7 +51,6 @@ export function listenForCallsToNockScope<TVariables>(
       calls.push(JSON.parse(bodyString));
     } catch (e) {
       console.error('Failed to parse nock request body:', bodyString, e);
-      // Push raw body if parsing fails, or handle as appropriate
       calls.push(bodyString as any);
     }
   });

@@ -17,7 +17,6 @@ const config: CodegenConfig = {
       config: {
         skipTypename: false, // Include __typename
         withHooks: false, // Disable React hooks
-        urqlImportFrom: '@urql/core',
       },
     },
   },

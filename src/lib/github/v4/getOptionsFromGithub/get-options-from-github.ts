@@ -1,4 +1,3 @@
-import type { OperationResult } from '@urql/core';
 import type { GithubConfigOptionsQuery } from '../../../../graphql/generated/graphql.js';
 import { graphql } from '../../../../graphql/generated/index.js';
 import type { ConfigFileOptions } from '../../../../options/config-options.js';
@@ -13,10 +12,8 @@ import {
   parseRemoteConfigFile,
   isMissingConfigFileException,
 } from '../../../remote-config.js';
-import {
-  GithubV4Exception,
-  getGraphQLClient,
-} from '../client/graphql-client.js';
+import type { OperationResultWithMeta } from '../client/graphql-client.js';
+import { GithubV4Exception, graphqlRequest } from '../client/graphql-client.js';
 import { getInvalidAccessTokenMessage } from '../get-invalid-access-token-message.js';
 
 // fetches the default source branch for the repo (normally "master")
@@ -68,8 +65,11 @@ export async function getOptionsFromGithub(options: {
   `);
 
   const variables = { repoOwner, repoName };
-  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
-  const result = await client.query(query, variables);
+  const result = await graphqlRequest(
+    { accessToken, githubApiBaseUrlV4 },
+    query,
+    variables,
+  );
 
   if (result.error) {
     const isInvalidAccessTokenMessage = getInvalidAccessTokenMessage({
@@ -187,16 +187,9 @@ async function getRemoteConfigFileOptions(
 }
 
 function getInsufficientPermissionsErrorMessage(
-  res: OperationResult<
-    GithubConfigOptionsQuery,
-    {
-      repoOwner: string;
-      repoName: string;
-    }
-  >,
+  res: OperationResultWithMeta<GithubConfigOptionsQuery>,
 ): string | undefined {
-  const responseHeaders = (res as any).responseHeaders as Headers;
-  const accessScopesHeader = responseHeaders.get('x-oauth-scopes');
+  const accessScopesHeader = res.responseHeaders?.get('x-oauth-scopes');
   if (accessScopesHeader == null) {
     return;
   }

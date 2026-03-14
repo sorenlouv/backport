@@ -1,8 +1,5 @@
 import { graphql } from '../../../graphql/generated/index.js';
-import {
-  getGraphQLClient,
-  GithubV4Exception,
-} from './client/graphql-client.js';
+import { graphqlRequest, GithubV4Exception } from './client/graphql-client.js';
 
 export async function fetchAuthorId({
   accessToken,
@@ -26,8 +23,11 @@ export async function fetchAuthorId({
   `);
   const variables = { author };
 
-  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
-  const result = await client.query(query, variables);
+  const result = await graphqlRequest(
+    { accessToken, githubApiBaseUrlV4 },
+    query,
+    variables,
+  );
 
   if (result.error) {
     throw new GithubV4Exception(result);
