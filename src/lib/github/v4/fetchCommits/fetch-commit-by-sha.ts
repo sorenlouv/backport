@@ -4,10 +4,7 @@ import { BackportError } from '../../../backport-error.js';
 import { isMissingConfigFileException } from '../../../remote-config.js';
 import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
 import { parseSourceCommit } from '../../../sourceCommit/parse-source-commit.js';
-import {
-  GithubV4Exception,
-  getGraphQLClient,
-} from '../client/graphql-client.js';
+import { GithubV4Exception, graphqlRequest } from '../client/graphql-client.js';
 
 export async function fetchCommitBySha(options: {
   accessToken: string;
@@ -39,8 +36,11 @@ export async function fetchCommitBySha(options: {
   `);
 
   const variables = { repoOwner, repoName, sha };
-  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
-  const result = await client.query(query, variables);
+  const result = await graphqlRequest(
+    { accessToken, githubApiBaseUrlV4 },
+    query,
+    variables,
+  );
 
   if (result.error && !isMissingConfigFileException(result)) {
     throw new GithubV4Exception(result);

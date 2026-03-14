@@ -45,14 +45,13 @@ exports[`fetchCommitsByAuthor > when commit has an associated pull request > sho
     }
   }
 }
+
 fragment RemoteConfigHistoryFragment on Commit {
-  remoteConfigHistory: history(first: 1, path: 
-".backportrc.json") {
+  remoteConfigHistory: history(first: 1, path: ".backportrc.json") {
     edges {
       remoteConfig: node {
         committedDate
-        file(path: 
-".backportrc.json") {
+        file(path: ".backportrc.json") {
           ... on TreeEntry {
             __typename
             object {
@@ -67,6 +66,7 @@ fragment RemoteConfigHistoryFragment on Commit {
     }
   }
 }
+
 fragment SourceCommitWithTargetPullRequestFragment on Commit {
   __typename
   repository {

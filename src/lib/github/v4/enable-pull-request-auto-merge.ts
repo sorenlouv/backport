@@ -1,10 +1,7 @@
-import { graphql } from '../../../graphql/generated/index.js';
 import { PullRequestMergeMethod } from '../../../graphql/generated/graphql.js';
+import { graphql } from '../../../graphql/generated/index.js';
 import type { ValidConfigOptions } from '../../../options/options.js';
-import {
-  getGraphQLClient,
-  GithubV4Exception,
-} from './client/graphql-client.js';
+import { graphqlRequest, GithubV4Exception } from './client/graphql-client.js';
 import { fetchPullRequestId } from './fetch-pull-request-id2.js';
 
 export async function enablePullRequestAutoMerge(
@@ -49,8 +46,11 @@ export async function enablePullRequestAutoMerge(
       mergeMethodMap[autoMergeMethod] ?? PullRequestMergeMethod.Merge,
   };
 
-  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
-  const result = await client.mutation(query, variables);
+  const result = await graphqlRequest(
+    { accessToken, githubApiBaseUrlV4 },
+    query,
+    variables,
+  );
 
   if (result.error) {
     throw new GithubV4Exception(result);

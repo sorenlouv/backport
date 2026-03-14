@@ -1,9 +1,6 @@
 import { graphql } from '../../../graphql/generated/index.js';
 import type { ValidConfigOptions } from '../../../options/options.js';
-import {
-  GithubV4Exception,
-  getGraphQLClient,
-} from './client/graphql-client.js';
+import { GithubV4Exception, graphqlRequest } from './client/graphql-client.js';
 
 export async function fetchPullRequestAutoMergeMethod(
   options: ValidConfigOptions,
@@ -32,8 +29,11 @@ export async function fetchPullRequestAutoMergeMethod(
     repoName,
     pullNumber,
   };
-  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
-  const result = await client.query(query, variables);
+  const result = await graphqlRequest(
+    { accessToken, githubApiBaseUrlV4 },
+    query,
+    variables,
+  );
 
   if (result.error) {
     throw new GithubV4Exception(result);

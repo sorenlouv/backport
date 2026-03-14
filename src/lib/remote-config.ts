@@ -1,5 +1,5 @@
-import { graphql } from '../graphql/generated/index.js';
 import type { RemoteConfigHistoryFragmentFragment } from '../graphql/generated/graphql.js';
+import { graphql } from '../graphql/generated/index.js';
 import { parseConfigFile } from '../options/config/read-config-file.js';
 import type {
   GitHubGraphQLError,

@@ -4,7 +4,7 @@ import type {
   GitHubGraphQLError,
   OperationResultWithMeta,
 } from './graphql-client.js';
-import { getGraphQLClient } from './graphql-client.js';
+import { graphqlRequest } from './graphql-client.js';
 
 const getViewerQuery = graphql(`
   query GetViewer {
@@ -27,11 +27,14 @@ describe('graphqlClient', () => {
 
   describe('when the access token is invalid', () => {
     beforeAll(async () => {
-      const client = getGraphQLClient({
-        accessToken: 'foobar',
-        githubApiBaseUrlV4: 'https://api.github.com/graphql',
-      });
-      result = await client.query(getViewerQuery, {});
+      result = await graphqlRequest(
+        {
+          accessToken: 'foobar',
+          githubApiBaseUrlV4: 'https://api.github.com/graphql',
+        },
+        getViewerQuery,
+        {},
+      );
     });
 
     it('includes status code', async () => {
@@ -50,11 +53,14 @@ describe('graphqlClient', () => {
   describe('when the access token is valid', () => {
     const accessToken = getDevAccessToken();
     beforeAll(async () => {
-      const client = getGraphQLClient({
-        accessToken: accessToken,
-        githubApiBaseUrlV4: 'https://api.github.com/graphql',
-      });
-      result = await client.query(getViewerQuery, {});
+      result = await graphqlRequest(
+        {
+          accessToken: accessToken,
+          githubApiBaseUrlV4: 'https://api.github.com/graphql',
+        },
+        getViewerQuery,
+        {},
+      );
     });
 
     it('includes status code', async () => {
@@ -69,14 +75,17 @@ describe('graphqlClient', () => {
   describe('when repo is not found', () => {
     const accessToken = getDevAccessToken();
     beforeAll(async () => {
-      const client = getGraphQLClient({
-        accessToken: accessToken,
-        githubApiBaseUrlV4: 'https://api.github.com/graphql',
-      });
-      result = await client.query(getRepoQuery, {
-        repoName: 'backportNonExisting',
-        repoOwner: 'sorenlouv',
-      });
+      result = await graphqlRequest(
+        {
+          accessToken: accessToken,
+          githubApiBaseUrlV4: 'https://api.github.com/graphql',
+        },
+        getRepoQuery,
+        {
+          repoName: 'backportNonExisting',
+          repoOwner: 'sorenlouv',
+        },
+      );
     });
 
     it('includes status code', async () => {

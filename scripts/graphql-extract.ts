@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync } from 'fs';
 import { join, resolve } from 'path';
-import { parse, Kind, type DocumentNode, type ASTNode } from 'graphql';
 import { fileURLToPath } from 'url';
+import { parse, Kind, type DocumentNode, type ASTNode } from 'graphql';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 

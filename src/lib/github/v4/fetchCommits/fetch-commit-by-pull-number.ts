@@ -3,10 +3,7 @@ import type { ValidConfigOptions } from '../../../../options/options.js';
 import { BackportError } from '../../../backport-error.js';
 import { isMissingConfigFileException } from '../../../remote-config.js';
 import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
-import {
-  GithubV4Exception,
-  getGraphQLClient,
-} from '../client/graphql-client.js';
+import { GithubV4Exception, graphqlRequest } from '../client/graphql-client.js';
 import { fetchCommitBySha } from './fetch-commit-by-sha.js';
 import { fetchCommitsForRebaseAndMergeStrategy } from './fetch-commits-for-rebase-and-merge-strategy.js';
 
@@ -67,8 +64,11 @@ export async function fetchCommitsByPullNumber(options: {
   `);
 
   const variables = { repoOwner, repoName, pullNumber };
-  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
-  const result = await client.query(query, variables);
+  const result = await graphqlRequest(
+    { accessToken, githubApiBaseUrlV4 },
+    query,
+    variables,
+  );
 
   if (result.error && !isMissingConfigFileException(result)) {
     throw new GithubV4Exception(result);

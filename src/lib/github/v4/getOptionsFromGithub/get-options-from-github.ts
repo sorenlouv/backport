@@ -13,10 +13,7 @@ import {
   isMissingConfigFileException,
 } from '../../../remote-config.js';
 import type { OperationResultWithMeta } from '../client/graphql-client.js';
-import {
-  GithubV4Exception,
-  getGraphQLClient,
-} from '../client/graphql-client.js';
+import { GithubV4Exception, graphqlRequest } from '../client/graphql-client.js';
 import { getInvalidAccessTokenMessage } from '../get-invalid-access-token-message.js';
 
 // fetches the default source branch for the repo (normally "master")
@@ -68,8 +65,11 @@ export async function getOptionsFromGithub(options: {
   `);
 
   const variables = { repoOwner, repoName };
-  const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
-  const result = await client.query(query, variables);
+  const result = await graphqlRequest(
+    { accessToken, githubApiBaseUrlV4 },
+    query,
+    variables,
+  );
 
   if (result.error) {
     const isInvalidAccessTokenMessage = getInvalidAccessTokenMessage({

@@ -8,7 +8,7 @@ import type {
 import * as git from '../lib/git.js';
 import * as logger from '../lib/logger.js';
 import { mockConfigFiles } from '../test/mock-config-files.js';
-import { mockUrqlRequest } from '../test/nock-helpers.js';
+import { mockGraphqlRequest } from '../test/nock-helpers.js';
 import type { ConfigFileOptions } from './config-options.js';
 import { getOptions } from './options.js';
 
@@ -489,7 +489,7 @@ function mockGithubConfigOptions({
   isRepoPrivate?: boolean;
   headers?: Record<string, string>;
 }) {
-  return mockUrqlRequest<GithubConfigOptionsQuery>({
+  return mockGraphqlRequest<GithubConfigOptionsQuery>({
     operationName: 'GithubConfigOptions',
     headers,
     body: {
@@ -545,7 +545,7 @@ function mockRepoOwnerAndName({
   parentRepoOwner: string;
   childRepoOwner: string;
 }) {
-  return mockUrqlRequest<RepoOwnerAndNameQuery>({
+  return mockGraphqlRequest<RepoOwnerAndNameQuery>({
     operationName: 'RepoOwnerAndName',
     body: {
       data: {

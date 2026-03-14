@@ -1,8 +1,6 @@
-import type { GraphQLError } from '@0no-co/graphql.web';
-import type { OperationResult } from '@urql/core';
-import { fetchExchange, Client } from '@urql/core';
-import type { ValidConfigOptions } from '../../../../options/options.js';
-import { responseMetaInterceptorExchange } from './response-meta-interceptor-exchange.js';
+import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
+import { GraphQLError, print, Kind } from 'graphql';
+import { logger } from '../../../logger.js';
 
 export interface GitHubGraphQLError extends GraphQLError {
   type?: 'FORBIDDEN';
@@ -14,28 +12,87 @@ export interface GitHubGraphQLError extends GraphQLError {
     | undefined;
 }
 
-export interface OperationResultWithMeta<
-  Data = any,
-> extends OperationResult<Data> {
-  responseHeaders?: Headers;
-  statusCode?: number;
+export interface OperationResultWithMeta<Data = any> {
+  data: Data | undefined;
+  error: { message: string; graphQLErrors: GraphQLError[] } | undefined;
+  responseHeaders: Headers | undefined;
+  statusCode: number | undefined;
 }
 
-export function getGraphQLClient({
-  githubApiBaseUrlV4 = 'https://api.github.com/graphql',
-  accessToken,
-}: Pick<ValidConfigOptions, 'githubApiBaseUrlV4' | 'accessToken'>): Client {
-  return new Client({
-    url: githubApiBaseUrlV4,
-    preferGetMethod: false,
-    exchanges: [responseMetaInterceptorExchange, fetchExchange],
-    fetchOptions: () => ({
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `bearer ${accessToken}`,
-      },
-    }),
+export async function graphqlRequest<TData, TVars>(
+  {
+    githubApiBaseUrlV4 = 'https://api.github.com/graphql',
+    accessToken,
+  }: {
+    githubApiBaseUrlV4?: string;
+    accessToken: string;
+  },
+  document: TypedDocumentNode<TData, TVars>,
+  variables: TVars,
+): Promise<OperationResultWithMeta<TData>> {
+  const query = print(document);
+  const opDef = document.definitions.find(
+    (d) => d.kind === Kind.OPERATION_DEFINITION,
+  );
+  const operationName =
+    opDef?.kind === Kind.OPERATION_DEFINITION ? opDef.name?.value : undefined;
+
+  logger.verbose('Query:', query);
+  logger.verbose('Variables:', variables);
+
+  const response = await fetch(githubApiBaseUrlV4, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ query, variables, operationName }),
   });
+
+  const responseHeaders = response.headers;
+  const statusCode = response.status;
+
+  let json: { data?: TData; errors?: any[] };
+  try {
+    json = await response.json();
+  } catch {
+    // Non-JSON response (e.g. 502 Bad Gateway HTML page)
+    const error = {
+      message: `[Network] ${response.statusText}`,
+      graphQLErrors: [] as GraphQLError[],
+    };
+    logger.error('GraphQL Error:', error.message);
+    return { data: undefined, error, responseHeaders, statusCode };
+  }
+
+  if (!response.ok && !json.errors) {
+    const error = {
+      message: `[Network] ${response.statusText}`,
+      graphQLErrors: [] as GraphQLError[],
+    };
+    logger.error('GraphQL Error:', error.message);
+    return { data: json.data, error, responseHeaders, statusCode };
+  }
+
+  if (json.errors?.length) {
+    const graphQLErrors = json.errors.map(
+      (e) =>
+        new GraphQLError(e.message, {
+          path: e.path,
+          extensions: e.extensions,
+          originalError: e.originalError,
+        }),
+    );
+    const error = {
+      message: `[GraphQL] ${json.errors[0].message}`,
+      graphQLErrors,
+    };
+    logger.error('GraphQL Error:', error.message);
+    return { data: json.data, error, responseHeaders, statusCode };
+  }
+
+  logger.verbose('Data:', json.data);
+  return { data: json.data, error: undefined, responseHeaders, statusCode };
 }
 
 export class GithubV4Exception<T> extends Error {
