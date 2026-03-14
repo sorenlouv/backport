@@ -21,5 +21,10 @@ void backportRun({ processArgs, exitCodeOnFailure: true }).then(
     if (!interactive || ls) {
       console.log(JSON.stringify(backportResponse));
     }
+
+    process.exit(process.exitCode ?? 0);
+  },
+  () => {
+    process.exit(process.exitCode ?? 1);
   },
 );
