@@ -75,14 +75,17 @@ export async function graphqlRequest<TData, TVars>(
   }
 
   if (json.errors?.length) {
-    const graphQLErrors = json.errors.map(
-      (e) =>
-        new GraphQLError(e.message, {
-          path: e.path,
-          extensions: e.extensions,
-          originalError: e.originalError,
-        }),
-    );
+    const graphQLErrors = json.errors.map((e) => {
+      const err = new GraphQLError(e.message, {
+        path: e.path,
+        extensions: e.extensions,
+      });
+      // Wrap the raw API error as originalError to preserve GitHub-specific
+      // properties (e.g. type: "NOT_FOUND") that consumers access via
+      // error.originalError?.type
+      (err as any).originalError = e;
+      return err;
+    });
     const error = {
       message: `[GraphQL] ${json.errors[0].message}`,
       graphQLErrors,
