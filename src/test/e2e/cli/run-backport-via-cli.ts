@@ -10,6 +10,18 @@ const entrypointFile = path.resolve('./src/entrypoint.cli.ts');
 
 vi.setConfig({ testTimeout: 15_000 });
 
+// Track all spawned processes so they can be cleaned up if the test worker exits
+const activeProcesses = new Set<ChildProcessWithoutNullStreams>();
+
+afterAll(() => {
+  for (const proc of activeProcesses) {
+    if (!proc.killed) {
+      proc.kill('SIGKILL');
+    }
+  }
+  activeProcesses.clear();
+});
+
 type RunBackportOptions = {
   timeoutSeconds?: number;
   showOra?: boolean;
@@ -40,6 +52,8 @@ export async function runBackportViaCli(
   ];
 
   const proc = spawn(tsxBinary, cmdArgs, { cwd: runBackportOptions.cwd });
+  activeProcesses.add(proc);
+  proc.on('exit', () => activeProcesses.delete(proc));
   return getPromise(proc, runBackportOptions, cmdArgs, chunks);
 }
 
@@ -145,7 +159,7 @@ function getPromise(
     });
   }).finally(() => {
     if (!keepAlive) {
-      proc.kill();
+      proc.kill('SIGKILL');
     } else {
       proc.removeAllListeners('exit');
       proc.stdout.removeAllListeners('data');
