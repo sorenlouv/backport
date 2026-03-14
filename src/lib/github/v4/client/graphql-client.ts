@@ -29,12 +29,12 @@ export function getGraphQLClient({
     url: githubApiBaseUrlV4,
     preferGetMethod: false,
     exchanges: [responseMetaInterceptorExchange, fetchExchange],
-    fetchOptions: () => {
-      return {
+    fetchOptions: () => ({
+      headers: {
         'Content-Type': 'application/json',
-        headers: { Authorization: `bearer ${accessToken}` },
-      };
-    },
+        Authorization: `bearer ${accessToken}`,
+      },
+    }),
   });
 }
 

@@ -5,6 +5,7 @@ import {
   extractQueriesMap,
   buildFragmentMap,
   resolveFragments,
+  extractVariableDefinitions,
   ROOT,
   SRC_DIR,
 } from './graphql-extract.js';
@@ -100,6 +101,23 @@ async function main() {
     } catch (e) {
       console.error(
         `Error: Invalid JSON for --variables: ${(e as Error).message}`,
+      );
+      process.exit(1);
+    }
+  }
+
+  // Check for required variables when --variables is not provided
+  if (!args.variables) {
+    const varDefs = extractVariableDefinitions(query);
+    const requiredVars = varDefs.filter((v) => v.required);
+    if (requiredVars.length > 0) {
+      const varList = requiredVars
+        .map((v) => `  $${v.name} (${v.type})`)
+        .join('\n');
+      console.error(
+        `Error: Operation requires variables:\n${varList}\n\nUsage: npm run graphql:execute -- --operation ${args.operation ?? '<Name>'} --variables '${JSON.stringify(
+          Object.fromEntries(requiredVars.map((v) => [v.name, '...'])),
+        )}'`,
       );
       process.exit(1);
     }

@@ -1,4 +1,3 @@
-import type { OperationResult } from '@urql/core';
 import type { GithubConfigOptionsQuery } from '../../../../graphql/generated/graphql.js';
 import { graphql } from '../../../../graphql/generated/index.js';
 import type { ConfigFileOptions } from '../../../../options/config-options.js';
@@ -13,6 +12,7 @@ import {
   parseRemoteConfigFile,
   isMissingConfigFileException,
 } from '../../../remote-config.js';
+import type { OperationResultWithMeta } from '../client/graphql-client.js';
 import {
   GithubV4Exception,
   getGraphQLClient,
@@ -187,16 +187,9 @@ async function getRemoteConfigFileOptions(
 }
 
 function getInsufficientPermissionsErrorMessage(
-  res: OperationResult<
-    GithubConfigOptionsQuery,
-    {
-      repoOwner: string;
-      repoName: string;
-    }
-  >,
+  res: OperationResultWithMeta<GithubConfigOptionsQuery>,
 ): string | undefined {
-  const responseHeaders = (res as any).responseHeaders as Headers;
-  const accessScopesHeader = responseHeaders.get('x-oauth-scopes');
+  const accessScopesHeader = res.responseHeaders?.get('x-oauth-scopes');
   if (accessScopesHeader == null) {
     return;
   }

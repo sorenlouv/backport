@@ -11,18 +11,14 @@ interface StoredResponseData {
 // A Map to temporarily store headers and status code
 const temporaryResponseDataStore = new Map<number, StoredResponseData>();
 
-export const responseMetaInterceptorExchange: Exchange = ({
-  client,
-  forward,
-}) => {
+export const responseMetaInterceptorExchange: Exchange = ({ forward }) => {
   // Renamed for clarity
   return (operations$) => {
     // 1. Modify outgoing operations to use a wrapped fetch
     const operationsWithWrappedFetch$ = pipe(
       operations$,
       map((operation) => {
-        const originalFetch =
-          operation.context.fetch ?? (client as any).fetch ?? fetch;
+        const originalFetch = operation.context.fetch ?? globalThis.fetch;
 
         const newContext = {
           ...operation.context,

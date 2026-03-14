@@ -160,3 +160,44 @@ export function buildFragmentMap(
   }
   return map;
 }
+
+export interface VariableDefinition {
+  name: string;
+  type: string;
+  required: boolean;
+}
+
+/**
+ * Extract variable definitions from a GraphQL query string.
+ */
+export function extractVariableDefinitions(
+  querySource: string,
+): VariableDefinition[] {
+  const doc = parse(querySource);
+  const variables: VariableDefinition[] = [];
+
+  for (const def of doc.definitions) {
+    if (def.kind === Kind.OPERATION_DEFINITION && def.variableDefinitions) {
+      for (const varDef of def.variableDefinitions) {
+        const required = varDef.type.kind === Kind.NON_NULL_TYPE;
+        variables.push({
+          name: varDef.variable.name.value,
+          type: printType(varDef.type),
+          required,
+        });
+      }
+    }
+  }
+
+  return variables;
+}
+
+function printType(type: any): string {
+  if (type.kind === Kind.NON_NULL_TYPE) {
+    return printType(type.type) + '!';
+  }
+  if (type.kind === Kind.LIST_TYPE) {
+    return '[' + printType(type.type) + ']';
+  }
+  return type.name.value;
+}

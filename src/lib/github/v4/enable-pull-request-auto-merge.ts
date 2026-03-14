@@ -1,4 +1,5 @@
 import { graphql } from '../../../graphql/generated/index.js';
+import { PullRequestMergeMethod } from '../../../graphql/generated/graphql.js';
 import type { ValidConfigOptions } from '../../../options/options.js';
 import {
   getGraphQLClient,
@@ -36,9 +37,16 @@ export async function enablePullRequestAutoMerge(
     }
   `);
 
+  const mergeMethodMap: Record<string, PullRequestMergeMethod> = {
+    merge: PullRequestMergeMethod.Merge,
+    squash: PullRequestMergeMethod.Squash,
+    rebase: PullRequestMergeMethod.Rebase,
+  };
+
   const variables = {
     pullRequestId,
-    mergeMethod: autoMergeMethod.toUpperCase() as any,
+    mergeMethod:
+      mergeMethodMap[autoMergeMethod] ?? PullRequestMergeMethod.Merge,
   };
 
   const client = getGraphQLClient({ accessToken, githubApiBaseUrlV4 });
