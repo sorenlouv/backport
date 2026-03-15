@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'path';
 import stripAnsi from 'strip-ansi';
 import { getDevAccessToken } from '../../private/get-dev-access-token.js';
+import { getSandboxPath, resetSandbox } from '../../sandbox.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(
@@ -13,16 +14,17 @@ const pkg = JSON.parse(
 );
 
 const accessToken = getDevAccessToken();
+const sandboxPath = getSandboxPath({ filename: import.meta.filename });
 
-describe('CLI “backport” binary', () => {
+describe('CLI "backport" binary', () => {
   const binPath = path.resolve(import.meta.dirname, '../../../../bin/backport');
 
-  beforeAll(() => {
-    // ensure dist folder exists
+  beforeAll(async () => {
     const distPath = path.resolve(import.meta.dirname, '../../../../dist');
     if (!fs.existsSync(distPath)) {
       throw new Error(`Please run "npm run build" before running this test.`);
     }
+    await resetSandbox(sandboxPath);
   });
 
   it('exists and is executable', () => {
@@ -42,14 +44,20 @@ describe('CLI “backport” binary', () => {
   it('list commits', () => {
     const result = spawnSync(
       'node',
-      [binPath, '--repo', 'elastic/kibana', `--accessToken`, accessToken],
+      [
+        binPath,
+        '--repo',
+        'elastic/kibana',
+        `--accessToken`,
+        accessToken,
+        `--dir=${sandboxPath}`,
+      ],
       {
         encoding: 'utf8',
       },
     );
 
     const strippedStdout = stripAnsi(result.stdout);
-    // Interactive prompt exits with code 1 when stdin is closed (expected in spawnSync)
     expect(strippedStdout).toContain('repo: elastic/kibana');
     expect(strippedStdout).toContain('Select commit');
   });

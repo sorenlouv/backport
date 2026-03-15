@@ -1,11 +1,14 @@
-import nock from 'nock';
 import type {
   AuthorIdQuery,
   AuthorIdQueryVariables,
   CommitsByAuthorQuery,
   CommitsByAuthorQueryVariables,
 } from '../../../../graphql/generated/graphql.js';
-import { mockGraphqlRequest } from '../../../../test/nock-helpers.js';
+import {
+  cleanupFetchMock,
+  mockGraphqlRequest,
+  setupFetchMock,
+} from '../../../../test/mock-fetch.js';
 import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
 import { commitsByAuthorMock } from '../mocks/commits-by-author-mock.js';
 import { fetchCommitsByAuthor } from './fetch-commits-by-author.js';
@@ -27,10 +30,11 @@ const authorIdMockData = { user: { id: 'myUserId' } } as const;
 describe('fetchCommitsByAuthor', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    setupFetchMock();
   });
 
   afterEach(() => {
-    nock.cleanAll();
+    cleanupFetchMock();
   });
 
   describe('when commit has an associated pull request', () => {
@@ -39,6 +43,7 @@ describe('fetchCommitsByAuthor', () => {
     let commitsByAuthorCalls: ReturnType<typeof mockGraphqlRequest>;
 
     beforeAll(async () => {
+      setupFetchMock();
       authorIdCalls = mockGraphqlRequest<AuthorIdQuery, AuthorIdQueryVariables>(
         {
           operationName: 'AuthorId',
@@ -55,6 +60,7 @@ describe('fetchCommitsByAuthor', () => {
       });
 
       res = await fetchCommitsByAuthor(defaultOptions);
+      cleanupFetchMock();
     });
 
     it('should return a list of commits with pullNumber and existing backports', () => {

@@ -91,7 +91,7 @@ export async function cherrypickAndCreateTargetPullRequest({
     ? [options.authenticatedUsername]
     : options.assignees;
 
-  if (options.assignees.length > 0) {
+  if (assignees.length > 0) {
     await addAssigneesToPullRequest({
       ...options,
       pullNumber: targetPullRequest.number,
@@ -141,17 +141,17 @@ export async function cherrypickAndCreateTargetPullRequest({
 
   // add labels to source pull requests
   if (options.sourcePRLabels.length > 0) {
-    const promises = commits.map((commit) => {
-      if (commit.sourcePullRequest) {
-        return addLabelsToPullRequest({
-          ...options,
-          pullNumber: commit.sourcePullRequest.number,
-          labels: options.sourcePRLabels,
-        });
-      }
-    });
-
-    await Promise.all(promises);
+    await Promise.all(
+      commits
+        .filter((commit) => commit.sourcePullRequest)
+        .map((commit) =>
+          addLabelsToPullRequest({
+            ...options,
+            pullNumber: commit.sourcePullRequest!.number,
+            labels: options.sourcePRLabels,
+          }),
+        ),
+    );
   }
 
   consoleLog(`View pull request: ${targetPullRequest.url}`);

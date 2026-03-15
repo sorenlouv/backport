@@ -9,11 +9,12 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['src/**/*.test.ts'],
-    // exclude "private" tests that require credentials and cannot run on CI for external contributors
-    // exclude "mutation" tests that cannot run in parallel because they mutate shared state
-    exclude: ['**/*.private.test.ts', '**/*.mutation.test.ts'],
+    exclude: [],
+    retry: 3,
     setupFiles: ['./src/test/setupFiles/automatic-mocks.ts'],
     clearMocks: true,
     snapshotSerializers: ['./src/test/setupFiles/snapshot-serializer-ansi.ts'],
+    pool: 'forks',
+    maxWorkers: 1,
   },
 });

@@ -1,11 +1,12 @@
 import os from 'os';
-import nock from 'nock';
 import type { MockInstance } from 'vitest';
 import type { ValidConfigOptions } from '../../options/options.js';
 import {
-  listenForCallsToNockScope,
+  cleanupFetchMock,
+  mockFetchResponse,
   mockGraphqlRequest,
-} from '../../test/nock-helpers.js';
+  setupFetchMock,
+} from '../../test/mock-fetch.js';
 import type { SpyHelper } from '../../types/spy-helper';
 import * as childProcess from '../child-process-promisified.js';
 import type { TargetBranchResponse } from '../github/v4/validate-target-branch.js';
@@ -17,7 +18,7 @@ import { cherrypickAndCreateTargetPullRequest } from './cherrypick-and-create-ta
 
 describe('cherrypickAndCreateTargetPullRequest', () => {
   let execSpy: SpyHelper<typeof childProcess.spawnPromise>;
-  let addLabelsScope: ReturnType<typeof nock>;
+  let addLabelsCalls: any[];
   let consoleLogSpy: SpyHelper<(typeof logger)['consoleLog']>;
   let autoMergeSpy: SpyHelper<typeof autoMergeNowOrLater.autoMergeNowOrLater>;
 
@@ -34,18 +35,20 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
 
     consoleLogSpy = vi.spyOn(logger, 'consoleLog');
 
+    setupFetchMock();
+
     // ensure labels are added
-    addLabelsScope = nock('https://api.github.com')
-      .post('/repos/elastic/kibana/issues/1337/labels', {
-        labels: ['backport'],
-      })
-      .reply(200);
+    addLabelsCalls = mockFetchResponse({
+      url: '/repos/elastic/kibana/issues/1337/labels',
+      method: 'POST',
+      responseBody: {},
+    });
   });
 
   afterEach(() => {
     vi.clearAllMocks();
-    addLabelsScope.done();
-    nock.cleanAll();
+    expect(addLabelsCalls).toHaveLength(1);
+    cleanupFetchMock();
   });
 
   describe('when commit has a pull request reference', () => {
@@ -133,10 +136,11 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         body: { data: { repository: { ref: { id: 'foo' } } } },
       });
 
-      const scope = nock('https://api.github.com')
-        .post('/repos/elastic/kibana/pulls')
-        .reply(200, { number: 1337, html_url: 'myHtmlUrl' });
-      createPullRequestCalls = listenForCallsToNockScope(scope);
+      createPullRequestCalls = mockFetchResponse({
+        url: '/repos/elastic/kibana/pulls',
+        method: 'POST',
+        responseBody: { number: 1337, html_url: 'myHtmlUrl' },
+      });
 
       oraSpy = vi.spyOn(oraModule, 'ora');
 
@@ -145,9 +149,6 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         commits,
         targetBranch: '6.x',
       });
-
-      scope.done();
-      nock.cleanAll();
     });
 
     it('creates the pull request with multiple PR references', () => {
@@ -255,19 +256,17 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         body: { data: { repository: { ref: { id: 'foo' } } } },
       });
 
-      const scope = nock('https://api.github.com')
-        .post('/repos/elastic/kibana/pulls')
-        .reply(200, { number: 1337, html_url: 'myHtmlUrl' });
-
-      createPullRequestCalls = listenForCallsToNockScope(scope);
+      createPullRequestCalls = mockFetchResponse({
+        url: '/repos/elastic/kibana/pulls',
+        method: 'POST',
+        responseBody: { number: 1337, html_url: 'myHtmlUrl' },
+      });
 
       res = await cherrypickAndCreateTargetPullRequest({
         options,
         commits,
         targetBranch: '6.x',
       });
-      scope.done();
-      nock.cleanAll();
     });
 
     it('creates the pull request with commit reference', () => {
@@ -322,11 +321,11 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         body: { data: { repository: { ref: { id: 'foo' } } } },
       });
 
-      const scope = nock('https://api.github.com')
-        .post('/repos/elastic/kibana/pulls')
-        .reply(200, { number: 1337, html_url: 'myHtmlUrl' });
-
-      createPullRequestCalls = listenForCallsToNockScope(scope);
+      createPullRequestCalls = mockFetchResponse({
+        url: '/repos/elastic/kibana/pulls',
+        method: 'POST',
+        responseBody: { number: 1337, html_url: 'myHtmlUrl' },
+      });
 
       res = await cherrypickAndCreateTargetPullRequest({
         options,
@@ -349,9 +348,6 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         ],
         targetBranch: '6.x',
       });
-
-      scope.done();
-      nock.cleanAll();
     });
 
     it('creates the pull request with commit reference', () => {
@@ -377,6 +373,76 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
 
     it('returns the expected response', () => {
       expect(res).toEqual({ didUpdate: false, url: 'myHtmlUrl', number: 1337 });
+    });
+  });
+
+  describe('when autoAssign is true', () => {
+    let addAssigneesCalls: any[];
+
+    beforeEach(async () => {
+      const options = {
+        assignees: [] as string[],
+        autoAssign: true,
+        authenticatedUsername: 'sqren_authenticated',
+        author: 'sorenlouv',
+        fork: true,
+        githubApiBaseUrlV4: 'http://localhost/graphql',
+        interactive: false,
+        prTitle: '[{{targetBranch}}] {{commitMessages}}',
+        repoForkOwner: 'sorenlouv',
+        repoName: 'kibana',
+        repoOwner: 'elastic',
+        reviewers: [] as string[],
+        sourceBranch: 'myDefaultSourceBranch',
+        sourcePRLabels: [] as string[],
+        targetPRLabels: ['backport'],
+      } as ValidConfigOptions;
+
+      mockGraphqlRequest<TargetBranchResponse>({
+        operationName: 'GetBranchId',
+        body: { data: { repository: { ref: { id: 'foo' } } } },
+      });
+
+      mockFetchResponse({
+        url: '/repos/elastic/kibana/pulls',
+        method: 'POST',
+        responseBody: { number: 1337, html_url: 'myHtmlUrl' },
+      });
+
+      addAssigneesCalls = mockFetchResponse({
+        url: '/repos/elastic/kibana/issues/1337/assignees',
+        method: 'POST',
+        responseBody: {},
+      });
+
+      await cherrypickAndCreateTargetPullRequest({
+        options,
+        commits: [
+          {
+            author: {
+              email: 'soren.louv@elastic.co',
+              name: 'Søren Louv-Jansen',
+            },
+            suggestedTargetBranches: [],
+            sourceCommit: {
+              branchLabelMapping: {},
+              committedDate: '2021-08-18T16:11:38Z',
+              sha: 'mySha',
+              message: 'My original commit message',
+            },
+            sourceBranch: '7.x',
+            targetPullRequestStates: [],
+          },
+        ],
+        targetBranch: '6.x',
+      });
+    });
+
+    it('adds the authenticated user as assignee', () => {
+      expect(addAssigneesCalls).toHaveLength(1);
+      expect(addAssigneesCalls[0]).toEqual(
+        expect.objectContaining({ assignees: ['sqren_authenticated'] }),
+      );
     });
   });
 });

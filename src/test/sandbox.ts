@@ -1,9 +1,9 @@
 import fs from 'fs/promises';
 import { fileURLToPath } from 'node:url';
-import { homedir } from 'os';
 import path, { resolve } from 'path';
 
-export const SANDBOX_PATH = `${homedir()}/.backport_testing/`;
+const REPO_ROOT = resolve(fileURLToPath(import.meta.url), '../../..');
+export const SANDBOX_PATH = resolve(REPO_ROOT, '.integration_testing');
 
 export function getSandboxPath({
   filename,

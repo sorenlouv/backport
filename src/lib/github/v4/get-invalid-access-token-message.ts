@@ -75,6 +75,10 @@ export function getInvalidAccessTokenMessage({
         globalConfigFile,
       )}`;
 
+    case undefined:
+      logger.warn('Missing status code');
+      return undefined;
+
     default:
       logger.warn(`Unexpected status code: ${statusCode}`);
       return undefined;

@@ -1,6 +1,5 @@
 import fs from 'fs/promises';
 import os from 'os';
-import nock from 'nock';
 import type {
   GithubConfigOptionsQuery,
   RepoOwnerAndNameQuery,
@@ -8,13 +7,16 @@ import type {
 import * as git from '../lib/git.js';
 import * as logger from '../lib/logger.js';
 import { mockConfigFiles } from '../test/mock-config-files.js';
-import { mockGraphqlRequest } from '../test/nock-helpers.js';
+import {
+  cleanupFetchMock,
+  mockGraphqlRequest,
+  setupFetchMock,
+} from '../test/mock-fetch.js';
 import type { ConfigFileOptions } from './config-options.js';
 import { getOptions } from './options.js';
 
 const defaultConfigs = {
   projectConfig: {
-    // use localhost to avoid CORS issues with nock
     githubApiBaseUrlV4: 'http://localhost/graphql',
     repoOwner: 'elastic',
     repoName: 'kibana',
@@ -26,10 +28,11 @@ const defaultConfigs = {
 describe('getOptions', () => {
   afterEach(() => {
     vi.clearAllMocks();
-    nock.cleanAll();
+    cleanupFetchMock();
   });
 
   beforeEach(() => {
+    setupFetchMock();
     mockConfigFiles(defaultConfigs);
     vi.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
     vi.spyOn(fs, 'mkdir').mockResolvedValue(undefined as any);
@@ -464,7 +467,6 @@ function mockProjectConfig(projectConfig: ConfigFileOptions) {
   return mockConfigFiles({
     globalConfig: { accessToken: 'abc' },
     projectConfig: {
-      // use localhost to avoid CORS issues with nock
       githubApiBaseUrlV4: 'http://localhost/graphql',
       repoOwner: 'elastic',
       repoName: 'kibana',
