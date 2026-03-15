@@ -4,7 +4,7 @@ import { logger } from '../../../logger.js';
 import { ora } from '../../../ora.js';
 import { fetchExistingPullRequest } from '../../v4/fetch-existing-pull-request.js';
 import { getGithubV3ErrorMessage } from '../get-github-v3-error-message.js';
-import { createOctokitClient } from '../octokit-client.js';
+import { createOctokitClient, retryOctokitRequest } from '../octokit-client.js';
 
 export interface PullRequestPayload {
   owner: string;
@@ -45,7 +45,9 @@ export async function createPullRequest({
   try {
     const octokit = createOctokitClient({ accessToken, githubApiBaseUrlV3 });
 
-    const res = await octokit.pulls.create(prPayload);
+    const res = await retryOctokitRequest(() =>
+      octokit.pulls.create(prPayload),
+    );
 
     spinner.succeed();
 

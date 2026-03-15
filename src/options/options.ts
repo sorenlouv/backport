@@ -9,15 +9,14 @@ import type { OptionsFromConfigFiles } from './config/config.js';
 import { getOptionsFromConfigFiles } from './config/config.js';
 import type { ConfigFileOptions } from './config-options.js';
 import type { ValidConfigOptions } from './option-schema.js';
-import { defaultConfigOptions, validOptionsSchema } from './option-schema.js';
+import {
+  defaultConfigOptions,
+  validOptionsSchema,
+  GLOBAL_CONFIG_DOCS_LINK,
+  PROJECT_CONFIG_DOCS_LINK,
+} from './option-schema.js';
 export type { ValidConfigOptions } from './option-schema.js';
 export { defaultConfigOptions } from './option-schema.js';
-
-const PROJECT_CONFIG_DOCS_LINK =
-  'https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson';
-
-const GLOBAL_CONFIG_DOCS_LINK =
-  'https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson';
 
 export async function getOptions({
   optionsFromCliArgs,

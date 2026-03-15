@@ -21,8 +21,6 @@ import type { ConfigFileOptions } from './options/config-options.js';
 import type { ValidConfigOptions } from './options/options.js';
 import { getActiveOptionsFormatted, getOptions } from './options/options.js';
 
-registerHandlebarsHelpers();
-
 export type BackportAbortResponse = {
   status: 'aborted';
   commits: Commit[];
@@ -57,6 +55,8 @@ export async function backportRun({
   optionsFromModule?: ConfigFileOptions;
   exitCodeOnFailure: boolean;
 }): Promise<BackportResponse> {
+  registerHandlebarsHelpers();
+
   const { interactive, logFilePath } = getRuntimeArguments(
     processArgs,
     optionsFromModule,

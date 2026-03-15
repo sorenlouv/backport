@@ -7,7 +7,7 @@ export interface TargetBranchChoice {
 }
 export type TargetBranchChoiceOrString = string | TargetBranchChoice;
 
-type AutoFixConflictsHandler = ({
+export type AutoFixConflictsHandler = ({
   files,
   directory,
   logger,

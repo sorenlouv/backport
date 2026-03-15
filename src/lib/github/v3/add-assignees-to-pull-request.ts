@@ -1,6 +1,6 @@
 import { ora } from '../../../lib/ora.js';
 import { logger } from '../../logger.js';
-import { createOctokitClient } from './octokit-client.js';
+import { createOctokitClient, retryOctokitRequest } from './octokit-client.js';
 
 export async function addAssigneesToPullRequest({
   // options
@@ -41,12 +41,14 @@ export async function addAssigneesToPullRequest({
   try {
     const octokit = createOctokitClient({ accessToken, githubApiBaseUrlV3 });
 
-    await octokit.issues.addAssignees({
-      owner: repoOwner,
-      repo: repoName,
-      issue_number: pullNumber,
-      assignees: assignees,
-    });
+    await retryOctokitRequest(() =>
+      octokit.issues.addAssignees({
+        owner: repoOwner,
+        repo: repoName,
+        issue_number: pullNumber,
+        assignees: assignees,
+      }),
+    );
 
     spinner.succeed();
   } catch (e) {

@@ -2,7 +2,7 @@ import { uniq, flatten } from 'lodash-es';
 import { filterNil } from '../../../utils/filter-empty.js';
 import { logger } from '../../logger.js';
 import { ora } from '../../ora.js';
-import { createOctokitClient } from './octokit-client.js';
+import { createOctokitClient, retryOctokitRequest } from './octokit-client.js';
 
 export async function getReviewersFromPullRequests({
   options,
@@ -34,11 +34,13 @@ export async function getReviewersFromPullRequests({
 
   try {
     const promises = pullNumbers.map(async (pullNumber) => {
-      const reviews = await octokit.pulls.listReviews({
-        owner: repoOwner,
-        repo: repoName,
-        pull_number: pullNumber,
-      });
+      const reviews = await retryOctokitRequest(() =>
+        octokit.pulls.listReviews({
+          owner: repoOwner,
+          repo: repoName,
+          pull_number: pullNumber,
+        }),
+      );
 
       return reviews.data
         .map((review) => review.user?.login)

@@ -1,5 +1,6 @@
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { GraphQLError, print, Kind } from 'graphql';
+import pRetry from 'p-retry';
 import { logger } from '../../../logger.js';
 
 export interface GitHubGraphQLError extends GraphQLError {
@@ -40,14 +41,36 @@ export async function graphqlRequest<TData, TVars>(
   logger.verbose('Query:', query);
   logger.verbose('Variables:', variables);
 
-  const response = await fetch(githubApiBaseUrlV4, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `bearer ${accessToken}`,
+  const response = await pRetry(
+    async () => {
+      const res = await fetch(githubApiBaseUrlV4, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ query, variables, operationName }),
+      });
+
+      // Retry on transient server errors and rate limiting
+      if (res.status >= 500 || res.status === 429) {
+        throw new Error(
+          `GitHub GraphQL API returned ${res.status} ${res.statusText}`,
+        );
+      }
+
+      return res;
     },
-    body: JSON.stringify({ query, variables, operationName }),
-  });
+    {
+      retries: 2,
+      minTimeout: 1000,
+      onFailedAttempt: ({ error, attemptNumber, retriesLeft }) => {
+        logger.info(
+          `GraphQL request failed (attempt ${attemptNumber}/${attemptNumber + retriesLeft}): ${error.message}`,
+        );
+      },
+    },
+  );
 
   const responseHeaders = response.headers;
   const statusCode = response.status;
