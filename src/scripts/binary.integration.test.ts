@@ -24,10 +24,9 @@ describe('binary backport file', () => {
     repoRoot = path.resolve(import.meta.dirname, '../..');
 
     // read version early
-    const pkgJson = JSON.parse(
+    version = JSON.parse(
       fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'),
-    );
-    version = pkgJson.version;
+    ).version;
 
     workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'backport-bin-consumer-'));
 
@@ -41,21 +40,6 @@ describe('binary backport file', () => {
       .split('\n')
       .pop()!;
     tarballPath = path.join(repoRoot, tarballName);
-
-    // create consumer package.json with overrides to work around broken
-    // @inquirer/* publishes (several versions shipped without dist/ files)
-    fs.writeFileSync(
-      path.join(workDir, 'package.json'),
-      JSON.stringify(
-        {
-          name: 'consumer-project',
-          private: true,
-          overrides: pkgJson.overrides,
-        },
-        null,
-        2,
-      ),
-    );
 
     // install tarball (this creates node_modules/.bin/backport symlink / shim)
     execSync(`npm install ${tarballPath}`, {

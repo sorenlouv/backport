@@ -67,22 +67,9 @@
   "engines": {
     "node": ">=22.0.0"
   },
-  "overrides": {
-    "@inquirer/core": "11.1.5",
-    "@inquirer/checkbox": "5.1.0",
-    "@inquirer/select": "5.1.0",
-    "@inquirer/confirm": "6.0.8",
-    "@inquirer/input": "5.0.8",
-    "@inquirer/editor": "5.0.8",
-    "@inquirer/expand": "5.0.8",
-    "@inquirer/number": "4.0.8",
-    "@inquirer/search": "4.1.4",
-    "@inquirer/rawlist": "5.2.4",
-    "@inquirer/password": "5.0.8"
-  },
   "dependencies": {
     "@graphql-typed-document-node/core": "^3.2.0",
-    "@inquirer/prompts": "8.3.0",
+    "@inquirer/prompts": "8.3.2",
     "@octokit/rest": "^22.0.1",
     "chalk": "^5.6.2",
     "dotenv": "^17.3.1",
