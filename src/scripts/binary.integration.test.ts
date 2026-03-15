@@ -42,10 +42,19 @@ describe('binary backport file', () => {
       .pop()!;
     tarballPath = path.join(repoRoot, tarballName);
 
-    // create consumer package.json
+    // create consumer package.json with overrides to work around broken
+    // @inquirer/* publishes (several versions shipped without dist/ files)
     fs.writeFileSync(
       path.join(workDir, 'package.json'),
-      JSON.stringify({ name: 'consumer-project', private: true }, null, 2),
+      JSON.stringify(
+        {
+          name: 'consumer-project',
+          private: true,
+          overrides: pkgJson.overrides,
+        },
+        null,
+        2,
+      ),
     );
 
     // install tarball (this creates node_modules/.bin/backport symlink / shim)

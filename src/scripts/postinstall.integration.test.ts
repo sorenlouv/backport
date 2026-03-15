@@ -32,6 +32,7 @@ describe('postinstall (integration)', () => {
     const tarballName = execSync('npm pack', {
       cwd: repoRoot,
       encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'ignore'],
     })
       .trim()
       .split('\n')
