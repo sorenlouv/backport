@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import { isEmpty } from 'lodash-es';
 import { BackportError } from '../lib/backport-error.js';
 import { getGlobalConfigPath } from '../lib/env.js';
 import { getRepoOwnerAndNameFromGitRemotes } from '../lib/github/v4/get-repo-owner-and-name-from-git-remotes.js';
@@ -121,18 +120,6 @@ async function getRequiredOptions(combined: OptionsFromConfigAndCli) {
 }
 
 function throwForRequiredOptions(options: Record<string, any>) {
-  // ensure `targetBranches` or `targetBranchChoices` are given
-  if (
-    isEmpty(options.targetBranches) &&
-    isEmpty(options.targetBranchChoices) &&
-    // this is primarily necessary on CI where `targetBranches` and `targetBranchChoices` and not given
-    isEmpty(options.branchLabelMapping)
-  ) {
-    throw new BackportError(
-      `Please specify a target branch: "--branch 6.1".\n\nRead more: ${PROJECT_CONFIG_DOCS_LINK}`,
-    );
-  }
-
   const optionKeys: Array<keyof typeof options> = [
     'accessToken',
     'author',

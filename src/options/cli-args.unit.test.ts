@@ -352,6 +352,39 @@ describe('getRuntimeArguments', () => {
     });
   });
 
+  describe('copySourcePRLabels', () => {
+    it('--copySourcePRLabels (bare flag)', () => {
+      const { copySourcePRLabels } = getOptionsFromCliArgs([
+        '--copySourcePRLabels',
+      ]);
+      expect(copySourcePRLabels).toEqual(true);
+    });
+
+    it('--copySourcePRLabels=true', () => {
+      const { copySourcePRLabels } = getOptionsFromCliArgs([
+        '--copySourcePRLabels=true',
+      ]);
+      expect(copySourcePRLabels).toEqual(true);
+    });
+
+    it('--copySourcePRLabels=false', () => {
+      const { copySourcePRLabels } = getOptionsFromCliArgs([
+        '--copySourcePRLabels=false',
+      ]);
+      expect(copySourcePRLabels).toEqual(false);
+    });
+
+    // Regex patterns are not supported via CLI
+    // Use a config file to pass regex patterns instead.
+    it('--copySourcePRLabels with regex string is not supported via CLI', () => {
+      const { copySourcePRLabels } = getOptionsFromCliArgs([
+        '--copySourcePRLabels=^v\\d+',
+      ]);
+      // yargs coerces the string to false instead of passing the regex through
+      expect(copySourcePRLabels).toEqual(false);
+    });
+  });
+
   describe('logFilePath', () => {
     it('by default', () => {
       const { logFilePath } = getRuntimeArguments([]);

@@ -1,4 +1,8 @@
 import { z } from 'zod';
+import { BackportError } from '../lib/backport-error.js';
+
+const PROJECT_CONFIG_DOCS_LINK =
+  'https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson';
 
 /**
  * Target branch choice — either a plain string or an object with name/value/checked.
@@ -106,15 +110,30 @@ export const defaultConfigOptions: ResolvedConfigOptions =
  * Schema for the final validated options that include required fields
  * resolved during startup (access token, repo info, authenticated user).
  */
-export const validOptionsSchema = configOptionsSchema.extend({
-  accessToken: z.string().min(1),
-  author: z.string().nullable().default(null),
-  repoName: z.string().min(1),
-  repoOwner: z.string().min(1),
-  repoForkOwner: z.string(),
-  authenticatedUsername: z.string(),
-  sourceBranch: z.string(),
-  isRepoPrivate: z.boolean().optional(),
-});
+export const validOptionsSchema = configOptionsSchema
+  .extend({
+    accessToken: z.string().min(1),
+    author: z.string().nullable().default(null),
+    repoName: z.string().min(1),
+    repoOwner: z.string().min(1),
+    repoForkOwner: z.string(),
+    authenticatedUsername: z.string(),
+    sourceBranch: z.string(),
+    isRepoPrivate: z.boolean().optional(),
+  })
+  // Require target branches unless running in list-only mode (--ls)
+  .superRefine((data) => {
+    if (
+      !data.ls &&
+      data.targetBranches.length === 0 &&
+      data.targetBranchChoices.length === 0 &&
+      (!data.branchLabelMapping ||
+        Object.keys(data.branchLabelMapping).length === 0)
+    ) {
+      throw new BackportError(
+        `Please specify a target branch: "--branch 6.1".\n\nRead more: ${PROJECT_CONFIG_DOCS_LINK}`,
+      );
+    }
+  });
 
 export type ValidConfigOptions = Readonly<z.output<typeof validOptionsSchema>>;

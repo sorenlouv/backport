@@ -73,6 +73,18 @@ describe('getOptions', () => {
       ).rejects.toThrow('Please specify a target branch: "--branch 6.1".');
     });
 
+    it('when `ls` is true, should NOT throw even if target branches are empty', async () => {
+      mockProjectConfig({
+        targetBranches: undefined,
+        targetBranchChoices: undefined,
+        branchLabelMapping: undefined,
+      });
+
+      await expect(
+        getOptions({ optionsFromCliArgs: { ls: true }, optionsFromModule: {} }),
+      ).resolves.toBeDefined();
+    });
+
     describe('whe option is an empty string', () => {
       it('throws for "username"', async () => {
         await expect(() =>
