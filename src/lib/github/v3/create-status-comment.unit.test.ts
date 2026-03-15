@@ -1,9 +1,13 @@
-import nock from 'nock';
 import type {
   BackportResponse,
   BackportSuccessResponse,
 } from '../../../backport-run.js';
 import type { ValidConfigOptions } from '../../../options/options.js';
+import {
+  cleanupFetchMock,
+  mockFetchResponse,
+  setupFetchMock,
+} from '../../../test/mock-fetch.js';
 import { BackportError } from '../../backport-error.js';
 import { setAccessToken } from '../../logger.js';
 import {
@@ -14,17 +18,22 @@ import {
 vi.unmock('../../logger');
 
 describe('createStatusComment', () => {
+  beforeEach(() => {
+    setupFetchMock();
+  });
+
+  afterEach(() => {
+    cleanupFetchMock();
+  });
+
   it('redacts accessToken if it is included in the error message', async () => {
     const accessToken = 'ghp_abcdefg';
     setAccessToken(accessToken);
 
-    const scope = nock('https://api.github.com')
-      .post('/repos/elastic/kibana/issues/100/comments')
-      .reply(200, 'some response');
-
-    let postedCommentBody = '';
-    scope.on('request', (req, interceptor, body) => {
-      postedCommentBody = JSON.parse(body).body;
+    const calls = mockFetchResponse({
+      url: 'https://api.github.com/repos/elastic/kibana/issues/100/comments',
+      method: 'POST',
+      responseBody: 'some response',
     });
 
     await createStatusComment({
@@ -47,12 +56,10 @@ describe('createStatusComment', () => {
       } as BackportResponse,
     });
 
-    expect(postedCommentBody).toContain(
+    expect(calls).toHaveLength(1);
+    expect(calls[0].body).toContain(
       'Error message containing very secret access token: <REDACTED>',
     );
-
-    scope.done();
-    nock.cleanAll();
   });
 });
 

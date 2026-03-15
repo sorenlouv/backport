@@ -8,3 +8,5 @@
 /src/graphql
 /.eslintcache
 .claude/worktrees/
+/.integration_testing/
+/backport-10.4.0.tgz

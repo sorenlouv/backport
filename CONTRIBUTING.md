@@ -7,7 +7,7 @@ npm start -- --branch 6.1 --repo backport-org/backport-demo --all
 ```
 
 **Run `backport` CLI globally**
-This will build backport continously and link it, so it can accessed with `backport` command globally
+This will build backport continuously and link it, so it can be accessed with the `backport` command globally
 
 ```
 npm run build && chmod +x bin/backport && npm link && npx tsc --watch
@@ -21,22 +21,48 @@ npm uninstall -g backport; npm unlink;
 
 You can now use `backport` command anywhere, and it'll point to the development version.
 
-### Debug
+### Testing
 
-**Run tests**
+**Run all tests**
 
 ```
 npm test
 ```
 
-**Run tests continously**
+**Run unit tests only**
 
 ```
-npm test -- --watch
+npm run test:unit
 ```
 
-**Compile typescript continously**
+**Run a single test file**
+
+```
+npm test -- src/lib/git.unit.test.ts
+```
+
+**Run tests continuously**
+
+```
+npm run test:unit -- --watch
+```
+
+**Compile TypeScript continuously**
 
 ```
 npx tsc --watch
+```
+
+#### Test tiers
+
+Tests are organized into three tiers:
+
+- **Unit tests** (`*.unit.test.ts`): Run with `npm run test:unit`. These use mocked HTTP responses and don't require any credentials.
+- **Private tests** (`*.private.test.ts`): Run with `npm run test:private`. Require an `ACCESS_TOKEN` environment variable with a GitHub token that has read access to `backport-org/backport-demo`.
+- **Mutation tests** (`*.mutation.test.ts`): Run with `npm run test:mutation`. Require an `ACCESS_TOKEN` with **write** access to `backport-org/backport-demo`. Only the repo owner can run these.
+
+To run private or mutation tests:
+
+```
+ACCESS_TOKEN=ghp_xxx npm run test:private
 ```

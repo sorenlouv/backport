@@ -1,13 +1,8 @@
-import nock from 'nock';
 import { PullRequestState } from '../../graphql/generated/graphql.js';
 import { getMockSourceCommit } from './get-mock-source-commit.js';
 import { getPullRequestStates } from './get-pull-request-states.js';
 
 describe('getPullRequestStates', () => {
-  afterEach(() => {
-    nock.cleanAll();
-  });
-
   it('should return empty when there is no associated PR', () => {
     // no associated pull request
     const sourcePullRequest = null;

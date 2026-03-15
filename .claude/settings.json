@@ -13,7 +13,10 @@
       "Bash(grep *)",
       "Bash(find *)",
       "Bash(wc *)",
-      "Bash(cat *)"
+      "Bash(cat *)",
+      "Bash(sort *)",
+      "Bash(top *)",
+      "Bash(ps *)"
     ]
   },
   "defaultMode": "bypassPermissions",

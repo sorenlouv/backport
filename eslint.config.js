@@ -125,6 +125,8 @@ export default [
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-floating-promises': 'error',
 
+      // Note: strict type safety rules are in a separate block below (production only)
+
       // Turn off base rule in favor of TypeScript version
       'no-unused-vars': 'off',
     },
@@ -165,6 +167,21 @@ export default [
       '@typescript-eslint/ban-ts-comment': 'off',
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'error',
+    },
+  },
+
+  // Strict type safety rules (production code only)
+  {
+    files: ['**/*.ts'],
+    ignores: ['**/*.{test,spec}.{js,ts}', '**/test/**/*.{js,ts}'],
+    plugins: {
+      '@typescript-eslint': tseslint,
+    },
+    rules: {
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
+      '@typescript-eslint/no-misused-promises': 'error',
+      '@typescript-eslint/await-thenable': 'error',
+      '@typescript-eslint/require-await': 'error',
     },
   },
 ];

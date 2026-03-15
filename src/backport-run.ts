@@ -75,7 +75,7 @@ export async function backportRun({
         error: e,
         errorMessage: e.message,
         commits: [],
-      } as BackportResponse;
+      } satisfies BackportFailureResponse;
     }
 
     throw e;
@@ -97,7 +97,11 @@ export async function backportRun({
     logger.info('Commits', commits);
 
     if (options.ls) {
-      return { status: 'success', commits, results: [] } as BackportResponse;
+      return {
+        status: 'success',
+        commits,
+        results: [],
+      } satisfies BackportSuccessResponse;
     }
 
     const targetBranches = await getTargetBranches(options, commits);
@@ -180,10 +184,10 @@ function outputError({
   if (e instanceof Error) {
     // output
     consoleLog('\n');
-    consoleLog(chalk.bold('⚠️  Ouch! An unhandled error occured 😿'));
+    consoleLog(chalk.bold('⚠️  Ouch! An unhandled error occurred 😿'));
     consoleLog(e.stack ?? e.message);
     consoleLog(
-      'Please open an issue in https://github.com/sorenlouv/backport/issues or contact me directly on https://twitter.com/sorenlouv',
+      'Please open an issue in https://github.com/sorenlouv/backport/issues',
     );
 
     const infoLogPath = getLogfilePath({ logFilePath, logLevel: 'info' });

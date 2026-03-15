@@ -23,30 +23,28 @@ export async function createStatusComment({
     });
 
     await Promise.all(
-      backportResponse.commits.map((commit) => {
-        if (!commit.sourcePullRequest) {
-          return;
-        }
+      backportResponse.commits
+        .filter((commit) => commit.sourcePullRequest)
+        .map((commit) => {
+          const body = getCommentBody({
+            options,
+            pullNumber: commit.sourcePullRequest!.number,
+            backportResponse,
+          });
 
-        const body = getCommentBody({
-          options,
-          pullNumber: commit.sourcePullRequest.number,
-          backportResponse,
-        });
+          // only post comment if there is a body
+          if (!body) {
+            return Promise.resolve();
+          }
 
-        // only post comment if there is a body
-        if (!body) {
-          return;
-        }
-
-        return octokit.issues.createComment({
-          baseUrl: githubApiBaseUrlV3,
-          owner: repoOwner,
-          repo: repoName,
-          issue_number: commit.sourcePullRequest.number,
-          body: redactAccessToken(body),
-        });
-      }),
+          return octokit.issues.createComment({
+            baseUrl: githubApiBaseUrlV3,
+            owner: repoOwner,
+            repo: repoName,
+            issue_number: commit.sourcePullRequest!.number,
+            body: redactAccessToken(body),
+          });
+        }),
     );
   } catch (e) {
     logger.error(`Could not create status comment `, e);
