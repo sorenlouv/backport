@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import { isEmpty, difference } from 'lodash-es';
 import type { Commit } from '../../entrypoint.api.js';
 import { BackportError } from '../../entrypoint.api.js';
 import type { Ora } from '../../lib/ora.js';
@@ -9,19 +8,17 @@ import type { CommitAuthor } from '../author.js';
 import { getCommitAuthor } from '../author.js';
 import { spawnPromise } from '../child-process-promisified.js';
 import { getRepoPath } from '../env.js';
-import type { ConflictingFiles } from '../git.js';
+import type { ConflictingFiles } from '../git/index.js';
 import {
   cherrypick,
   cherrypickAbort,
   commitChanges,
-  getConflictingFiles,
-  getUnstagedFiles,
   gitAddAll,
-} from '../git.js';
+} from '../git/index.js';
 import { getFirstLine } from '../github/commit-formatters.js';
 import { consoleLog, logger } from '../logger.js';
-import { confirmPrompt } from '../prompts.js';
 import { getCommitsWithoutBackports } from './get-commits-without-backports.js';
+import { listConflictingAndUnstagedFiles } from './list-conflicting-and-unstaged-files.js';
 
 export type CherrypickResult = {
   hasCommitsWithConflicts: boolean;
@@ -227,70 +224,4 @@ async function cherrypickAndHandleConflicts({
   });
 
   return { hasCommitsWithConflicts: false, unresolvedFiles: [] };
-}
-
-async function listConflictingAndUnstagedFiles({
-  retries,
-  options,
-  conflictingFiles,
-  unstagedFiles,
-}: {
-  retries: number;
-  options: ValidConfigOptions;
-  conflictingFiles: string[];
-  unstagedFiles: string[];
-}): Promise<void> {
-  const hasUnstagedFiles = !isEmpty(
-    difference(unstagedFiles, conflictingFiles),
-  );
-  const hasConflictingFiles = !isEmpty(conflictingFiles);
-
-  if (!hasConflictingFiles && !hasUnstagedFiles) {
-    return;
-  }
-
-  // add divider between prompts
-  if (retries > 0) {
-    consoleLog('\n----------------------------------------\n');
-  }
-
-  const header = chalk.reset(`Fix the following conflicts manually:`);
-
-  // show conflict section if there are conflicting files
-  const conflictSection = hasConflictingFiles
-    ? `Conflicting files:\n${chalk.reset(
-        conflictingFiles.map((file) => ` - ${file}`).join('\n'),
-      )}`
-    : '';
-
-  const unstagedSection = hasUnstagedFiles
-    ? `Unstaged files:\n${chalk.reset(
-        unstagedFiles.map((file) => ` - ${file}`).join('\n'),
-      )}`
-    : '';
-
-  const didConfirm = await confirmPrompt(
-    `${header}\n\n${conflictSection}\n${unstagedSection}\n\nPress ENTER when the conflicts are resolved and files are staged`,
-  );
-
-  if (!didConfirm) {
-    throw new BackportError({ code: 'abort-conflict-resolution-exception' });
-  }
-
-  const MAX_RETRIES = 100;
-  if (retries++ > MAX_RETRIES) {
-    throw new Error(`Maximum number of retries (${MAX_RETRIES}) exceeded`);
-  }
-
-  const [_conflictingFiles, _unstagedFiles] = await Promise.all([
-    getConflictingFiles(options),
-    getUnstagedFiles(options),
-  ]);
-
-  await listConflictingAndUnstagedFiles({
-    retries,
-    options,
-    conflictingFiles: _conflictingFiles.map((file) => file.absolute),
-    unstagedFiles: _unstagedFiles,
-  });
 }

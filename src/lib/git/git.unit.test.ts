@@ -1,7 +1,7 @@
 import os from 'os';
-import type { ValidConfigOptions } from '../options/options.js';
-import type { SpyHelper } from '../types/spy-helper';
-import * as childProcess from './child-process-promisified.js';
+import type { ValidConfigOptions } from '../../options/options.js';
+import type { SpyHelper } from '../../types/spy-helper';
+import * as childProcess from '../child-process-promisified.js';
 import {
   addRemote,
   getUnstagedFiles,
@@ -18,8 +18,8 @@ import {
   getRepoInfoFromGitRemotes,
   getRerereConfig,
   getStagedFiles,
-} from './git.js';
-import type { Commit } from './sourceCommit/parse-source-commit.js';
+} from './index.js';
+import type { Commit } from '../sourceCommit/parse-source-commit.js';
 
 beforeEach(() => {
   vi.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');

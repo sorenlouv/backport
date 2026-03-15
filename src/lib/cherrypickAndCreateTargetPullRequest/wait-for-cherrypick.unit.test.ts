@@ -2,7 +2,7 @@ import type { MockInstance } from 'vitest';
 import type { Commit } from '../../entrypoint.api.js';
 import { BackportError } from '../../entrypoint.api.js';
 import type { ValidConfigOptions } from '../../options/options.js';
-import * as git from '../git.js';
+import * as git from '../git/index.js';
 import { logger } from '../logger.js';
 import { waitForCherrypick } from './wait-for-cherrypick.js';
 

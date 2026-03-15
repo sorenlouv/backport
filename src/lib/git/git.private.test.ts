@@ -1,11 +1,11 @@
 import fs, { access } from 'fs/promises';
 import path from 'path';
-import type { Commit } from '../entrypoint.api.js';
-import type { ValidConfigOptions } from '../options/options.js';
-import { exec } from '../test/child-process-helper.js';
-import { getDevAccessToken } from '../test/private/get-dev-access-token.js';
-import { getSandboxPath, resetSandbox } from '../test/sandbox.js';
-import * as childProcess from './child-process-promisified.js';
+import type { Commit } from '../../entrypoint.api.js';
+import type { ValidConfigOptions } from '../../options/options.js';
+import { exec } from '../../test/child-process-helper.js';
+import { getDevAccessToken } from '../../test/private/get-dev-access-token.js';
+import { getSandboxPath, resetSandbox } from '../../test/sandbox.js';
+import * as childProcess from '../child-process-promisified.js';
 import {
   cherrypick,
   cloneRepo,
@@ -21,8 +21,8 @@ import {
   isLocalConfigFileModified,
   isLocalConfigFileUntracked,
   pushBackportBranch,
-} from './git.js';
-import { getShortSha } from './github/commit-formatters.js';
+} from './index.js';
+import { getShortSha } from '../github/commit-formatters.js';
 
 const commitAuthor = { name: 'Soren L', email: 'soren@mail.dk' };
 const accessToken = getDevAccessToken();

@@ -1,6 +1,6 @@
 import stripAnsi from 'strip-ansi';
 import type { ValidConfigOptions } from '../../options/options.js';
-import * as git from '../git.js';
+import * as git from '../git/index.js';
 import * as fetchCommitsByAuthorModule from '../github/v4/fetchCommits/fetch-commits-by-author.js';
 import type { TargetPullRequest } from '../sourceCommit/get-pull-request-states.js';
 import { getCommitsWithoutBackports } from './get-commits-without-backports.js';

@@ -9,7 +9,7 @@ import {
   getGitProjectRootPath,
   getLocalSourceRepoPath,
   getRemoteUrl,
-} from './git.js';
+} from './git/index.js';
 import { logger } from './logger.js';
 import { ora } from './ora.js';
 
