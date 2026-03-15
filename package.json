@@ -32,13 +32,13 @@
     "postinstall": "test -f ./dist/src/scripts/run-postinstall.js && node ./dist/src/scripts/run-postinstall.js || echo 'Dist folder missing'",
     "prepare": "husky",
     "prepublishOnly": "rm -rf ./dist/ && npm install && npm run lint && npm run build",
-    "lint-and-test": "npm run lint && npm run test-all",
+    "lint-and-test": "npm run lint && npm test",
     "lint": "tsc -p tsconfig.build.json --noEmit --incremental && eslint './**/*.{ts,js}' --fix --cache",
     "start": "NODE_ENV=development tsx ./src/entrypoint.cli.ts",
-    "test-all": "vitest run --config ./vitest.config.all.ts",
-    "test-mutation": "vitest run --config ./vitest.config.mutation.ts",
-    "test-private": "vitest run --config ./vitest.config.private.ts",
     "test": "vitest run",
+    "test:unit": "vitest run --config ./vitest.config.unit.ts",
+    "test:mutation": "vitest run --config ./vitest.config.mutation.ts",
+    "test:private": "vitest run --config ./vitest.config.private.ts",
     "codegen": "graphql-codegen --config codegen.ts && node scripts/fix-generated-imports.js",
     "build": "npm run codegen && tsc -p tsconfig.build.json --incremental",
     "graphql:validate": "tsx scripts/graphql-validate.ts",
@@ -55,7 +55,7 @@
     "package-lock.json"
   ],
   "author": "Søren Louv-Jansen",
-  "homepage": "https://github.com/sorenlouv/backport/blob/master/README.md",
+  "homepage": "https://github.com/sorenlouv/backport/blob/main/README.md",
   "bugs": {
     "url": "https://github.com/sorenlouv/backport/issues"
   },
@@ -63,18 +63,13 @@
     "type": "git",
     "url": "git+https://github.com/sorenlouv/backport.git"
   },
-  "greenkeeper": {
-    "ignore": [
-      "@types/node"
-    ]
-  },
   "engines": {
     "node": ">=22.0.0"
   },
   "dependencies": {
+    "@graphql-typed-document-node/core": "^3.2.0",
     "@inquirer/prompts": "^8.3.0",
     "@octokit/rest": "^22.0.1",
-    "@graphql-typed-document-node/core": "^3.2.0",
     "chalk": "^5.6.2",
     "dotenv": "^17.3.1",
     "find-up": "^8.0.0",
@@ -87,7 +82,8 @@
     "utility-types": "^3.11.0",
     "winston": "^3.19.0",
     "yargs": "^18.0.0",
-    "yargs-parser": "^22.0.0"
+    "yargs-parser": "^22.0.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@0no-co/graphqlsp": "^1.15.2",
@@ -111,7 +107,6 @@
     "graphql-request": "^7.4.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.3.3",
-    "nock": "^14.0.11",
     "prettier": "^3.8.1",
     "strip-ansi": "^7.2.0",
     "tsx": "^4.21.0",

@@ -31,5 +31,5 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run lint
-      - run: npm test
-      - run: ACCESS_TOKEN=${{ secrets.GH_ACCESS_TOKEN }} npm run test-private
+      - run: npm run test:unit
+      - run: ACCESS_TOKEN=${{ secrets.GH_ACCESS_TOKEN }} npm run test:private

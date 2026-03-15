@@ -4,15 +4,15 @@ import { BackportError } from '../lib/backport-error.js';
 import { getGlobalConfigPath } from '../lib/env.js';
 import { getRepoOwnerAndNameFromGitRemotes } from '../lib/github/v4/get-repo-owner-and-name-from-git-remotes.js';
 import { getOptionsFromGithub } from '../lib/github/v4/getOptionsFromGithub/get-options-from-github.js';
-import type { OptionsFromGithub } from '../lib/github/v4/getOptionsFromGithub/get-options-from-github.js';
 import { setAccessToken } from '../lib/logger.js';
 import type { OptionsFromCliArgs } from './cli-args.js';
 import type { OptionsFromConfigFiles } from './config/config.js';
 import { getOptionsFromConfigFiles } from './config/config.js';
-import type {
-  ConfigFileOptions,
-  TargetBranchChoiceOrString,
-} from './config-options.js';
+import type { ConfigFileOptions } from './config-options.js';
+import type { ValidConfigOptions } from './option-schema.js';
+import { defaultConfigOptions, validOptionsSchema } from './option-schema.js';
+export type { ValidConfigOptions } from './option-schema.js';
+export { defaultConfigOptions } from './option-schema.js';
 
 const PROJECT_CONFIG_DOCS_LINK =
   'https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson';
@@ -20,54 +20,13 @@ const PROJECT_CONFIG_DOCS_LINK =
 const GLOBAL_CONFIG_DOCS_LINK =
   'https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson';
 
-export type ValidConfigOptions = Readonly<
-  Awaited<ReturnType<typeof getOptions>>
->;
-
-export const defaultConfigOptions = {
-  assignees: [] as Array<string>,
-  autoAssign: false,
-  autoMerge: false,
-  autoMergeMethod: 'merge',
-  backportBinary: 'backport',
-  cherrypickRef: true,
-  commitConflicts: false,
-  autoResolveConflictsWithTheirs: false,
-  commitPaths: [] as Array<string>,
-  copySourcePRLabels: false as boolean | string | string[],
-  copySourcePRReviewers: false,
-  cwd: process.cwd(),
-  dateSince: null,
-  dateUntil: null,
-  details: false,
-  draft: false,
-  fork: true,
-  gitHostname: 'github.com',
-  interactive: true,
-  maxNumber: 10,
-  multipleBranches: true,
-  multipleCommits: false,
-  noVerify: true,
-  publishStatusCommentOnAbort: false,
-  publishStatusCommentOnFailure: false,
-  publishStatusCommentOnSuccess: true,
-  resetAuthor: false,
-  reviewers: [] as Array<string>,
-  signoff: false,
-  sourcePRLabels: [] as string[],
-  noUnmergedBackportsHelp: false,
-  targetBranchChoices: [] as TargetBranchChoiceOrString[],
-  targetBranches: [] as string[],
-  targetPRLabels: [] as string[],
-};
-
 export async function getOptions({
   optionsFromCliArgs,
   optionsFromModule,
 }: {
   optionsFromCliArgs: OptionsFromCliArgs;
   optionsFromModule: ConfigFileOptions;
-}) {
+}): Promise<ValidConfigOptions> {
   const optionsFromConfigFiles = await getOptionsFromConfigFiles({
     optionsFromCliArgs,
     optionsFromModule,
@@ -94,7 +53,7 @@ export async function getOptions({
     repoOwner,
   });
 
-  const options = {
+  const merged = {
     // default author to filter commits by
     author: optionsFromGithub.authenticatedUsername,
 
@@ -121,9 +80,9 @@ export async function getOptions({
     repoOwner,
   };
 
-  throwForRequiredOptions(options);
+  throwForRequiredOptions(merged);
 
-  return options;
+  return validOptionsSchema.passthrough().parse(merged) as ValidConfigOptions;
 }
 
 async function getRequiredOptions(combined: OptionsFromConfigAndCli) {
@@ -161,10 +120,7 @@ async function getRequiredOptions(combined: OptionsFromConfigAndCli) {
   };
 }
 
-function throwForRequiredOptions(
-  options: (OptionsFromConfigAndCli | OptionsFromGithub) &
-    Awaited<ReturnType<typeof getRequiredOptions>>,
-) {
+function throwForRequiredOptions(options: Record<string, any>) {
   // ensure `targetBranches` or `targetBranchChoices` are given
   if (
     isEmpty(options.targetBranches) &&

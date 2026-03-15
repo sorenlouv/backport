@@ -8,14 +8,9 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['src/**/*.test.ts'],
-    // no exclusions — run all tests including private and mutation
-    exclude: [],
-    retry: 3,
+    include: ['src/**/*.unit.test.ts'],
     setupFiles: ['./src/test/setupFiles/automatic-mocks.ts'],
     clearMocks: true,
     snapshotSerializers: ['./src/test/setupFiles/snapshot-serializer-ansi.ts'],
-    pool: 'forks',
-    maxWorkers: 1,
   },
 });
