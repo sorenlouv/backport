@@ -69,7 +69,7 @@ describe('backport-org/repo-with-changing-branchLabelMapping', () => {
         );
 
         expect(output).toMatchInlineSnapshot(`
-          "repo: backport-org/repo-with-changing-branchLabelMapping 🔹 sourceBranch: main 🔹 pullNumber: 6 🔹 author: sorenlouv
+          "repo: backport-org/repo-with-changing-branchLabelMapping | sourceBranch: main | pullNumber: 6 | author: sorenlouv
 
           ? Select branch
           ❯◯ 8.4
