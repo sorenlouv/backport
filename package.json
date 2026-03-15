@@ -40,10 +40,11 @@
     "test:mutation": "vitest run --config ./vitest.config.mutation.ts",
     "test:private": "vitest run --config ./vitest.config.private.ts",
     "test:integration": "vitest run --config ./vitest.config.integration.ts",
-    "codegen": "graphql-codegen --config codegen.ts && node scripts/fix-generated-imports.js",
+    "codegen": "graphql-codegen --config scripts/codegen-config.ts && node scripts/codegen-fix-imports.js",
     "build": "rm -rf ./dist/ && npm run codegen && tsc -p tsconfig.build.json",
     "graphql:validate": "tsx scripts/graphql-validate.ts",
-    "graphql:execute": "tsx scripts/graphql-execute.ts"
+    "graphql:execute": "tsx scripts/graphql-execute.ts",
+    "graphql:update-schema": "tsx scripts/graphql-update-schema.ts"
   },
   "lint-staged": {
     "*.ts": [
@@ -78,6 +79,7 @@
     "handlebars": "^4.7.8",
     "lodash-es": "^4.17.21",
     "ora": "^9.3.0",
+    "p-retry": "^7.1.1",
     "strip-json-comments": "^5.0.3",
     "terminal-link": "^5.0.0",
     "utility-types": "^3.11.0",

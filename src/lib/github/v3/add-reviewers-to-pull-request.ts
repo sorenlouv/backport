@@ -1,7 +1,7 @@
 import { ora } from '../../../lib/ora.js';
 import { logger } from '../../logger.js';
 import { GithubV4Exception } from '../v4/client/graphql-client.js';
-import { createOctokitClient } from './octokit-client.js';
+import { createOctokitClient, retryOctokitRequest } from './octokit-client.js';
 
 export async function addReviewersToPullRequest({
   githubApiBaseUrlV3,
@@ -38,12 +38,14 @@ export async function addReviewersToPullRequest({
   try {
     const octokit = createOctokitClient({ accessToken, githubApiBaseUrlV3 });
 
-    await octokit.pulls.requestReviewers({
-      owner: repoOwner,
-      repo: repoName,
-      pull_number: pullNumber,
-      reviewers,
-    });
+    await retryOctokitRequest(() =>
+      octokit.pulls.requestReviewers({
+        owner: repoOwner,
+        repo: repoName,
+        pull_number: pullNumber,
+        reviewers,
+      }),
+    );
 
     spinner.succeed();
   } catch (e) {

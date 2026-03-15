@@ -4,7 +4,7 @@ import { getPackageVersion } from '../../../utils/package-version.js';
 import { BackportError } from '../../backport-error.js';
 import { logger, redactAccessToken } from '../../logger.js';
 import { getFirstLine } from '../commit-formatters.js';
-import { createOctokitClient } from './octokit-client.js';
+import { createOctokitClient, retryOctokitRequest } from './octokit-client.js';
 
 export async function createStatusComment({
   options,
@@ -33,13 +33,15 @@ export async function createStatusComment({
             return Promise.resolve();
           }
 
-          return octokit.issues.createComment({
-            baseUrl: githubApiBaseUrlV3,
-            owner: repoOwner,
-            repo: repoName,
-            issue_number: commit.sourcePullRequest!.number,
-            body: redactAccessToken(body),
-          });
+          return retryOctokitRequest(() =>
+            octokit.issues.createComment({
+              baseUrl: githubApiBaseUrlV3,
+              owner: repoOwner,
+              repo: repoName,
+              issue_number: commit.sourcePullRequest!.number,
+              body: redactAccessToken(body),
+            }),
+          );
         }),
     );
   } catch (e) {

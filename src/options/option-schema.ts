@@ -1,8 +1,12 @@
 import { z } from 'zod';
 import { BackportError } from '../lib/backport-error.js';
+import type { AutoFixConflictsHandler } from './config-options.js';
 
-const PROJECT_CONFIG_DOCS_LINK =
+export const PROJECT_CONFIG_DOCS_LINK =
   'https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson';
+
+export const GLOBAL_CONFIG_DOCS_LINK =
+  'https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson';
 
 /**
  * Target branch choice — either a plain string or an object with name/value/checked.
@@ -27,7 +31,9 @@ export const configOptionsSchema = z.object({
   assignees: z.array(z.string()).default([]),
   author: z.string().nullable().optional(),
   autoAssign: z.boolean().default(false),
-  autoFixConflicts: z.any().optional(),
+  autoFixConflicts: z
+    .custom<AutoFixConflictsHandler>((val) => typeof val === 'function')
+    .optional(),
   autoMerge: z.boolean().default(false),
   autoMergeMethod: z.enum(['merge', 'rebase', 'squash']).default('merge'),
   backportBinary: z.string().default('backport'),

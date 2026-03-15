@@ -1,6 +1,6 @@
 import { ora } from '../../../lib/ora.js';
 import { logger } from '../../logger.js';
-import { createOctokitClient } from './octokit-client.js';
+import { createOctokitClient, retryOctokitRequest } from './octokit-client.js';
 
 export async function addLabelsToPullRequest({
   githubApiBaseUrlV3,
@@ -37,12 +37,14 @@ export async function addLabelsToPullRequest({
   try {
     const octokit = createOctokitClient({ accessToken, githubApiBaseUrlV3 });
 
-    await octokit.issues.addLabels({
-      owner: repoOwner,
-      repo: repoName,
-      issue_number: pullNumber,
-      labels,
-    });
+    await retryOctokitRequest(() =>
+      octokit.issues.addLabels({
+        owner: repoOwner,
+        repo: repoName,
+        issue_number: pullNumber,
+        labels,
+      }),
+    );
 
     spinner.succeed();
   } catch (e) {

@@ -27,7 +27,7 @@ Test scenarios to cover:
 
 ## GraphQL
 
-GraphQL codegen config is in `codegen.ts`. Queries live inline as `graphql()` tagged templates in `src/lib/github/v4/`.
+GraphQL codegen config is in `scripts/codegen-config.ts`. Queries live inline as `graphql()` tagged templates in `src/lib/github/v4/`.
 
 Useful commands:
 

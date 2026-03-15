@@ -1,6 +1,8 @@
 import childProcess from 'child_process';
 import { logger } from './logger.js';
 
+const MAX_BUFFER_SIZE = 100 * 1024 * 1024; // 100MB
+
 type SpawnErrorContext = {
   cmdArgs: ReadonlyArray<string>;
   code: number;
@@ -53,10 +55,26 @@ export async function spawnPromise(
 
     subprocess.stdout?.on('data', (data: string) => {
       stdout += data;
+      if (stdout.length > MAX_BUFFER_SIZE) {
+        subprocess.kill();
+        reject(
+          new Error(
+            `stdout exceeded ${MAX_BUFFER_SIZE} bytes for: "${fullCmd}"`,
+          ),
+        );
+      }
     });
 
     subprocess.stderr?.on('data', (data: string) => {
       stderr += data;
+      if (stderr.length > MAX_BUFFER_SIZE) {
+        subprocess.kill();
+        reject(
+          new Error(
+            `stderr exceeded ${MAX_BUFFER_SIZE} bytes for: "${fullCmd}"`,
+          ),
+        );
+      }
     });
 
     subprocess.on('close', (code) => {
