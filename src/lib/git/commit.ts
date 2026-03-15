@@ -1,9 +1,9 @@
 import type { ValidConfigOptions } from '../../options/options.js';
+import type { CommitAuthor } from '../author.js';
 import { SpawnError, spawnPromise } from '../child-process-promisified.js';
 import { getRepoPath } from '../env.js';
 import { getShortSha } from '../github/commit-formatters.js';
 import { logger } from '../logger.js';
-import type { CommitAuthor } from '../author.js';
 import type { Commit } from '../sourceCommit/parse-source-commit.js';
 
 export async function gitAddAll({ options }: { options: ValidConfigOptions }) {

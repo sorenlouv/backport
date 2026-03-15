@@ -6,6 +6,7 @@ import { exec } from '../../test/child-process-helper.js';
 import { getDevAccessToken } from '../../test/private/get-dev-access-token.js';
 import { getSandboxPath, resetSandbox } from '../../test/sandbox.js';
 import * as childProcess from '../child-process-promisified.js';
+import { getShortSha } from '../github/commit-formatters.js';
 import {
   cherrypick,
   cloneRepo,
@@ -22,7 +23,6 @@ import {
   isLocalConfigFileUntracked,
   pushBackportBranch,
 } from './index.js';
-import { getShortSha } from '../github/commit-formatters.js';
 
 const commitAuthor = { name: 'Soren L', email: 'soren@mail.dk' };
 const accessToken = getDevAccessToken();
