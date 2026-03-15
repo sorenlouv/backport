@@ -79,9 +79,9 @@ export async function getOptions({
     repoOwner,
   };
 
-  throwForRequiredOptions(merged);
+  throwForEmptyStringOptions(merged);
 
-  return validOptionsSchema.passthrough().parse(merged) as ValidConfigOptions;
+  return validOptionsSchema.strip().parse(merged) as ValidConfigOptions;
 }
 
 async function getRequiredOptions(combined: OptionsFromConfigAndCli) {
@@ -119,38 +119,37 @@ async function getRequiredOptions(combined: OptionsFromConfigAndCli) {
   };
 }
 
-function throwForRequiredOptions(options: Record<string, any>) {
-  const optionKeys: Array<keyof typeof options> = [
-    'accessToken',
-    'author',
-    'autoMergeMethod',
-    'backportBinary',
-    'backportBranchName',
-    'dir',
-    'editor',
-    'gitHostname',
-    'githubApiBaseUrlV3',
-    'githubApiBaseUrlV4',
-    'logFilePath',
-    'prDescription',
-    'projectConfigFile',
-    'prTitle',
-    'repoForkOwner',
-    'repoName',
-    'repoOwner',
-    'sha',
-    'sourceBranch',
-  ];
+// Disallow empty strings for options that should be undefined instead.
+// This is primarily an issue in Github Actions where inputs default to empty
+// strings instead of undefined — failing early provides a better UX.
+const DISALLOW_EMPTY_STRING_OPTIONS = [
+  'accessToken',
+  'author',
+  'autoMergeMethod',
+  'backportBinary',
+  'backportBranchName',
+  'dir',
+  'editor',
+  'gitHostname',
+  'githubApiBaseUrlV3',
+  'githubApiBaseUrlV4',
+  'logFilePath',
+  'prDescription',
+  'projectConfigFile',
+  'prTitle',
+  'repoForkOwner',
+  'repoName',
+  'repoOwner',
+  'sha',
+  'sourceBranch',
+] as const;
 
-  // Disallow empty strings
-  // this is primarily an issue in Github actions where inputs default to empty strings instead of undefined
-  // in those cases failing early provides a better UX
-  optionKeys.forEach((optionName) => {
-    const option = options[optionName] as string;
-    if (option === '') {
+function throwForEmptyStringOptions(options: Record<string, unknown>) {
+  for (const optionName of DISALLOW_EMPTY_STRING_OPTIONS) {
+    if (options[optionName] === '') {
       throw new BackportError(`"${optionName}" cannot be empty!`);
     }
-  });
+  }
 }
 
 type OptionsFromConfigAndCli = ReturnType<
@@ -207,6 +206,6 @@ export function getActiveOptionsFormatted(options: ValidConfigOptions) {
   return (
     customOptions
       .map(([key, value]) => `${key}: ${chalk.bold(value)}`)
-      .join(' 🔹 ') + `\n`
+      .join(' | ') + `\n`
   );
 }

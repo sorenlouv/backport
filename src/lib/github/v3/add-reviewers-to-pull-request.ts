@@ -1,21 +1,31 @@
-import { Octokit } from '@octokit/rest';
 import { ora } from '../../../lib/ora.js';
-import type { ValidConfigOptions } from '../../../options/options.js';
 import { logger } from '../../logger.js';
 import { GithubV4Exception } from '../v4/client/graphql-client.js';
+import { createOctokitClient } from './octokit-client.js';
 
-export async function addReviewersToPullRequest(
-  {
-    githubApiBaseUrlV3,
-    repoName,
-    repoOwner,
-    accessToken,
-    interactive,
-    dryRun,
-  }: ValidConfigOptions,
-  pullNumber: number,
-  reviewers: string[],
-) {
+export async function addReviewersToPullRequest({
+  githubApiBaseUrlV3,
+  repoName,
+  repoOwner,
+  accessToken,
+  interactive,
+  dryRun,
+
+  pullNumber,
+  reviewers,
+}: {
+  // options
+  githubApiBaseUrlV3?: string;
+  repoName: string;
+  repoOwner: string;
+  accessToken: string;
+  interactive: boolean;
+  dryRun?: boolean;
+
+  // additional args
+  pullNumber: number;
+  reviewers: string[];
+}) {
   const text = `Adding reviewers: ${reviewers}`;
   logger.info(text);
   const spinner = ora(interactive, text).start();
@@ -26,11 +36,7 @@ export async function addReviewersToPullRequest(
   }
 
   try {
-    const octokit = new Octokit({
-      auth: accessToken,
-      baseUrl: githubApiBaseUrlV3,
-      log: logger,
-    });
+    const octokit = createOctokitClient({ accessToken, githubApiBaseUrlV3 });
 
     await octokit.pulls.requestReviewers({
       owner: repoOwner,

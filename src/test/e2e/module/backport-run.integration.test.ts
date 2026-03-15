@@ -230,4 +230,162 @@ describe('backportRun integration', () => {
       expect(res.errorMessage).toContain('--mainline must be an integer');
     }
   });
+
+  it('returns failure when an option is set to empty string (GitHub Actions compat)', async () => {
+    // Mock GithubConfigOptions query (needed before empty-string check runs)
+    mockGraphqlRequest({
+      apiBaseUrl: GRAPHQL_URL,
+      operationName: 'GithubConfigOptions',
+      headers: { 'x-oauth-scopes': 'repo' },
+      body: {
+        data: {
+          viewer: { login: 'test-user' },
+          repository: {
+            isPrivate: false,
+            illegalBackportBranch: null,
+            defaultBranchRef: {
+              name: 'main',
+              target: {
+                __typename: 'Commit',
+                remoteConfigHistory: { edges: [] },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const res = await backportRun({
+      processArgs: [
+        '--sha=abc123',
+        '--targetBranch=7.x',
+        '--nonInteractive',
+        '--author=',
+      ],
+      optionsFromModule: {},
+      exitCodeOnFailure: false,
+    });
+
+    expect(res.status).toBe('failure');
+    if (res.status === 'failure') {
+      expect(res.errorMessage).toContain('"author" cannot be empty');
+    }
+  });
+
+  it('succeeds with --dryRun without calling GitHub APIs for PR creation', async () => {
+    // Mock GithubConfigOptions query (startup check)
+    mockGraphqlRequest({
+      apiBaseUrl: GRAPHQL_URL,
+      operationName: 'GithubConfigOptions',
+      headers: { 'x-oauth-scopes': 'repo' },
+      body: {
+        data: {
+          viewer: { login: 'test-user' },
+          repository: {
+            isPrivate: false,
+            illegalBackportBranch: null,
+            defaultBranchRef: {
+              name: 'main',
+              target: {
+                __typename: 'Commit',
+                remoteConfigHistory: { edges: [] },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Mock CommitsBySha query
+    mockGraphqlRequest({
+      apiBaseUrl: GRAPHQL_URL,
+      operationName: 'CommitsBySha',
+      body: {
+        data: {
+          repository: {
+            object: {
+              __typename: 'Commit',
+              repository: {
+                name: 'my-repo',
+                owner: { login: 'my-org' },
+              },
+              sha: 'abc123abc123abc123abc123abc123abc123abc1',
+              message: 'Fix bug (#42)',
+              committedDate: '2024-01-15T00:00:00Z',
+              author: {
+                name: 'Test User',
+                email: 'test@example.com',
+              },
+              associatedPullRequests: {
+                edges: [
+                  {
+                    node: {
+                      title: 'Fix bug',
+                      url: 'https://github.com/my-org/my-repo/pull/42',
+                      number: 42,
+                      labels: { nodes: [] },
+                      baseRefName: 'main',
+                      mergeCommit: {
+                        __typename: 'Commit',
+                        remoteConfigHistory: { edges: [] },
+                        sha: 'abc123abc123abc123abc123abc123abc123abc1',
+                        message: 'Fix bug (#42)',
+                      },
+                      timelineItems: { edges: [] },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Mock setupRepo
+    vi.spyOn(setupRepoModule, 'setupRepo').mockResolvedValue();
+
+    // Mock git commands
+    vi.spyOn(childProcess, 'spawnPromise').mockResolvedValue({
+      stdout: '',
+      stderr: '',
+      code: 0,
+      cmdArgs: [],
+    });
+
+    // Mock GetBranchId (validateTargetBranch)
+    mockGraphqlRequest({
+      apiBaseUrl: GRAPHQL_URL,
+      operationName: 'GetBranchId',
+      body: {
+        data: {
+          repository: {
+            ref: { id: 'branch-ref-id' },
+          },
+        },
+      },
+    });
+
+    // NOTE: No REST API mocks for PR creation — dry-run should skip them
+
+    const res: BackportResponse = await backportRun({
+      processArgs: [
+        '--sha=abc123abc123abc123abc123abc123abc123abc1',
+        '--targetBranch=7.x',
+        '--nonInteractive',
+        '--dryRun',
+      ],
+      optionsFromModule: {},
+      exitCodeOnFailure: false,
+    });
+
+    expect(res.status).toBe('success');
+    if (res.status === 'success') {
+      expect(res.results).toHaveLength(1);
+      expect(res.results[0].status).toBe('success');
+      if (res.results[0].status === 'success') {
+        expect(res.results[0].pullRequestUrl).toBe('this-is-a-dry-run');
+      }
+    }
+  });
 });

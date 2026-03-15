@@ -1,8 +1,8 @@
-import { Octokit } from '@octokit/rest';
 import { uniq, flatten } from 'lodash-es';
 import { filterNil } from '../../../utils/filter-empty.js';
 import { logger } from '../../logger.js';
 import { ora } from '../../ora.js';
+import { createOctokitClient } from './octokit-client.js';
 
 export async function getReviewersFromPullRequests({
   options,
@@ -30,11 +30,7 @@ export async function getReviewersFromPullRequests({
   const text = `Retrieving original reviewers`;
   const spinner = ora(interactive, text).start();
 
-  const octokit = new Octokit({
-    auth: accessToken,
-    baseUrl: githubApiBaseUrlV3,
-    log: logger,
-  });
+  const octokit = createOctokitClient({ accessToken, githubApiBaseUrlV3 });
 
   try {
     const promises = pullNumbers.map(async (pullNumber) => {
@@ -54,7 +50,7 @@ export async function getReviewersFromPullRequests({
     spinner.stop();
     return reviewers;
   } catch (e) {
-    console.log(e);
+    logger.error('Retrieving reviewers failed', e);
     spinner.fail(`Retrieving reviewers failed`);
   }
 }

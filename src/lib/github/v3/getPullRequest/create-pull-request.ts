@@ -1,10 +1,10 @@
-import { Octokit } from '@octokit/rest';
 import type { ValidConfigOptions } from '../../../../options/options.js';
 import { BackportError } from '../../../backport-error.js';
 import { logger } from '../../../logger.js';
 import { ora } from '../../../ora.js';
 import { fetchExistingPullRequest } from '../../v4/fetch-existing-pull-request.js';
 import { getGithubV3ErrorMessage } from '../get-github-v3-error-message.js';
+import { createOctokitClient } from '../octokit-client.js';
 
 export interface PullRequestPayload {
   owner: string;
@@ -14,6 +14,7 @@ export interface PullRequestPayload {
   head: string;
   base: string;
   draft: boolean;
+  // Required by Octokit's RequestParameters type
   [key: string]: unknown;
 }
 
@@ -42,11 +43,7 @@ export async function createPullRequest({
   }
 
   try {
-    const octokit = new Octokit({
-      auth: accessToken,
-      baseUrl: githubApiBaseUrlV3,
-      log: logger,
-    });
+    const octokit = createOctokitClient({ accessToken, githubApiBaseUrlV3 });
 
     const res = await octokit.pulls.create(prPayload);
 

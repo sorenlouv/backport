@@ -1,5 +1,4 @@
 import { isEmpty, difference } from 'lodash-es';
-import { maybe } from '../../../utils/maybe.js';
 import { getGlobalConfigPath } from '../../env.js';
 import { logger } from '../../logger.js';
 import type {
@@ -41,7 +40,7 @@ export function getInvalidAccessTokenMessage({
       const grantedScopes = result.responseHeaders?.get('x-oauth-scopes') ?? '';
       const requiredScopes =
         result.responseHeaders?.get('x-accepted-oauth-scopes') ?? '';
-      const ssoHeader = maybe(result.responseHeaders?.get('x-github-sso'));
+      const ssoHeader = result.responseHeaders?.get('x-github-sso');
 
       if (repoNotFound) {
         const hasRequiredScopes = isEmpty(

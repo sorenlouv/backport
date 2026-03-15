@@ -18,6 +18,6 @@ export async function copySourcePullRequestReviewersToTargetPullRequest(
     pullNumbers,
   });
   if (reviewers) {
-    await addReviewersToPullRequest(options, pullNumber, reviewers);
+    await addReviewersToPullRequest({ ...options, pullNumber, reviewers });
   }
 }
