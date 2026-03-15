@@ -1,5 +1,5 @@
 import { graphql } from '../../../graphql/generated/index.js';
-import { getRepoInfoFromGitRemotes } from '../../git.js';
+import { getRepoInfoFromGitRemotes } from '../../git/index.js';
 import { logger } from '../../logger.js';
 import { graphqlRequest, GithubV4Exception } from './client/graphql-client.js';
 

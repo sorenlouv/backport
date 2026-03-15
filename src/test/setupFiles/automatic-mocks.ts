@@ -4,6 +4,7 @@
  */
 
 import { vi } from 'vitest';
+import type * as OraModule from '../../lib/ora.js';
 import { registerHandlebarsHelpers } from '../../lib/register-handlebars-helpers.js';
 import * as packageVersionModule from '../../utils/package-version.js';
 
@@ -18,6 +19,15 @@ vi.mock('find-up', () => {
 vi.spyOn(packageVersionModule, 'getPackageVersion').mockReturnValue(
   '1.2.3-mocked',
 );
+
+// Suppress ora spinner output in tests by always using non-interactive mode
+vi.mock('../../lib/ora', async (importOriginal) => {
+  const original = await importOriginal<typeof OraModule>();
+  return {
+    ...original,
+    ora: () => original.oraNonInteractiveMode,
+  };
+});
 
 vi.mock('../../lib/logger', () => {
   const spy = vi.fn();

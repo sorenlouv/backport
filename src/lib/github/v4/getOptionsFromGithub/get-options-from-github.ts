@@ -6,7 +6,7 @@ import {
   getLocalConfigFileCommitDate,
   isLocalConfigFileUntracked,
   isLocalConfigFileModified,
-} from '../../../git.js';
+} from '../../../git/index.js';
 import { logger } from '../../../logger.js';
 import {
   parseRemoteConfigFile,

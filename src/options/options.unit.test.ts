@@ -4,7 +4,7 @@ import type {
   GithubConfigOptionsQuery,
   RepoOwnerAndNameQuery,
 } from '../graphql/generated/graphql.js';
-import * as git from '../lib/git.js';
+import * as git from '../lib/git/index.js';
 import * as logger from '../lib/logger.js';
 import { mockConfigFiles } from '../test/mock-config-files.js';
 import {

@@ -7,7 +7,7 @@ import {
   deleteBackportBranch,
   pushBackportBranch,
   getRepoForkOwner,
-} from '../git.js';
+} from '../git/index.js';
 import { addAssigneesToPullRequest } from '../github/v3/add-assignees-to-pull-request.js';
 import { addLabelsToPullRequest } from '../github/v3/add-labels-to-pull-request.js';
 import { addReviewersToPullRequest } from '../github/v3/add-reviewers-to-pull-request.js';

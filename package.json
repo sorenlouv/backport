@@ -31,7 +31,7 @@
   "scripts": {
     "postinstall": "test -f ./dist/src/scripts/run-postinstall.js && node ./dist/src/scripts/run-postinstall.js || echo 'Dist folder missing'",
     "prepare": "husky",
-    "prepublishOnly": "rm -rf ./dist/ && npm install && npm run lint && npm run build",
+    "prepublishOnly": "npm install && npm run lint && npm run build",
     "lint-and-test": "npm run lint && npm test",
     "lint": "tsc -p tsconfig.build.json --noEmit --incremental && eslint './**/*.{ts,js}' --fix --cache",
     "start": "NODE_ENV=development tsx ./src/entrypoint.cli.ts",
@@ -39,8 +39,9 @@
     "test:unit": "vitest run --config ./vitest.config.unit.ts",
     "test:mutation": "vitest run --config ./vitest.config.mutation.ts",
     "test:private": "vitest run --config ./vitest.config.private.ts",
+    "test:integration": "vitest run --config ./vitest.config.integration.ts",
     "codegen": "graphql-codegen --config codegen.ts && node scripts/fix-generated-imports.js",
-    "build": "npm run codegen && tsc -p tsconfig.build.json --incremental",
+    "build": "rm -rf ./dist/ && npm run codegen && tsc -p tsconfig.build.json",
     "graphql:validate": "tsx scripts/graphql-validate.ts",
     "graphql:execute": "tsx scripts/graphql-execute.ts"
   },
@@ -68,7 +69,7 @@
   },
   "dependencies": {
     "@graphql-typed-document-node/core": "^3.2.0",
-    "@inquirer/prompts": "^8.3.0",
+    "@inquirer/prompts": "8.3.2",
     "@octokit/rest": "^22.0.1",
     "chalk": "^5.6.2",
     "dotenv": "^17.3.1",

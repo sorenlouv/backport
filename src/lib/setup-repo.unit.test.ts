@@ -4,7 +4,7 @@ import type { MockInstance } from 'vitest';
 import type { ValidConfigOptions } from '../options/options.js';
 import type { SpyHelper } from '../types/spy-helper';
 import * as childProcess from './child-process-promisified.js';
-import * as gitModule from './git.js';
+import * as gitModule from './git/index.js';
 import { oraNonInteractiveMode } from './ora.js';
 import { setupRepo } from './setup-repo.js';
 

@@ -11,7 +11,8 @@ if [ ! -f .env ]; then
   cp "$root/.env" .env 2>/dev/null
 fi
 
-# Copy node_modules from root if not already present, then rebuild
+# Copy node_modules from root if not already present, reconcile deps, then rebuild
 if [ ! -d node_modules ]; then
-  cp -a "$root/node_modules" . 2>/dev/null && npm run build
+  cp -a "$root/node_modules" . 2>/dev/null
+  npm install && npm run build
 fi
