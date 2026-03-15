@@ -101,11 +101,11 @@ export async function cherrypickAndCreateTargetPullRequest({
 
   // add reviewers to target pull request
   if (options.reviewers.length > 0) {
-    await addReviewersToPullRequest(
-      options,
-      targetPullRequest.number,
-      options.reviewers,
-    );
+    await addReviewersToPullRequest({
+      ...options,
+      pullNumber: targetPullRequest.number,
+      reviewers: options.reviewers,
+    });
   }
 
   // add reviewers of the original PRs to the target pull request

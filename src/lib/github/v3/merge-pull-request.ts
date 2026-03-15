@@ -1,17 +1,12 @@
-import { Octokit } from '@octokit/rest';
 import type { ValidConfigOptions } from '../../../options/options.js';
-import { logger } from '../../logger.js';
+import { createOctokitClient } from './octokit-client.js';
 
 export function mergePullRequest(
   options: ValidConfigOptions,
   pullNumber: number,
 ) {
   const { accessToken, githubApiBaseUrlV3 } = options;
-  const octokit = new Octokit({
-    auth: accessToken,
-    baseUrl: githubApiBaseUrlV3,
-    log: logger,
-  });
+  const octokit = createOctokitClient({ accessToken, githubApiBaseUrlV3 });
 
   return octokit.request(
     'PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge',

@@ -26,7 +26,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "root=$(git worktree list | head -1 | awk '{print $1}') && ([ -f .env ] || cp \"$root/.env\" .env 2>/dev/null || true) && ([ -d node_modules ] || cp -r \"$root/node_modules\" . 2>/dev/null || true)"
+            "command": "bash .claude/setup-worktree.sh"
           }
         ]
       }

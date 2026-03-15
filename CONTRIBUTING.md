@@ -66,3 +66,28 @@ To run private or mutation tests:
 ```
 ACCESS_TOKEN=ghp_xxx npm run test:private
 ```
+
+### Architecture overview
+
+#### Config merging pipeline
+
+Options are resolved in this priority order (highest wins):
+
+1. **Default options** (`option-schema.ts`)
+2. **Local config files** (`.backportrc.json` or global `~/.backport/config.json`)
+3. **Remote config** (fetched from the repo's `.backportrc.json` via GitHub API)
+4. **CLI arguments** (always highest precedence)
+
+#### GraphQL codegen
+
+GraphQL queries are type-checked at build time. After modifying any `graphql(...)` tagged template:
+
+```
+npm run codegen
+```
+
+This regenerates `src/graphql/generated/`. Queries can be validated against the GitHub schema with:
+
+```
+npm run graphql:validate
+```

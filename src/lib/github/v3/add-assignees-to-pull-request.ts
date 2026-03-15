@@ -1,6 +1,6 @@
-import { Octokit } from '@octokit/rest';
 import { ora } from '../../../lib/ora.js';
 import { logger } from '../../logger.js';
+import { createOctokitClient } from './octokit-client.js';
 
 export async function addAssigneesToPullRequest({
   // options
@@ -39,11 +39,7 @@ export async function addAssigneesToPullRequest({
   }
 
   try {
-    const octokit = new Octokit({
-      auth: accessToken,
-      baseUrl: githubApiBaseUrlV3,
-      log: logger,
-    });
+    const octokit = createOctokitClient({ accessToken, githubApiBaseUrlV3 });
 
     await octokit.issues.addAssignees({
       owner: repoOwner,
@@ -56,6 +52,6 @@ export async function addAssigneesToPullRequest({
   } catch (e) {
     spinner.fail();
 
-    logger.info(`Could not add assignees to PR ${pullNumber}`, e);
+    logger.error(`Could not add assignees to PR ${pullNumber}`, e);
   }
 }

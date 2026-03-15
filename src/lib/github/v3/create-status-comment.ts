@@ -1,10 +1,10 @@
-import { Octokit } from '@octokit/rest';
 import type { BackportResponse } from '../../../backport-run.js';
 import type { ValidConfigOptions } from '../../../options/options.js';
 import { getPackageVersion } from '../../../utils/package-version.js';
 import { BackportError } from '../../backport-error.js';
 import { logger, redactAccessToken } from '../../logger.js';
 import { getFirstLine } from '../commit-formatters.js';
+import { createOctokitClient } from './octokit-client.js';
 
 export async function createStatusComment({
   options,
@@ -16,11 +16,7 @@ export async function createStatusComment({
   const { githubApiBaseUrlV3, repoName, repoOwner, accessToken } = options;
 
   try {
-    const octokit = new Octokit({
-      auth: accessToken,
-      baseUrl: githubApiBaseUrlV3,
-      log: logger,
-    });
+    const octokit = createOctokitClient({ accessToken, githubApiBaseUrlV3 });
 
     await Promise.all(
       backportResponse.commits

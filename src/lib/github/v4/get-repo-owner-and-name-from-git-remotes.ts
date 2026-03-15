@@ -1,5 +1,4 @@
 import { graphql } from '../../../graphql/generated/index.js';
-import { maybe } from '../../../utils/maybe.js';
 import { getRepoInfoFromGitRemotes } from '../../git.js';
 import { logger } from '../../logger.js';
 import { graphqlRequest, GithubV4Exception } from './client/graphql-client.js';
@@ -15,7 +14,7 @@ export async function getRepoOwnerAndNameFromGitRemotes({
   cwd: string;
 }): Promise<{ repoOwner?: string; repoName?: string }> {
   const remotes = await getRepoInfoFromGitRemotes({ cwd });
-  const firstRemote = maybe(remotes[0]);
+  const firstRemote = remotes[0] as (typeof remotes)[number] | undefined;
 
   if (!firstRemote) {
     return {};

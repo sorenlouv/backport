@@ -153,7 +153,7 @@ describe('entrypoint cli', () => {
     );
 
     expect(output).toMatchInlineSnapshot(`
-      "repo: backport-org/backport-e2e 🔹 sourceBranch: master 🔹 author: sorenlouv
+      "repo: backport-org/backport-e2e | sourceBranch: master | author: sorenlouv
 
       ? Select commit
       ❯ 1. Add sheep emoji (#9) 7.8
@@ -184,7 +184,7 @@ describe('entrypoint cli', () => {
     );
 
     expect(output).toMatchInlineSnapshot(`
-      "repo: backport-org/backport-e2e 🔹 sourceBranch: master 🔹 author: sorenlouv 🔹 maxNumber: 6
+      "repo: backport-org/backport-e2e | sourceBranch: master | author: sorenlouv | maxNumber: 6
 
       ? Select commit
       ❯ 1. Add sheep emoji (#9) 7.8
@@ -212,7 +212,7 @@ describe('entrypoint cli', () => {
     );
 
     expect(output).toMatchInlineSnapshot(`
-      "repo: backport-org/backport-e2e 🔹 sourceBranch: 7.x 🔹 author: sorenlouv 🔹 maxNumber: 6
+      "repo: backport-org/backport-e2e | sourceBranch: 7.x | author: sorenlouv | maxNumber: 6
 
       ? Select commit
       ❯ 1. Add 🍏 emoji (#5) (#6)
