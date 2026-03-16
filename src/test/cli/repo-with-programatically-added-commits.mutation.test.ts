@@ -1,6 +1,6 @@
 import { Octokit } from '@octokit/rest';
-import { getDevAccessToken } from '../../private/get-dev-access-token.js';
-import { getSandboxPath, resetSandbox } from '../../sandbox.js';
+import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
+import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 
 vi.setConfig({ testTimeout: 25_000 });

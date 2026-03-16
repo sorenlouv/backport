@@ -1,6 +1,6 @@
-import { exec } from '../../../test/child-process-helper.js';
-import { getDevAccessToken } from '../../../test/private/get-dev-access-token.js';
-import { getSandboxPath, resetSandbox } from '../../../test/sandbox.js';
+import { exec } from '../../../test/helpers/child-process-helper.js';
+import { getDevAccessToken } from '../../../test/helpers/get-dev-access-token.js';
+import { getSandboxPath, resetSandbox } from '../../../test/helpers/sandbox.js';
 import { getRepoOwnerAndNameFromGitRemotes } from './get-repo-owner-and-name-from-git-remotes.js';
 
 const sandboxPath = getSandboxPath({ filename: import.meta.filename });

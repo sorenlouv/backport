@@ -1,3 +1,4 @@
+/** Per-branch backport: cherry-pick commits, resolve conflicts, create target PR, add labels/assignees/reviewers. */
 import chalk from 'chalk';
 import { flatten } from 'lodash-es';
 import type { ValidConfigOptions } from '../../options/options.js';
@@ -11,13 +12,13 @@ import {
 import { addAssigneesToPullRequest } from '../github/v3/add-assignees-to-pull-request.js';
 import { addLabelsToPullRequest } from '../github/v3/add-labels-to-pull-request.js';
 import { addReviewersToPullRequest } from '../github/v3/add-reviewers-to-pull-request.js';
-import type { PullRequestPayload } from '../github/v3/getPullRequest/create-pull-request.js';
-import { createPullRequest } from '../github/v3/getPullRequest/create-pull-request.js';
-import { getPullRequestBody } from '../github/v3/getPullRequest/get-pull-request-body.js';
-import { getTitle } from '../github/v3/getPullRequest/get-title.js';
+import type { PullRequestPayload } from '../github/v3/create-pull-request/create-pull-request.js';
+import { createPullRequest } from '../github/v3/create-pull-request/create-pull-request.js';
+import { getPullRequestBody } from '../github/v3/create-pull-request/get-pull-request-body.js';
+import { getTitle } from '../github/v3/create-pull-request/get-title.js';
 import { validateTargetBranch } from '../github/v4/validate-target-branch.js';
 import { consoleLog } from '../logger.js';
-import { sequentially } from '../sequentially.js';
+import { sequentially } from '../sequential-helper.js';
 import type { Commit } from '../sourceCommit/parse-source-commit.js';
 import { autoMergeNowOrLater } from './auto-merge-now-or-later.js';
 import { copySourcePullRequestReviewersToTargetPullRequest } from './copy-source-pull-request-reviewers-to-target-pull-request.js';

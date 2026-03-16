@@ -1,3 +1,4 @@
+/** Dispatches to the correct fetch* function based on options (pullNumber, sha, author, prFilter). */
 import chalk from 'chalk';
 import type { ValidConfigOptions } from '../options/options.js';
 import { BackportError } from './backport-error.js';

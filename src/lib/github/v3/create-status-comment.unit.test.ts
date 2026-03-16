@@ -7,7 +7,7 @@ import {
   cleanupFetchMock,
   mockFetchResponse,
   setupFetchMock,
-} from '../../../test/mock-fetch.js';
+} from '../../../test/helpers/mock-fetch.js';
 import { BackportError } from '../../backport-error.js';
 import { setAccessToken } from '../../logger.js';
 import {

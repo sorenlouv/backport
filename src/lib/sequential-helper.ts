@@ -1,3 +1,4 @@
+/** Generic utility: runs an async handler on each item sequentially. Not backport-specific; see run-sequentially.ts. */
 export async function sequentially<T, R>(
   items: T[],
   handler: (item: T) => Promise<R>,

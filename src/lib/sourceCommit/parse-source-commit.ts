@@ -1,3 +1,4 @@
+/** Parses raw GitHub API commit data into the Commit type used throughout the codebase. */
 import { differenceBy } from 'lodash-es';
 import type { SourceCommitWithTargetPullRequestFragmentFragment } from '../../graphql/generated/graphql.js';
 import { graphql } from '../../graphql/generated/index.js';

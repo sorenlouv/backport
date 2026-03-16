@@ -1,5 +1,5 @@
 import fs from 'node:fs/promises';
-import type { ConfigFileOptions } from '../options/config-options.js';
+import type { ConfigFileOptions } from '../../options/config-options.js';
 
 export function mockConfigFiles({
   projectConfig,

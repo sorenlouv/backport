@@ -1,3 +1,4 @@
+/** Merges config from defaults, config files, GitHub remote config, and CLI args into ValidConfigOptions. */
 import chalk from 'chalk';
 import { BackportError } from '../lib/backport-error.js';
 import { getGlobalConfigPath } from '../lib/env.js';

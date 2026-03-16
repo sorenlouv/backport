@@ -1,7 +1,7 @@
 import { first } from 'lodash-es';
 import { graphql } from '../../../graphql/generated/index.js';
 import type { ValidConfigOptions } from '../../../options/options.js';
-import type { PullRequestPayload } from '../v3/getPullRequest/create-pull-request.js';
+import type { PullRequestPayload } from '../v3/create-pull-request/create-pull-request.js';
 import { graphqlRequest, GithubV4Exception } from './client/graphql-client.js';
 
 export async function fetchExistingPullRequest({

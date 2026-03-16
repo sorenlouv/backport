@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path, { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const REPO_ROOT = resolve(fileURLToPath(import.meta.url), '../../..');
+const REPO_ROOT = process.cwd();
 export const SANDBOX_PATH = resolve(REPO_ROOT, '.integration_testing');
 
 export function getSandboxPath({

@@ -1,5 +1,5 @@
 import os from 'node:os';
-import { getDevAccessToken } from '../../../../test/private/get-dev-access-token.js';
+import { getDevAccessToken } from '../../../../test/helpers/get-dev-access-token.js';
 import { getOptionsFromGithub } from './get-options-from-github.js';
 
 const accessToken = getDevAccessToken();

@@ -8,7 +8,7 @@ import {
   cleanupFetchMock,
   mockGraphqlRequest,
   setupFetchMock,
-} from '../../../../test/mock-fetch.js';
+} from '../../../../test/helpers/mock-fetch.js';
 import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
 import { commitsByAuthorMock } from '../mocks/commits-by-author-mock.js';
 import { fetchCommitsByAuthor } from './fetch-commits-by-author.js';

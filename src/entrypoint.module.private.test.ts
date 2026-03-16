@@ -5,8 +5,8 @@ import type {
 import type { Commit } from './entrypoint.api.js';
 import { backportRun, getCommits } from './entrypoint.api.js';
 import { getFirstLine } from './lib/github/commit-formatters.js';
-import { getDevAccessToken } from './test/private/get-dev-access-token.js';
-import { getSandboxPath, resetSandbox } from './test/sandbox.js';
+import { getDevAccessToken } from './test/helpers/get-dev-access-token.js';
+import { getSandboxPath, resetSandbox } from './test/helpers/sandbox.js';
 
 vi.setConfig({ testTimeout: 10_000 });
 

@@ -2,7 +2,7 @@ import {
   cleanupFetchMock,
   mockFetchResponse,
   setupFetchMock,
-} from '../../../test/mock-fetch.js';
+} from '../../../test/helpers/mock-fetch.js';
 import { addAssigneesToPullRequest } from './add-assignees-to-pull-request.js';
 
 describe('addAssigneesToPullRequest', () => {

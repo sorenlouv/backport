@@ -1,5 +1,5 @@
-import type { Commit } from '../../../entrypoint.api.js';
-import { getDevAccessToken } from '../../private/get-dev-access-token.js';
+import type { Commit } from '../../entrypoint.api.js';
+import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 
 const accessToken = getDevAccessToken();

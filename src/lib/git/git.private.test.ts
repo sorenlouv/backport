@@ -2,9 +2,9 @@ import fs, { access } from 'node:fs/promises';
 import path from 'node:path';
 import type { Commit } from '../../entrypoint.api.js';
 import type { ValidConfigOptions } from '../../options/options.js';
-import { exec } from '../../test/child-process-helper.js';
-import { getDevAccessToken } from '../../test/private/get-dev-access-token.js';
-import { getSandboxPath, resetSandbox } from '../../test/sandbox.js';
+import { exec } from '../../test/helpers/child-process-helper.js';
+import { getDevAccessToken } from '../../test/helpers/get-dev-access-token.js';
+import { getSandboxPath, resetSandbox } from '../../test/helpers/sandbox.js';
 import * as childProcess from '../child-process-promisified.js';
 import { getShortSha } from '../github/commit-formatters.js';
 import {

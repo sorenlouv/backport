@@ -1,4 +1,4 @@
-import { getDevAccessToken } from '../../../test/private/get-dev-access-token.js';
+import { getDevAccessToken } from '../../../test/helpers/get-dev-access-token.js';
 import { getReviewersFromPullRequests } from './get-reviewers-from-pull-requests.js';
 
 const accessToken = getDevAccessToken();

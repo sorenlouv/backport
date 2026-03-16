@@ -1,3 +1,4 @@
+/** Top-level orchestrator: parse args, resolve options, fetch commits, run backports, report results. */
 import chalk from 'chalk';
 import { BackportError } from './lib/backport-error.js';
 import { getLogfilePath } from './lib/env.js';

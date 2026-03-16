@@ -3,7 +3,11 @@ import { spawn } from 'node:child_process';
 import path from 'node:path';
 import { debounce } from 'lodash-es';
 import stripAnsi from 'strip-ansi';
-import { getSandboxPath, resetSandbox, SANDBOX_PATH } from '../../sandbox.js';
+import {
+  getSandboxPath,
+  resetSandbox,
+  SANDBOX_PATH,
+} from '../helpers/sandbox.js';
 
 const tsxBinary = path.resolve('./node_modules/.bin/tsx');
 const entrypointFile = path.resolve('./src/entrypoint.cli.ts');

@@ -4,10 +4,10 @@ import type {
   BackportAbortResponse,
   BackportFailureResponse,
   BackportSuccessResponse,
-} from '../../../backport-run.js';
-import type { ConfigFileOptions } from '../../../entrypoint.api.js';
-import { getDevAccessToken } from '../../private/get-dev-access-token.js';
-import { getSandboxPath, resetSandbox } from '../../sandbox.js';
+} from '../../backport-run.js';
+import type { ConfigFileOptions } from '../../entrypoint.api.js';
+import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
+import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 
 const accessToken = getDevAccessToken();

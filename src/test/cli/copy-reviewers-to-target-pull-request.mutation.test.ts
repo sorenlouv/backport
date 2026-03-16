@@ -1,6 +1,6 @@
 import { Octokit } from '@octokit/rest';
-import type { SuccessResult } from '../../../entrypoint.api.js';
-import { getDevAccessToken } from '../../private/get-dev-access-token.js';
+import type { SuccessResult } from '../../entrypoint.api.js';
+import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 
 const accessToken = getDevAccessToken();

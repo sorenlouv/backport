@@ -1,5 +1,5 @@
 import { graphql } from '../../../../graphql/generated/index.js';
-import { getDevAccessToken } from '../../../../test/private/get-dev-access-token.js';
+import { getDevAccessToken } from '../../../../test/helpers/get-dev-access-token.js';
 import type {
   GitHubGraphQLError,
   OperationResultWithMeta,

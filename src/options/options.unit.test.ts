@@ -6,12 +6,12 @@ import type {
 } from '../graphql/generated/graphql.js';
 import * as git from '../lib/git/index.js';
 import * as logger from '../lib/logger.js';
-import { mockConfigFiles } from '../test/mock-config-files.js';
+import { mockConfigFiles } from '../test/helpers/mock-config-files.js';
 import {
   cleanupFetchMock,
   mockGraphqlRequest,
   setupFetchMock,
-} from '../test/mock-fetch.js';
+} from '../test/helpers/mock-fetch.js';
 import type { ConfigFileOptions } from './config-options.js';
 import { getOptions } from './options.js';
 

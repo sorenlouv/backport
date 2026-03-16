@@ -1,4 +1,4 @@
-import { getDevAccessToken } from '../../../../test/private/get-dev-access-token.js';
+import { getDevAccessToken } from '../../../../test/helpers/get-dev-access-token.js';
 import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
 import { fetchPullRequestsBySearchQuery } from './fetch-pull-requests-by-search-query.js';
 

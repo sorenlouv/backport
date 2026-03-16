@@ -16,6 +16,17 @@ for (const file of readdirSync(dir)) {
   if (!file.endsWith('.ts')) continue;
   const filePath = join(dir, file);
   let content = readFileSync(filePath, 'utf8');
+
+  // Add "DO NOT EDIT" header so agents and developers don't manually modify generated files
+  const doNotEditHeader =
+    '/* @generated — DO NOT EDIT MANUALLY. Regenerate with: npm run codegen */\n/* Source queries live in src/lib/github/v4/*.ts as graphql() tagged templates */\n';
+  if (!content.includes('@generated')) {
+    content = content.replace(
+      '/* eslint-disable */\n',
+      '/* eslint-disable */\n' + doNotEditHeader,
+    );
+  }
+
   const updated = content.replaceAll(
     /(from\s+['"])(\.\/[^'"]+)(?<!\.js)(['"])/g,
     '$1$2.js$3',

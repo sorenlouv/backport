@@ -1,6 +1,6 @@
-import { exec } from '../../child-process-helper.js';
-import { getDevAccessToken } from '../../private/get-dev-access-token.js';
-import { getSandboxPath, resetSandbox } from '../../sandbox.js';
+import { exec } from '../helpers/child-process-helper.js';
+import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
+import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 const accessToken = getDevAccessToken();
 vi.setConfig({ testTimeout: 15_000, hookTimeout: 30_000 });

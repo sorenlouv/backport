@@ -6,7 +6,7 @@ import {
   mockFetchResponse,
   mockGraphqlRequest,
   setupFetchMock,
-} from '../../test/mock-fetch.js';
+} from '../../test/helpers/mock-fetch.js';
 import type { SpyHelper } from '../../types/spy-helper';
 import * as childProcess from '../child-process-promisified.js';
 import type { TargetBranchResponse } from '../github/v4/validate-target-branch.js';

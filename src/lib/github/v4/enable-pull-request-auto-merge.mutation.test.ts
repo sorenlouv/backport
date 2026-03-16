@@ -1,9 +1,9 @@
 import crypto from 'node:crypto';
 import { Octokit } from '@octokit/rest';
 import type { ValidConfigOptions } from '../../../options/options.js';
-import { getDevAccessToken } from '../../../test/private/get-dev-access-token.js';
-import type { PullRequestPayload } from '../v3/getPullRequest/create-pull-request.js';
-import { createPullRequest } from '../v3/getPullRequest/create-pull-request.js';
+import { getDevAccessToken } from '../../../test/helpers/get-dev-access-token.js';
+import type { PullRequestPayload } from '../v3/create-pull-request/create-pull-request.js';
+import { createPullRequest } from '../v3/create-pull-request/create-pull-request.js';
 import type { GithubV4Exception } from './client/graphql-client.js';
 import { disablePullRequestAutoMerge } from './disable-pull-request-auto-merge.js';
 import {

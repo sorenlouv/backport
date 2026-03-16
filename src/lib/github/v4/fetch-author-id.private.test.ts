@@ -1,5 +1,5 @@
 import type { ValidConfigOptions } from '../../../options/options.js';
-import { getDevAccessToken } from '../../../test/private/get-dev-access-token.js';
+import { getDevAccessToken } from '../../../test/helpers/get-dev-access-token.js';
 import { fetchAuthorId } from './fetch-author-id.js';
 
 const accessToken = getDevAccessToken();

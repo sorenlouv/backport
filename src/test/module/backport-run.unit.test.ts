@@ -10,17 +10,17 @@
 
 import fs from 'node:fs/promises';
 import os from 'node:os';
-import type { BackportResponse } from '../../../backport-run.js';
-import { backportRun } from '../../../backport-run.js';
-import * as childProcess from '../../../lib/child-process-promisified.js';
-import * as setupRepoModule from '../../../lib/setup-repo.js';
-import { mockConfigFiles } from '../../mock-config-files.js';
+import type { BackportResponse } from '../../backport-run.js';
+import { backportRun } from '../../backport-run.js';
+import * as childProcess from '../../lib/child-process-promisified.js';
+import * as setupRepoModule from '../../lib/setup-repo.js';
+import { mockConfigFiles } from '../helpers/mock-config-files.js';
 import {
   cleanupFetchMock,
   mockFetchResponse,
   mockGraphqlRequest,
   setupFetchMock,
-} from '../../mock-fetch.js';
+} from '../helpers/mock-fetch.js';
 
 const GRAPHQL_URL = 'http://localhost/graphql';
 const REST_URL = 'http://localhost/rest';

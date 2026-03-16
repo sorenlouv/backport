@@ -1,3 +1,4 @@
+/** Low-level GraphQL client with retry logic (p-retry) for GitHub v4 API. */
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { GraphQLError, print, Kind } from 'graphql';
 import pRetry from 'p-retry';

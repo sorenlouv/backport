@@ -1,4 +1,4 @@
-import { getDevAccessToken } from '../../../../test/private/get-dev-access-token.js';
+import { getDevAccessToken } from '../../../../test/helpers/get-dev-access-token.js';
 import { fetchCommitsForRebaseAndMergeStrategy } from './fetch-commits-for-rebase-and-merge-strategy.js';
 
 const accessToken = getDevAccessToken();

@@ -1,9 +1,9 @@
 import { Octokit } from '@octokit/rest';
-import type { BackportResponse } from '../../../entrypoint.api.js';
-import { backportRun } from '../../../entrypoint.api.js';
-import { getShortSha } from '../../../lib/github/commit-formatters.js';
-import { getDevAccessToken } from '../../private/get-dev-access-token.js';
-import { getSandboxPath, resetSandbox } from '../../sandbox.js';
+import type { BackportResponse } from '../../entrypoint.api.js';
+import { backportRun } from '../../entrypoint.api.js';
+import { getShortSha } from '../../lib/github/commit-formatters.js';
+import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
+import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 
 vi.unmock('find-up');
 vi.unmock('del');

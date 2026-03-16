@@ -1,9 +1,10 @@
+/** Iterates target branches, calling cherrypickAndCreateTargetPullRequest for each, collecting Result[]. */
 import type { ValidConfigOptions } from '../options/options.js';
 import { BackportError } from './backport-error.js';
 import { cherrypickAndCreateTargetPullRequest } from './cherrypickAndCreateTargetPullRequest/cherrypick-and-create-target-pull-request.js';
 import { getLogfilePath } from './env.js';
 import { logger, consoleLog } from './logger.js';
-import { sequentially } from './sequentially.js';
+import { sequentially } from './sequential-helper.js';
 import type { Commit } from './sourceCommit/parse-source-commit.js';
 
 export type SuccessResult = {

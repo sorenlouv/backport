@@ -1,24 +1,21 @@
 import { spawnSync } from 'node:child_process';
 import fs, { readFileSync } from 'node:fs';
-import path, { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 import stripAnsi from 'strip-ansi';
-import { getDevAccessToken } from '../../private/get-dev-access-token.js';
-import { getSandboxPath, resetSandbox } from '../../sandbox.js';
+import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
+import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const pkg = JSON.parse(
-  readFileSync(join(__dirname, '../../../../package.json'), 'utf8'),
-);
+const ROOT = process.cwd();
+const pkg = JSON.parse(readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
 
 const accessToken = getDevAccessToken();
 const sandboxPath = getSandboxPath({ filename: import.meta.filename });
 
 describe('CLI "backport" binary', () => {
-  const binPath = path.resolve(import.meta.dirname, '../../../../bin/backport');
+  const binPath = path.resolve(ROOT, 'bin/backport');
 
   beforeAll(async () => {
-    const distPath = path.resolve(import.meta.dirname, '../../../../dist');
+    const distPath = path.resolve(ROOT, 'dist');
     if (!fs.existsSync(distPath)) {
       throw new Error(`Please run "npm run build" before running this test.`);
     }

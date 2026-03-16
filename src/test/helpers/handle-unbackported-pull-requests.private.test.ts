@@ -1,6 +1,6 @@
-import type { Commit } from '../entrypoint.api.js';
-import { getCommits, backportRun } from '../entrypoint.api.js';
-import { getDevAccessToken } from './private/get-dev-access-token.js';
+import type { Commit } from '../../entrypoint.api.js';
+import { getCommits, backportRun } from '../../entrypoint.api.js';
+import { getDevAccessToken } from './get-dev-access-token.js';
 import { getSandboxPath, resetSandbox } from './sandbox.js';
 
 const accessToken = getDevAccessToken();

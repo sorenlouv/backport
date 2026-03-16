@@ -1,4 +1,4 @@
-import { getDevAccessToken } from '../../../../test/private/get-dev-access-token.js';
+import { getDevAccessToken } from '../../../../test/helpers/get-dev-access-token.js';
 import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
 import { fetchCommitsByPullNumber } from './fetch-commit-by-pull-number.js';
 import { fetchCommitBySha } from './fetch-commit-by-sha.js';

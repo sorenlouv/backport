@@ -1,3 +1,4 @@
+/** Defines all CLI options via yargs. Exports getOptionsFromCliArgs() and getRuntimeArguments(). */
 import yargs from 'yargs';
 import yargsParser from 'yargs-parser';
 import { excludeUndefined } from '../utils/exclude-undefined.js';
@@ -18,13 +19,14 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
     .usage('$0 [args]')
     .wrap(Math.max(100, Math.min(120, y.terminalWidth())))
 
+    // ── GitHub & Authentication ──────────────────────────────────────
     .option('accessToken', {
       alias: 'accesstoken',
       description: 'Github access token',
       type: 'string',
     })
 
-    // show users own commits
+    // ── Source Commit Selection ──────────────────────────────────────
     .option('all', {
       description: 'List all commits',
       alias: 'a',
@@ -32,6 +34,7 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       conflicts: 'author',
     })
 
+    // ── Target PR Creation ──────────────────────────────────────────
     .option('assignee', {
       description: 'Add assignees to the target pull request',
       alias: 'assign',
@@ -65,6 +68,7 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       conflicts: 'all',
     })
 
+    // ── Cherry-pick & Conflict Handling ─────────────────────────────
     .option('cherrypickRef', {
       description: 'Append commit message with "(cherry picked from commit...)',
       type: 'boolean',
@@ -85,6 +89,7 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       conflicts: ['commitConflicts'],
     })
 
+    // ── Paths & Config ─────────────────────────────────────────────
     .option('cwd', {
       hidden: true,
       description: 'Path to source repo',
@@ -190,6 +195,7 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       type: 'string',
     })
 
+    // ── Output & Mode ──────────────────────────────────────────────
     .option('nonInteractive', {
       alias: ['json'],
       description: 'Disable interactive prompts and return response as JSON',
@@ -376,6 +382,7 @@ export function getOptionsFromCliArgs(processArgs: readonly string[]) {
       type: 'boolean',
     })
 
+    // ── Branch Selection ────────────────────────────────────────────
     .option('sourceBranch', {
       description: `Specify a non-default branch (normally "master") to backport from`,
       type: 'string',

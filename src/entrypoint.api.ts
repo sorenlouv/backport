@@ -1,3 +1,4 @@
+/** Public module API for programmatic consumers. Re-exports types and wraps backportRun. */
 import { backportRun as run } from './backport-run.js';
 import type { BackportResponse } from './backport-run.js';
 import { fetchCommitsByPullNumber } from './lib/github/v4/fetchCommits/fetch-commit-by-pull-number.js';
