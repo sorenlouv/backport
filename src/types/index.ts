@@ -11,17 +11,11 @@ export type { CommitAuthor } from '../lib/author.js';
 export type {
   Result,
   SuccessResult,
-  HandledErrorResult,
-  UnhandledErrorResult,
+  ErrorResult,
 } from '../lib/run-sequentially.js';
 
-// Backport response types (returned by backportRun)
-export type {
-  BackportResponse,
-  BackportSuccessResponse,
-  BackportFailureResponse,
-  BackportAbortResponse,
-} from '../backport-run.js';
+// Backport response type (returned by backportRun)
+export type { BackportResponse } from '../backport-run.js';
 
 // Configuration types
 export type { ValidConfigOptions } from '../options/option-schema.js';

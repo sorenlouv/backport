@@ -2,7 +2,8 @@ import { first } from 'lodash-es';
 import { graphql } from '../../../graphql/generated/index.js';
 import type { ValidConfigOptions } from '../../../options/options.js';
 import type { PullRequestPayload } from '../v3/create-pull-request/create-pull-request.js';
-import { graphqlRequest, GithubV4Exception } from './client/graphql-client.js';
+import { BackportError } from '../../backport-error.js';
+import { graphqlRequest } from './client/graphql-client.js';
 
 export async function fetchExistingPullRequest({
   options,
@@ -56,7 +57,10 @@ export async function fetchExistingPullRequest({
   );
 
   if (result.error) {
-    throw new GithubV4Exception(result);
+    throw new BackportError({
+      code: 'github-api-exception',
+      message: result.error.message,
+    });
   }
 
   const existingPullRequest = first(

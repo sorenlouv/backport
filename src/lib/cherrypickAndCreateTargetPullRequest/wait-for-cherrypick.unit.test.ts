@@ -134,7 +134,10 @@ describe('waitForCherrypick with autoResolveConflictsWithTheirs', () => {
   it('should propagate error when cherrypickAbort fails', async () => {
     cherrypickSpy.mockResolvedValueOnce(conflictingCherrypickResult);
     cherrypickAbortSpy.mockRejectedValueOnce(
-      new BackportError('Failed to abort cherry-pick before retry'),
+      new BackportError({
+        code: 'cherrypick-exception',
+        message: 'Failed to abort cherry-pick before retry',
+      }),
     );
 
     await expect(

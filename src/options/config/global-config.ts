@@ -53,9 +53,10 @@ export async function createGlobalConfigIfNotExist(
       // handle error if folder does not exist
       const FOLDER_NOT_EXISTS = 'ENOENT';
       if (error.code === FOLDER_NOT_EXISTS) {
-        throw new BackportError(
-          `The .backport folder (${globalConfigPath}) does not exist. `,
-        );
+        throw new BackportError({
+          code: 'config-error-exception',
+          message: `The .backport folder (${globalConfigPath}) does not exist. `,
+        });
       }
 
       throw error;

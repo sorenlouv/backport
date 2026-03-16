@@ -1,14 +1,10 @@
-import type {
-  BackportResponse,
-  BackportSuccessResponse,
-} from '../../../backport-run.js';
+import type { BackportResponse } from '../../../backport-run.js';
 import type { ValidConfigOptions } from '../../../options/options.js';
 import {
   cleanupFetchMock,
   mockFetchResponse,
   setupFetchMock,
 } from '../../../test/helpers/mock-fetch.js';
-import { BackportError } from '../../backport-error.js';
 import { setAccessToken } from '../../logger.js';
 import {
   createStatusComment,
@@ -49,10 +45,13 @@ describe('createStatusComment', () => {
       } as ValidConfigOptions,
       backportResponse: {
         commits: [{ sourcePullRequest: { number: 100 } }],
-        status: 'failure',
-        error: new Error(
-          `Error message containing very secret access token: ${accessToken}.`,
-        ),
+        results: [
+          {
+            status: 'error',
+            errorCode: 'unhandled-exception',
+            errorMessage: `Error message containing very secret access token: ${accessToken}.`,
+          },
+        ],
       } as BackportResponse,
     });
 
@@ -72,8 +71,14 @@ describe('getCommentBody', () => {
       } as ValidConfigOptions,
       pullNumber: 55,
       backportResponse: {
-        status: 'failure',
-        error: new Error('A terrible error occured'),
+        commits: [],
+        results: [
+          {
+            status: 'error',
+            errorCode: 'unhandled-exception',
+            errorMessage: 'A terrible error occured',
+          },
+        ],
       } as BackportResponse,
     });
 
@@ -113,16 +118,18 @@ describe('getCommentBody', () => {
       } as ValidConfigOptions,
       pullNumber: 55,
       backportResponse: {
-        status: 'success',
+        commits: [],
         results: [
           {
             status: 'success',
+
             targetBranch: '7.x',
             pullRequestNumber: 55,
             pullRequestUrl: 'url-to-pr',
           },
           {
             status: 'success',
+
             targetBranch: '7.1',
             pullRequestNumber: 66,
             pullRequestUrl: 'url-to-pr',
@@ -167,20 +174,22 @@ describe('getCommentBody', () => {
       } as ValidConfigOptions,
       pullNumber: 55,
       backportResponse: {
-        status: 'success',
+        commits: [],
         results: [
           {
-            status: 'unhandled-error',
+            status: 'error',
             targetBranch: '7.x',
-            error: new Error('My boom error!'),
+            errorCode: 'unhandled-exception',
+            errorMessage: 'My boom error!',
           },
           {
-            status: 'unhandled-error',
+            status: 'error',
             targetBranch: '7.1',
-            error: new Error('My boom error!'),
+            errorCode: 'unhandled-exception',
+            errorMessage: 'My boom error!',
           },
         ],
-      } as BackportSuccessResponse,
+      } as BackportResponse,
     });
 
     it('posts a comment when `publishStatusCommentOnFailure = true`', () => {
@@ -223,7 +232,7 @@ describe('getCommentBody', () => {
       } as ValidConfigOptions,
       pullNumber: 55,
       backportResponse: {
-        status: 'success',
+        commits: [],
         results: [
           {
             status: 'success',
@@ -233,9 +242,10 @@ describe('getCommentBody', () => {
           },
 
           {
-            status: 'failure',
+            status: 'error',
             targetBranch: '7.1',
-            error: new Error('My boom error!'),
+            errorCode: 'unhandled-exception',
+            errorMessage: 'My boom error!',
           },
         ],
       } as BackportResponse,
@@ -283,7 +293,7 @@ describe('getCommentBody', () => {
       } as ValidConfigOptions,
       pullNumber: 55,
       backportResponse: {
-        status: 'success',
+        commits: [],
         results: [
           {
             status: 'success',
@@ -293,9 +303,12 @@ describe('getCommentBody', () => {
           },
 
           {
-            status: 'failure',
+            status: 'error',
             targetBranch: '7.1',
-            error: new BackportError({
+            errorCode: 'merge-conflict-exception',
+            errorMessage:
+              'Commit could not be cherrypicked due to conflicts in: readme.md',
+            errorContext: {
               code: 'merge-conflict-exception',
               conflictingFiles: ['readme.md'],
               commitsWithoutBackports: [
@@ -384,17 +397,20 @@ describe('getCommentBody', () => {
                   },
                 },
               ],
-            }),
+            },
           },
 
           {
-            status: 'failure',
+            status: 'error',
             targetBranch: '7.2',
-            error: new BackportError({
+            errorCode: 'merge-conflict-exception',
+            errorMessage:
+              'Commit could not be cherrypicked due to conflicts in: my-file.txt',
+            errorContext: {
               code: 'merge-conflict-exception',
               conflictingFiles: ['my-file.txt'],
               commitsWithoutBackports: [],
-            }),
+            },
           },
         ],
       } as BackportResponse,
@@ -443,10 +459,14 @@ describe('getCommentBody', () => {
       } as ValidConfigOptions,
       pullNumber: 55,
       backportResponse: {
-        status: 'aborted',
         commits: [],
-        error: new BackportError({ code: 'no-branches-exception' }),
-        errorMessage: 'my message',
+        results: [
+          {
+            status: 'error',
+            errorCode: 'no-branches-exception',
+            errorMessage: 'There are no branches to backport to. Aborting.',
+          },
+        ],
       } as BackportResponse,
     });
 
@@ -489,15 +509,13 @@ describe('getCommentBody', () => {
       } as ValidConfigOptions,
       pullNumber: 55,
       backportResponse: {
-        status: 'success',
         commits: [],
         results: [
           {
             targetBranch: 'staging',
-            status: 'handled-error',
-            error: new BackportError({
-              code: 'abort-conflict-resolution-exception',
-            }),
+            status: 'error',
+            errorCode: 'abort-conflict-resolution-exception',
+            errorMessage: 'Conflict resolution was aborted by the user',
           },
         ],
       } as BackportResponse,
@@ -557,15 +575,13 @@ describe('getCommentBody', () => {
       } as ValidConfigOptions,
       pullNumber: 55,
       backportResponse: {
-        status: 'success',
         commits: [],
         results: [
           {
             targetBranch: 'main',
-            status: 'handled-error',
-            error: new BackportError(
-              'The branch "main" is invalid or doesn\'t exist',
-            ),
+            status: 'error',
+            errorCode: 'branch-not-found-exception',
+            errorMessage: 'The branch "main" is invalid or doesn\'t exist',
           },
         ],
       } as BackportResponse,
@@ -613,13 +629,13 @@ describe('getCommentBody', () => {
       } as ValidConfigOptions,
       pullNumber: 55,
       backportResponse: {
-        status: 'success',
         commits: [],
         results: [
           {
             targetBranch: '--foo',
-            status: 'unhandled-error',
-            error: new BackportError('The branch "--foo" does not exist'),
+            status: 'error',
+            errorCode: 'branch-not-found-exception',
+            errorMessage: 'The branch "--foo" is invalid or doesn\'t exist',
           },
         ],
       } as BackportResponse,
@@ -634,7 +650,7 @@ describe('getCommentBody', () => {
 
         | Status | Branch | Result |
         |:------:|:------:|:------|
-        |❌|--foo|An unhandled error occurred. Please see the logs for details|
+        |❌|--foo|The branch "--foo" is invalid or doesn't exist|
 
         ### Manual backport
         To create the backport manually run:
@@ -668,10 +684,11 @@ describe('getCommentBody', () => {
       } as ValidConfigOptions,
       pullNumber: 55,
       backportResponse: {
-        status: 'success',
+        commits: [],
         results: [
           {
             status: 'success',
+
             targetBranch: '7.x',
             pullRequestNumber: 55,
             pullRequestUrl: 'url-to-pr',

@@ -14,9 +14,10 @@ export async function readConfigFile(
     return parseConfigFile(fileContents);
   } catch (error) {
     logger.debug(error);
-    throw new BackportError(
-      `"${filepath}" contains invalid JSON:\n\n${fileContents}`,
-    );
+    throw new BackportError({
+      code: 'config-error-exception',
+      message: `"${filepath}" contains invalid JSON:\n\n${fileContents}`,
+    });
   }
 }
 // ensure backwards compatability when config options are renamed

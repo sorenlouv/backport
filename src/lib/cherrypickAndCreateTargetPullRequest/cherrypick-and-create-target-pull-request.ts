@@ -35,7 +35,7 @@ export async function cherrypickAndCreateTargetPullRequest({
   options: ValidConfigOptions;
   commits: Commit[];
   targetBranch: string;
-}): Promise<{ url: string; number: number; didUpdate: boolean }> {
+}): Promise<{ url: string; number: number }> {
   const backportBranch = getBackportBranchName({
     options,
     targetBranch,

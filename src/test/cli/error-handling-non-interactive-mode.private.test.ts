@@ -1,10 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type {
-  BackportAbortResponse,
-  BackportFailureResponse,
-  BackportSuccessResponse,
-} from '../../backport-run.js';
+import type { BackportResponse } from '../../backport-run.js';
+import type { ErrorResult } from '../../lib/run-sequentially.js';
 import type { ConfigFileOptions } from '../../entrypoint.api.js';
 import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
 import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
@@ -21,16 +18,17 @@ describe('non interactive (json) error handling', () => {
       `--globalConfigFile=${configFilePath}`,
     ]);
 
-    const backportResult = JSON.parse(output) as BackportFailureResponse;
+    const backportResult = JSON.parse(output) as BackportResponse;
+    const error = backportResult.results[0] as ErrorResult;
 
     // remove absolute path to avoid issues on ci
-    const errorMessage = backportResult.errorMessage.replace(
+    const errorMessage = error.errorMessage.replace(
       configFilePath,
       '<GLOBAL_CONFIG_FILE>',
     );
 
     expect(code).toBe(1);
-    expect(backportResult.status).toBe('failure');
+    expect(error.status).toBe('error');
     expect(errorMessage).toMatchInlineSnapshot(`
       "Please update your config file: "<GLOBAL_CONFIG_FILE>".
       It must contain a valid "accessToken".
@@ -48,13 +46,11 @@ describe('non interactive (json) error handling', () => {
     ]);
 
     expect(code).toBe(0);
-    const backportResult = JSON.parse(output) as BackportAbortResponse;
-    expect(backportResult.status).toBe('aborted');
-    expect(backportResult.error).toEqual({
-      errorContext: { code: 'no-branches-exception' },
-      name: 'BackportError',
-    });
-    expect(backportResult.errorMessage).toBe(
+    const backportResult = JSON.parse(output) as BackportResponse;
+    const error = backportResult.results[0] as ErrorResult;
+    expect(error.status).toBe('error');
+    expect(error.errorCode).toBe('no-branches-exception');
+    expect(error.errorMessage).toBe(
       'There are no branches to backport to. Aborting.',
     );
   });
@@ -66,9 +62,10 @@ describe('non interactive (json) error handling', () => {
     ]);
 
     expect(code).toBe(1);
-    const backportResult = JSON.parse(output) as BackportFailureResponse;
-    expect(backportResult.status).toBe('failure');
-    expect(backportResult.errorMessage).toMatchInlineSnapshot(`
+    const backportResult = JSON.parse(output) as BackportResponse;
+    const error = backportResult.results[0] as ErrorResult;
+    expect(error.status).toBe('error');
+    expect(error.errorMessage).toMatchInlineSnapshot(`
       "Please specify a target branch: "--branch 6.1".
 
       Read more: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson"
@@ -78,9 +75,10 @@ describe('non interactive (json) error handling', () => {
   it(`when argument is invalid`, async () => {
     const { output } = await runBackportViaCli(['--json', '--foo'], {});
 
-    const backportResult = JSON.parse(output) as BackportFailureResponse;
-    expect(backportResult.status).toBe('failure');
-    expect(backportResult.errorMessage).toEqual('Unknown argument: foo');
+    const backportResult = JSON.parse(output) as BackportResponse;
+    const error = backportResult.results[0] as ErrorResult;
+    expect(error.status).toBe('error');
+    expect(error.errorMessage).toEqual('Unknown argument: foo');
   });
 
   it('when `--repo` is invalid', async () => {
@@ -90,9 +88,10 @@ describe('non interactive (json) error handling', () => {
       `--accessToken=${accessToken}`,
     ]);
 
-    const backportResult = JSON.parse(output) as BackportFailureResponse;
-    expect(backportResult.status).toBe('failure');
-    expect(backportResult.errorMessage).toEqual(
+    const backportResult = JSON.parse(output) as BackportResponse;
+    const error = backportResult.results[0] as ErrorResult;
+    expect(error.status).toBe('error');
+    expect(error.errorMessage).toEqual(
       'The repository "backport-org/backport-e2e-foo" doesn\'t exist',
     );
   });
@@ -105,9 +104,10 @@ describe('non interactive (json) error handling', () => {
       `--accessToken=${accessToken}`,
     ]);
 
-    const backportResult = JSON.parse(output) as BackportFailureResponse;
-    expect(backportResult.status).toBe('failure');
-    expect(backportResult.errorMessage).toEqual(
+    const backportResult = JSON.parse(output) as BackportResponse;
+    const error = backportResult.results[0] as ErrorResult;
+    expect(error.status).toBe('error');
+    expect(error.errorMessage).toEqual(
       'No commit found on branch "master" with sha "abcdefg"',
     );
   });
@@ -121,15 +121,13 @@ describe('non interactive (json) error handling', () => {
       `--accessToken=${accessToken}`,
     ]);
 
-    const backportResult = JSON.parse(output) as BackportSuccessResponse;
-    expect(backportResult.status).toBe('success');
-    //@ts-expect-error
-    expect(backportResult.results[0].error).toEqual({
-      name: 'BackportError',
-      errorContext: {
-        code: 'invalid-branch-exception',
-        branchName: 'foobar',
-      },
+    const backportResult = JSON.parse(output) as BackportResponse;
+    const error = backportResult.results[0] as ErrorResult;
+    expect(error.status).toBe('error');
+    expect(error.errorCode).toBe('invalid-branch-exception');
+    expect(error.errorContext).toEqual({
+      code: 'invalid-branch-exception',
+      branchName: 'foobar',
     });
   });
 
@@ -142,15 +140,13 @@ describe('non interactive (json) error handling', () => {
       `--accessToken=${accessToken}`,
     ]);
 
-    const backportResult = JSON.parse(output) as BackportSuccessResponse;
-    expect(backportResult.status).toBe('success');
-    //@ts-expect-error
-    expect(backportResult.results[0].error).toEqual({
-      name: 'BackportError',
-      errorContext: {
-        code: 'invalid-branch-exception',
-        branchName: '--foo bar',
-      },
+    const backportResult = JSON.parse(output) as BackportResponse;
+    const error = backportResult.results[0] as ErrorResult;
+    expect(error.status).toBe('error');
+    expect(error.errorCode).toBe('invalid-branch-exception');
+    expect(error.errorContext).toEqual({
+      code: 'invalid-branch-exception',
+      branchName: '--foo bar',
     });
   });
 
@@ -163,10 +159,11 @@ describe('non interactive (json) error handling', () => {
       `--accessToken=${accessToken}`,
     ]);
 
-    const backportResult = JSON.parse(output) as BackportFailureResponse;
-    expect(backportResult.status).toEqual('failure');
-    expect(backportResult.errorMessage).toEqual(
-      '[GraphQL] Could not resolve to a PullRequest with the number of 900. (Github API v4)',
+    const backportResult = JSON.parse(output) as BackportResponse;
+    const error = backportResult.results[0] as ErrorResult;
+    expect(error.status).toBe('error');
+    expect(error.errorMessage).toContain(
+      'Could not resolve to a PullRequest with the number of 900',
     );
   });
 
@@ -179,11 +176,11 @@ describe('non interactive (json) error handling', () => {
       `--accessToken=${accessToken}`,
     ]);
 
-    const backportResult = JSON.parse(output) as BackportSuccessResponse;
-    expect(backportResult.status).toEqual('success');
+    const backportResult = JSON.parse(output) as BackportResponse;
+    const error = backportResult.results[0] as ErrorResult;
+    expect(error.status).toBe('error');
     expect(
-      //@ts-expect-error
-      backportResult.results[0].error.errorContext.conflictingFiles,
+      (error.errorContext as { conflictingFiles?: string[] })?.conflictingFiles,
     ).toEqual(['la-liga.md']);
   });
 
@@ -197,22 +194,14 @@ describe('non interactive (json) error handling', () => {
       `--accessToken=${accessToken}`,
     ]);
 
-    const backportResult = JSON.parse(output) as BackportSuccessResponse;
-    expect(backportResult.status).toBe('success');
-    expect(backportResult.results[0]).toEqual({
-      error: {
-        context: {
-          cmdArgs: ['checkout', 'foo'],
-          code: 1,
-          stderr:
-            "error: pathspec 'foo' did not match any file(s) known to git\n",
-          stdout: '',
-        },
-        name: 'SpawnError',
-      },
-      status: 'unhandled-error',
-      targetBranch: '7.x',
-    });
+    const backportResult = JSON.parse(output) as BackportResponse;
+    const error = backportResult.results[0] as ErrorResult;
+    expect(error.status).toBe('error');
+    expect(error.errorCode).toBe('unhandled-exception');
+    expect(error.targetBranch).toBe('7.x');
+    expect(error.errorMessage).toContain(
+      "error: pathspec 'foo' did not match any file(s) known to git",
+    );
   });
 
   it('when attempting to backport unmerged PR', async () => {
@@ -223,15 +212,11 @@ describe('non interactive (json) error handling', () => {
       `--accessToken=${accessToken}`,
     ]);
 
-    const backportResult = JSON.parse(output) as BackportFailureResponse;
-    expect(backportResult.status).toBe('failure');
-    expect(backportResult.error).toEqual({
-      errorContext: {
-        code: 'message-only-exception',
-        message: 'The PR #12 is not merged',
-      },
-      name: 'BackportError',
-    });
+    const backportResult = JSON.parse(output) as BackportResponse;
+    const error = backportResult.results[0] as ErrorResult;
+    expect(error.status).toBe('error');
+    expect(error.errorCode).toBe('pr-not-merged-exception');
+    expect(error.errorMessage).toBe('The PR #12 is not merged');
   });
 });
 

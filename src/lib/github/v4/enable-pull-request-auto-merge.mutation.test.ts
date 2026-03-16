@@ -4,12 +4,9 @@ import type { ValidConfigOptions } from '../../../options/options.js';
 import { getDevAccessToken } from '../../../test/helpers/get-dev-access-token.js';
 import type { PullRequestPayload } from '../v3/create-pull-request/create-pull-request.js';
 import { createPullRequest } from '../v3/create-pull-request/create-pull-request.js';
-import type { GithubV4Exception } from './client/graphql-client.js';
+import { BackportError } from '../../backport-error.js';
 import { disablePullRequestAutoMerge } from './disable-pull-request-auto-merge.js';
-import {
-  enablePullRequestAutoMerge,
-  isMissingStatusChecksError,
-} from './enable-pull-request-auto-merge.js';
+import { enablePullRequestAutoMerge } from './enable-pull-request-auto-merge.js';
 import { fetchPullRequestAutoMergeMethod } from './fetch-pull-request-auto-merge-method.js';
 
 // The test repo requires auto-merge being enabled in options, as well as all merge types enabled (merge, squash, rebase)
@@ -198,14 +195,15 @@ describe('enablePullRequestAutoMerge', () => {
           pullNumber,
         );
       } catch (error) {
-        const err = error as GithubV4Exception<unknown>;
-        isMissingStatusChecks = isMissingStatusChecksError(err);
+        const err = error as BackportError;
+        isMissingStatusChecks =
+          err.errorContext.code === 'auto-merge-not-available-exception';
         errorMessage = err.message;
       }
 
       expect(isMissingStatusChecks).toBe(false);
       expect(errorMessage).toMatchInlineSnapshot(
-        `"[GraphQL] Merge method rebase merging is not allowed on this repository (Github API v4)"`,
+        `"[GraphQL] Merge method rebase merging is not allowed on this repository"`,
       );
 
       // ensure Github API reflects the change before querying
@@ -271,23 +269,23 @@ describe('enablePullRequestAutoMerge', () => {
     });
 
     it.skip('should not be possible to enable auto-merge', async () => {
-      let isMissingStatusChecks;
-      let errorMessage;
+      let errorCode: string | undefined;
+      let errorMessage: string | undefined;
       try {
         await enablePullRequestAutoMerge(
           { ...options, autoMergeMethod: 'merge' },
           pullNumber,
         );
       } catch (error) {
-        const err = error as GithubV4Exception<unknown>;
-        isMissingStatusChecks = isMissingStatusChecksError(err);
+        const err = error as BackportError;
+        errorCode = err.errorContext.code;
         errorMessage = err.message;
       }
 
       expect(errorMessage).toMatchInlineSnapshot(
-        `"Pull request Pull request is in clean status (Github API v4)"`,
+        `"Pull request Pull request is in clean status"`,
       );
-      expect(isMissingStatusChecks).toBe(true);
+      expect(errorCode).toBe('auto-merge-not-available-exception');
     });
   });
 
@@ -327,8 +325,8 @@ describe('enablePullRequestAutoMerge', () => {
     });
 
     it.skip('should not be possible to enable auto-merge', async () => {
-      let isMissingStatusChecks;
-      let errorMessage;
+      let errorCode: string | undefined;
+      let errorMessage: string | undefined;
 
       try {
         await enablePullRequestAutoMerge(
@@ -336,8 +334,8 @@ describe('enablePullRequestAutoMerge', () => {
           pullNumber,
         );
       } catch (error) {
-        const err = error as GithubV4Exception<unknown>;
-        isMissingStatusChecks = isMissingStatusChecksError(err);
+        const err = error as BackportError;
+        errorCode = err.errorContext.code;
         errorMessage = err.message;
       }
 
@@ -349,9 +347,9 @@ describe('enablePullRequestAutoMerge', () => {
       expect(autoMergeMethod).toBe(undefined);
 
       expect(errorMessage).toMatchInlineSnapshot(
-        `"Pull request Pull request is in clean status (Github API v4)"`,
+        `"Pull request Pull request is in clean status"`,
       );
-      expect(isMissingStatusChecks).toBe(true);
+      expect(errorCode).toBe('auto-merge-not-available-exception');
     });
   });
 });

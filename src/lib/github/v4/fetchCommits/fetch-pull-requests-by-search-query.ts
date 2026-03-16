@@ -6,7 +6,7 @@ import { BackportError } from '../../../backport-error.js';
 import { isMissingConfigFileException } from '../../../remote-config.js';
 import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
 import { parseSourceCommit } from '../../../sourceCommit/parse-source-commit.js';
-import { GithubV4Exception, graphqlRequest } from '../client/graphql-client.js';
+import { graphqlRequest } from '../client/graphql-client.js';
 
 export async function fetchPullRequestsBySearchQuery(options: {
   accessToken: string;
@@ -89,7 +89,10 @@ export async function fetchPullRequestsBySearchQuery(options: {
   );
 
   if (result.error && !isMissingConfigFileException(result)) {
-    throw new GithubV4Exception(result);
+    throw new BackportError({
+      code: 'github-api-exception',
+      message: result.error.message,
+    });
   }
   const { data } = result;
 
@@ -110,7 +113,10 @@ export async function fetchPullRequestsBySearchQuery(options: {
       ? `No commits found for query:\n    ${searchQuery}\n\nUse \`--all\` to see commits by all users or \`--author=<username>\` for commits from a specific user`
       : `No commits found for query:\n    ${searchQuery}`;
 
-    throw new BackportError(errorText);
+    throw new BackportError({
+      code: 'no-commits-found-exception',
+      message: errorText,
+    });
   }
 
   if (options.onlyMissing) {

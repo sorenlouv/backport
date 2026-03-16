@@ -172,11 +172,13 @@ describe('backportRun integration', () => {
       exitCodeOnFailure: false,
     });
 
-    if (res.status === 'failure') {
-      throw new Error(`Expected success but got failure: ${res.errorMessage}`);
+    const hasError = res.results.some((r) => r.status === 'error');
+    if (hasError) {
+      throw new Error(
+        `Expected success but got error: ${(res.results[0] as any).errorMessage}`,
+      );
     }
 
-    expect(res.status).toBe('success');
     expect(res.results).toHaveLength(1);
     expect(res.results[0].targetBranch).toBe('7.x');
     expect(res.results[0].status).toBe('success');
@@ -212,9 +214,14 @@ describe('backportRun integration', () => {
       exitCodeOnFailure: false,
     });
 
-    expect(res.status).toBe('failure');
-    if (res.status === 'failure') {
-      expect(res.errorMessage).toContain('accessToken');
+    expect(res.results).toHaveLength(1);
+    const error0 = res.results[0];
+    expect(error0).toMatchObject({
+      status: 'error',
+      errorCode: 'invalid-credentials-exception',
+    });
+    if (error0.status === 'error') {
+      expect(error0.errorMessage).toContain('accessToken');
     }
   });
 
@@ -225,9 +232,14 @@ describe('backportRun integration', () => {
       exitCodeOnFailure: false,
     });
 
-    expect(res.status).toBe('failure');
-    if (res.status === 'failure') {
-      expect(res.errorMessage).toContain('--mainline must be an integer');
+    expect(res.results).toHaveLength(1);
+    const error0 = res.results[0];
+    expect(error0).toMatchObject({
+      status: 'error',
+      errorCode: 'unhandled-exception',
+    });
+    if (error0.status === 'error') {
+      expect(error0.errorMessage).toContain('--mainline must be an integer');
     }
   });
 
@@ -266,10 +278,130 @@ describe('backportRun integration', () => {
       exitCodeOnFailure: false,
     });
 
-    expect(res.status).toBe('failure');
-    if (res.status === 'failure') {
-      expect(res.errorMessage).toContain('"author" cannot be empty');
+    expect(res.results).toHaveLength(1);
+    const error0 = res.results[0];
+    expect(error0).toMatchObject({
+      status: 'error',
+      errorCode: 'config-error-exception',
+    });
+    if (error0.status === 'error') {
+      expect(error0.errorMessage).toContain('"author" cannot be empty');
     }
+  });
+
+  describe('exit code behavior with exitCodeOnFailure: true', () => {
+    afterEach(() => {
+      process.exitCode = undefined;
+    });
+
+    it('sets process.exitCode = 1 for invalid CLI args', async () => {
+      await backportRun({
+        processArgs: ['--mainline', 'not-a-number'],
+        optionsFromModule: {},
+        exitCodeOnFailure: true,
+      });
+
+      expect(process.exitCode).toBe(1);
+    });
+
+    it('sets process.exitCode = 1 for missing access token', async () => {
+      mockConfigFiles({
+        projectConfig: {
+          repoOwner: 'my-org',
+          repoName: 'my-repo',
+          targetBranchChoices: ['7.x'],
+          githubApiBaseUrlV4: GRAPHQL_URL,
+        },
+        globalConfig: {},
+      });
+
+      await backportRun({
+        processArgs: ['--sha=abc123', '--targetBranch=7.x', '--nonInteractive'],
+        optionsFromModule: {},
+        exitCodeOnFailure: true,
+      });
+
+      expect(process.exitCode).toBe(1);
+    });
+
+    it('does NOT set process.exitCode = 1 for no-branches-exception', async () => {
+      mockGraphqlRequest({
+        apiBaseUrl: GRAPHQL_URL,
+        operationName: 'GithubConfigOptions',
+        headers: { 'x-oauth-scopes': 'repo' },
+        body: {
+          data: {
+            viewer: { login: 'test-user' },
+            repository: {
+              isPrivate: false,
+              illegalBackportBranch: null,
+              defaultBranchRef: {
+                name: 'main',
+                target: {
+                  __typename: 'Commit',
+                  remoteConfigHistory: { edges: [] },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      mockGraphqlRequest({
+        apiBaseUrl: GRAPHQL_URL,
+        operationName: 'CommitsBySha',
+        body: {
+          data: {
+            repository: {
+              object: {
+                __typename: 'Commit',
+                repository: { name: 'my-repo', owner: { login: 'my-org' } },
+                sha: 'abc123abc123abc123abc123abc123abc123abc1',
+                message: 'Fix bug (#42)',
+                committedDate: '2024-01-15T00:00:00Z',
+                author: { name: 'Test User', email: 'test@example.com' },
+                associatedPullRequests: {
+                  edges: [
+                    {
+                      node: {
+                        title: 'Fix bug',
+                        url: 'https://github.com/my-org/my-repo/pull/42',
+                        number: 42,
+                        labels: { nodes: [] },
+                        baseRefName: 'main',
+                        mergeCommit: {
+                          __typename: 'Commit',
+                          remoteConfigHistory: { edges: [] },
+                          sha: 'abc123abc123abc123abc123abc123abc123abc1',
+                          message: 'Fix bug (#42)',
+                        },
+                        timelineItems: { edges: [] },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const res = await backportRun({
+        processArgs: [
+          '--sha=abc123abc123abc123abc123abc123abc123abc1',
+          '--nonInteractive',
+        ],
+        optionsFromModule: {},
+        exitCodeOnFailure: true,
+      });
+
+      expect(res.results).toHaveLength(1);
+      expect(res.results[0]).toMatchObject({
+        status: 'error',
+        errorCode: 'no-branches-exception',
+      });
+      expect(process.exitCode).toBeUndefined();
+    });
   });
 
   it('succeeds with --dryRun without calling GitHub APIs for PR creation', async () => {
@@ -379,13 +511,10 @@ describe('backportRun integration', () => {
       exitCodeOnFailure: false,
     });
 
-    expect(res.status).toBe('success');
-    if (res.status === 'success') {
-      expect(res.results).toHaveLength(1);
-      expect(res.results[0].status).toBe('success');
-      if (res.results[0].status === 'success') {
-        expect(res.results[0].pullRequestUrl).toBe('this-is-a-dry-run');
-      }
+    expect(res.results).toHaveLength(1);
+    expect(res.results[0].status).toBe('success');
+    if (res.results[0].status === 'success') {
+      expect(res.results[0].pullRequestUrl).toBe('this-is-a-dry-run');
     }
   });
 });

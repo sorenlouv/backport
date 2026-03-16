@@ -178,7 +178,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
     });
 
     it('returns the expected response', () => {
-      expect(res).toEqual({ didUpdate: false, url: 'myHtmlUrl', number: 1337 });
+      expect(res).toEqual({ url: 'myHtmlUrl', number: 1337 });
     });
 
     it('should make correct git commands', () => {
@@ -291,7 +291,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
     });
 
     it('returns the expected response', () => {
-      expect(res).toEqual({ didUpdate: false, url: 'myHtmlUrl', number: 1337 });
+      expect(res).toEqual({ url: 'myHtmlUrl', number: 1337 });
     });
   });
 
@@ -372,7 +372,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
     });
 
     it('returns the expected response', () => {
-      expect(res).toEqual({ didUpdate: false, url: 'myHtmlUrl', number: 1337 });
+      expect(res).toEqual({ url: 'myHtmlUrl', number: 1337 });
     });
   });
 

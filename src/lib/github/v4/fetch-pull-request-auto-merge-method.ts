@@ -1,6 +1,7 @@
 import { graphql } from '../../../graphql/generated/index.js';
 import type { ValidConfigOptions } from '../../../options/options.js';
-import { GithubV4Exception, graphqlRequest } from './client/graphql-client.js';
+import { BackportError } from '../../backport-error.js';
+import { graphqlRequest } from './client/graphql-client.js';
 
 export async function fetchPullRequestAutoMergeMethod(
   options: ValidConfigOptions,
@@ -36,7 +37,10 @@ export async function fetchPullRequestAutoMergeMethod(
   );
 
   if (result.error) {
-    throw new GithubV4Exception(result);
+    throw new BackportError({
+      code: 'github-api-exception',
+      message: result.error.message,
+    });
   }
 
   return result.data?.repository?.pullRequest?.autoMergeRequest?.mergeMethod;

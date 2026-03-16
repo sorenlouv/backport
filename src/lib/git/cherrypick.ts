@@ -23,7 +23,10 @@ export async function cherrypickAbort({
     return await spawnPromise('git', ['cherry-pick', '--abort'], cwd);
   } catch (error) {
     logger.warn('Failed to abort cherry-pick', error);
-    throw new BackportError('Failed to abort cherry-pick before retry');
+    throw new BackportError({
+      code: 'cherrypick-exception',
+      message: 'Failed to abort cherry-pick before retry',
+    });
   }
 }
 
@@ -68,28 +71,32 @@ export async function cherrypick({
     if (isSpawnError) {
       // missing `mainline` option
       if (error.message.includes('is a merge but no -m option was given')) {
-        throw new BackportError(
-          'Cherrypick failed because the selected commit was a merge commit. Please try again by specifying the parent with the `mainline` argument:\n\n> backport --mainline\n\nor:\n\n> backport --mainline <parent-number>\n\nOr refer to the git documentation for more information: https://git-scm.com/docs/git-cherry-pick#Documentation/git-cherry-pick.txt---mainlineparent-number',
-        );
+        throw new BackportError({
+          code: 'cherrypick-exception',
+          message:
+            'Cherrypick failed because the selected commit was a merge commit. Please try again by specifying the parent with the `mainline` argument:\n\n> backport --mainline\n\nor:\n\n> backport --mainline <parent-number>\n\nOr refer to the git documentation for more information: https://git-scm.com/docs/git-cherry-pick#Documentation/git-cherry-pick.txt---mainlineparent-number',
+        });
       }
 
       // commit was already backported
       if (error.message.includes('The previous cherry-pick is now empty')) {
         const shortSha = getShortSha(sha);
 
-        throw new BackportError(
-          `Cherrypick failed because the selected commit (${shortSha}) is empty. ${
+        throw new BackportError({
+          code: 'cherrypick-exception',
+          message: `Cherrypick failed because the selected commit (${shortSha}) is empty. ${
             mergedTargetPullRequest?.url
               ? `It looks like the commit was already backported in ${mergedTargetPullRequest.url}`
               : 'Did you already backport this commit? '
           }`,
-        );
+        });
       }
 
       if (error.message.includes(`bad object ${sha}`)) {
-        throw new BackportError(
-          `Cherrypick failed because commit "${sha}" was not found`,
-        );
+        throw new BackportError({
+          code: 'cherrypick-exception',
+          message: `Cherrypick failed because commit "${sha}" was not found`,
+        });
       }
 
       const isCherryPickError =

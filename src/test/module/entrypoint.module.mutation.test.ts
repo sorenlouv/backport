@@ -79,7 +79,6 @@ describe('entrypoint.module', () => {
         ],
         results: [
           {
-            didUpdate: false,
             pullRequestNumber: expect.any(Number),
             pullRequestUrl: expect.stringContaining(
               'https://github.com/backport-org/integration-test/pull/',
@@ -88,8 +87,7 @@ describe('entrypoint.module', () => {
             targetBranch: '7.x',
           },
         ],
-        status: 'success',
-      } as BackportResponse);
+      });
     });
 
     it('pull request: status code', async () => {
@@ -206,7 +204,6 @@ describe('entrypoint.module', () => {
         ],
         results: [
           {
-            didUpdate: false,
             pullRequestNumber: expect.any(Number),
             pullRequestUrl: expect.stringContaining(
               'https://github.com/backport-org/integration-test/pull/',
@@ -215,8 +212,7 @@ describe('entrypoint.module', () => {
             targetBranch: '7.x',
           },
         ],
-        status: 'success',
-      } as BackportResponse);
+      });
     });
 
     it('pull request: status code', async () => {
@@ -330,7 +326,6 @@ describe('entrypoint.module', () => {
         ],
         results: [
           {
-            didUpdate: false,
             pullRequestNumber: expect.any(Number),
             pullRequestUrl: expect.stringContaining(
               'https://github.com/backport-org/integration-test/pull/',
@@ -339,8 +334,7 @@ describe('entrypoint.module', () => {
             targetBranch: '7.x',
           },
         ],
-        status: 'success',
-      } as BackportResponse);
+      });
     });
 
     it('creates a new branch in origin (backport-org/integration-test)', async () => {

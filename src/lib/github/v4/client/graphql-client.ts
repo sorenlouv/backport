@@ -120,13 +120,3 @@ export async function graphqlRequest<TData, TVars>(
   logger.verbose('Data:', json.data);
   return { data: json.data, error: undefined, responseHeaders, statusCode };
 }
-
-export class GithubV4Exception<T> extends Error {
-  constructor(public result: OperationResultWithMeta<T>) {
-    const message = `${result.error?.message} (Github API v4)`;
-
-    super(message);
-
-    this.name = 'GithubV4Exception';
-  }
-}

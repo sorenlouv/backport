@@ -1,6 +1,7 @@
 import { graphql } from '../../../graphql/generated/index.js';
 import type { ValidConfigOptions } from '../../../options/options.js';
-import { graphqlRequest, GithubV4Exception } from './client/graphql-client.js';
+import { BackportError } from '../../backport-error.js';
+import { graphqlRequest } from './client/graphql-client.js';
 
 export async function fetchPullRequestId(
   options: ValidConfigOptions,
@@ -30,12 +31,18 @@ export async function fetchPullRequestId(
   );
 
   if (result.error) {
-    throw new GithubV4Exception(result);
+    throw new BackportError({
+      code: 'github-api-exception',
+      message: result.error.message,
+    });
   }
 
   const pullRequestId = result.data?.repository?.pullRequest?.id;
   if (!pullRequestId) {
-    throw new Error(`No pull request found with number "${pullNumber}"`);
+    throw new BackportError({
+      code: 'pr-not-found-exception',
+      pullNumber,
+    });
   }
 
   return pullRequestId;

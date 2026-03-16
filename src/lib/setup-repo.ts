@@ -20,9 +20,10 @@ export async function setupRepo(options: ValidConfigOptions) {
   // clone repo if folder does not already exists
   if (!isAlreadyCloned) {
     if (options.cwd.includes(repoPath)) {
-      throw new BackportError(
-        `Refusing to clone repo into "${repoPath}" when current working directory is "${options.cwd}". Please change backport directory via \`--dir\` option or run backport from another location`,
-      );
+      throw new BackportError({
+        code: 'clone-exception',
+        message: `Refusing to clone repo into "${repoPath}" when current working directory is "${options.cwd}". Please change backport directory via \`--dir\` option or run backport from another location`,
+      });
     }
 
     const spinner = ora(options.interactive).start();

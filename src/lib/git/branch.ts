@@ -86,9 +86,10 @@ export async function createBackportBranch({
       const invalidBranch = invalidRemoteRef ?? invalidCommit;
 
       if (invalidBranch) {
-        throw new BackportError(
-          `The branch "${invalidBranch}" is invalid or doesn't exist`,
-        );
+        throw new BackportError({
+          code: 'branch-not-found-exception',
+          branchName: invalidBranch,
+        });
       }
 
       const invalidRefSpec = error.context.stderr
@@ -97,9 +98,10 @@ export async function createBackportBranch({
         ?.at(1);
 
       if (invalidRefSpec) {
-        throw new BackportError(
-          `The remote "${invalidRefSpec}" is invalid or doesn't exist`,
-        );
+        throw new BackportError({
+          code: 'branch-not-found-exception',
+          branchName: invalidRefSpec,
+        });
       }
     }
 

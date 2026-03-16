@@ -1,5 +1,6 @@
 /** Iterates target branches, calling cherrypickAndCreateTargetPullRequest for each, collecting Result[]. */
 import type { ValidConfigOptions } from '../options/options.js';
+import type { BackportErrorCode, ErrorContext } from './backport-error.js';
 import { BackportError } from './backport-error.js';
 import { cherrypickAndCreateTargetPullRequest } from './cherrypickAndCreateTargetPullRequest/cherrypick-and-create-target-pull-request.js';
 import { getLogfilePath } from './env.js';
@@ -9,25 +10,20 @@ import type { Commit } from './sourceCommit/parse-source-commit.js';
 
 export type SuccessResult = {
   status: 'success';
-  didUpdate: boolean;
   targetBranch: string;
   pullRequestUrl: string;
   pullRequestNumber: number;
 };
 
-export type HandledErrorResult = {
-  status: 'handled-error';
-  targetBranch: string;
-  error: BackportError;
+export type ErrorResult = {
+  status: 'error';
+  targetBranch?: string;
+  errorMessage: string;
+  errorCode: BackportErrorCode | 'unhandled-exception';
+  errorContext?: ErrorContext;
 };
 
-export type UnhandledErrorResult = {
-  status: 'unhandled-error';
-  targetBranch: string;
-  error: Error;
-};
-
-export type Result = SuccessResult | HandledErrorResult | UnhandledErrorResult;
+export type Result = SuccessResult | ErrorResult;
 
 export async function runSequentially({
   options,
@@ -45,47 +41,40 @@ export async function runSequentially({
   await sequentially(targetBranches, async (targetBranch) => {
     logger.info(`Backporting ${JSON.stringify(commits)} to ${targetBranch}`);
     try {
-      const { number, url, didUpdate } =
-        await cherrypickAndCreateTargetPullRequest({
-          options,
-          commits,
-          targetBranch,
-        });
+      const { number, url } = await cherrypickAndCreateTargetPullRequest({
+        options,
+        commits,
+        targetBranch,
+      });
 
       results.push({
         targetBranch,
         status: 'success',
-        didUpdate,
         pullRequestUrl: url,
         pullRequestNumber: number,
       });
     } catch (error) {
-      const isHandledError = error instanceof BackportError;
-      if (isHandledError) {
-        results.push({
-          targetBranch,
-          status: 'handled-error',
-          error: error,
-        });
-      } else if (error instanceof Error) {
-        results.push({
-          targetBranch,
-          status: 'unhandled-error',
-          error: error,
-        });
-      } else {
-        throw error;
-      }
+      const isBackportError = error instanceof BackportError;
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      const errorCode: BackportErrorCode | 'unhandled-exception' =
+        isBackportError ? error.errorContext.code : 'unhandled-exception';
+      const errorContext = isBackportError ? error.errorContext : undefined;
+
+      results.push({
+        status: 'error',
+        targetBranch,
+        errorMessage,
+        errorCode,
+        errorContext,
+      });
 
       logger.error('runSequentially failed', error);
 
-      if (isHandledError) {
-        // don't output anything for `code: invalid-branch-exception`.
-        // Outputting is already handled
-        if (error.errorContext.code !== 'invalid-branch-exception') {
-          consoleLog(error.message);
+      if (isBackportError) {
+        if (errorCode !== 'invalid-branch-exception') {
+          consoleLog(errorMessage);
         }
-
         return;
       }
 
@@ -97,6 +86,5 @@ export async function runSequentially({
     }
   });
 
-  // return the results for consumers to programatically read
   return results;
 }

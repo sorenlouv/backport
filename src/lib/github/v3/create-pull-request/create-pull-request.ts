@@ -28,7 +28,6 @@ export async function createPullRequest({
 }): Promise<{
   url: string;
   number: number;
-  didUpdate: boolean;
 }> {
   const msg = `Creating ${options.draft ? 'draft ' : ''}pull request`;
   logger.info(
@@ -40,7 +39,7 @@ export async function createPullRequest({
 
   if (options.dryRun) {
     spinner.succeed();
-    return { didUpdate: false, number: 1337, url: 'this-is-a-dry-run' };
+    return { number: 1337, url: 'this-is-a-dry-run' };
   }
 
   try {
@@ -55,7 +54,6 @@ export async function createPullRequest({
     return {
       url: res.data.html_url,
       number: res.data.number,
-      didUpdate: false,
     };
   } catch (error) {
     // retrieve url for existing
@@ -70,7 +68,6 @@ export async function createPullRequest({
         return {
           url: existingPR.url,
           number: existingPR.number,
-          didUpdate: true,
         };
       }
     } catch (error_) {
@@ -85,6 +82,9 @@ export async function createPullRequest({
         : error instanceof Error
           ? error.message
           : String(error);
-    throw new BackportError(`Could not create pull request: ${message}`);
+    throw new BackportError({
+      code: 'pr-creation-exception',
+      message: `Could not create pull request: ${message}`,
+    });
   }
 }

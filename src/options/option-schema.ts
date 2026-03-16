@@ -136,9 +136,10 @@ export const validOptionsSchema = configOptionsSchema
       (!data.branchLabelMapping ||
         Object.keys(data.branchLabelMapping).length === 0)
     ) {
-      throw new BackportError(
-        `Please specify a target branch: "--branch 6.1".\n\nRead more: ${PROJECT_CONFIG_DOCS_LINK}`,
-      );
+      throw new BackportError({
+        code: 'config-error-exception',
+        message: `Please specify a target branch: "--branch 6.1".\n\nRead more: ${PROJECT_CONFIG_DOCS_LINK}`,
+      });
     }
   });
 

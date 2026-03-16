@@ -1,7 +1,7 @@
 /** Barrel export for GitHub GraphQL (v4) API operations. */
 
 // Client
-export { graphqlRequest, GithubV4Exception } from './client/graphql-client.js';
+export { graphqlRequest } from './client/graphql-client.js';
 export type {
   GitHubGraphQLError,
   OperationResultWithMeta,
@@ -18,10 +18,7 @@ export { fetchPullRequestsBySearchQuery } from './fetchCommits/fetch-pull-reques
 export { fetchExistingPullRequest } from './fetch-existing-pull-request.js';
 export { fetchPullRequestId } from './fetch-pull-request-id.js';
 export { fetchPullRequestAutoMergeMethod } from './fetch-pull-request-auto-merge-method.js';
-export {
-  enablePullRequestAutoMerge,
-  isMissingStatusChecksError,
-} from './enable-pull-request-auto-merge.js';
+export { enablePullRequestAutoMerge } from './enable-pull-request-auto-merge.js';
 export { disablePullRequestAutoMerge } from './disable-pull-request-auto-merge.js';
 
 // Auth & config

@@ -1,7 +1,9 @@
 import { PullRequestMergeMethod } from '../../../graphql/generated/graphql.js';
 import { graphql } from '../../../graphql/generated/index.js';
 import type { ValidConfigOptions } from '../../../options/options.js';
-import { graphqlRequest, GithubV4Exception } from './client/graphql-client.js';
+import { BackportError } from '../../backport-error.js';
+import type { OperationResultWithMeta } from './client/graphql-client.js';
+import { graphqlRequest } from './client/graphql-client.js';
 import { fetchPullRequestId } from './fetch-pull-request-id.js';
 
 export async function enablePullRequestAutoMerge(
@@ -53,14 +55,23 @@ export async function enablePullRequestAutoMerge(
   );
 
   if (result.error) {
-    throw new GithubV4Exception(result);
+    if (isMissingStatusChecksError(result)) {
+      throw new BackportError({
+        code: 'auto-merge-not-available-exception',
+        message: result.error.message,
+      });
+    }
+    throw new BackportError({
+      code: 'github-api-exception',
+      message: result.error.message,
+    });
   }
 
   return result.data?.enablePullRequestAutoMerge?.pullRequest?.number;
 }
 
-export function isMissingStatusChecksError(e: GithubV4Exception<unknown>) {
-  return e.result.error?.graphQLErrors.some(
+function isMissingStatusChecksError(result: OperationResultWithMeta<unknown>) {
+  return result.error?.graphQLErrors.some(
     (e) =>
       e.extensions.type === 'UNPROCESSABLE' &&
       (e.message.includes(

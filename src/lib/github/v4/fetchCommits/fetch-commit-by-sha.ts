@@ -4,7 +4,7 @@ import { BackportError } from '../../../backport-error.js';
 import { isMissingConfigFileException } from '../../../remote-config.js';
 import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
 import { parseSourceCommit } from '../../../sourceCommit/parse-source-commit.js';
-import { GithubV4Exception, graphqlRequest } from '../client/graphql-client.js';
+import { graphqlRequest } from '../client/graphql-client.js';
 
 export async function fetchCommitBySha(options: {
   accessToken: string;
@@ -43,16 +43,21 @@ export async function fetchCommitBySha(options: {
   );
 
   if (result.error && !isMissingConfigFileException(result)) {
-    throw new GithubV4Exception(result);
+    throw new BackportError({
+      code: 'github-api-exception',
+      message: result.error.message,
+    });
   }
 
   const { data } = result;
 
   const sourceCommit = data?.repository?.object;
   if (sourceCommit?.__typename !== 'Commit') {
-    throw new BackportError(
-      `No commit found on branch "${sourceBranch}" with sha "${sha}"`,
-    );
+    throw new BackportError({
+      code: 'commit-not-found-exception',
+      sha,
+      sourceBranch,
+    });
   }
 
   return parseSourceCommit({ options, sourceCommit });

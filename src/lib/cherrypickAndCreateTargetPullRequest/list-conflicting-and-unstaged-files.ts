@@ -56,7 +56,7 @@ export async function listConflictingAndUnstagedFiles({
 
   const MAX_RETRIES = 100;
   if (retries++ > MAX_RETRIES) {
-    throw new Error(`Maximum number of retries (${MAX_RETRIES}) exceeded`);
+    throw new BackportError({ code: 'max-retries-exception' });
   }
 
   const [_conflictingFiles, _unstagedFiles] = await Promise.all([

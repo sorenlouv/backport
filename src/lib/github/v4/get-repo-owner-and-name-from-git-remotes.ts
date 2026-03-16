@@ -1,7 +1,8 @@
 import { graphql } from '../../../graphql/generated/index.js';
 import { getRepoInfoFromGitRemotes } from '../../git/index.js';
 import { logger } from '../../logger.js';
-import { graphqlRequest, GithubV4Exception } from './client/graphql-client.js';
+import { BackportError } from '../../backport-error.js';
+import { graphqlRequest } from './client/graphql-client.js';
 
 // This method should be used to get the origin owner (instead of a fork owner)
 export async function getRepoOwnerAndNameFromGitRemotes({
@@ -50,7 +51,10 @@ export async function getRepoOwnerAndNameFromGitRemotes({
     );
 
     if (result.error) {
-      throw new GithubV4Exception(result);
+      throw new BackportError({
+        code: 'github-api-exception',
+        message: result.error.message,
+      });
     }
 
     const repo = result.data?.repository;
@@ -59,7 +63,7 @@ export async function getRepoOwnerAndNameFromGitRemotes({
       repoOwner: repo?.isFork ? repo.parent?.owner.login : repo?.owner.login, // get the original owner (not the fork owner)
     };
   } catch (error) {
-    if (error instanceof GithubV4Exception) {
+    if (error instanceof BackportError) {
       logger.error(error.message);
       return {};
     }

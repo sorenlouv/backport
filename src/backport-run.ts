@@ -1,15 +1,15 @@
 /** Top-level orchestrator: parse args, resolve options, fetch commits, run backports, report results. */
 import chalk from 'chalk';
+import type { BackportErrorCode } from './lib/backport-error.js';
 import { BackportError } from './lib/backport-error.js';
 import { getLogfilePath } from './lib/env.js';
 import { getCommits } from './lib/get-commits.js';
 import { getTargetBranches } from './lib/get-target-branches.js';
 import { createStatusComment } from './lib/github/v3/create-status-comment.js';
-import { GithubV4Exception } from './lib/github/v4/client/graphql-client.js';
 import { consoleLog, initLogger } from './lib/logger.js';
 import { ora } from './lib/ora.js';
 import { registerHandlebarsHelpers } from './lib/register-handlebars-helpers.js';
-import type { Result } from './lib/run-sequentially.js';
+import type { ErrorResult, Result } from './lib/run-sequentially.js';
 import { runSequentially } from './lib/run-sequentially.js';
 import { setupRepo } from './lib/setup-repo.js';
 import type { Commit } from './lib/sourceCommit/parse-source-commit.js';
@@ -22,30 +22,10 @@ import type { ConfigFileOptions } from './options/config-options.js';
 import type { ValidConfigOptions } from './options/options.js';
 import { getActiveOptionsFormatted, getOptions } from './options/options.js';
 
-export type BackportAbortResponse = {
-  status: 'aborted';
-  commits: Commit[];
-  error: BackportError;
-  errorMessage: string;
-};
-
-export type BackportSuccessResponse = {
-  status: 'success';
+export type BackportResponse = {
   commits: Commit[];
   results: Result[];
 };
-
-export type BackportFailureResponse = {
-  status: 'failure';
-  commits: Commit[];
-  error: Error | BackportError;
-  errorMessage: string;
-};
-
-export type BackportResponse =
-  | BackportSuccessResponse
-  | BackportFailureResponse
-  | BackportAbortResponse;
 
 export async function backportRun({
   processArgs,
@@ -75,11 +55,9 @@ export async function backportRun({
         process.exitCode = 1;
       }
       return {
-        status: 'failure',
-        error: error,
-        errorMessage: error.message,
         commits: [],
-      } satisfies BackportFailureResponse;
+        results: [toErrorResult(error)],
+      };
     }
 
     throw error;
@@ -101,11 +79,7 @@ export async function backportRun({
     logger.info('Commits', commits);
 
     if (options.ls) {
-      return {
-        status: 'success',
-        commits,
-        results: [],
-      } satisfies BackportSuccessResponse;
+      return { commits, results: [] };
     }
 
     const targetBranches = await getTargetBranches(options, commits);
@@ -120,50 +94,39 @@ export async function backportRun({
     });
     logger.info('Results', results);
 
-    const backportResponse: BackportResponse = {
-      status: 'success',
-      commits,
-      results,
-    };
+    const backportResponse: BackportResponse = { commits, results };
 
     await createStatusComment({ options, backportResponse });
 
     return backportResponse;
   } catch (error) {
     spinner.stop();
-    let backportResponse: BackportResponse;
 
-    if (
-      error instanceof BackportError &&
-      error.errorContext.code === 'no-branches-exception'
-    ) {
-      backportResponse = {
-        status: 'aborted',
-        commits,
-        error: error,
-        errorMessage: error.message,
-      };
-
-      // this will catch both BackportError and Error
-    } else if (error instanceof Error) {
-      backportResponse = {
-        status: 'failure',
-        commits,
-        error: error,
-        errorMessage: error.message,
-      };
-    } else {
+    if (!(error instanceof Error)) {
       throw error;
     }
+
+    const errorResult = toErrorResult(error);
+    const backportResponse: BackportResponse = {
+      commits,
+      results: [errorResult],
+    };
 
     if (options) {
       await createStatusComment({ options, backportResponse });
     }
 
-    outputError({ e: error, logFilePath });
+    outputError({
+      errorCode: errorResult.errorCode,
+      errorMessage: errorResult.errorMessage,
+      error,
+      logFilePath,
+    });
 
-    // only change exit code for failures while in cli mode
-    if (exitCodeOnFailure && backportResponse.status === 'failure') {
+    if (
+      exitCodeOnFailure &&
+      errorResult.errorCode !== 'no-branches-exception'
+    ) {
       process.exitCode = 1;
     }
 
@@ -173,30 +136,45 @@ export async function backportRun({
   }
 }
 
+function toErrorResult(error: Error): ErrorResult {
+  const isBackportError = error instanceof BackportError;
+  return {
+    status: 'error',
+    errorMessage: error.message,
+    errorCode: isBackportError
+      ? error.errorContext.code
+      : 'unhandled-exception',
+    errorContext: isBackportError ? error.errorContext : undefined,
+  };
+}
+
 function outputError({
-  e,
+  errorCode,
+  errorMessage,
+  error,
   logFilePath,
 }: {
-  e: BackportError | GithubV4Exception<unknown> | Error;
+  errorCode: BackportErrorCode | 'unhandled-exception';
+  errorMessage: string;
+  error: unknown;
   logFilePath?: string;
 }) {
-  if (e instanceof BackportError || e instanceof GithubV4Exception) {
-    consoleLog(e.message);
+  if (errorCode !== 'unhandled-exception') {
+    consoleLog(errorMessage);
     return;
   }
 
-  if (e instanceof Error) {
-    // output
-    consoleLog('\n');
-    consoleLog(chalk.bold('⚠️  Ouch! An unhandled error occurred 😿'));
-    consoleLog(e.stack ?? e.message);
-    consoleLog(
-      'Please open an issue in https://github.com/sorenlouv/backport/issues',
-    );
+  consoleLog('\n');
+  consoleLog(chalk.bold('⚠️  Ouch! An unhandled error occurred 😿'));
+  consoleLog(
+    error instanceof Error ? (error.stack ?? errorMessage) : errorMessage,
+  );
+  consoleLog(
+    'Please open an issue in https://github.com/sorenlouv/backport/issues',
+  );
 
-    const infoLogPath = getLogfilePath({ logFilePath, logLevel: 'info' });
-    consoleLog(
-      chalk.italic(`For additional details see the logs: ${infoLogPath}`),
-    );
-  }
+  const infoLogPath = getLogfilePath({ logFilePath, logLevel: 'info' });
+  consoleLog(
+    chalk.italic(`For additional details see the logs: ${infoLogPath}`),
+  );
 }

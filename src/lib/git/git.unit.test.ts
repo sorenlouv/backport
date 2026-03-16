@@ -353,7 +353,7 @@ describe('createBackportBranch', () => {
         backportBranch,
       }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[BackportError: The remote "'https://github.com/elastic/kibana.git'" is invalid or doesn't exist]`,
+      `[BackportError: The branch "'https://github.com/elastic/kibana.git'" is invalid or doesn't exist]`,
     );
   });
 

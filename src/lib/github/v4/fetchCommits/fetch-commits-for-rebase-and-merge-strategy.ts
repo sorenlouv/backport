@@ -1,7 +1,8 @@
 import { first } from 'lodash-es';
 import type { Commit } from '../../../../entrypoint.api.js';
 import { graphql } from '../../../../graphql/generated/index.js';
-import { graphqlRequest, GithubV4Exception } from '../client/graphql-client.js';
+import { BackportError } from '../../../backport-error.js';
+import { graphqlRequest } from '../client/graphql-client.js';
 import { fetchCommitBySha } from './fetch-commit-by-sha.js';
 
 export async function fetchCommitsForRebaseAndMergeStrategy(
@@ -76,7 +77,10 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
   );
 
   if (result.error) {
-    throw new GithubV4Exception(result);
+    throw new BackportError({
+      code: 'github-api-exception',
+      message: result.error.message,
+    });
   }
 
   const pullRequestNode = result.data?.repository?.pullRequest;

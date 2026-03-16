@@ -13,21 +13,13 @@ import type { ValidConfigOptions } from './options/options.js';
 import { excludeUndefined } from './utils/exclude-undefined.js';
 
 // public API
-export type {
-  HandledErrorResult,
-  SuccessResult,
-  UnhandledErrorResult,
-} from './lib/run-sequentially.js';
-export type {
-  BackportAbortResponse,
-  BackportFailureResponse,
-  BackportResponse,
-  BackportSuccessResponse,
-} from './backport-run.js';
+export type { ErrorResult, SuccessResult } from './lib/run-sequentially.js';
+export type { BackportResponse } from './backport-run.js';
 export type { Commit } from './lib/sourceCommit/parse-source-commit.js';
 export type { ConfigFileOptions } from './options/config-options.js';
 export { getTargetBranchFromLabel } from './lib/sourceCommit/get-pull-request-states.js';
 export { BackportError } from './lib/backport-error.js';
+export type { BackportErrorCode, ErrorContext } from './lib/backport-error.js';
 export { getGlobalConfig } from './options/config/global-config.js';
 export { getProjectConfig } from './options/config/project-config.js';
 

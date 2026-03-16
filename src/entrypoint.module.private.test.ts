@@ -1,7 +1,4 @@
-import type {
-  BackportFailureResponse,
-  BackportSuccessResponse,
-} from './backport-run.js';
+import type { BackportResponse } from './backport-run.js';
 import type { Commit } from './entrypoint.api.js';
 import { backportRun, getCommits } from './entrypoint.api.js';
 import { getFirstLine } from './lib/github/commit-formatters.js';
@@ -23,9 +20,9 @@ describe('entrypoint.module', () => {
       await resetSandbox(sandboxPath);
     });
     describe('when running into merge conflict', () => {
-      let response: BackportSuccessResponse;
+      let response: BackportResponse;
       beforeAll(async () => {
-        response = (await backportRun({
+        response = await backportRun({
           options: {
             repoOwner: 'backport-org',
             repoName: 'repo-with-conflicts',
@@ -35,11 +32,7 @@ describe('entrypoint.module', () => {
             targetBranches: ['7.x'],
             dir: sandboxPath,
           },
-        })) as BackportSuccessResponse;
-      });
-
-      it('should have overall status=success', async () => {
-        expect(response.status).toBe('success');
+        });
       });
 
       it('should fail with "handled-error"', () => {
@@ -67,9 +60,9 @@ describe('entrypoint.module', () => {
     });
 
     describe('when running into merge conflict with autoResolveConflictsWithTheirs=true', () => {
-      let response: BackportSuccessResponse;
+      let response: BackportResponse;
       beforeAll(async () => {
-        response = (await backportRun({
+        response = await backportRun({
           options: {
             repoOwner: 'backport-org',
             repoName: 'repo-with-conflicts',
@@ -81,11 +74,7 @@ describe('entrypoint.module', () => {
             dryRun: true,
             dir: sandboxPath,
           },
-        })) as BackportSuccessResponse;
-      });
-
-      it('should have overall status=success', () => {
-        expect(response.status).toBe('success');
+        });
       });
 
       it('should succeed instead of returning a conflict error', () => {
@@ -104,9 +93,9 @@ describe('entrypoint.module', () => {
     });
 
     describe('when target branch in branchLabelMapping is invalid', () => {
-      let response: BackportSuccessResponse;
+      let response: BackportResponse;
       beforeAll(async () => {
-        response = (await backportRun({
+        response = await backportRun({
           options: {
             accessToken,
             branchLabelMapping: {
@@ -118,23 +107,25 @@ describe('entrypoint.module', () => {
             repoOwner: 'backport-org',
             dir: sandboxPath,
           },
-        })) as BackportSuccessResponse;
+        });
       });
 
       it('should return handled error', async () => {
-        expect(response.status).toBe('success');
-        // @ts-expect-error
-        expect(response.results[0].error.errorContext).toEqual({
-          code: 'invalid-branch-exception',
-          branchName: '--foo',
+        expect(response.results[0]).toMatchObject({
+          status: 'error',
+          errorCode: 'invalid-branch-exception',
+          errorContext: {
+            code: 'invalid-branch-exception',
+            branchName: '--foo',
+          },
         });
       });
     });
 
     describe('when missing branches to backport to', () => {
-      let response: BackportFailureResponse;
+      let response: BackportResponse;
       beforeAll(async () => {
-        response = (await backportRun({
+        response = await backportRun({
           options: {
             repoOwner: 'backport-org',
             repoName: 'repo-with-conflicts',
@@ -143,23 +134,22 @@ describe('entrypoint.module', () => {
             pullNumber: 12,
             dir: sandboxPath,
           },
-        })) as BackportFailureResponse;
+        });
       });
 
       it('should correct error code', async () => {
-        expect(response.status).toBe('aborted');
-        //@ts-expect-error
-        expect(response.error.errorContext.code).toBe('no-branches-exception');
-        expect(response.error.message).toBe(
-          'There are no branches to backport to. Aborting.',
-        );
+        expect(response.results[0]).toMatchObject({
+          status: 'error',
+          errorCode: 'no-branches-exception',
+          errorMessage: 'There are no branches to backport to. Aborting.',
+        });
       });
     });
 
     describe('when backporting', () => {
-      let response: BackportSuccessResponse;
+      let response: BackportResponse;
       beforeAll(async () => {
-        response = (await backportRun({
+        response = await backportRun({
           options: {
             repoOwner: 'backport-org',
             repoName: 'repo-with-conflicts',
@@ -169,17 +159,14 @@ describe('entrypoint.module', () => {
             dryRun: true,
             dir: sandboxPath,
           },
-        })) as BackportSuccessResponse;
+        });
       });
 
       it('should return successful backport response', async () => {
-        expect(response.status).toBe('success');
         expect(response).toEqual({
-          status: 'success',
           results: [
             {
               status: 'success',
-              didUpdate: false,
               pullRequestNumber: 1337,
               pullRequestUrl: 'this-is-a-dry-run',
               targetBranch: '7.x',

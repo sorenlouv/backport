@@ -1,6 +1,5 @@
 import { ora } from '../../../lib/ora.js';
 import { logger } from '../../logger.js';
-import { GithubV4Exception } from '../v4/client/graphql-client.js';
 import { createOctokitClient, retryOctokitRequest } from './octokit-client.js';
 
 export async function addReviewersToPullRequest({
@@ -49,12 +48,7 @@ export async function addReviewersToPullRequest({
 
     spinner.succeed();
   } catch (error) {
-    const message =
-      error instanceof GithubV4Exception
-        ? error.result?.data?.message
-        : error instanceof Error
-          ? error.message
-          : '';
+    const message = error instanceof Error ? error.message : '';
 
     spinner.fail(`Adding reviewers. ${message}`);
     logger.error(`Could not add reviewers to PR ${pullNumber}`, error);

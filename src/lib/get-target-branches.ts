@@ -55,7 +55,10 @@ export function getTargetBranchChoices(
   ).filter((choice) => choice.name !== sourceBranch);
 
   if (isEmpty(targetBranchesChoices)) {
-    throw new BackportError('Missing target branch choices');
+    throw new BackportError({
+      code: 'config-error-exception',
+      message: 'Missing target branch choices',
+    });
   }
 
   if (!options.branchLabelMapping) {

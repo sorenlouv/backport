@@ -3,7 +3,7 @@ import type { ValidConfigOptions } from '../../../../options/options.js';
 import { BackportError } from '../../../backport-error.js';
 import { isMissingConfigFileException } from '../../../remote-config.js';
 import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
-import { GithubV4Exception, graphqlRequest } from '../client/graphql-client.js';
+import { graphqlRequest } from '../client/graphql-client.js';
 import { fetchCommitBySha } from './fetch-commit-by-sha.js';
 import { fetchCommitsForRebaseAndMergeStrategy } from './fetch-commits-for-rebase-and-merge-strategy.js';
 
@@ -71,19 +71,28 @@ export async function fetchCommitsByPullNumber(options: {
   );
 
   if (result.error && !isMissingConfigFileException(result)) {
-    throw new GithubV4Exception(result);
+    throw new BackportError({
+      code: 'github-api-exception',
+      message: result.error.message,
+    });
   }
 
   const { data } = result;
 
   const pullRequestNode = data?.repository?.pullRequest;
   if (!pullRequestNode) {
-    throw new BackportError(`The PR #${pullNumber} does not exist`);
+    throw new BackportError({
+      code: 'pr-not-found-exception',
+      pullNumber,
+    });
   }
 
   const { mergeCommit } = pullRequestNode;
   if (mergeCommit === null) {
-    throw new BackportError(`The PR #${pullNumber} is not merged`);
+    throw new BackportError({
+      code: 'pr-not-merged-exception',
+      pullNumber,
+    });
   }
 
   const lastCommitInPullRequest =

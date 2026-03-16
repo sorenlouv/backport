@@ -1,7 +1,7 @@
 import { graphql } from '../../../graphql/generated/index.js';
 import { BackportError } from '../../backport-error.js';
 import { ora } from '../../ora.js';
-import { GithubV4Exception, graphqlRequest } from './client/graphql-client.js';
+import { graphqlRequest } from './client/graphql-client.js';
 
 export interface TargetBranchResponse {
   repository: { ref: { id: string } | null };
@@ -45,7 +45,10 @@ export async function validateTargetBranch({
   );
 
   if (result.error) {
-    throw new GithubV4Exception(result);
+    throw new BackportError({
+      code: 'github-api-exception',
+      message: result.error.message,
+    });
   }
 
   if (!result.data?.repository?.ref) {

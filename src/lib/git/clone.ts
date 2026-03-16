@@ -1,3 +1,4 @@
+import { BackportError } from '../backport-error.js';
 import { spawnStream } from '../child-process-promisified.js';
 import { logger } from '../logger.js';
 
@@ -52,7 +53,12 @@ export async function cloneRepo(
       if (code === 0 || code === null) {
         resolve();
       } else {
-        reject(new Error(`Git clone failed with exit code: ${code}`));
+        reject(
+          new BackportError({
+            code: 'clone-exception',
+            message: `Git clone failed with exit code: ${code}`,
+          }),
+        );
       }
     });
   });

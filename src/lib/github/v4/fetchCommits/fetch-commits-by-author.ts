@@ -7,7 +7,7 @@ import { BackportError } from '../../../backport-error.js';
 import { isMissingConfigFileException } from '../../../remote-config.js';
 import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
 import { parseSourceCommit } from '../../../sourceCommit/parse-source-commit.js';
-import { graphqlRequest, GithubV4Exception } from '../client/graphql-client.js';
+import { graphqlRequest } from '../client/graphql-client.js';
 import { fetchAuthorId } from '../fetch-author-id.js';
 
 async function fetchByCommitPath({
@@ -95,13 +95,17 @@ async function fetchByCommitPath({
 
   if (result.error) {
     if (result.statusCode === 502 && maxNumber > 50) {
-      throw new BackportError(
-        `The GitHub API returned a 502 error. Try reducing the number of commits to display: "--max-number 20"`,
-      );
+      throw new BackportError({
+        code: 'github-api-exception',
+        message: `The GitHub API returned a 502 error. Try reducing the number of commits to display: "--max-number 20"`,
+      });
     }
 
     if (!isMissingConfigFileException(result)) {
-      throw new GithubV4Exception(result);
+      throw new BackportError({
+        code: 'github-api-exception',
+        message: result.error.message,
+      });
     }
   }
 
@@ -136,9 +140,10 @@ export async function fetchCommitsByAuthor(options: {
 
   // we only need to check if the first item is `null` (if the first is `null` they all are)
   if (first(responses)?.repository?.ref === null) {
-    throw new BackportError(
-      `The upstream branch "${sourceBranch}" does not exist. Try specifying a different branch with "--source-branch <your-branch>"`,
-    );
+    throw new BackportError({
+      code: 'branch-not-found-exception',
+      branchName: sourceBranch,
+    });
   }
 
   const commits = responses
@@ -166,7 +171,10 @@ export async function fetchCommitsByAuthor(options: {
       ? `There are no commits by "${options.author}" in this repository${pathText}. Try with \`--all\` for commits by all users or \`--author=<username>\` for commits from a specific user`
       : `There are no commits in this repository${pathText}`;
 
-    throw new BackportError(errorText);
+    throw new BackportError({
+      code: 'no-commits-found-exception',
+      message: errorText,
+    });
   }
 
   const commitsUnique = uniqBy(commits, (c) => c.sourceCommit.sha);

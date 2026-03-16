@@ -1,10 +1,7 @@
 import type { ValidConfigOptions } from '../../options/options.js';
+import { BackportError } from '../backport-error.js';
 import { mergePullRequest } from '../github/v3/merge-pull-request.js';
-import { GithubV4Exception } from '../github/v4/client/graphql-client.js';
-import {
-  enablePullRequestAutoMerge,
-  isMissingStatusChecksError,
-} from '../github/v4/enable-pull-request-auto-merge.js';
+import { enablePullRequestAutoMerge } from '../github/v4/enable-pull-request-auto-merge.js';
 import { logger } from '../logger.js';
 import { ora } from '../ora.js';
 
@@ -26,7 +23,7 @@ export async function autoMergeNowOrLater(
     try {
       await enablePullRequestAutoMerge(options, pullNumber);
     } catch (error) {
-      if (!(error instanceof GithubV4Exception)) {
+      if (!(error instanceof BackportError)) {
         throw error;
       }
 
@@ -34,11 +31,10 @@ export async function autoMergeNowOrLater(
         `Auto merge: Failed to enable auto merge for PR "#${pullNumber}" due to ${error.message}`,
       );
 
-      if (!isMissingStatusChecksError(error)) {
+      if (error.errorContext.code !== 'auto-merge-not-available-exception') {
         throw error;
       }
 
-      // if auto merge cannot be enabled due to missing status checks, the PR should be merged immediately
       logger.info('Auto merge: Attempting to merge immediately');
       await mergePullRequest(options, pullNumber);
       spinner.text = 'Auto-merge: Pull request was merged immediately';

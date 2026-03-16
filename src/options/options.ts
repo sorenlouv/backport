@@ -94,9 +94,10 @@ async function getRequiredOptions(combined: OptionsFromConfigAndCli) {
   // require access token
   if (!accessToken) {
     const globalConfigPath = getGlobalConfigPath(globalConfigFile);
-    throw new BackportError(
-      `Please update your config file: "${globalConfigPath}".\nIt must contain a valid "accessToken".\n\nRead more: ${GLOBAL_CONFIG_DOCS_LINK}`,
-    );
+    throw new BackportError({
+      code: 'invalid-credentials-exception',
+      message: `Please update your config file: "${globalConfigPath}".\nIt must contain a valid "accessToken".\n\nRead more: ${GLOBAL_CONFIG_DOCS_LINK}`,
+    });
   }
 
   // attempt to retrieve repo-owner and repo-name from git remote
@@ -107,9 +108,10 @@ async function getRequiredOptions(combined: OptionsFromConfigAndCli) {
   });
 
   if (!gitRemote.repoName || !gitRemote.repoOwner) {
-    throw new BackportError(
-      `Please specify a repository: "--repo elastic/kibana".\n\nRead more: ${PROJECT_CONFIG_DOCS_LINK}`,
-    );
+    throw new BackportError({
+      code: 'config-error-exception',
+      message: `Please specify a repository: "--repo elastic/kibana".\n\nRead more: ${PROJECT_CONFIG_DOCS_LINK}`,
+    });
   }
 
   return {
@@ -147,7 +149,10 @@ const DISALLOW_EMPTY_STRING_OPTIONS = [
 function throwForEmptyStringOptions(options: Record<string, unknown>) {
   for (const optionName of DISALLOW_EMPTY_STRING_OPTIONS) {
     if (options[optionName] === '') {
-      throw new BackportError(`"${optionName}" cannot be empty!`);
+      throw new BackportError({
+        code: 'config-error-exception',
+        message: `"${optionName}" cannot be empty!`,
+      });
     }
   }
 }

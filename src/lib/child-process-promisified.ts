@@ -1,4 +1,5 @@
 import childProcess from 'node:child_process';
+import { BackportError } from './backport-error.js';
 import { logger } from './logger.js';
 
 const MAX_BUFFER_SIZE = 100 * 1024 * 1024; // 100MB
@@ -58,9 +59,10 @@ export async function spawnPromise(
       if (stdout.length > MAX_BUFFER_SIZE) {
         subprocess.kill();
         reject(
-          new Error(
-            `stdout exceeded ${MAX_BUFFER_SIZE} bytes for: "${fullCmd}"`,
-          ),
+          new BackportError({
+            code: 'buffer-overflow-exception',
+            message: `stdout exceeded ${MAX_BUFFER_SIZE} bytes for: "${fullCmd}"`,
+          }),
         );
       }
     });
@@ -70,9 +72,10 @@ export async function spawnPromise(
       if (stderr.length > MAX_BUFFER_SIZE) {
         subprocess.kill();
         reject(
-          new Error(
-            `stderr exceeded ${MAX_BUFFER_SIZE} bytes for: "${fullCmd}"`,
-          ),
+          new BackportError({
+            code: 'buffer-overflow-exception',
+            message: `stderr exceeded ${MAX_BUFFER_SIZE} bytes for: "${fullCmd}"`,
+          }),
         );
       }
     });

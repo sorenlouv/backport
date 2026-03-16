@@ -35,16 +35,22 @@ export async function pushBackportBranch({
       error instanceof SpawnError &&
       error.context.stderr.toLowerCase().includes(`repository not found`)
     ) {
-      throw new BackportError(
-        `Error pushing to https://github.com/${repoForkOwner}/${options.repoName}. Repository does not exist. Either fork the repository (https://github.com/${options.repoOwner}/${options.repoName}) or disable fork mode via "--no-fork".\nRead more about fork mode in the docs: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#fork`,
-      );
+      throw new BackportError({
+        code: 'repo-not-found-exception',
+        repoOwner: options.repoOwner,
+        repoName: options.repoName,
+        repoForkOwner,
+      });
     }
 
     if (
       error instanceof SpawnError &&
       error.context.stderr.includes(`could not read Username for`)
     ) {
-      throw new BackportError(`Invalid credentials: ${error.message}`);
+      throw new BackportError({
+        code: 'invalid-credentials-exception',
+        message: `Invalid credentials: ${error.message}`,
+      });
     }
 
     throw error;

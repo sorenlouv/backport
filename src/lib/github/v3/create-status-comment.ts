@@ -1,7 +1,6 @@
 import type { BackportResponse } from '../../../backport-run.js';
 import type { ValidConfigOptions } from '../../../options/options.js';
 import { getPackageVersion } from '../../../utils/package-version.js';
-import { BackportError } from '../../backport-error.js';
 import { logger, redactAccessToken } from '../../logger.js';
 import { getFirstLine } from '../commit-formatters.js';
 import { createOctokitClient, retryOctokitRequest } from './octokit-client.js';
@@ -69,34 +68,32 @@ export function getCommentBody({
     publishStatusCommentOnSuccess,
   } = options;
 
-  // eg. in addition to `--noStatusComment` add `--noFailureStatusComment` and `--noSuccessStatusComment` where the former will overwrite the two latter
+  const { results } = backportResponse;
 
+  const isAborted = results.some(
+    (r) => r.status === 'error' && r.errorCode === 'no-branches-exception',
+  );
   const didAllBackportsSucceed =
-    backportResponse.status === 'success' &&
-    backportResponse.results.every((r) => r.status === 'success');
-
+    results.length > 0 && results.every((r) => r.status === 'success');
   const didAllBackportsFail =
-    backportResponse.status === 'failure' ||
-    (backportResponse.status === 'success' &&
-      backportResponse.results.every((r) => r.status !== 'success'));
+    !isAborted &&
+    results.length > 0 &&
+    results.every((r) => r.status !== 'success');
+  const isPreLoopError =
+    !isAborted &&
+    results.length === 1 &&
+    results[0].status === 'error' &&
+    !results[0].targetBranch;
 
   if (
-    // don't publish on dry-run
     options.dryRun ||
-    //
-    // don't publish comment under any circumstances
     (!publishStatusCommentOnFailure &&
       !publishStatusCommentOnSuccess &&
       !publishStatusCommentOnAbort) ||
-    //
-    // dont publish comment if all backports suceeded
     (didAllBackportsSucceed && !publishStatusCommentOnSuccess) ||
-    //
-    // dont publish comment if operation failed or all backports failed
-    (didAllBackportsFail && !publishStatusCommentOnFailure) ||
-    //
-    // dont publish comment if backport was aborted
-    (backportResponse.status === 'aborted' && !publishStatusCommentOnAbort)
+    ((didAllBackportsFail || isPreLoopError) &&
+      !publishStatusCommentOnFailure) ||
+    (isAborted && !publishStatusCommentOnAbort)
   ) {
     return;
   }
@@ -109,23 +106,21 @@ export function getCommentBody({
     : '';
   const questionsAndLinkToBackport = `\n### Questions ?\nPlease refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)${linkToGithubActionLogs}\n`;
 
-  if (
-    backportResponse.status === 'aborted' &&
-    backportResponse.error.errorContext.code === 'no-branches-exception'
-  ) {
+  if (isAborted) {
     return `## ⚪ Backport skipped
 The pull request was not backported as there were no branches to backport to. If this is a mistake, please apply the desired version labels or run the backport tool manually.
 ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
   }
 
-  if (backportResponse.status !== 'success') {
+  if (isPreLoopError && results[0].status === 'error') {
+    const errorMessage = results[0].errorMessage;
     return `## 💔 Backport failed
 The pull request could not be backported due to the following error:
-\`${backportResponse.error.message}\`
+\`${errorMessage}\`
 ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
   }
 
-  const tableBody = backportResponse.results
+  const tableBody = results
     .map((result) => {
       if (result.status === 'success') {
         const prShield = `[<img src="https://img.shields.io/github/pulls/detail/state/${repoOwner}/${repoName}/${result.pullRequestNumber}">](${result.pullRequestUrl})`;
@@ -138,13 +133,12 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
       }
 
       if (
-        result.error instanceof BackportError &&
-        result.error.errorContext.code === 'merge-conflict-exception'
+        result.errorCode === 'merge-conflict-exception' &&
+        result.errorContext?.code === 'merge-conflict-exception'
       ) {
         const unmergedBackports =
-          result.error.errorContext.commitsWithoutBackports.map((c) => {
+          result.errorContext.commitsWithoutBackports.map((c) => {
             const msg = getFirstLine(c.commit.sourceCommit.message);
-            // make sure to escape the pipe character to ensure the markdown table is correct
             const msgEscaped = msg.replaceAll('|', String.raw`\|`);
             return ` - [${msgEscaped}](${c.commit.sourcePullRequest?.url})`;
           });
@@ -169,22 +163,20 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
       }
 
       const message =
-        result.status === 'handled-error'
-          ? result.error.message
-          : 'An unhandled error occurred. Please see the logs for details';
+        result.errorCode === 'unhandled-exception'
+          ? 'An unhandled error occurred. Please see the logs for details'
+          : result.errorMessage;
       return ['❌', result.targetBranch, message];
     })
     .map((line) => line.join('|'))
     .join('|\n|');
 
   const table =
-    backportResponse.results.length > 0
+    results.length > 0
       ? `\n\n| Status | Branch | Result |\n|:------:|:------:|:------|\n|${tableBody}|\n`
       : '';
 
-  const didAnyBackportsSucceed = backportResponse.results.some(
-    (r) => r.status === 'success',
-  );
+  const didAnyBackportsSucceed = results.some((r) => r.status === 'success');
 
   const header = didAllBackportsSucceed
     ? '## 💚 All backports created successfully'

@@ -70,9 +70,11 @@ export async function getCommits(options: ValidConfigOptions) {
     }
 
     if (!options.interactive && !options.ls) {
-      throw new BackportError(
-        'When "--interactive" is disabled either `--sha` or `--pr` must be specified',
-      );
+      throw new BackportError({
+        code: 'config-error-exception',
+        message:
+          'When "--interactive" is disabled either `--sha` or `--pr` must be specified',
+      });
     }
 
     spinner.text = options.prFilter

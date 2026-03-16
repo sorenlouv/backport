@@ -13,7 +13,7 @@ import {
   isMissingConfigFileException,
 } from '../../../remote-config.js';
 import type { OperationResultWithMeta } from '../client/graphql-client.js';
-import { GithubV4Exception, graphqlRequest } from '../client/graphql-client.js';
+import { graphqlRequest } from '../client/graphql-client.js';
 import { getInvalidAccessTokenMessage } from '../get-invalid-access-token-message.js';
 
 // fetches the default source branch for the repo (normally "master")
@@ -80,11 +80,17 @@ export async function getOptionsFromGithub(options: {
     });
 
     if (isInvalidAccessTokenMessage) {
-      throw new BackportError(isInvalidAccessTokenMessage);
+      throw new BackportError({
+        code: 'invalid-credentials-exception',
+        message: isInvalidAccessTokenMessage,
+      });
     }
 
     if (!isMissingConfigFileException(result)) {
-      throw new GithubV4Exception(result);
+      throw new BackportError({
+        code: 'github-api-exception',
+        message: result.error.message,
+      });
     }
   }
 
@@ -92,16 +98,21 @@ export async function getOptionsFromGithub(options: {
     getInsufficientPermissionsErrorMessage(result);
 
   if (insufficientPermissionsErrorMessage) {
-    throw new BackportError(insufficientPermissionsErrorMessage);
+    throw new BackportError({
+      code: 'invalid-credentials-exception',
+      message: insufficientPermissionsErrorMessage,
+    });
   }
 
   const { data } = result;
 
   // it is not possible to have a branch named "backport"
   if (data?.repository?.illegalBackportBranch) {
-    throw new BackportError(
-      'You must delete the branch "backport" to continue. See https://github.com/sorenlouv/backport/issues/155 for details',
-    );
+    throw new BackportError({
+      code: 'config-error-exception',
+      message:
+        'You must delete the branch "backport" to continue. See https://github.com/sorenlouv/backport/issues/155 for details',
+    });
   }
 
   const remoteConfig = await getRemoteConfigFileOptions(
@@ -111,9 +122,11 @@ export async function getOptionsFromGithub(options: {
   );
 
   if (!data) {
-    throw new BackportError(
-      'Failed to fetch options from GitHub. Please check your access token and repository settings.',
-    );
+    throw new BackportError({
+      code: 'config-error-exception',
+      message:
+        'Failed to fetch options from GitHub. Please check your access token and repository settings.',
+    });
   }
 
   return {
