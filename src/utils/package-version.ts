@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-function findPackageJson(): string {
+function findPackageJson(): string | undefined {
   let dir = dirname(fileURLToPath(import.meta.url));
   while (dir !== dirname(dir)) {
     const candidate = join(dir, 'package.json');
@@ -14,11 +14,14 @@ function findPackageJson(): string {
     }
     dir = dirname(dir);
   }
-  throw new Error('Could not find backport package.json');
+  return undefined;
 }
 
-const pkg = JSON.parse(readFileSync(findPackageJson(), 'utf8'));
+const packageJsonPath = findPackageJson();
+const packageVersion: string = packageJsonPath
+  ? JSON.parse(readFileSync(packageJsonPath, 'utf8')).version
+  : 'unknown';
 
 export function getPackageVersion() {
-  return pkg.version;
+  return packageVersion;
 }
