@@ -1,7 +1,7 @@
 import { graphql } from '../../../graphql/generated/index.js';
+import { BackportError } from '../../backport-error.js';
 import { getRepoInfoFromGitRemotes } from '../../git/index.js';
 import { logger } from '../../logger.js';
-import { BackportError } from '../../backport-error.js';
 import { graphqlRequest } from './client/graphql-client.js';
 
 // This method should be used to get the origin owner (instead of a fork owner)

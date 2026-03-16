@@ -1,8 +1,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import type { BackportResponse } from '../../backport-run.js';
-import type { ErrorResult } from '../../lib/run-sequentially.js';
 import type { ConfigFileOptions } from '../../entrypoint.api.js';
+import type { ErrorResult } from '../../lib/run-sequentially.js';
 import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
 import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
