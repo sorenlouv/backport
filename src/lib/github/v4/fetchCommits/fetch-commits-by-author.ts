@@ -125,15 +125,14 @@ export async function fetchCommitsByAuthor(options: {
   const { sourceBranch, commitPaths = [] } = options;
 
   const authorId = await fetchAuthorId(options);
-  const responses = (
-    await Promise.all(
-      isEmpty(commitPaths)
-        ? [fetchByCommitPath({ options, authorId, commitPath: null })]
-        : commitPaths.map((commitPath) =>
-            fetchByCommitPath({ options, authorId, commitPath }),
-          ),
-    )
-  ).filter(filterNil);
+  const allResponses = await Promise.all(
+    isEmpty(commitPaths)
+      ? [fetchByCommitPath({ options, authorId, commitPath: null })]
+      : commitPaths.map((commitPath) =>
+          fetchByCommitPath({ options, authorId, commitPath }),
+        ),
+  );
+  const responses = allResponses.filter(filterNil);
 
   // we only need to check if the first item is `null` (if the first is `null` they all are)
   if (first(responses)?.repository?.ref === null) {

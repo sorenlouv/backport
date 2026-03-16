@@ -93,7 +93,7 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
 
   const commitsInPullRequest = pullRequestNode.commits.edges ?? [];
   const commitsInBaseBranch =
-    pullRequestNode.mergeCommit.history.edges?.reverse() ?? [];
+    pullRequestNode.mergeCommit.history.edges?.toReversed() ?? [];
 
   const didUseRebaseAndMergeStrategy = commitsInBaseBranch.every((c, i) => {
     const hasSameCommittedDate =

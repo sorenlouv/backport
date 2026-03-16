@@ -1,4 +1,4 @@
-import fs from 'fs/promises';
+import fs from 'node:fs/promises';
 import stripJsonComments from 'strip-json-comments';
 import { BackportError } from '../../lib/backport-error.js';
 import { logger } from '../../lib/logger.js';
@@ -12,8 +12,8 @@ export async function readConfigFile(
 
   try {
     return parseConfigFile(fileContents);
-  } catch (e) {
-    logger.debug(e);
+  } catch (error) {
+    logger.debug(error);
     throw new BackportError(
       `"${filepath}" contains invalid JSON:\n\n${fileContents}`,
     );

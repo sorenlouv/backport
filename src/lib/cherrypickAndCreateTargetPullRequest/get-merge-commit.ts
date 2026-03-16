@@ -13,7 +13,7 @@ export async function getMergeCommits(
     if (isMergeCommit) {
       const shas = await getShasInMergeCommit(options, sha);
       return Promise.all(
-        shas.reverse().map((sha) => fetchCommitBySha({ ...options, sha })),
+        shas.toReversed().map((sha) => fetchCommitBySha({ ...options, sha })),
       );
     }
   }

@@ -1,5 +1,5 @@
-import { readFileSync } from 'fs';
-import { relative } from 'path';
+import { readFileSync } from 'node:fs';
+import { relative } from 'node:path';
 import { buildSchema, parse, validate } from 'graphql';
 import {
   extractQueries,
@@ -11,7 +11,7 @@ import {
 } from './graphql-extract.js';
 
 function main() {
-  const schemaSource = readFileSync(SCHEMA_PATH, 'utf-8');
+  const schemaSource = readFileSync(SCHEMA_PATH, 'utf8');
   const schema = buildSchema(schemaSource);
 
   const operations = extractQueries(SRC_DIR);
@@ -47,12 +47,12 @@ function main() {
           `  OK  ${op.operationName} (${relative(ROOT, op.filePath)})`,
         );
       }
-    } catch (e) {
+    } catch (error) {
       hasErrors = true;
       console.error(
         `FAIL  ${op.operationName} (${relative(ROOT, op.filePath)})`,
       );
-      console.error(`      Parse error: ${(e as Error).message}`);
+      console.error(`      Parse error: ${(error as Error).message}`);
     }
   }
 
@@ -80,12 +80,12 @@ function main() {
           `  OK  fragment ${frag.operationName} (${relative(ROOT, frag.filePath)})`,
         );
       }
-    } catch (e) {
+    } catch (error) {
       hasErrors = true;
       console.error(
         `FAIL  fragment ${frag.operationName} (${relative(ROOT, frag.filePath)})`,
       );
-      console.error(`      Parse error: ${(e as Error).message}`);
+      console.error(`      Parse error: ${(error as Error).message}`);
     }
   }
 

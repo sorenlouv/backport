@@ -1,5 +1,5 @@
-import childProcess from 'child_process';
-import { promisify } from 'util';
+import childProcess from 'node:child_process';
+import { promisify } from 'node:util';
 const execPromisified = promisify(childProcess.exec);
 
 export async function exec(

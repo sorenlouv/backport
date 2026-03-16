@@ -1,4 +1,4 @@
-import os from 'os';
+import os from 'node:os';
 import type { ValidConfigOptions } from '../options/options.js';
 import { getGlobalConfigPath, getRepoPath } from './env.js';
 
@@ -9,9 +9,7 @@ describe('env', () => {
 
   describe('getGlobalConfigPath', () => {
     it('uses homedir when no argument is given', () => {
-      expect(getGlobalConfigPath(undefined)).toBe(
-        '/myHomeDir/.backport/config.json',
-      );
+      expect(getGlobalConfigPath()).toBe('/myHomeDir/.backport/config.json');
     });
 
     it('uses custom config when given', () => {

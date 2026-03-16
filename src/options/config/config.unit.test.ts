@@ -1,4 +1,4 @@
-import fs from 'fs/promises';
+import fs from 'node:fs/promises';
 import { mockConfigFiles } from '../../test/mock-config-files.js';
 import { getOptionsFromConfigFiles } from './config.js';
 
@@ -6,7 +6,7 @@ describe('getOptionsFromConfigFiles', () => {
   let res: Awaited<ReturnType<typeof getOptionsFromConfigFiles>>;
 
   beforeEach(async () => {
-    vi.spyOn(fs, 'writeFile').mockResolvedValueOnce(undefined);
+    vi.spyOn(fs, 'writeFile').mockResolvedValueOnce();
     vi.spyOn(fs, 'chmod').mockResolvedValue();
     mockConfigFiles({
       globalConfig: { accessToken: 'abc', editor: 'vim' },

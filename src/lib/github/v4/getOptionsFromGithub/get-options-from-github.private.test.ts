@@ -1,4 +1,4 @@
-import os from 'os';
+import os from 'node:os';
 import { getDevAccessToken } from '../../../../test/private/get-dev-access-token.js';
 import { getOptionsFromGithub } from './get-options-from-github.js';
 

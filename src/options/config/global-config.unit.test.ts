@@ -1,5 +1,5 @@
-import fs from 'fs/promises';
-import os from 'os';
+import fs from 'node:fs/promises';
+import os from 'node:os';
 import {
   getGlobalConfig,
   createGlobalConfigIfNotExist,
@@ -56,7 +56,7 @@ describe('config', () => {
 
   describe('createGlobalConfigIfNotExist', () => {
     it("should create config if it does't exist", async () => {
-      vi.spyOn(fs, 'writeFile').mockResolvedValueOnce(undefined);
+      vi.spyOn(fs, 'writeFile').mockResolvedValueOnce();
       const didCreate = await createGlobalConfigIfNotExist(
         '/path/to/globalConfig',
         'myConfigTemplate',
@@ -72,7 +72,7 @@ describe('config', () => {
     });
 
     it('should not fail if config already exists', async () => {
-      const err = new Error();
+      const err = new Error('EEXIST');
       (err as any).code = 'EEXIST';
       vi.spyOn(fs, 'writeFile').mockRejectedValueOnce(err);
 
@@ -85,7 +85,7 @@ describe('config', () => {
     });
 
     it("should fail gracefully if .backport folder doesn't exist", async () => {
-      const err = new Error();
+      const err = new Error('ENOENT');
       (err as any).code = 'ENOENT';
       vi.spyOn(fs, 'writeFile').mockRejectedValueOnce(err);
 

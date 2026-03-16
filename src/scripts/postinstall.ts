@@ -4,14 +4,14 @@ import { createGlobalConfigAndFolderIfNotExist } from '../options/config/global-
 
 export async function postinstall() {
   try {
-    const globalConfigPath = getGlobalConfigPath(undefined);
+    const globalConfigPath = getGlobalConfigPath();
     const didCreate =
       await createGlobalConfigAndFolderIfNotExist(globalConfigPath);
     if (didCreate) {
       consoleLog(`Global config successfully created in ${globalConfigPath}`);
     }
-  } catch (e) {
-    // @ts-expect-error: assume error
-    consoleLog(`Global config could not be created:\n${e.stack}`);
+  } catch (error) {
+    const stack = error instanceof Error ? error.stack : String(error);
+    consoleLog(`Global config could not be created:\n${stack}`);
   }
 }

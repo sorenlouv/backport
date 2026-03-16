@@ -51,9 +51,9 @@ export async function addAssigneesToPullRequest({
     );
 
     spinner.succeed();
-  } catch (e) {
+  } catch (error) {
     spinner.fail();
 
-    logger.error(`Could not add assignees to PR ${pullNumber}`, e);
+    logger.error(`Could not add assignees to PR ${pullNumber}`, error);
   }
 }

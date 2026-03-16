@@ -86,8 +86,8 @@ async function updateRef(sha: string) {
       sha,
     });
     return res.data;
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
   }
 }
 
@@ -133,7 +133,7 @@ async function createBlob(content: string) {
     owner: 'backport-org',
     repo: 'repo-with-programatically-added-commits',
     content: content,
-    encoding: 'utf-8',
+    encoding: 'utf8',
   });
 
   return res.data.sha;

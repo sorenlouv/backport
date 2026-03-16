@@ -46,21 +46,21 @@ describe('gracefully handle corrupted repo', () => {
 
     // second run: backport should re-create remotes and branches correctly
     expect(output).toMatchInlineSnapshot(`
-"- Initializing...
-repo: backport-org/integration-test | sourceBranch: master | sha: 16cfd987b82f49a79ebc663506f5d215b7a81c5c | author: sorenlouv
+      "- Initializing...
+      repo: backport-org/integration-test | sourceBranch: master | sha: 16cfd987b82f49a79ebc663506f5d215b7a81c5c | author: sorenlouv
 
-? Select commit Bump to 8.0.0
+      ? Select commit Bump to 8.0.0
 
-Backporting to 7.x:
-- Pulling latest changes
-✔ Pulling latest changes
-- Cherry-picking: Bump to 8.0.0
-✔ Cherry-picking: Bump to 8.0.0
-- Creating pull request
-✔ Creating pull request
-- Adding labels: backport
-✔ Adding labels: backport
-View pull request: this-is-a-dry-run"
-`);
+      Backporting to 7.x:
+      - Pulling latest changes
+      ✔ Pulling latest changes
+      - Cherry-picking: Bump to 8.0.0
+      ✔ Cherry-picking: Bump to 8.0.0
+      - Creating pull request
+      ✔ Creating pull request
+      - Adding labels: backport
+      ✔ Adding labels: backport
+      View pull request: this-is-a-dry-run"
+    `);
   });
 });

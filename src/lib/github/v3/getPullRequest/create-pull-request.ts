@@ -1,3 +1,4 @@
+import { RequestError } from '@octokit/request-error';
 import type { ValidConfigOptions } from '../../../../options/options.js';
 import { BackportError } from '../../../backport-error.js';
 import { logger } from '../../../logger.js';
@@ -56,7 +57,7 @@ export async function createPullRequest({
       number: res.data.number,
       didUpdate: false,
     };
-  } catch (e) {
+  } catch (error) {
     // retrieve url for existing
     try {
       const existingPR = await fetchExistingPullRequest({
@@ -72,15 +73,18 @@ export async function createPullRequest({
           didUpdate: true,
         };
       }
-    } catch (e) {
-      logger.error('Could not retrieve existing pull request', e);
+    } catch (error_) {
+      logger.error('Could not retrieve existing pull request', error_);
       // swallow error
     }
 
     spinner.fail();
-    throw new BackportError(
-      //@ts-expect-error: assume the error is GithubV3Error
-      `Could not create pull request: ${getGithubV3ErrorMessage(e)}`,
-    );
+    const message =
+      error instanceof RequestError
+        ? getGithubV3ErrorMessage(error)
+        : error instanceof Error
+          ? error.message
+          : String(error);
+    throw new BackportError(`Could not create pull request: ${message}`);
   }
 }

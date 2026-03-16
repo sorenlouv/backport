@@ -70,7 +70,7 @@ export async function getCommitsWithoutBackports({
           }),
         );
 
-        const isCommitInBranch = results.some((inBranch) => inBranch === true);
+        const isCommitInBranch = results.includes(true);
         return { c, isCommitInBranch };
       }),
   );

@@ -23,18 +23,23 @@ type ErrorContext =
 
 function getMessage(errorContext: ErrorContext): string {
   switch (errorContext.code) {
-    case 'merge-conflict-exception':
+    case 'merge-conflict-exception': {
       return `Commit could not be cherrypicked due to conflicts in: ${errorContext.conflictingFiles.join(
         ',',
       )}`;
-    case 'no-branches-exception':
+    }
+    case 'no-branches-exception': {
       return 'There are no branches to backport to. Aborting.';
-    case 'abort-conflict-resolution-exception':
+    }
+    case 'abort-conflict-resolution-exception': {
       return 'Conflict resolution was aborted by the user';
-    case 'invalid-branch-exception':
+    }
+    case 'invalid-branch-exception': {
       return `The branch "${errorContext.branchName}" does not exist`;
-    case 'message-only-exception':
+    }
+    case 'message-only-exception': {
       return errorContext.message;
+    }
   }
 }
 
@@ -47,7 +52,7 @@ export class BackportError extends Error {
         : errorContextOrString;
     const message = getMessage(errorContext);
     super(message);
-    Error.captureStackTrace(this, BackportError);
+
     this.name = 'BackportError';
     this.message = message;
     this.errorContext = errorContext;

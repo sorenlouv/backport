@@ -49,14 +49,14 @@ export async function commitChanges({
 }) {
   try {
     await gitCommit({ options, commitAuthor });
-  } catch (e) {
-    const isSpawnError = e instanceof SpawnError;
+  } catch (error) {
+    const isSpawnError = error instanceof SpawnError;
 
     if (isSpawnError) {
-      if (e.context.stdout.includes('nothing to commit')) {
+      if (error.context.stdout.includes('nothing to commit')) {
         logger.info(
           `Could not run "git commit". Probably because the changes were manually committed`,
-          e,
+          error,
         );
         return;
       }
@@ -64,7 +64,9 @@ export async function commitChanges({
       // manually set the commit message if the inferred commit message is empty
       // this can happen if the user runs `git reset HEAD` and thereby aborts the cherrypick process
       if (
-        e.context.stderr.includes('Aborting commit due to empty commit message')
+        error.context.stderr.includes(
+          'Aborting commit due to empty commit message',
+        )
       ) {
         await gitCommit({
           options,
@@ -76,7 +78,7 @@ export async function commitChanges({
     }
 
     // rethrow error if it can't be handled
-    throw e;
+    throw error;
   }
 }
 
@@ -92,8 +94,8 @@ export async function getIsCommitInBranch(
       cwd,
     );
     return true;
-  } catch (e) {
-    logger.warn('getIsCommitInBranch threw', e);
+  } catch (error) {
+    logger.warn('getIsCommitInBranch threw', error);
     return false;
   }
 }
@@ -111,11 +113,11 @@ export async function getIsMergeCommit(
     );
 
     return res.stdout !== '';
-  } catch (e) {
+  } catch (error) {
     const shortSha = getShortSha(sha);
     logger.info(
       `Could not determine if ${shortSha} is a merge commit. Will assume it is not`,
-      e,
+      error,
     );
     return false;
   }
@@ -134,14 +136,14 @@ export async function getShasInMergeCommit(
     );
 
     return res.stdout.split('\n');
-  } catch (e) {
-    const isSpawnError = e instanceof SpawnError;
+  } catch (error) {
+    const isSpawnError = error instanceof SpawnError;
 
     // swallow error
-    if (isSpawnError && e.context.code === 128) {
+    if (isSpawnError && error.context.code === 128) {
       return [];
     }
 
-    throw e;
+    throw error;
   }
 }

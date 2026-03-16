@@ -19,7 +19,7 @@ describe('prompt', () => {
           },
           sourcePullRequest: {
             labels: [],
-            number: 119700,
+            number: 119_700,
             url: 'foo',
             title: '[APM] Remove log-log descriptions from correlation charts',
             mergeCommit: {
@@ -31,7 +31,7 @@ describe('prompt', () => {
           targetPullRequestStates: [
             {
               branchLabelMappingKey: 'foo tbd',
-              number: 120178,
+              number: 120_178,
               branch: '8.0',
               label: '',
               isSourceBranch: false,
@@ -39,7 +39,7 @@ describe('prompt', () => {
             },
             {
               branchLabelMappingKey: 'foo tbd',
-              number: 120179,
+              number: 120_179,
               branch: '7.16',
               state: 'MERGED',
               label: '',
@@ -47,7 +47,7 @@ describe('prompt', () => {
             },
             {
               branchLabelMappingKey: 'foo tbd',
-              number: 120179,
+              number: 120_179,
               branch: '7.15',
               state: 'NOT_CREATED',
               label: '',
@@ -83,7 +83,7 @@ describe('prompt', () => {
           },
           sourcePullRequest: {
             labels: [],
-            number: 120694,
+            number: 120_694,
             title: '[APM] Prefer service.name for logs correlation',
             url: 'foo',
             mergeCommit: {
@@ -107,7 +107,7 @@ describe('prompt', () => {
           },
           sourcePullRequest: {
             labels: [],
-            number: 120106,
+            number: 120_106,
             url: 'foo',
             title: '[APM] Disable telemetry in agent config endpoint',
             mergeCommit: {
@@ -131,7 +131,7 @@ describe('prompt', () => {
           },
           sourcePullRequest: {
             labels: [],
-            number: 119915,
+            number: 119_915,
             title:
               '[APM] Remove index_pattern.json and add custom field formatters',
             url: 'foo',
@@ -156,7 +156,7 @@ describe('prompt', () => {
           },
           sourcePullRequest: {
             labels: [],
-            number: 119700,
+            number: 119_700,
             url: 'foo',
             title: '[APM] Remove log-log descriptions from correlation charts',
             mergeCommit: {

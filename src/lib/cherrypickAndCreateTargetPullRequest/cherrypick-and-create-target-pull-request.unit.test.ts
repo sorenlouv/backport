@@ -1,4 +1,4 @@
-import os from 'os';
+import os from 'node:os';
 import type { MockInstance } from 'vitest';
 import type { ValidConfigOptions } from '../../options/options.js';
 import {
@@ -198,18 +198,18 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
 
     it('should start the spinner with the correct text', () => {
       expect(oraSpy.mock.calls.map(([, text]) => text)).toMatchInlineSnapshot(`
-[
-  "",
-  "Pulling latest changes",
-  "Cherry-picking: My original commit message (#1000)",
-  "Cherry-picking: My other commit message (#2000)",
-  "Pushing branch "sorenlouv:backport/6.x/pr-1000_pr-2000"",
-  undefined,
-  "Creating pull request",
-  "Adding labels: backport",
-  "Auto-merge: Enabling via "squash"",
-]
-`);
+        [
+          "",
+          "Pulling latest changes",
+          "Cherry-picking: My original commit message (#1000)",
+          "Cherry-picking: My other commit message (#2000)",
+          "Pushing branch "sorenlouv:backport/6.x/pr-1000_pr-2000"",
+          undefined,
+          "Creating pull request",
+          "Adding labels: backport",
+          "Auto-merge: Enabling via "squash"",
+        ]
+      `);
     });
   });
 

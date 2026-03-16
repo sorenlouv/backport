@@ -1,4 +1,4 @@
-import fs from 'fs/promises';
+import fs from 'node:fs/promises';
 import { exec } from '../../child-process-helper.js';
 import { getDevAccessToken } from '../../private/get-dev-access-token.js';
 import { removeLinesBreaksInConflictingFiles } from '../../replace-string-and-linebreaks.js';
@@ -75,35 +75,35 @@ describe('different-merge-strategies', () => {
 
     it('runs to completion without errors', () => {
       expect(output).toMatchInlineSnapshot(`
-"- Initializing...
-repo: backport-org/different-merge-strategies | sourceBranch: main | pullNumber: 9 | author: sorenlouv
+        "- Initializing...
+        repo: backport-org/different-merge-strategies | sourceBranch: main | pullNumber: 9 | author: sorenlouv
 
-? Select pull request Merge pull request #9 from backport-org/many-merge-commits
-✔ 100% Cloning repository from github.com (one-time operation)
+        ? Select pull request Merge pull request #9 from backport-org/many-merge-commits
+        ✔ 100% Cloning repository from github.com (one-time operation)
 
-Backporting to 7.x:
-- Pulling latest changes
-✔ Pulling latest changes
-- Cherry-picking: Merge strategy: First of many merges
-✔ Cherry-picking: Merge strategy: First of many merges
-- Cherry-picking: Merge strategy: Second of many merges
-✔ Cherry-picking: Merge strategy: Second of many merges
-- Cherry-picking: Merge strategy: Third of many merges
-✔ Cherry-picking: Merge strategy: Third of many merges
-- Cherry-picking: Merge strategy: Fourth of many merges
-✔ Cherry-picking: Merge strategy: Fourth of many merges
-- Cherry-picking: Merge strategy: Fifth of many merges
-✔ Cherry-picking: Merge strategy: Fifth of many merges
-- Cherry-picking: Merge strategy: Sixth of many merges
-✔ Cherry-picking: Merge strategy: Sixth of many merges
-- Cherry-picking: Merge strategy: Seventh of many merges
-✔ Cherry-picking: Merge strategy: Seventh of many merges
-- Cherry-picking: Merge strategy: Eighth of many merges
-✔ Cherry-picking: Merge strategy: Eighth of many merges
-- Creating pull request
-✔ Creating pull request
-View pull request: this-is-a-dry-run"
-`);
+        Backporting to 7.x:
+        - Pulling latest changes
+        ✔ Pulling latest changes
+        - Cherry-picking: Merge strategy: First of many merges
+        ✔ Cherry-picking: Merge strategy: First of many merges
+        - Cherry-picking: Merge strategy: Second of many merges
+        ✔ Cherry-picking: Merge strategy: Second of many merges
+        - Cherry-picking: Merge strategy: Third of many merges
+        ✔ Cherry-picking: Merge strategy: Third of many merges
+        - Cherry-picking: Merge strategy: Fourth of many merges
+        ✔ Cherry-picking: Merge strategy: Fourth of many merges
+        - Cherry-picking: Merge strategy: Fifth of many merges
+        ✔ Cherry-picking: Merge strategy: Fifth of many merges
+        - Cherry-picking: Merge strategy: Sixth of many merges
+        ✔ Cherry-picking: Merge strategy: Sixth of many merges
+        - Cherry-picking: Merge strategy: Seventh of many merges
+        ✔ Cherry-picking: Merge strategy: Seventh of many merges
+        - Cherry-picking: Merge strategy: Eighth of many merges
+        ✔ Cherry-picking: Merge strategy: Eighth of many merges
+        - Creating pull request
+        ✔ Creating pull request
+        View pull request: this-is-a-dry-run"
+      `);
     });
 
     it('backports all immediate children of the merge commit', async () => {
@@ -283,7 +283,8 @@ View pull request: this-is-a-dry-run"
     });
 
     it('backports all commits', async () => {
-      const commits = await (await listCommits(sandboxPath)).slice(0, 3);
+      const allCommits = await listCommits(sandboxPath);
+      const commits = allCommits.slice(0, 3);
       expect(commits).toEqual([
         'Downsides with "Rebase and merge"',
         'Add description for "Rebase and merge"',

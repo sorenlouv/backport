@@ -413,13 +413,13 @@ async function deleteBranchOnGithub({
     const res = await octokit.git.deleteRef(opts);
 
     return res.data;
-  } catch (e) {
+  } catch (error) {
     //@ts-expect-error
-    if (e.message === 'Reference does not exist') {
+    if (error.message === 'Reference does not exist') {
       return;
     }
 
-    throw e;
+    throw error;
   }
 }
 

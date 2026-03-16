@@ -194,20 +194,17 @@ function getInsufficientPermissionsErrorMessage(
     return;
   }
 
-  const accessTokenScopes = accessScopesHeader
-    .split(',')
-    .map((scope) => scope.trim());
+  const accessTokenScopes = new Set(
+    accessScopesHeader.split(',').map((scope) => scope.trim()),
+  );
 
   const isRepoPrivate = res.data?.repository?.isPrivate;
 
-  if (isRepoPrivate && !accessTokenScopes.includes('repo')) {
+  if (isRepoPrivate && !accessTokenScopes.has('repo')) {
     return `You must grant the "repo" scope to your personal access token`;
   }
 
-  if (
-    !accessTokenScopes.includes('repo') &&
-    !accessTokenScopes.includes('public_repo')
-  ) {
+  if (!accessTokenScopes.has('repo') && !accessTokenScopes.has('public_repo')) {
     return `You must grant the "repo" or "public_repo" scope to your personal access token`;
   }
 }

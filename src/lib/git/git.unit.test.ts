@@ -1,4 +1,4 @@
-import os from 'os';
+import os from 'node:os';
 import type { ValidConfigOptions } from '../../options/options.js';
 import type { SpyHelper } from '../../types/spy-helper';
 import * as childProcess from '../child-process-promisified.js';
@@ -115,7 +115,7 @@ describe('getLocalConfigFileCommitDate', () => {
     };
     vi.spyOn(childProcess, 'spawnPromise').mockResolvedValue(res);
     expect(await getLocalConfigFileCommitDate({ cwd: 'foo/bar' })).toEqual(
-      1608142239000,
+      1_608_142_239_000,
     );
   });
 

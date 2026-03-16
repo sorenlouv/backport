@@ -106,6 +106,7 @@
     "@typescript-eslint/parser": "^8.57.0",
     "eslint": "^10.0.3",
     "eslint-plugin-import-x": "^4.16.2",
+    "eslint-plugin-unicorn": "^63.0.0",
     "graphql-config": "^5.1.6",
     "graphql-request": "^7.4.0",
     "husky": "^9.1.7",

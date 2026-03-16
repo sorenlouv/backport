@@ -144,7 +144,7 @@ export async function promptForCommits({
         message: 'Select commit',
       });
 
-  const selectedCommits = Array.isArray(res) ? res.reverse() : [res];
+  const selectedCommits = Array.isArray(res) ? res.toReversed() : [res];
   return isEmpty(selectedCommits)
     ? promptForCommits({ commitChoices, isMultipleChoice, showDetails })
     : selectedCommits;

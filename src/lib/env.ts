@@ -1,5 +1,5 @@
-import os from 'os';
-import path from 'path';
+import os from 'node:os';
+import path from 'node:path';
 import type { ValidConfigOptions } from '../options/options.js';
 import type { LogLevel } from './logger.js';
 
@@ -20,7 +20,7 @@ export function getLogfilePath({
   return path.join(os.homedir(), '.backport', `backport.${logLevel}.log`);
 }
 
-export function getGlobalConfigPath(globalConfigFile: string | undefined) {
+export function getGlobalConfigPath(globalConfigFile?: string) {
   if (globalConfigFile) {
     return path.resolve(globalConfigFile);
   }

@@ -5,7 +5,7 @@ import { logger } from '../../../logger.js';
 
 export interface GitHubGraphQLError extends GraphQLError {
   type?: 'FORBIDDEN';
-  extensions: { saml_failure?: boolean };
+  extensions: { saml_failure?: boolean; type?: string; [key: string]: unknown };
   originalError:
     | ({
         type?: 'NOT_FOUND';
@@ -15,7 +15,7 @@ export interface GitHubGraphQLError extends GraphQLError {
 
 export interface OperationResultWithMeta<Data = any> {
   data: Data | undefined;
-  error: { message: string; graphQLErrors: GraphQLError[] } | undefined;
+  error: { message: string; graphQLErrors: GitHubGraphQLError[] } | undefined;
   responseHeaders: Headers | undefined;
   statusCode: number | undefined;
 }
@@ -82,7 +82,7 @@ export async function graphqlRequest<TData, TVars>(
     // Non-JSON response (e.g. 502 Bad Gateway HTML page)
     const error = {
       message: `[Network] ${response.statusText}`,
-      graphQLErrors: [] as GraphQLError[],
+      graphQLErrors: [] as GitHubGraphQLError[],
     };
     logger.error('GraphQL Error:', error.message);
     return { data: undefined, error, responseHeaders, statusCode };
@@ -91,23 +91,22 @@ export async function graphqlRequest<TData, TVars>(
   if (!response.ok && !json.errors) {
     const error = {
       message: `[Network] ${response.statusText}`,
-      graphQLErrors: [] as GraphQLError[],
+      graphQLErrors: [] as GitHubGraphQLError[],
     };
     logger.error('GraphQL Error:', error.message);
     return { data: json.data, error, responseHeaders, statusCode };
   }
 
   if (json.errors?.length) {
-    const graphQLErrors = json.errors.map((e) => {
-      const err = new GraphQLError(e.message, {
+    const graphQLErrors: GitHubGraphQLError[] = json.errors.map((e) => {
+      const originalError = Object.assign(new Error(e.message), {
+        type: e.type as 'NOT_FOUND' | undefined,
+      });
+      return new GraphQLError(e.message, {
         path: e.path,
         extensions: e.extensions,
-      });
-      // Wrap the raw API error as originalError to preserve GitHub-specific
-      // properties (e.g. type: "NOT_FOUND") that consumers access via
-      // error.originalError?.type
-      (err as any).originalError = e;
-      return err;
+        originalError,
+      }) as GitHubGraphQLError;
     });
     const error = {
       message: `[GraphQL] ${json.errors[0].message}`,
@@ -126,7 +125,7 @@ export class GithubV4Exception<T> extends Error {
     const message = `${result.error?.message} (Github API v4)`;
 
     super(message);
-    Error.captureStackTrace(this, GithubV4Exception);
+
     this.name = 'GithubV4Exception';
   }
 }

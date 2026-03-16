@@ -21,8 +21,8 @@ export async function cherrypickAbort({
   const cwd = getRepoPath(options);
   try {
     return await spawnPromise('git', ['cherry-pick', '--abort'], cwd);
-  } catch (e) {
-    logger.warn('Failed to abort cherry-pick', e);
+  } catch (error) {
+    logger.warn('Failed to abort cherry-pick', error);
     throw new BackportError('Failed to abort cherry-pick before retry');
   }
 }
@@ -50,9 +50,9 @@ export async function cherrypick({
     `-c`,
     `user.email="${commitAuthor.email}"`,
     `cherry-pick`,
-    ...(options.mainline != undefined
-      ? ['--mainline', `${options.mainline}`]
-      : []),
+    ...(options.mainline == undefined
+      ? []
+      : ['--mainline', `${options.mainline}`]),
     ...(options.cherrypickRef === false ? [] : ['-x']),
     ...(options.signoff ? ['--signoff'] : []),
     ...(strategyOption ? ['--strategy-option', strategyOption] : []),
@@ -63,18 +63,18 @@ export async function cherrypick({
     const cwd = getRepoPath(options);
     await spawnPromise('git', cmdArgs, cwd);
     return { conflictingFiles: [], unstagedFiles: [], needsResolving: false };
-  } catch (e) {
-    const isSpawnError = e instanceof SpawnError;
+  } catch (error) {
+    const isSpawnError = error instanceof SpawnError;
     if (isSpawnError) {
       // missing `mainline` option
-      if (e.message.includes('is a merge but no -m option was given')) {
+      if (error.message.includes('is a merge but no -m option was given')) {
         throw new BackportError(
           'Cherrypick failed because the selected commit was a merge commit. Please try again by specifying the parent with the `mainline` argument:\n\n> backport --mainline\n\nor:\n\n> backport --mainline <parent-number>\n\nOr refer to the git documentation for more information: https://git-scm.com/docs/git-cherry-pick#Documentation/git-cherry-pick.txt---mainlineparent-number',
         );
       }
 
       // commit was already backported
-      if (e.message.includes('The previous cherry-pick is now empty')) {
+      if (error.message.includes('The previous cherry-pick is now empty')) {
         const shortSha = getShortSha(sha);
 
         throw new BackportError(
@@ -86,14 +86,14 @@ export async function cherrypick({
         );
       }
 
-      if (e.message.includes(`bad object ${sha}`)) {
+      if (error.message.includes(`bad object ${sha}`)) {
         throw new BackportError(
           `Cherrypick failed because commit "${sha}" was not found`,
         );
       }
 
       const isCherryPickError =
-        e.context.cmdArgs.includes('cherry-pick') && e.context.code > 0;
+        error.context.cmdArgs.includes('cherry-pick') && error.context.code > 0;
       if (isCherryPickError) {
         const [conflictingFiles, unstagedFiles, rerereConfig] =
           await Promise.all([
@@ -140,6 +140,6 @@ export async function cherrypick({
     }
 
     // re-throw error if it didn't match the handled cases above
-    throw e;
+    throw error;
   }
 }

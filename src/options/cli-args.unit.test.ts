@@ -378,7 +378,7 @@ describe('getRuntimeArguments', () => {
     // Use a config file to pass regex patterns instead.
     it('--copySourcePRLabels with regex string is not supported via CLI', () => {
       const { copySourcePRLabels } = getOptionsFromCliArgs([
-        '--copySourcePRLabels=^v\\d+',
+        String.raw`--copySourcePRLabels=^v\d+`,
       ]);
       // yargs coerces the string to false instead of passing the regex through
       expect(copySourcePRLabels).toEqual(false);

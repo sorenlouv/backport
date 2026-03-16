@@ -14,12 +14,12 @@ export function getSourcePRLabelsToCopy({
         return [];
       }
 
-      const backportLabels = commit.targetPullRequestStates.map(
-        (pr) => pr.label,
+      const backportLabels = new Set(
+        commit.targetPullRequestStates.map((pr) => pr.label),
       );
 
       return commit.sourcePullRequest.labels.filter(
-        (label) => !backportLabels.includes(label),
+        (label) => !backportLabels.has(label),
       );
     });
   }

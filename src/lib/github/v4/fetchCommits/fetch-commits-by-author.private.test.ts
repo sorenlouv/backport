@@ -19,7 +19,7 @@ describe('fetchCommitsByAuthor', () => {
 
     const getCommitMessages = (commits: Commit[]) => {
       return commits.map((c) =>
-        c.sourceCommit.message.replace(/(\r\n|\n|\r)/gm, ''),
+        c.sourceCommit.message.replaceAll(/(\r\n|\n|\r)/gm, ''),
       );
     };
 
@@ -113,7 +113,7 @@ describe('fetchCommitsByAuthor', () => {
         {
           branch: '7.8',
           label: 'v7.8.0',
-          branchLabelMappingKey: '^v(\\d+).(\\d+).\\d+$',
+          branchLabelMappingKey: String.raw`^v(\d+).(\d+).\d+$`,
           isSourceBranch: false,
           state: 'OPEN',
           number: 10,
@@ -130,7 +130,7 @@ describe('fetchCommitsByAuthor', () => {
         {
           branch: '7.8',
           label: 'v7.8.0',
-          branchLabelMappingKey: '^v(\\d+).(\\d+).\\d+$',
+          branchLabelMappingKey: String.raw`^v(\d+).(\d+).\d+$`,
           isSourceBranch: false,
           mergeCommit: {
             message: 'Add 🍏 emoji (#5) (#7)',

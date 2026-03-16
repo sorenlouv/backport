@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 import { uniq } from 'lodash-es';
 import type { ValidConfigOptions } from '../../options/options.js';
 import { filterNil } from '../../utils/filter-empty.js';
@@ -20,8 +20,8 @@ export async function deleteRemote(
   try {
     const cwd = getRepoPath(options);
     await spawnPromise('git', ['remote', 'rm', remoteName], cwd);
-  } catch (e) {
-    const isSpawnError = e instanceof SpawnError;
+  } catch (error) {
+    const isSpawnError = error instanceof SpawnError;
 
     // Swallow the "remote does not exist" failure.
     // Since git 2.30.0, this failure is indicated by the specific exit code 2.
@@ -29,14 +29,15 @@ export async function deleteRemote(
     // tell the problems apart.
     if (
       isSpawnError &&
-      (e.context.code == 2 ||
-        (e.context.code == 128 && e.context.stderr.includes('No such remote')))
+      (error.context.code == 2 ||
+        (error.context.code == 128 &&
+          error.context.stderr.includes('No such remote')))
     ) {
       return;
     }
 
     // re-throw
-    throw e;
+    throw error;
   }
 }
 
@@ -51,8 +52,8 @@ export async function addRemote(
       ['remote', 'add', remoteName, getRemoteUrl(options, remoteName)],
       cwd,
     );
-  } catch (e) {
-    logger.debug(`Could not add remote "${remoteName}": ${e}`);
+  } catch (error) {
+    logger.debug(`Could not add remote "${remoteName}": ${error}`);
     return;
   }
 }
@@ -74,8 +75,8 @@ export async function getRepoInfoFromGitRemotes({ cwd }: { cwd: string }) {
       const [repoOwner, repoName] = remote.split('/');
       return { repoOwner, repoName };
     });
-  } catch (e) {
-    logger.debug(`An error occurred while retrieving git remotes: ${e}`);
+  } catch (error) {
+    logger.debug(`An error occurred while retrieving git remotes: ${error}`);
     return [];
   }
 }
@@ -96,8 +97,8 @@ export async function getGitProjectRootPath(dir: string) {
       cwd,
     );
     return path.normalize(stdout.trim());
-  } catch (e) {
-    logger.error('An error occurred while retrieving git project root', e);
+  } catch (error) {
+    logger.error('An error occurred while retrieving git project root', error);
     return;
   }
 }

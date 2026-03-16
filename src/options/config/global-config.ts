@@ -1,4 +1,4 @@
-import fs from 'fs/promises';
+import fs from 'node:fs/promises';
 import { BackportError } from '../../lib/backport-error.js';
 import { getBackportDirPath, getGlobalConfigPath } from '../../lib/env.js';
 import { isErrnoError } from '../../utils/is-errno-error.js';
@@ -42,23 +42,23 @@ export async function createGlobalConfigIfNotExist(
       mode: 0o600, // give the owner read-write privleges, no access for others
     });
     return true;
-  } catch (e) {
-    if (isErrnoError(e)) {
+  } catch (error) {
+    if (isErrnoError(error)) {
       // ignore error if file already exists
       const FILE_ALREADY_EXISTS = 'EEXIST';
-      if (e.code === FILE_ALREADY_EXISTS) {
+      if (error.code === FILE_ALREADY_EXISTS) {
         return false;
       }
 
       // handle error if folder does not exist
       const FOLDER_NOT_EXISTS = 'ENOENT';
-      if (e.code === FOLDER_NOT_EXISTS) {
+      if (error.code === FOLDER_NOT_EXISTS) {
         throw new BackportError(
           `The .backport folder (${globalConfigPath}) does not exist. `,
         );
       }
 
-      throw e;
+      throw error;
     }
   }
 }

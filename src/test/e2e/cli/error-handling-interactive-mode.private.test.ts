@@ -88,24 +88,24 @@ describe('interactive error handling', () => {
         '<BACKPORT_DIR>',
       ),
     ).toMatchInlineSnapshot(`
-"repo: backport-org/repo-with-conflicts | sourceBranch: main | pullNumber: 12 | author: sorenlouv
+      "repo: backport-org/repo-with-conflicts | sourceBranch: main | pullNumber: 12 | author: sorenlouv
 
 
-Backporting to 7.x:
+      Backporting to 7.x:
 
-The commit could not be backported due to conflicts
+      The commit could not be backported due to conflicts
 
-Please fix the conflicts in <BACKPORT_DIR>
-Hint: Before fixing the conflicts manually you should consider backporting the following pull requests to "7.x":
- - Change Barca to Braithwaite (#8) (backport missing)
-   https://github.com/backport-org/repo-with-conflicts/pull/8
+      Please fix the conflicts in <BACKPORT_DIR>
+      Hint: Before fixing the conflicts manually you should consider backporting the following pull requests to "7.x":
+       - Change Barca to Braithwaite (#8) (backport missing)
+         https://github.com/backport-org/repo-with-conflicts/pull/8
 
 
-? Fix the following conflicts manually:
+      ? Fix the following conflicts manually:
 
-Conflicting files: - <BACKPORT_DIR>/la-liga.md
+      Conflicting files: - <BACKPORT_DIR>/la-liga.md
 
-Press ENTER when the conflicts are resolved and files are staged (Y/n)"
-`);
+      Press ENTER when the conflicts are resolved and files are staged (Y/n)"
+    `);
   });
 });

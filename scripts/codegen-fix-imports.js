@@ -7,8 +7,8 @@
 // When: Invoked automatically after codegen via the npm "codegen" script
 // (see package.json). Also runs as part of `npm run build`.
 
-import { readFileSync, writeFileSync, readdirSync } from 'fs';
-import { join } from 'path';
+import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
 
 const dir = 'src/graphql/generated';
 
@@ -16,7 +16,7 @@ for (const file of readdirSync(dir)) {
   if (!file.endsWith('.ts')) continue;
   const filePath = join(dir, file);
   let content = readFileSync(filePath, 'utf8');
-  const updated = content.replace(
+  const updated = content.replaceAll(
     /(from\s+['"])(\.\/[^'"]+)(?<!\.js)(['"])/g,
     '$1$2.js$3',
   );

@@ -2,6 +2,7 @@ import js from '@eslint/js';
 import tseslint from '@typescript-eslint/eslint-plugin';
 import tsparser from '@typescript-eslint/parser';
 import importPlugin from 'eslint-plugin-import-x';
+import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 
 const nodeGlobals = {
   process: 'readonly',
@@ -26,6 +27,22 @@ export default [
       'coverage/**',
       '.claude/**',
     ],
+  },
+
+  // Unicorn recommended rules
+  eslintPluginUnicorn.configs.recommended,
+  {
+    rules: {
+      'unicorn/prevent-abbreviations': 'off',
+      'unicorn/no-null': 'off',
+      'unicorn/no-process-exit': 'off',
+      'unicorn/no-array-callback-reference': 'off',
+      'unicorn/consistent-function-scoping': 'off',
+      'unicorn/import-style': 'off',
+      'unicorn/no-nested-ternary': 'off',
+      'unicorn/prefer-top-level-await': 'off',
+      'unicorn/prefer-module': 'off',
+    },
   },
 
   // CJS config files (.graphqlrc.js uses require/module.exports)

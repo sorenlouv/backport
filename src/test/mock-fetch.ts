@@ -73,14 +73,14 @@ export function setupFetchMock() {
         mock.calls.push(body);
 
         return new Response(
-          mock.responseBody !== undefined
-            ? JSON.stringify(mock.responseBody)
-            : '',
+          mock.responseBody === undefined
+            ? ''
+            : JSON.stringify(mock.responseBody),
           {
             status: mock.statusCode ?? 200,
             headers: {
               'Content-Type': 'application/json',
-              ...(mock.responseHeaders ?? {}),
+              ...mock.responseHeaders,
             },
           },
         );

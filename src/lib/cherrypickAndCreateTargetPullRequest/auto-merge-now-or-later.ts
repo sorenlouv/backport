@@ -25,17 +25,17 @@ export async function autoMergeNowOrLater(
   try {
     try {
       await enablePullRequestAutoMerge(options, pullNumber);
-    } catch (e) {
-      if (!(e instanceof GithubV4Exception)) {
-        throw e;
+    } catch (error) {
+      if (!(error instanceof GithubV4Exception)) {
+        throw error;
       }
 
       logger.info(
-        `Auto merge: Failed to enable auto merge for PR "#${pullNumber}" due to ${e.message}`,
+        `Auto merge: Failed to enable auto merge for PR "#${pullNumber}" due to ${error.message}`,
       );
 
-      if (!isMissingStatusChecksError(e)) {
-        throw e;
+      if (!isMissingStatusChecksError(error)) {
+        throw error;
       }
 
       // if auto merge cannot be enabled due to missing status checks, the PR should be merged immediately
@@ -45,8 +45,8 @@ export async function autoMergeNowOrLater(
     }
 
     spinner.succeed();
-  } catch (e) {
-    logger.warn(`Auto merge: An error occurred ${e}`);
+  } catch (error) {
+    logger.warn(`Auto merge: An error occurred ${error}`);
     spinner.fail();
   }
 }

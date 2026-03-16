@@ -66,7 +66,7 @@ describe('waitForCherrypick with autoResolveConflictsWithTheirs', () => {
     cherrypickAbortSpy = vi
       .spyOn(git, 'cherrypickAbort')
       .mockResolvedValue({ stderr: '', stdout: '', code: 0, cmdArgs: [] });
-    vi.spyOn(git, 'commitChanges').mockResolvedValue(undefined);
+    vi.spyOn(git, 'commitChanges').mockResolvedValue();
   });
 
   afterEach(() => {

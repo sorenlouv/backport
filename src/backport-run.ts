@@ -66,19 +66,22 @@ export async function backportRun({
   let optionsFromCliArgs: OptionsFromCliArgs;
   try {
     optionsFromCliArgs = getOptionsFromCliArgs(processArgs);
-  } catch (e) {
-    if (e instanceof Error) {
-      consoleLog(e.message);
+  } catch (error) {
+    if (error instanceof Error) {
+      consoleLog(error.message);
       consoleLog(`Run "backport --help" to see all options`);
+      if (exitCodeOnFailure) {
+        process.exitCode = 1;
+      }
       return {
         status: 'failure',
-        error: e,
-        errorMessage: e.message,
+        error: error,
+        errorMessage: error.message,
         commits: [],
       } satisfies BackportFailureResponse;
     }
 
-    throw e;
+    throw error;
   }
 
   let options: ValidConfigOptions | null = null;
@@ -125,45 +128,45 @@ export async function backportRun({
     await createStatusComment({ options, backportResponse });
 
     return backportResponse;
-  } catch (e) {
+  } catch (error) {
     spinner.stop();
     let backportResponse: BackportResponse;
 
     if (
-      e instanceof BackportError &&
-      e.errorContext.code === 'no-branches-exception'
+      error instanceof BackportError &&
+      error.errorContext.code === 'no-branches-exception'
     ) {
       backportResponse = {
         status: 'aborted',
         commits,
-        error: e,
-        errorMessage: e.message,
+        error: error,
+        errorMessage: error.message,
       };
 
       // this will catch both BackportError and Error
-    } else if (e instanceof Error) {
+    } else if (error instanceof Error) {
       backportResponse = {
         status: 'failure',
         commits,
-        error: e,
-        errorMessage: e.message,
+        error: error,
+        errorMessage: error.message,
       };
     } else {
-      throw e;
+      throw error;
     }
 
     if (options) {
       await createStatusComment({ options, backportResponse });
     }
 
-    outputError({ e, logFilePath });
+    outputError({ e: error, logFilePath });
 
     // only change exit code for failures while in cli mode
     if (exitCodeOnFailure && backportResponse.status === 'failure') {
       process.exitCode = 1;
     }
 
-    logger.error('Unhandled exception:', e);
+    logger.error('Unhandled exception:', error);
 
     return backportResponse;
   }

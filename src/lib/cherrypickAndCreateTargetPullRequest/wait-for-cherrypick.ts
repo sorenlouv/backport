@@ -54,9 +54,9 @@ export async function waitForCherrypick(
     cherrypickSpinner.succeed();
 
     return result;
-  } catch (e) {
+  } catch (error) {
     cherrypickSpinner.fail();
-    throw e;
+    throw error;
   }
 }
 
@@ -95,9 +95,9 @@ async function cherrypickAndHandleConflicts({
     }
     // cherrypick failed due to conflicts
     cherrypickSpinner.fail();
-  } catch (e) {
+  } catch (error) {
     cherrypickSpinner.fail();
-    throw e;
+    throw error;
   }
 
   const repoPath = getRepoPath(options);
@@ -175,10 +175,12 @@ async function cherrypickAndHandleConflicts({
       targetBranch,
       conflictingFiles: conflictingFilesRelative,
     });
-  } catch (e) {
+  } catch (error) {
     commitsWithoutBackports = [];
-    if (e instanceof Error) {
-      logger.warn(`Unable to fetch commits without backports: ${e.message}`);
+    if (error instanceof Error) {
+      logger.warn(
+        `Unable to fetch commits without backports: ${error.message}`,
+      );
     }
   }
 

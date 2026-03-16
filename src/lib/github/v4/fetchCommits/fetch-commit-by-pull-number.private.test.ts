@@ -44,7 +44,7 @@ describe('fetchCommitByPullNumber', () => {
             branch: '7.8',
             isSourceBranch: false,
             label: 'v7.8.0',
-            branchLabelMappingKey: '^v(\\d+).(\\d+).\\d+$',
+            branchLabelMappingKey: String.raw`^v(\d+).(\d+).\d+$`,
             mergeCommit: {
               message: 'Add 🍏 emoji (#5) (#7)',
               sha: '46cd6f9999effdf894a36dbc7db90e890f4be840',
@@ -106,7 +106,7 @@ describe('fetchCommitByPullNumber', () => {
     it('throws an error', async () => {
       const options = {
         accessToken,
-        pullNumber: 9999999999999,
+        pullNumber: 9_999_999_999_999,
         repoName: 'backport-e2e',
         repoOwner: 'backport-org',
         sourceBranch: 'main',

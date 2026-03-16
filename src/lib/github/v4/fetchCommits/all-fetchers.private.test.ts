@@ -94,7 +94,7 @@ describe('allFetchers', () => {
           'auto-backport',
           'v8.1.0',
         ],
-        number: 121633,
+        number: 121_633,
         title: '[APM] Add note about synthtrace to APM docs',
         url: 'https://github.com/elastic/kibana/pull/121633',
         mergeCommit: {
@@ -107,14 +107,14 @@ describe('allFetchers', () => {
         {
           branch: '8.0',
           label: 'v8.0.0',
-          branchLabelMappingKey: '^v(\\d+).(\\d+).\\d+$',
+          branchLabelMappingKey: String.raw`^v(\d+).(\d+).\d+$`,
           isSourceBranch: false,
           mergeCommit: {
             message:
               '[APM] Add note about synthtrace to APM docs (#121633) (#121643)\n\nCo-authored-by: Søren Louv-Jansen <soren.louv@elastic.co>',
             sha: '842adfdeb5541b059231857522f9009771a46107',
           },
-          number: 121643,
+          number: 121_643,
           state: 'MERGED',
           url: 'https://github.com/elastic/kibana/pull/121643',
         },
@@ -127,7 +127,7 @@ describe('allFetchers', () => {
             message: '[APM] Add note about synthtrace to APM docs (#121633)',
             sha: 'd421ddcf6157150596581c7885afa3690cec6339',
           },
-          number: 121633,
+          number: 121_633,
           state: 'MERGED',
           url: 'https://github.com/elastic/kibana/pull/121633',
         },

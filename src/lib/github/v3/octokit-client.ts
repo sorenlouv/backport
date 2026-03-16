@@ -1,3 +1,4 @@
+import { RequestError } from '@octokit/request-error';
 import { Octokit } from '@octokit/rest';
 import pRetry from 'p-retry';
 import { logger } from '../../logger.js';
@@ -25,11 +26,13 @@ export function retryOctokitRequest<T>(fn: () => Promise<T>): Promise<T> {
     retries: 2,
     minTimeout: 1000,
     shouldRetry: (error) => {
-      const status = (error as { status?: number }).status;
-      return status !== undefined && (status >= 500 || status === 429);
+      return (
+        error instanceof RequestError &&
+        (error.status >= 500 || error.status === 429)
+      );
     },
     onFailedAttempt: ({ error, attemptNumber, retriesLeft }) => {
-      const status = (error as { status?: number }).status;
+      const status = error instanceof RequestError ? error.status : undefined;
       logger.info(
         `Octokit request failed (attempt ${attemptNumber}/${attemptNumber + retriesLeft}): ${status ?? error.message}`,
       );

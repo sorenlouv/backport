@@ -1,5 +1,5 @@
-import fs from 'fs/promises';
-import os from 'os';
+import fs from 'node:fs/promises';
+import os from 'node:os';
 import type { MockInstance } from 'vitest';
 import type { ValidConfigOptions } from '../options/options.js';
 import type { SpyHelper } from '../types/spy-helper';
@@ -13,7 +13,7 @@ describe('setupRepo', () => {
 
   beforeEach(() => {
     vi.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
-    vi.spyOn(fs, 'rm').mockResolvedValue(undefined);
+    vi.spyOn(fs, 'rm').mockResolvedValue();
 
     spawnSpy = vi
       .spyOn(childProcess, 'spawnPromise')
@@ -62,9 +62,7 @@ describe('setupRepo', () => {
       const spinnerTextSpy = vi.spyOn(oraNonInteractiveMode, 'text', 'set');
       const spinnerSuccessSpy = vi.spyOn(oraNonInteractiveMode, 'succeed');
 
-      vi.spyOn(gitModule, 'getLocalSourceRepoPath').mockResolvedValue(
-        undefined,
-      );
+      vi.spyOn(gitModule, 'getLocalSourceRepoPath').mockResolvedValue();
 
       vi.spyOn(childProcess, 'spawnStream')
         //@ts-expect-error
@@ -107,18 +105,18 @@ describe('setupRepo', () => {
 
       expect(spinnerTextSpy.mock.calls.map((call) => call[0]))
         .toMatchInlineSnapshot(`
-        [
-          "0% Cloning repository from github.com (one-time operation)",
-          "1% Cloning repository from github.com (one-time operation)",
-          "9% Cloning repository from github.com (one-time operation)",
-          "18% Cloning repository from github.com (one-time operation)",
-          "90% Cloning repository from github.com (one-time operation)",
-          "90% Cloning repository from github.com (one-time operation)",
-          "91% Cloning repository from github.com (one-time operation)",
-          "92% Cloning repository from github.com (one-time operation)",
-          "100% Cloning repository from github.com (one-time operation)",
-        ]
-      `);
+          [
+            "0% Cloning repository from github.com (one-time operation)",
+            "1% Cloning repository from github.com (one-time operation)",
+            "9% Cloning repository from github.com (one-time operation)",
+            "18% Cloning repository from github.com (one-time operation)",
+            "90% Cloning repository from github.com (one-time operation)",
+            "90% Cloning repository from github.com (one-time operation)",
+            "91% Cloning repository from github.com (one-time operation)",
+            "92% Cloning repository from github.com (one-time operation)",
+            "100% Cloning repository from github.com (one-time operation)",
+          ]
+        `);
 
       expect(spinnerSuccessSpy).toHaveBeenCalledWith(
         '100% Cloning repository from github.com (one-time operation)',

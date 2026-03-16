@@ -44,8 +44,8 @@ export function parseRemoteConfigFile(remoteConfig: RemoteConfigNode) {
         : undefined;
     if (!text) return;
     return parseConfigFile(text);
-  } catch (e) {
-    logger.info('Parsing remote config failed', e);
+  } catch (error) {
+    logger.info('Parsing remote config failed', error);
     return;
   }
 }

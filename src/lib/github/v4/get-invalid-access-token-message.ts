@@ -1,10 +1,7 @@
 import { isEmpty, difference } from 'lodash-es';
 import { getGlobalConfigPath } from '../../env.js';
 import { logger } from '../../logger.js';
-import type {
-  GitHubGraphQLError,
-  OperationResultWithMeta,
-} from './client/graphql-client.js';
+import type { OperationResultWithMeta } from './client/graphql-client.js';
 
 export function getInvalidAccessTokenMessage({
   result,
@@ -26,8 +23,7 @@ export function getInvalidAccessTokenMessage({
 
   const { statusCode } = result;
 
-  const graphQLErrors = (result.error?.graphQLErrors ??
-    []) as GitHubGraphQLError[];
+  const graphQLErrors = result.error?.graphQLErrors ?? [];
 
   switch (statusCode) {
     case 200: {
@@ -69,17 +65,20 @@ export function getInvalidAccessTokenMessage({
       break;
     }
 
-    case 401:
+    case 401: {
       return `Please check your access token and make sure it is valid.\nConfig: ${getGlobalConfigPath(
         globalConfigFile,
       )}`;
+    }
 
-    case undefined:
+    case undefined: {
       logger.warn('Missing status code');
       return undefined;
+    }
 
-    default:
+    default: {
       logger.warn(`Unexpected status code: ${statusCode}`);
       return undefined;
+    }
   }
 }

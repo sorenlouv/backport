@@ -1,6 +1,6 @@
-import type { ChildProcessWithoutNullStreams } from 'child_process';
-import { spawn } from 'child_process';
-import path from 'path';
+import type { ChildProcessWithoutNullStreams } from 'node:child_process';
+import { spawn } from 'node:child_process';
+import path from 'node:path';
 import { debounce } from 'lodash-es';
 import stripAnsi from 'strip-ansi';
 import { getSandboxPath, resetSandbox, SANDBOX_PATH } from '../../sandbox.js';
@@ -58,9 +58,9 @@ export async function runBackportViaCli(
 }
 
 const keyCodeMap = {
-  down: '\x1B\x5B\x42',
-  up: '\x1B\x5B\x41',
-  enter: '\x0D',
+  down: '\u001B\u005B\u0042',
+  up: '\u001B\u005B\u0041',
+  enter: '\u000D',
 };
 type KeyCode = keyof typeof keyCodeMap;
 
@@ -158,13 +158,13 @@ function getPromise(
       reject(`runBackportViaCli failed with: ${err}`);
     });
   }).finally(() => {
-    if (!keepAlive) {
-      proc.kill('SIGKILL');
-    } else {
+    if (keepAlive) {
       proc.removeAllListeners('exit');
       proc.stdout.removeAllListeners('data');
       proc.stderr.removeAllListeners('data');
       proc.removeAllListeners('errors');
+    } else {
+      proc.kill('SIGKILL');
     }
   });
 }

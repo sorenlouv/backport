@@ -1,4 +1,4 @@
-import { resolve as pathResolve } from 'path';
+import { resolve as pathResolve } from 'node:path';
 import { uniq } from 'lodash-es';
 import type { ValidConfigOptions } from '../../options/options.js';
 import { SpawnError, spawnPromise } from '../child-process-promisified.js';
@@ -12,11 +12,9 @@ export async function getConflictingFiles(options: ValidConfigOptions) {
     await spawnPromise('git', ['--no-pager', 'diff', '--check'], cwd);
 
     return [];
-  } catch (e) {
-    const isSpawnError = e instanceof SpawnError;
-    const isConflictError = isSpawnError && e.context.code === 2;
-    if (isConflictError) {
-      const files = (e.context.stdout as string)
+  } catch (error) {
+    if (error instanceof SpawnError && error.context.code === 2) {
+      const files = error.context.stdout
         .split('\n')
         .filter(
           (line: string) =>
@@ -39,7 +37,7 @@ export async function getConflictingFiles(options: ValidConfigOptions) {
     }
 
     // rethrow error since it's unrelated
-    throw e;
+    throw error;
   }
 }
 

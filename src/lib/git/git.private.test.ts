@@ -1,5 +1,5 @@
-import fs, { access } from 'fs/promises';
-import path from 'path';
+import fs, { access } from 'node:fs/promises';
+import path from 'node:path';
 import type { Commit } from '../../entrypoint.api.js';
 import type { ValidConfigOptions } from '../../options/options.js';
 import { exec } from '../../test/child-process-helper.js';
@@ -752,13 +752,13 @@ async function createAndStageFile({
   try {
     await fs.writeFile(path.join(cwd, filename), content);
     await childProcess.spawnPromise('git', ['add', `${filename}`], cwd);
-  } catch (e) {
+  } catch (error) {
     console.log('"createAndStageFile" threw an error', {
       filename,
       content,
       cwd,
     });
-    throw e;
+    throw error;
   }
 }
 
@@ -784,9 +784,9 @@ async function getMostRecentCommitMessage(cwd: string) {
       cwd,
     );
     return stdout.trim();
-  } catch (e) {
+  } catch (error) {
     console.log('"getMostRecentCommitMessage" threw an error', cwd);
-    throw e;
+    throw error;
   }
 }
 
@@ -797,17 +797,17 @@ async function gitClone(repoUrl: string, cwd: string) {
       ['clone', repoUrl, './'],
       cwd,
     );
-  } catch (e) {
+  } catch (error) {
     console.log('Git clone failed');
-    throw e;
+    throw error;
   }
 }
 
 async function gitInit(cwd: string) {
   try {
     await childProcess.spawnPromise('git', ['init'], cwd);
-  } catch (e) {
+  } catch (error) {
     console.log('Git init failed');
-    throw e;
+    throw error;
   }
 }

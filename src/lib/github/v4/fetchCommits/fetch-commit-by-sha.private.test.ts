@@ -21,7 +21,7 @@ describe('fetchCommitBySha', () => {
       },
       sourcePullRequest: {
         labels: ['Team:APM - DEPRECATED', 'release_note:skip', 'v7.9.0'],
-        number: 70740,
+        number: 70_740,
         title: '[APM] Add API tests',
         url: 'https://github.com/elastic/kibana/pull/70740',
         mergeCommit: {
@@ -37,7 +37,7 @@ describe('fetchCommitBySha', () => {
           branchLabelMappingKey: '^v7.9.0$',
           isSourceBranch: false,
           state: 'MERGED',
-          number: 71014,
+          number: 71_014,
           url: 'https://github.com/elastic/kibana/pull/71014',
           mergeCommit: {
             message: '[APM] Add API tests (#70740) (#71014)',

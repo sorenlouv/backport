@@ -1,4 +1,4 @@
-import childProcess from 'child_process';
+import childProcess from 'node:child_process';
 import { logger } from './logger.js';
 
 const MAX_BUFFER_SIZE = 100 * 1024 * 1024; // 100MB
@@ -19,7 +19,7 @@ export class SpawnError extends Error {
     }, Args: "${cmdArgs}", Message: ${context.stderr.trim()}`;
 
     super(message);
-    Error.captureStackTrace(this, SpawnError);
+
     this.name = 'SpawnError';
     this.message = message;
     this.context = context;

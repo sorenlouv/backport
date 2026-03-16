@@ -1,6 +1,6 @@
-import { readFileSync, readdirSync } from 'fs';
-import { join, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { readFileSync, readdirSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { parse, Kind, type DocumentNode, type ASTNode } from 'graphql';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
@@ -47,7 +47,7 @@ export function extractQueries(srcDir: string): ExtractedOperation[] {
   const pattern = /graphql\(\s*`([\s\S]*?)`\s*\)/g;
 
   for (const filePath of files) {
-    const content = readFileSync(filePath, 'utf-8');
+    const content = readFileSync(filePath, 'utf8');
     let match;
     while ((match = pattern.exec(content)) !== null) {
       const queryString = match[1];
@@ -70,9 +70,9 @@ export function extractQueries(srcDir: string): ExtractedOperation[] {
             });
           }
         }
-      } catch (e) {
+      } catch (error) {
         console.warn(
-          `Warning: Failed to parse GraphQL in ${filePath}: ${(e as Error).message}`,
+          `Warning: Failed to parse GraphQL in ${filePath}: ${(error as Error).message}`,
         );
       }
     }
@@ -107,7 +107,9 @@ function findReferencedFragments(node: ASTNode): Set<string> {
     for (const key of Object.keys(n)) {
       const child = n[key];
       if (Array.isArray(child)) {
-        child.forEach(visit);
+        for (const item of child) {
+          visit(item);
+        }
       } else if (child && typeof child === 'object' && child.kind) {
         visit(child);
       }

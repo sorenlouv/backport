@@ -7,7 +7,7 @@ function findPackageJson(): string {
   while (dir !== dirname(dir)) {
     const candidate = join(dir, 'package.json');
     if (existsSync(candidate)) {
-      const content = JSON.parse(readFileSync(candidate, 'utf-8'));
+      const content = JSON.parse(readFileSync(candidate, 'utf8'));
       if (content.name === 'backport') {
         return candidate;
       }
@@ -17,7 +17,7 @@ function findPackageJson(): string {
   throw new Error('Could not find backport package.json');
 }
 
-const pkg = JSON.parse(readFileSync(findPackageJson(), 'utf-8'));
+const pkg = JSON.parse(readFileSync(findPackageJson(), 'utf8'));
 
 export function getPackageVersion() {
   return pkg.version;

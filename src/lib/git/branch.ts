@@ -59,23 +59,23 @@ export async function createBackportBranch({
     // delete tmp branch (if it still exists)
     try {
       await spawnPromise('git', ['branch', '-D', tmpBranchName], cwd);
-    } catch (e) {
+    } catch (error) {
       logger.debug(
-        `Could not delete temporary branch "${tmpBranchName}": ${e}`,
+        `Could not delete temporary branch "${tmpBranchName}": ${error}`,
       );
     }
 
     // fetch commits for source branch
     await fetchBranch(options, sourceBranch);
-  } catch (e) {
+  } catch (error) {
     spinner.fail();
 
-    if (e instanceof SpawnError) {
-      const invalidRemoteRef = e.context.stderr
+    if (error instanceof SpawnError) {
+      const invalidRemoteRef = error.context.stderr
         .toLowerCase()
         .match(/couldn't find remote ref (.*)/)?.[1];
 
-      const invalidCommit = e.context.stderr
+      const invalidCommit = error.context.stderr
         .toLowerCase()
         .match(
           /'(.+) is not a commit and a branch .+ cannot be created from it/,
@@ -89,7 +89,7 @@ export async function createBackportBranch({
         );
       }
 
-      const invalidRefSpec = e.context.stderr
+      const invalidRefSpec = error.context.stderr
         .toLowerCase()
         .match(/invalid refspec (.*)/)?.[1];
 
@@ -100,7 +100,7 @@ export async function createBackportBranch({
       }
     }
 
-    throw e;
+    throw error;
   }
 
   spinner.succeed();

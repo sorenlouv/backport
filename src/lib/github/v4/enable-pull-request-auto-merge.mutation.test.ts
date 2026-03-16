@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import { Octokit } from '@octokit/rest';
 import type { ValidConfigOptions } from '../../../options/options.js';
 import { getDevAccessToken } from '../../../test/private/get-dev-access-token.js';
@@ -197,8 +197,8 @@ describe('enablePullRequestAutoMerge', () => {
           { ...options, autoMergeMethod: 'rebase' },
           pullNumber,
         );
-      } catch (e) {
-        const err = e as GithubV4Exception<unknown>;
+      } catch (error) {
+        const err = error as GithubV4Exception<unknown>;
         isMissingStatusChecks = isMissingStatusChecksError(err);
         errorMessage = err.message;
       }
@@ -278,8 +278,8 @@ describe('enablePullRequestAutoMerge', () => {
           { ...options, autoMergeMethod: 'merge' },
           pullNumber,
         );
-      } catch (e) {
-        const err = e as GithubV4Exception<unknown>;
+      } catch (error) {
+        const err = error as GithubV4Exception<unknown>;
         isMissingStatusChecks = isMissingStatusChecksError(err);
         errorMessage = err.message;
       }
@@ -335,8 +335,8 @@ describe('enablePullRequestAutoMerge', () => {
           { ...options, autoMergeMethod: 'merge' },
           pullNumber,
         );
-      } catch (e) {
-        const err = e as GithubV4Exception<unknown>;
+      } catch (error) {
+        const err = error as GithubV4Exception<unknown>;
         isMissingStatusChecks = isMissingStatusChecksError(err);
         errorMessage = err.message;
       }

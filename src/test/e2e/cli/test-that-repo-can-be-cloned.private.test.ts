@@ -35,21 +35,21 @@ describe('test-that-repo-can-be-cloned', () => {
 
       expect(output).toContain('Cloning repository from github.com');
       expect(output).toMatchInlineSnapshot(`
-"- Initializing...
-repo: backport-org/test-that-repo-can-be-cloned | sourceBranch: main | pullNumber: 1 | author: sorenlouv
+        "- Initializing...
+        repo: backport-org/test-that-repo-can-be-cloned | sourceBranch: main | pullNumber: 1 | author: sorenlouv
 
-? Select pull request Beginning of a beautiful repo (#1)
-✔ 100% Cloning repository from github.com (one-time operation)
+        ? Select pull request Beginning of a beautiful repo (#1)
+        ✔ 100% Cloning repository from github.com (one-time operation)
 
-Backporting to production:
-- Pulling latest changes
-✔ Pulling latest changes
-- Cherry-picking: Beginning of a beautiful repo (#1)
-✔ Cherry-picking: Beginning of a beautiful repo (#1)
-- Creating pull request
-✔ Creating pull request
-View pull request: this-is-a-dry-run"
-`);
+        Backporting to production:
+        - Pulling latest changes
+        ✔ Pulling latest changes
+        - Cherry-picking: Beginning of a beautiful repo (#1)
+        ✔ Cherry-picking: Beginning of a beautiful repo (#1)
+        - Creating pull request
+        ✔ Creating pull request
+        View pull request: this-is-a-dry-run"
+      `);
     });
 
     it('does not clone again on subsequent runs', async () => {
@@ -57,20 +57,20 @@ View pull request: this-is-a-dry-run"
 
       expect(output).not.toContain('Cloning repository from github.com');
       expect(output).toMatchInlineSnapshot(`
-"- Initializing...
-repo: backport-org/test-that-repo-can-be-cloned | sourceBranch: main | pullNumber: 1 | author: sorenlouv
+        "- Initializing...
+        repo: backport-org/test-that-repo-can-be-cloned | sourceBranch: main | pullNumber: 1 | author: sorenlouv
 
-? Select pull request Beginning of a beautiful repo (#1)
+        ? Select pull request Beginning of a beautiful repo (#1)
 
-Backporting to production:
-- Pulling latest changes
-✔ Pulling latest changes
-- Cherry-picking: Beginning of a beautiful repo (#1)
-✔ Cherry-picking: Beginning of a beautiful repo (#1)
-- Creating pull request
-✔ Creating pull request
-View pull request: this-is-a-dry-run"
-`);
+        Backporting to production:
+        - Pulling latest changes
+        ✔ Pulling latest changes
+        - Cherry-picking: Beginning of a beautiful repo (#1)
+        ✔ Cherry-picking: Beginning of a beautiful repo (#1)
+        - Creating pull request
+        ✔ Creating pull request
+        View pull request: this-is-a-dry-run"
+      `);
     });
   });
 

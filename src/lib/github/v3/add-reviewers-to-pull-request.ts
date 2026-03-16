@@ -48,15 +48,15 @@ export async function addReviewersToPullRequest({
     );
 
     spinner.succeed();
-  } catch (e) {
+  } catch (error) {
     const message =
-      e instanceof GithubV4Exception
-        ? e.result?.data?.message
-        : e instanceof Error
-          ? e.message
+      error instanceof GithubV4Exception
+        ? error.result?.data?.message
+        : error instanceof Error
+          ? error.message
           : '';
 
     spinner.fail(`Adding reviewers. ${message}`);
-    logger.error(`Could not add reviewers to PR ${pullNumber}`, e);
+    logger.error(`Could not add reviewers to PR ${pullNumber}`, error);
   }
 }

@@ -1,4 +1,4 @@
-import { writeFileSync } from 'fs';
+import { writeFileSync } from 'node:fs';
 import dotenv from 'dotenv';
 import { getIntrospectionQuery, buildClientSchema, printSchema } from 'graphql';
 import { SCHEMA_PATH } from './graphql-extract.js';

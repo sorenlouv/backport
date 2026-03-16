@@ -1,4 +1,4 @@
-import os from 'os';
+import os from 'node:os';
 import * as logger from '../lib/logger.js';
 import * as globalConfig from '../options/config/global-config.js';
 import { postinstall } from './postinstall.js';

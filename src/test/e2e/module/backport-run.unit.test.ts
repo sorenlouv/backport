@@ -8,8 +8,8 @@
  * credential-requiring private/mutation tests.
  */
 
-import fs from 'fs/promises';
-import os from 'os';
+import fs from 'node:fs/promises';
+import os from 'node:os';
 import type { BackportResponse } from '../../../backport-run.js';
 import { backportRun } from '../../../backport-run.js';
 import * as childProcess from '../../../lib/child-process-promisified.js';

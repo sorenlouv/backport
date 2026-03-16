@@ -14,7 +14,7 @@ export async function getRepoOwnerAndNameFromGitRemotes({
   cwd: string;
 }): Promise<{ repoOwner?: string; repoName?: string }> {
   const remotes = await getRepoInfoFromGitRemotes({ cwd });
-  const firstRemote = remotes[0] as (typeof remotes)[number] | undefined;
+  const firstRemote = remotes.at(0);
 
   if (!firstRemote) {
     return {};
@@ -58,11 +58,11 @@ export async function getRepoOwnerAndNameFromGitRemotes({
       repoName: repo?.name,
       repoOwner: repo?.isFork ? repo.parent?.owner.login : repo?.owner.login, // get the original owner (not the fork owner)
     };
-  } catch (e) {
-    if (e instanceof GithubV4Exception) {
-      logger.error(e.message);
+  } catch (error) {
+    if (error instanceof GithubV4Exception) {
+      logger.error(error.message);
       return {};
     }
-    throw e;
+    throw error;
   }
 }

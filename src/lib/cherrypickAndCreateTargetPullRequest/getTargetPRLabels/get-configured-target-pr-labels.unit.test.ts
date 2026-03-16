@@ -15,7 +15,7 @@ const commits: Commit[] = [
     },
     sourcePullRequest: {
       labels: ['backport-to-7.11', 'feature-abc'],
-      number: 88188,
+      number: 88_188,
       title: 'Fix major bug',
       url: 'https://github.com/elastic/kibana/pull/88188',
       mergeCommit: {
@@ -27,7 +27,7 @@ const commits: Commit[] = [
     targetPullRequestStates: [
       {
         url: 'https://github.com/elastic/kibana/pull/88289',
-        number: 88289,
+        number: 88_289,
         branch: '7.11',
         label: 'backport-to-7.11',
         branchLabelMappingKey: '^backport-to-(.+)$',
@@ -40,7 +40,7 @@ const commits: Commit[] = [
       },
       {
         url: 'https://github.com/elastic/kibana/pull/88288',
-        number: 88288,
+        number: 88_288,
         branch: '7.x',
         state: 'OPEN',
         mergeCommit: {

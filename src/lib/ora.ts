@@ -16,4 +16,4 @@ export function ora(
   return interactive ? oraOriginal({ text }) : oraNonInteractiveMode;
 }
 
-export type { Ora };
+export { type Ora } from 'ora';

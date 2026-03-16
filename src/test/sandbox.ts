@@ -1,6 +1,6 @@
-import fs from 'fs/promises';
+import fs from 'node:fs/promises';
+import path, { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import path, { resolve } from 'path';
 
 const REPO_ROOT = resolve(fileURLToPath(import.meta.url), '../../..');
 export const SANDBOX_PATH = resolve(REPO_ROOT, '.integration_testing');

@@ -44,8 +44,8 @@ export async function createStatusComment({
           );
         }),
     );
-  } catch (e) {
-    logger.error(`Could not create status comment `, e);
+  } catch (error) {
+    logger.error(`Could not create status comment `, error);
   }
 }
 
@@ -145,7 +145,7 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
           result.error.errorContext.commitsWithoutBackports.map((c) => {
             const msg = getFirstLine(c.commit.sourceCommit.message);
             // make sure to escape the pipe character to ensure the markdown table is correct
-            const msgEscaped = msg.replace(/\|/g, '\\|');
+            const msgEscaped = msg.replaceAll('|', String.raw`\|`);
             return ` - [${msgEscaped}](${c.commit.sourcePullRequest?.url})`;
           });
 
@@ -177,9 +177,10 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
     .map((line) => line.join('|'))
     .join('|\n|');
 
-  const table = backportResponse.results.length
-    ? `\n\n| Status | Branch | Result |\n|:------:|:------:|:------|\n|${tableBody}|\n`
-    : '';
+  const table =
+    backportResponse.results.length > 0
+      ? `\n\n| Status | Branch | Result |\n|:------:|:------:|:------|\n|${tableBody}|\n`
+      : '';
 
   const didAnyBackportsSucceed = backportResponse.results.some(
     (r) => r.status === 'success',
@@ -196,9 +197,9 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
       ? '\nNote: Successful backport PRs will be merged automatically after passing CI.\n'
       : '';
 
-  const backportPRCommandMessage = !didAllBackportsSucceed
-    ? `${manualBackportCommand}`
-    : '';
+  const backportPRCommandMessage = didAllBackportsSucceed
+    ? ''
+    : `${manualBackportCommand}`;
 
   return `${header}${table}${autoMergeMessage}${backportPRCommandMessage}${questionsAndLinkToBackport}${packageVersionSection}`;
 }

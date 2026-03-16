@@ -43,10 +43,10 @@ describe('getInvalidAccessTokenMessage', () => {
           repoName: 'kibana',
         }),
       ).toMatchInlineSnapshot(`
-"Please follow the link to authorize your personal access token with SSO:
+        "Please follow the link to authorize your personal access token with SSO:
 
-https://ssourl.com"
-`);
+        https://ssourl.com"
+      `);
     });
 
     it('should handle non-existing repo', () => {
@@ -93,11 +93,11 @@ https://ssourl.com"
           repoName: 'kibana',
         }),
       ).toMatchInlineSnapshot(`
-"You do not have access to the repository "elastic/kibana". Please make sure your access token has the required scopes.
+        "You do not have access to the repository "elastic/kibana". Please make sure your access token has the required scopes.
 
-Required scopes: a,b,c
-Access token scopes: a,b"
-`);
+        Required scopes: a,b,c
+        Access token scopes: a,b"
+      `);
     });
 
     it('should not handle unknown cases', () => {

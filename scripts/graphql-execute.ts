@@ -1,4 +1,4 @@
-import { relative } from 'path';
+import { relative } from 'node:path';
 import dotenv from 'dotenv';
 import {
   extractQueries,
@@ -98,9 +98,9 @@ async function main() {
   if (args.variables) {
     try {
       variables = JSON.parse(args.variables as string);
-    } catch (e) {
+    } catch (error) {
       console.error(
-        `Error: Invalid JSON for --variables: ${(e as Error).message}`,
+        `Error: Invalid JSON for --variables: ${(error as Error).message}`,
       );
       process.exit(1);
     }
@@ -146,7 +146,7 @@ async function main() {
   }
 }
 
-main().catch((e) => {
-  console.error(e);
+main().catch((error) => {
+  console.error(error);
   process.exit(1);
 });

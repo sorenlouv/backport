@@ -28,7 +28,7 @@ export async function cloneRepo(
         data.toString().match(/^Receiving objects:\s+(\d+)%/) ?? [];
 
       if (objectReceiveProgress) {
-        progress.objectReceive = parseInt(objectReceiveProgress, 10);
+        progress.objectReceive = Number.parseInt(objectReceiveProgress, 10);
       }
 
       const [, fileUpdateProgress] =
@@ -36,7 +36,7 @@ export async function cloneRepo(
 
       if (fileUpdateProgress) {
         progress.objectReceive = 100;
-        progress.fileUpdate = parseInt(fileUpdateProgress, 10);
+        progress.fileUpdate = Number.parseInt(fileUpdateProgress, 10);
       }
 
       const progressSum = Math.round(

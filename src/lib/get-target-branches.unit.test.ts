@@ -161,7 +161,7 @@ describe('getTargetBranches', () => {
             labels: [],
             url: 'foo',
             title: '[backport] Bump to 5.1.3',
-            number: 62286,
+            number: 62_286,
             mergeCommit: {
               message: '[backport] Bump to 5.1.3 (#62286)',
               sha: 'my-sha',

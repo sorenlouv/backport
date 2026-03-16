@@ -1,4 +1,4 @@
-import fs from 'fs/promises';
+import fs from 'node:fs/promises';
 import type { ConfigFileOptions } from '../options/config-options.js';
 
 export function mockConfigFiles({

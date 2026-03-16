@@ -110,7 +110,7 @@ describe('parseSourceCommit', () => {
         {
           branch: '6.3',
           label: 'v6.3.0',
-          branchLabelMappingKey: '^v(\\d+).(\\d+).\\d+$',
+          branchLabelMappingKey: String.raw`^v(\d+).(\d+).\d+$`,
           isSourceBranch: false,
           number: 5678,
           state: PullRequestState.Merged,
@@ -123,7 +123,7 @@ describe('parseSourceCommit', () => {
         {
           branch: '6.2',
           label: 'v6.2.0',
-          branchLabelMappingKey: '^v(\\d+).(\\d+).\\d+$',
+          branchLabelMappingKey: String.raw`^v(\d+).(\d+).\d+$`,
           isSourceBranch: false,
           number: 9876,
           state: PullRequestState.Open,
@@ -132,7 +132,7 @@ describe('parseSourceCommit', () => {
         {
           branch: '6.1',
           label: 'v6.1.0',
-          branchLabelMappingKey: '^v(\\d+).(\\d+).\\d+$',
+          branchLabelMappingKey: String.raw`^v(\d+).(\d+).\d+$`,
           isSourceBranch: false,
           state: 'NOT_CREATED',
         },
@@ -200,7 +200,7 @@ describe('parseSourceCommit', () => {
         {
           branch: '6.2',
           label: 'v6.2.0',
-          branchLabelMappingKey: '^v(\\d+).(\\d+).\\d+$',
+          branchLabelMappingKey: String.raw`^v(\d+).(\d+).\d+$`,
           isSourceBranch: false,
           number: 9876,
           state: PullRequestState.Open,
@@ -209,7 +209,7 @@ describe('parseSourceCommit', () => {
         {
           branch: '6.1',
           label: 'v6.1.0',
-          branchLabelMappingKey: '^v(\\d+).(\\d+).\\d+$',
+          branchLabelMappingKey: String.raw`^v(\d+).(\d+).\d+$`,
           isSourceBranch: false,
           state: 'NOT_CREATED',
         },
@@ -296,7 +296,7 @@ describe('parseSourceCommit', () => {
         {
           branch: '6.2',
           label: 'v6.2.0',
-          branchLabelMappingKey: '^v(\\d+).(\\d+).\\d+$',
+          branchLabelMappingKey: String.raw`^v(\d+).(\d+).\d+$`,
           isSourceBranch: false,
           number: 9876,
           state: PullRequestState.Open,
@@ -305,7 +305,7 @@ describe('parseSourceCommit', () => {
         {
           branch: '6.1',
           label: 'v6.1.0',
-          branchLabelMappingKey: '^v(\\d+).(\\d+).\\d+$',
+          branchLabelMappingKey: String.raw`^v(\d+).(\d+).\d+$`,
           isSourceBranch: false,
           state: 'NOT_CREATED',
         },

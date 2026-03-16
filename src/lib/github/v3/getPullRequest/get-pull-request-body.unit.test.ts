@@ -36,19 +36,19 @@ describe('getPullRequestBody', () => {
 
         expect(getPullRequestBody({ options, commits, targetBranch: '7.x' }))
           .toMatchInlineSnapshot(`
-"# Backport
+            "# Backport
 
-This will backport the following commits from \`main\` to \`7.x\`:
- - [My commit message (#55)](https://github.com/backport-org/different-merge-strategies/pull/55)
- - [Another commit message (#56)](https://github.com/backport-org/different-merge-strategies/pull/56)
+            This will backport the following commits from \`main\` to \`7.x\`:
+             - [My commit message (#55)](https://github.com/backport-org/different-merge-strategies/pull/55)
+             - [Another commit message (#56)](https://github.com/backport-org/different-merge-strategies/pull/56)
 
-<!--- Backport version: 1.2.3-mocked -->
+            <!--- Backport version: 1.2.3-mocked -->
 
-### Questions ?
-Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
+            ### Questions ?
+            Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
 
-text to append"
-`);
+            text to append"
+          `);
       });
 
       it('replaces {defaultPrDescription} for legacy reasons', () => {
@@ -58,19 +58,19 @@ text to append"
 
         expect(getPullRequestBody({ options, commits, targetBranch: '7.x' }))
           .toMatchInlineSnapshot(`
-"# Backport
+            "# Backport
 
-This will backport the following commits from \`main\` to \`7.x\`:
- - [My commit message (#55)](https://github.com/backport-org/different-merge-strategies/pull/55)
- - [Another commit message (#56)](https://github.com/backport-org/different-merge-strategies/pull/56)
+            This will backport the following commits from \`main\` to \`7.x\`:
+             - [My commit message (#55)](https://github.com/backport-org/different-merge-strategies/pull/55)
+             - [Another commit message (#56)](https://github.com/backport-org/different-merge-strategies/pull/56)
 
-<!--- Backport version: 1.2.3-mocked -->
+            <!--- Backport version: 1.2.3-mocked -->
 
-### Questions ?
-Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
+            ### Questions ?
+            Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
 
-text to append"
-`);
+            text to append"
+          `);
       });
     });
 
@@ -151,18 +151,18 @@ text to append"
 
         expect(getPullRequestBody({ options, commits, targetBranch: '9.0' }))
           .toMatchInlineSnapshot(`
-"# Backport
+            "# Backport
 
-This will backport the following commits from \`main\` to \`9.0\`:
- - This is a commit message (mySha)
+            This will backport the following commits from \`main\` to \`9.0\`:
+             - This is a commit message (mySha)
 
-<!--- Backport version: 1.2.3-mocked -->
+            <!--- Backport version: 1.2.3-mocked -->
 
-### Questions ?
-Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
+            ### Questions ?
+            Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
 
-<!--BACKPORT [{"sourceCommit":{"message":"This is a commit message\\nThis is a description with illegal brackets \`\`\`\\r\\nmetadata={{\\r\\n          extraActionsColor: 'text',\\r\\n        }}\\r\\n\`\`\`","sha":"mySha"},"sourceBranch":"main"}] BACKPORT-->"
-`);
+            <!--BACKPORT [{"sourceCommit":{"message":"This is a commit message\\nThis is a description with illegal brackets \`\`\`\\r\\nmetadata={{\\r\\n          extraActionsColor: 'text',\\r\\n        }}\\r\\n\`\`\`","sha":"mySha"},"sourceBranch":"main"}] BACKPORT-->"
+          `);
       });
     });
 
@@ -174,9 +174,9 @@ Please refer to the [Backport tool documentation](https://github.com/sorenlouv/b
 
         expect(getPullRequestBody({ options, commits, targetBranch: '7.x' }))
           .toMatchInlineSnapshot(`
-" - [My commit message (#55)](https://github.com/backport-org/different-merge-strategies/pull/55)
- - [Another commit message (#56)](https://github.com/backport-org/different-merge-strategies/pull/56)"
-`);
+            " - [My commit message (#55)](https://github.com/backport-org/different-merge-strategies/pull/55)
+             - [Another commit message (#56)](https://github.com/backport-org/different-merge-strategies/pull/56)"
+          `);
       });
 
       it('replaces {{commitMessages}} in default PR description', () => {
@@ -184,17 +184,17 @@ Please refer to the [Backport tool documentation](https://github.com/sorenlouv/b
 
         expect(getPullRequestBody({ options, commits, targetBranch: '7.x' }))
           .toMatchInlineSnapshot(`
-"# Backport
+            "# Backport
 
-This will backport the following commits from \`main\` to \`7.x\`:
- - [My commit message (#55)](https://github.com/backport-org/different-merge-strategies/pull/55)
- - [Another commit message (#56)](https://github.com/backport-org/different-merge-strategies/pull/56)
+            This will backport the following commits from \`main\` to \`7.x\`:
+             - [My commit message (#55)](https://github.com/backport-org/different-merge-strategies/pull/55)
+             - [Another commit message (#56)](https://github.com/backport-org/different-merge-strategies/pull/56)
 
-<!--- Backport version: 1.2.3-mocked -->
+            <!--- Backport version: 1.2.3-mocked -->
 
-### Questions ?
-Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)"
-`);
+            ### Questions ?
+            Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)"
+          `);
       });
 
       it('handles curly brackets in commit message without error', () => {
@@ -216,19 +216,19 @@ Please refer to the [Backport tool documentation](https://github.com/sorenlouv/b
 
         expect(getPullRequestBody({ options, commits, targetBranch: '9.0' }))
           .toMatchInlineSnapshot(`
-"# Backport
+            "# Backport
 
-This will backport the following commits from \`main\` to \`9.0\`:
- - \`\`\`metadata={{ extraActionsColor: 'text',
- (mySha)
+            This will backport the following commits from \`main\` to \`9.0\`:
+             - \`\`\`metadata={{ extraActionsColor: 'text',
+             (mySha)
 
-<!--- Backport version: 1.2.3-mocked -->
+            <!--- Backport version: 1.2.3-mocked -->
 
-### Questions ?
-Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
+            ### Questions ?
+            Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
 
-<!--BACKPORT [{"sourceCommit":{"message":"\`\`\`metadata={{ extraActionsColor: 'text',\\r\\n }}\\r\\n\`\`\`","sha":"mySha"},"sourceBranch":"main"}] BACKPORT-->"
-`);
+            <!--BACKPORT [{"sourceCommit":{"message":"\`\`\`metadata={{ extraActionsColor: 'text',\\r\\n }}\\r\\n\`\`\`","sha":"mySha"},"sourceBranch":"main"}] BACKPORT-->"
+          `);
       });
     });
 
@@ -253,10 +253,10 @@ Please refer to the [Backport tool documentation](https://github.com/sorenlouv/b
 
         expect(getPullRequestBody({ options, commits, targetBranch: '7.x' }))
           .toMatchInlineSnapshot(`
-" - acbcdef My commit message (#55)
- - hijklmn Another commit message (#56)
-"
-`);
+            " - acbcdef My commit message (#55)
+             - hijklmn Another commit message (#56)
+            "
+          `);
       });
 
       it('should handle curly brackets in commits message', () => {
@@ -278,14 +278,14 @@ Please refer to the [Backport tool documentation](https://github.com/sorenlouv/b
 
         expect(getPullRequestBody({ options, commits, targetBranch: '7.x' }))
           .toMatchInlineSnapshot(`
-" - mySha This is a commit message
-This is a description with illegal brackets \`\`\`
-metadata={{
-          extraActionsColor: 'text',
-        }}
-\`\`\`
-"
-`);
+            " - mySha This is a commit message
+            This is a description with illegal brackets \`\`\`
+            metadata={{
+                      extraActionsColor: 'text',
+                    }}
+            \`\`\`
+            "
+          `);
       });
     });
   });
@@ -350,16 +350,16 @@ metadata={{
           targetBranch: '7.x',
         }),
       ).toMatchInlineSnapshot(`
-"# Backport
+        "# Backport
 
-This will backport the following commits from \`master\` to \`7.x\`:
- - [My commit message (#55)](https://github.com/backport-org/different-merge-strategies/pull/55)
+        This will backport the following commits from \`master\` to \`7.x\`:
+         - [My commit message (#55)](https://github.com/backport-org/different-merge-strategies/pull/55)
 
-<!--- Backport version: 1.2.3-mocked -->
+        <!--- Backport version: 1.2.3-mocked -->
 
-### Questions ?
-Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)"
-`);
+        ### Questions ?
+        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)"
+      `);
     });
 
     it('when a single commit (non pull request) is backported', () => {
@@ -379,16 +379,16 @@ Please refer to the [Backport tool documentation](https://github.com/sorenlouv/b
           targetBranch: '7.x',
         }),
       ).toMatchInlineSnapshot(`
-"# Backport
+        "# Backport
 
-This will backport the following commits from \`main\` to \`7.x\`:
- - My commit message (abcdefgh)
+        This will backport the following commits from \`main\` to \`7.x\`:
+         - My commit message (abcdefgh)
 
-<!--- Backport version: 1.2.3-mocked -->
+        <!--- Backport version: 1.2.3-mocked -->
 
-### Questions ?
-Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)"
-`);
+        ### Questions ?
+        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)"
+      `);
     });
 
     it('when multiple commits are backported', () => {
@@ -420,17 +420,17 @@ Please refer to the [Backport tool documentation](https://github.com/sorenlouv/b
           targetBranch: '7.x',
         }),
       ).toMatchInlineSnapshot(`
-"# Backport
+        "# Backport
 
-This will backport the following commits from \`main\` to \`7.x\`:
- - [My commit message (#55)](https://github.com/backport-org/different-merge-strategies/pull/55)
- - Another commit message (qwertyui)
+        This will backport the following commits from \`main\` to \`7.x\`:
+         - [My commit message (#55)](https://github.com/backport-org/different-merge-strategies/pull/55)
+         - Another commit message (qwertyui)
 
-<!--- Backport version: 1.2.3-mocked -->
+        <!--- Backport version: 1.2.3-mocked -->
 
-### Questions ?
-Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)"
-`);
+        ### Questions ?
+        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)"
+      `);
     });
 
     it('when a PR is merged (instead of squashed) and the individual commits are selected', () => {
@@ -467,17 +467,17 @@ Please refer to the [Backport tool documentation](https://github.com/sorenlouv/b
           targetBranch: '7.x',
         }),
       ).toMatchInlineSnapshot(`
-"# Backport
+        "# Backport
 
-This will backport the following commits from \`main\` to \`7.x\`:
- - [Merge strategy: Second commit](https://github.com/backport-org/different-merge-strategies/pull/1)
- - [Merge strategy: First commit](https://github.com/backport-org/different-merge-strategies/pull/1)
+        This will backport the following commits from \`main\` to \`7.x\`:
+         - [Merge strategy: Second commit](https://github.com/backport-org/different-merge-strategies/pull/1)
+         - [Merge strategy: First commit](https://github.com/backport-org/different-merge-strategies/pull/1)
 
-<!--- Backport version: 1.2.3-mocked -->
+        <!--- Backport version: 1.2.3-mocked -->
 
-### Questions ?
-Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)"
-`);
+        ### Questions ?
+        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)"
+      `);
     });
   });
 
@@ -496,17 +496,17 @@ Please refer to the [Backport tool documentation](https://github.com/sorenlouv/b
 
       expect(getPullRequestBody({ options, commits, targetBranch: '7.x' }))
         .toMatchInlineSnapshot(`
-"# Backport
+          "# Backport
 
-This will backport the following commits from \`main\` to \`7.x\`:
- - [My commit message (#55)](https://github.com/backport-org/different-merge-strategies/pull/55)
- - [Another commit message (#56)](https://github.com/backport-org/different-merge-strategies/pull/56)
+          This will backport the following commits from \`main\` to \`7.x\`:
+           - [My commit message (#55)](https://github.com/backport-org/different-merge-strategies/pull/55)
+           - [Another commit message (#56)](https://github.com/backport-org/different-merge-strategies/pull/56)
 
-<!--- Backport version: 1.2.3-mocked -->
+          <!--- Backport version: 1.2.3-mocked -->
 
-### Questions ?
-Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)"
-`);
+          ### Questions ?
+          Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)"
+        `);
 
       // Restore the stubs.
       compileSpy.mockRestore();

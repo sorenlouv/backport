@@ -77,8 +77,8 @@ export function getPullRequestBody({
       sourcePullRequest: commits[0].sourcePullRequest, // assume that all commits are from the same PR
       commits,
     });
-  } catch (e) {
-    logger.error('Could not compile PR description', e);
+  } catch (error) {
+    logger.error('Could not compile PR description', error);
     body = prDescription
       .replaceAll('{{{{raw}}}}', '')
       .replaceAll('{{{{/raw}}}}', '');
@@ -109,5 +109,5 @@ function getConflictResolutionNote(unresolvedFiles: string[]): string {
 }
 
 function stripMarkdownComments(str: string): string {
-  return str.replace(/<!--[\s\S]*?-->/g, '');
+  return str.replaceAll(/<!--[\s\S]*?-->/g, '');
 }

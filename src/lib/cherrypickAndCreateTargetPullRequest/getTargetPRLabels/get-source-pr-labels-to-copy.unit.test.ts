@@ -67,7 +67,10 @@ describe('getLabelsToCopy', () => {
   it('copies labels matching provided regex patterns', () => {
     const labels = getSourcePRLabelsToCopy({
       commits,
-      copySourcePRLabels: ['^version-\\d+$', '^release_note:\\w+$'],
+      copySourcePRLabels: [
+        String.raw`^version-\d+$`,
+        String.raw`^release_note:\w+$`,
+      ],
     });
     expect(labels).toEqual(['version-33', 'release_note:fix']);
   });
@@ -83,7 +86,7 @@ describe('getLabelsToCopy', () => {
   it('supports single regex string configuration', () => {
     const labels = getSourcePRLabelsToCopy({
       commits,
-      copySourcePRLabels: '^release_note:\\w+$',
+      copySourcePRLabels: String.raw`^release_note:\w+$`,
     });
     expect(labels).toEqual(['release_note:fix']);
   });

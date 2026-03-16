@@ -58,31 +58,31 @@ export async function runSequentially({
         pullRequestUrl: url,
         pullRequestNumber: number,
       });
-    } catch (e) {
-      const isHandledError = e instanceof BackportError;
+    } catch (error) {
+      const isHandledError = error instanceof BackportError;
       if (isHandledError) {
         results.push({
           targetBranch,
           status: 'handled-error',
-          error: e,
+          error: error,
         });
-      } else if (e instanceof Error) {
+      } else if (error instanceof Error) {
         results.push({
           targetBranch,
           status: 'unhandled-error',
-          error: e,
+          error: error,
         });
       } else {
-        throw e;
+        throw error;
       }
 
-      logger.error('runSequentially failed', e);
+      logger.error('runSequentially failed', error);
 
       if (isHandledError) {
         // don't output anything for `code: invalid-branch-exception`.
         // Outputting is already handled
-        if (e.errorContext.code !== 'invalid-branch-exception') {
-          consoleLog(e.message);
+        if (error.errorContext.code !== 'invalid-branch-exception') {
+          consoleLog(error.message);
         }
 
         return;

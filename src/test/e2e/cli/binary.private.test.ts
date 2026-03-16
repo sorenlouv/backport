@@ -1,16 +1,14 @@
-import { spawnSync } from 'child_process';
-import fs from 'fs';
-import { readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { spawnSync } from 'node:child_process';
+import fs, { readFileSync } from 'node:fs';
+import path, { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import path from 'path';
 import stripAnsi from 'strip-ansi';
 import { getDevAccessToken } from '../../private/get-dev-access-token.js';
 import { getSandboxPath, resetSandbox } from '../../sandbox.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(
-  readFileSync(join(__dirname, '../../../../package.json'), 'utf-8'),
+  readFileSync(join(__dirname, '../../../../package.json'), 'utf8'),
 );
 
 const accessToken = getDevAccessToken();

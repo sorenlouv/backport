@@ -1,4 +1,4 @@
-import fs from 'fs/promises';
+import fs from 'node:fs/promises';
 import type { ValidConfigOptions } from '../options/options.js';
 import { BackportError } from './backport-error.js';
 import { getRepoPath } from './env.js';
@@ -32,9 +32,9 @@ export async function setupRepo(options: ValidConfigOptions) {
       const sourcePath = localRepoPath ?? remoteRepoPath;
 
       // show the full path for local repos, but only the host name for remote repos (to avoid showing the access token)
-      const sourcePathHumanReadable = !localRepoPath
-        ? options.gitHostname
-        : sourcePath;
+      const sourcePathHumanReadable = localRepoPath
+        ? sourcePath
+        : options.gitHostname;
 
       const spinnerCloneText = `Cloning repository from ${sourcePathHumanReadable} (one-time operation)`;
       spinner.text = `0% ${spinnerCloneText}`;
@@ -49,10 +49,10 @@ export async function setupRepo(options: ValidConfigOptions) {
       );
 
       spinner.succeed(`100% ${spinnerCloneText}`);
-    } catch (e) {
+    } catch (error) {
       spinner.fail();
       await fs.rm(repoPath, { recursive: true, force: true });
-      throw e;
+      throw error;
     }
   }
 

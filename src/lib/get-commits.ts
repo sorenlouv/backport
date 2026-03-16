@@ -79,12 +79,12 @@ export async function getCommits(options: ValidConfigOptions) {
       : `Loading commits from branch "${options.sourceBranch}"...`;
 
     const commitChoices =
-      options.prFilter !== undefined
-        ? await fetchPullRequestsBySearchQuery({
+      options.prFilter === undefined
+        ? await fetchCommitsByAuthor(options)
+        : await fetchPullRequestsBySearchQuery({
             ...options,
             prFilter: options.prFilter,
-          })
-        : await fetchCommitsByAuthor(options);
+          });
     spinner.stop();
 
     if (options.ls) {
@@ -96,12 +96,12 @@ export async function getCommits(options: ValidConfigOptions) {
       isMultipleChoice: options.multipleCommits,
       showDetails: options.details,
     });
-  } catch (e) {
+  } catch (error) {
     if (options.ls) {
       spinner.stop();
     } else {
       spinner.fail();
     }
-    throw e;
+    throw error;
   }
 }

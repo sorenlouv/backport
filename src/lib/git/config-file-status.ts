@@ -13,8 +13,10 @@ export async function getLocalConfigFileCommitDate({ cwd }: { cwd: string }) {
     if (timestamp > 0) {
       return timestamp;
     }
-  } catch (e) {
-    logger.debug(`Could not retrieve commit date for .backportrc.json: ${e}`);
+  } catch (error) {
+    logger.debug(
+      `Could not retrieve commit date for .backportrc.json: ${error}`,
+    );
     return;
   }
 }
@@ -29,8 +31,8 @@ export async function isLocalConfigFileUntracked({ cwd }: { cwd: string }) {
     );
 
     return !!stdout;
-  } catch (e) {
-    logger.debug(`Could not check if .backportrc.json is untracked: ${e}`);
+  } catch (error) {
+    logger.debug(`Could not check if .backportrc.json is untracked: ${error}`);
     return;
   }
 }
@@ -44,8 +46,8 @@ export async function isLocalConfigFileModified({ cwd }: { cwd: string }) {
     );
 
     return !!stdout;
-  } catch (e) {
-    logger.debug(`Could not check if .backportrc.json is modified: ${e}`);
+  } catch (error) {
+    logger.debug(`Could not check if .backportrc.json is modified: ${error}`);
     return false;
   }
 }

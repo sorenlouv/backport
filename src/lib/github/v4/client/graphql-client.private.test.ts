@@ -105,10 +105,10 @@ describe('graphqlClient', () => {
 
     it('includes graphql errors', async () => {
       expect(result.error?.graphQLErrors).toMatchInlineSnapshot(`
-[
-  [GraphQLError: Could not resolve to a Repository with the name 'sorenlouv/backportNonExisting'.],
-]
-`);
+        [
+          [GraphQLError: Could not resolve to a Repository with the name 'sorenlouv/backportNonExisting'.],
+        ]
+      `);
     });
 
     it('includes error message', async () => {

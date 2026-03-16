@@ -51,8 +51,8 @@ export async function getReviewersFromPullRequests({
     const reviewers = uniq(flatten(await Promise.all(promises)));
     spinner.stop();
     return reviewers;
-  } catch (e) {
-    logger.error('Retrieving reviewers failed', e);
+  } catch (error) {
+    logger.error('Retrieving reviewers failed', error);
     spinner.fail(`Retrieving reviewers failed`);
   }
 }
