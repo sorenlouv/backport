@@ -143,8 +143,9 @@ async function getRemoteConfigFileOptions(
   }
 
   const remoteConfig =
-    res.repository.defaultBranchRef.target.remoteConfigHistory.edges?.[0]
-      ?.remoteConfig;
+    res.repository.defaultBranchRef.target.remoteConfigHistory.edges?.at(
+      0,
+    )?.remoteConfig;
 
   if (!remoteConfig) {
     logger.info("Remote config: Skipping. Remote config doesn't exist");

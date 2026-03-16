@@ -7,5 +7,5 @@ export type SourcePullRequestNode = NonNullable<
 export function getSourcePullRequest(
   sourceCommit: SourceCommitWithTargetPullRequestFragmentFragment,
 ) {
-  return sourceCommit.associatedPullRequests?.edges?.[0]?.node;
+  return sourceCommit.associatedPullRequests?.edges?.at(0)?.node;
 }

@@ -73,13 +73,15 @@ export async function createBackportBranch({
     if (error instanceof SpawnError) {
       const invalidRemoteRef = error.context.stderr
         .toLowerCase()
-        .match(/couldn't find remote ref (.*)/)?.[1];
+        .match(/couldn't find remote ref (.*)/)
+        ?.at(1);
 
       const invalidCommit = error.context.stderr
         .toLowerCase()
         .match(
           /'(.+) is not a commit and a branch .+ cannot be created from it/,
-        )?.[1];
+        )
+        ?.at(1);
 
       const invalidBranch = invalidRemoteRef ?? invalidCommit;
 
@@ -91,7 +93,8 @@ export async function createBackportBranch({
 
       const invalidRefSpec = error.context.stderr
         .toLowerCase()
-        .match(/invalid refspec (.*)/)?.[1];
+        .match(/invalid refspec (.*)/)
+        ?.at(1);
 
       if (invalidRefSpec) {
         throw new BackportError(

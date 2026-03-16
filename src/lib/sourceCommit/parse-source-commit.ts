@@ -207,8 +207,9 @@ function getSourceCommitBranchLabelMapping(
   const sourcePullRequest = getSourcePullRequest(sourceCommit);
 
   const remoteConfig =
-    sourcePullRequest?.mergeCommit?.remoteConfigHistory.edges?.[0]
-      ?.remoteConfig;
+    sourcePullRequest?.mergeCommit?.remoteConfigHistory.edges?.at(
+      0,
+    )?.remoteConfig;
 
   if (remoteConfig) {
     return parseRemoteConfigFile(remoteConfig)?.branchLabelMapping;

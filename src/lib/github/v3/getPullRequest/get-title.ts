@@ -32,7 +32,7 @@ export function getTitle({
   try {
     const template = Handlebars.compile(prTitle, { noEscape: true });
     return template({
-      sourcePullRequest: commits[0].sourcePullRequest, // assume that all commits are from the same PR
+      sourcePullRequest: commits.at(0)?.sourcePullRequest, // assume that all commits are from the same PR
       commits,
     });
   } catch (error) {

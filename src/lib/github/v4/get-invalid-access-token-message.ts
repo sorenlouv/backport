@@ -17,7 +17,7 @@ export function getInvalidAccessTokenMessage({
   function getSSOAuthUrl(ssoHeader?: string | null) {
     const matches = ssoHeader?.match(/url=(.*)/);
     if (matches) {
-      return matches[1];
+      return matches.at(1);
     }
   }
 

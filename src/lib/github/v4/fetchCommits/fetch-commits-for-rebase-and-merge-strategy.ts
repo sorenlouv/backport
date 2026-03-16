@@ -100,7 +100,7 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
       c?.node?.committedDate === pullRequestNode.mergeCommit?.committedDate;
 
     const hasSameCommitMessages =
-      c?.node?.message === commitsInPullRequest[i]?.node?.commit.message;
+      c?.node?.message === commitsInPullRequest.at(i)?.node?.commit.message;
 
     const hasSamePullNumber =
       first(c?.node?.associatedPullRequests?.edges)?.node?.number ===

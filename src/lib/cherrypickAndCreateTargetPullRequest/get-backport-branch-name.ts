@@ -29,7 +29,7 @@ export function getBackportBranchName({
     .join('_')
     .slice(0, 200);
 
-  const sourcePullRequest = commits[0].sourcePullRequest; // assume that all commits are from the same PR
+  const sourcePullRequest = commits.at(0)?.sourcePullRequest; // assume that all commits are from the same PR
   const defaultBackportBranchName = 'backport/{{targetBranch}}/{{refValues}}';
 
   const backportBranchName =

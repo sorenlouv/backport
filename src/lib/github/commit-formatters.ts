@@ -3,7 +3,7 @@ export function getShortSha(sha: string) {
 }
 
 export function getFirstLine(message: string) {
-  return message.split('\n')[0];
+  return message.split('\n').at(0)!;
 }
 
 export function stripPullNumber(message: string) {

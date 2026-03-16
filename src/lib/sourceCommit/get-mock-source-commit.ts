@@ -120,7 +120,7 @@ export function getMockSourceCommit({
                       targetMergeCommit:
                         timelineItem.state === 'MERGED'
                           ? {
-                              message: timelineItem.commitMessages[0],
+                              message: timelineItem.commitMessages.at(0)!,
                               sha: 'target-merge-commit-sha',
                             }
                           : null,

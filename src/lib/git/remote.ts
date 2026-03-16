@@ -67,7 +67,7 @@ export async function getRepoInfoFromGitRemotes({ cwd }: { cwd: string }) {
         const match = line.match(
           /github.com[/|:](.+?)(.git)? \((fetch|push)\)/,
         );
-        return match?.[1];
+        return match?.at(1);
       })
       .filter(filterNil);
 

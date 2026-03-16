@@ -109,7 +109,7 @@ export async function graphqlRequest<TData, TVars>(
       }) as GitHubGraphQLError;
     });
     const error = {
-      message: `[GraphQL] ${json.errors[0].message}`,
+      message: `[GraphQL] ${json.errors.at(0).message}`,
       graphQLErrors,
     };
     logger.error('GraphQL Error:', error.message);

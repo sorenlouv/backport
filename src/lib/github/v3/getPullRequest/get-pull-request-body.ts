@@ -74,7 +74,7 @@ export function getPullRequestBody({
   try {
     const template = Handlebars.compile(prDescription, { noEscape: true });
     body = template({
-      sourcePullRequest: commits[0].sourcePullRequest, // assume that all commits are from the same PR
+      sourcePullRequest: commits.at(0)?.sourcePullRequest, // assume that all commits are from the same PR
       commits,
     });
   } catch (error) {

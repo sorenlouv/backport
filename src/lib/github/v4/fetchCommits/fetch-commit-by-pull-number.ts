@@ -87,8 +87,8 @@ export async function fetchCommitsByPullNumber(options: {
   }
 
   const lastCommitInPullRequest =
-    pullRequestNode.commits.edges?.[0]?.node?.commit;
-  const firstCommitInBaseBranch = mergeCommit?.history.edges?.[0]?.node;
+    pullRequestNode.commits.edges?.at(0)?.node?.commit;
+  const firstCommitInBaseBranch = mergeCommit?.history.edges?.at(0)?.node;
   const isRebaseAndMergeStrategy =
     pullRequestNode.commits.totalCount > 0 &&
     mergeCommit?.history.edges?.every(
