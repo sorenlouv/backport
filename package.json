@@ -33,7 +33,7 @@
     "prepare": "husky",
     "prepublishOnly": "npm install && npm run lint && npm run build",
     "lint-and-test": "npm run lint && npm test",
-    "lint": "tsc -p tsconfig.build.json --noEmit --incremental && eslint './**/*.{ts,js}' --fix --cache",
+    "lint": "tsc -p tsconfig.eslint.json --noEmit --incremental && eslint './**/*.{ts,js}' --fix --cache",
     "start": "NODE_ENV=development tsx ./src/entrypoint.cli.ts",
     "test": "vitest run",
     "test:unit": "vitest run --config ./vitest.config.unit.ts",

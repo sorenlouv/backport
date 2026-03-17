@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import type { MockInstance } from 'vitest';
 import type { ValidConfigOptions } from '../options/options.js';
-import type { SpyHelper } from '../types/spy-helper';
+import type { SpyHelper } from '../types/spy-helper.js';
 import * as childProcess from './child-process-promisified.js';
 import * as gitModule from './git/index.js';
 import { oraNonInteractiveMode } from './ora.js';
@@ -29,7 +29,7 @@ describe('setupRepo', () => {
       expect.assertions(2);
 
       vi.spyOn(childProcess, 'spawnStream').mockImplementation(
-        (cmd, cmdArgs) => {
+        (_cmd, cmdArgs) => {
           if (cmdArgs.includes('clone')) {
             throw new Error('Simulated git clone failure');
           }
@@ -62,7 +62,9 @@ describe('setupRepo', () => {
       const spinnerTextSpy = vi.spyOn(oraNonInteractiveMode, 'text', 'set');
       const spinnerSuccessSpy = vi.spyOn(oraNonInteractiveMode, 'succeed');
 
-      vi.spyOn(gitModule, 'getLocalSourceRepoPath').mockResolvedValue();
+      vi.spyOn(gitModule, 'getLocalSourceRepoPath').mockResolvedValue(
+        undefined as any,
+      );
 
       vi.spyOn(childProcess, 'spawnStream').mockImplementation(
         () =>
@@ -165,7 +167,12 @@ describe('setupRepo', () => {
     it('should re-create remotes for both source repo and fork', () => {
       expect(
         spawnSpy.mock.calls.map(
-          ([cmd, cmdArgs, cwd]: [string, ReadonlyArray<string>, string]) => ({
+          ([cmd, cmdArgs, cwd]: [
+            string,
+            ReadonlyArray<string>,
+            string,
+            boolean?,
+          ]) => ({
             cmd: `${cmd} ${cmdArgs.join(' ')}`,
             cwd,
           }),
@@ -201,7 +208,7 @@ describe('setupRepo', () => {
 
   function mockGitClone() {
     vi.spyOn(childProcess, 'spawnStream').mockImplementation(
-      (cmd, cmdArgs) =>
+      (_cmd, cmdArgs) =>
         ({
           on: (name: string, cb: (...args: any[]) => void) => {
             if (cmdArgs.includes('clone') && name === 'close') {

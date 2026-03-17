@@ -1,7 +1,6 @@
 import fs from 'node:fs/promises';
 import { findUp } from 'find-up';
-import type { MockInstance } from 'vitest';
-import type { SpyHelper } from '../../types/spy-helper';
+import type { SpyHelper } from '../../types/spy-helper.js';
 import { getProjectConfig } from './project-config.js';
 
 describe('getProjectConfig', () => {
@@ -18,7 +17,10 @@ describe('getProjectConfig', () => {
           }),
         );
 
-        const projectConfig = await getProjectConfig();
+        const projectConfig = await getProjectConfig({
+          projectConfigFile: undefined,
+          cwd: undefined,
+        });
         expect(projectConfig?.targetBranchChoices).toEqual(['6.x']);
       });
     });
@@ -31,7 +33,10 @@ describe('getProjectConfig', () => {
           }),
         );
 
-        const projectConfig = await getProjectConfig();
+        const projectConfig = await getProjectConfig({
+          projectConfigFile: undefined,
+          cwd: undefined,
+        });
         expect(projectConfig?.targetPRLabels).toEqual(['backport']);
       });
     });
@@ -44,7 +49,10 @@ describe('getProjectConfig', () => {
           }),
         );
 
-        const projectConfig = await getProjectConfig();
+        const projectConfig = await getProjectConfig({
+          projectConfigFile: undefined,
+          cwd: undefined,
+        });
         expect(projectConfig?.repoOwner).toEqual('elastic');
         expect(projectConfig?.repoName).toEqual('kibana');
       });
@@ -62,7 +70,10 @@ describe('getProjectConfig', () => {
           }),
         );
 
-        projectConfig = await getProjectConfig(undefined, '/my/cwd');
+        projectConfig = await getProjectConfig({
+          projectConfigFile: undefined,
+          cwd: '/my/cwd',
+        });
       });
 
       it('should call findUp', () => {
@@ -95,9 +106,10 @@ describe('getProjectConfig', () => {
           }),
         );
 
-        projectConfig = await getProjectConfig(
-          '/custom/path/to/project/.backportrc.json',
-        );
+        projectConfig = await getProjectConfig({
+          projectConfigFile: '/custom/path/to/project/.backportrc.json',
+          cwd: undefined,
+        });
       });
 
       it('should not call findUp', () => {
@@ -125,15 +137,22 @@ describe('getProjectConfig', () => {
   describe('when projectConfig is empty', () => {
     it('should return empty config', async () => {
       vi.spyOn(fs, 'readFile').mockResolvedValueOnce('{}');
-      const projectConfig = await getProjectConfig();
+      const projectConfig = await getProjectConfig({
+        projectConfigFile: undefined,
+        cwd: undefined,
+      });
       expect(projectConfig).toEqual({});
     });
   });
 
   describe('when projectConfig is missing', () => {
     it('should return empty config', async () => {
-      (findUp as any as MockInstance).mockReturnValueOnce();
-      const projectConfig = await getProjectConfig();
+      // @ts-expect-error
+      findUp.mockReturnValueOnce();
+      const projectConfig = await getProjectConfig({
+        projectConfigFile: undefined,
+        cwd: undefined,
+      });
       expect(projectConfig).toEqual(undefined);
     });
   });

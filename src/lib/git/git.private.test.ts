@@ -768,12 +768,12 @@ async function getCurrentSha(cwd: string) {
     ['rev-parse', 'HEAD'],
     cwd,
   );
-  return stdout.trim();
+  return stdout.toString().trim();
 }
 
 async function getCurrentBranchName(cwd: string) {
   const { stdout } = await exec('git rev-parse --abbrev-ref HEAD', { cwd });
-  return stdout.trim();
+  return stdout.toString().trim();
 }
 
 async function getMostRecentCommitMessage(cwd: string) {
@@ -783,7 +783,7 @@ async function getMostRecentCommitMessage(cwd: string) {
       ['--no-pager', 'log', '-1', '--pretty=%B'],
       cwd,
     );
-    return stdout.trim();
+    return stdout.toString().trim();
   } catch (error) {
     console.log('"getMostRecentCommitMessage" threw an error', cwd);
     throw error;

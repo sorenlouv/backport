@@ -1,6 +1,6 @@
 import type { TargetBranchChoice } from '../options/config-options.js';
 import type { ValidConfigOptions } from '../options/options.js';
-import type { SpyHelper } from '../types/spy-helper';
+import type { SpyHelper } from '../types/spy-helper.js';
 import {
   getTargetBranches,
   getTargetBranchChoices,

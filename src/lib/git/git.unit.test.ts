@@ -1,6 +1,6 @@
 import os from 'node:os';
 import type { ValidConfigOptions } from '../../options/options.js';
-import type { SpyHelper } from '../../types/spy-helper';
+import type { SpyHelper } from '../../types/spy-helper.js';
 import * as childProcess from '../child-process-promisified.js';
 import type { Commit } from '../sourceCommit/parse-source-commit.js';
 import {

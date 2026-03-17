@@ -3,10 +3,13 @@ import { findUp } from 'find-up';
 import { readConfigFile } from '../config/read-config-file.js';
 import type { ConfigFileOptions } from '../config-options.js';
 
-export async function getProjectConfig(
-  projectConfigFile: string | undefined,
-  cwd: string | undefined,
-): Promise<ConfigFileOptions | undefined> {
+export async function getProjectConfig({
+  projectConfigFile,
+  cwd,
+}: {
+  projectConfigFile: string | undefined;
+  cwd: string | undefined;
+}): Promise<ConfigFileOptions | undefined> {
   const filepath = projectConfigFile
     ? path.resolve(projectConfigFile)
     : await findUp('.backportrc.json', { cwd });

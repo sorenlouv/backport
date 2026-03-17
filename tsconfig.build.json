@@ -1,4 +1,4 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["src/graphql/generated/graphql.ts", "src/**/*.test.ts", "src/test"]
+  "exclude": ["src/graphql/generated/**", "src/**/*.test.ts", "src/test"]
 }
