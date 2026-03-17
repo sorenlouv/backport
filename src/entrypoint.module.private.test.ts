@@ -35,27 +35,25 @@ describe('entrypoint.module', () => {
         });
       });
 
-      it('should fail with "handled-error"', () => {
-        expect(response.results[0].status).toBe('handled-error');
+      it('should fail with "error"', () => {
+        expect(response.results[0].status).toBe('error');
       });
 
       it('should have correct error code', () => {
-        //@ts-expect-error
-        expect(response.results[0].error.errorContext.code).toBe(
-          'merge-conflict-exception',
-        );
-
-        //@ts-expect-error
-        expect(response.results[0].error.message).toBe(
-          'Commit could not be cherrypicked due to conflicts in: la-liga.md',
-        );
+        expect(response.results[0]).toMatchObject({
+          errorCode: 'merge-conflict-exception',
+          errorMessage:
+            'Commit could not be cherrypicked due to conflicts in: la-liga.md',
+        });
       });
 
       it('contains a list of conflicting files', () => {
-        //@ts-expect-error
-        expect(response.results[0].error.errorContext.conflictingFiles).toEqual(
-          ['la-liga.md'],
-        );
+        expect(response.results[0]).toMatchObject({
+          errorContext: {
+            code: 'merge-conflict-exception',
+            conflictingFiles: ['la-liga.md'],
+          },
+        });
       });
     });
 
