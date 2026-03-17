@@ -8,15 +8,13 @@ export function mockConfigFiles({
   projectConfig: ConfigFileOptions;
   globalConfig: ConfigFileOptions;
 }) {
-  vi.spyOn(fs, 'readFile')
-    //@ts-expect-error
-    .mockImplementation(async (filepath: string) => {
-      if (filepath === '/path/to/project/config') {
-        return JSON.stringify(projectConfig);
-      }
+  vi.spyOn(fs, 'readFile').mockImplementation((async (filepath: string) => {
+    if (filepath === '/path/to/project/config') {
+      return JSON.stringify(projectConfig);
+    }
 
-      if (filepath.endsWith('.backport/config.json')) {
-        return JSON.stringify(globalConfig);
-      }
-    });
+    if (filepath.endsWith('.backport/config.json')) {
+      return JSON.stringify(globalConfig);
+    }
+  }) as typeof fs.readFile);
 }

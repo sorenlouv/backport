@@ -64,24 +64,23 @@ describe('setupRepo', () => {
 
       vi.spyOn(gitModule, 'getLocalSourceRepoPath').mockResolvedValue();
 
-      vi.spyOn(childProcess, 'spawnStream')
-        //@ts-expect-error
-        .mockImplementation(() => {
-          return {
-            on: (name, cb) => {
+      vi.spyOn(childProcess, 'spawnStream').mockImplementation(
+        () =>
+          ({
+            on: (name: string, cb: (...args: any[]) => void) => {
               if (name === 'close') {
                 onClose = cb;
               }
             },
             stderr: {
-              on: (name, handler) => {
+              on: (name: string, handler: (...args: any[]) => void) => {
                 if (name === 'data') {
                   onData = handler;
                 }
               },
             },
-          };
-        });
+          }) as unknown as ReturnType<typeof childProcess.spawnStream>,
+      );
 
       setTimeout(() => {
         onData('Receiving objects:   1%');
@@ -126,16 +125,13 @@ describe('setupRepo', () => {
 
   describe('if repo is already cloned', () => {
     function mockGitProjectRootPath(value: string) {
-      return (
-        spawnSpy
-          //@ts-expect-error
-          .mockImplementationOnce(async (cmd, cmdArgs) => {
-            if (cmdArgs.includes('rev-parse')) {
-              return {
-                stdout: value,
-              };
-            }
-          })
+      return spawnSpy.mockImplementationOnce(
+        async (cmd: string, cmdArgs: ReadonlyArray<string>) => {
+          if (cmdArgs.includes('rev-parse')) {
+            return { stdout: value, stderr: '', code: 0, cmdArgs };
+          }
+          return { stdout: '', stderr: '', code: 0, cmdArgs };
+        },
       );
     }
 
@@ -168,10 +164,12 @@ describe('setupRepo', () => {
 
     it('should re-create remotes for both source repo and fork', () => {
       expect(
-        spawnSpy.mock.calls.map(([cmd, cmdArgs, cwd]) => ({
-          cmd: `${cmd} ${cmdArgs.join(' ')}`,
-          cwd,
-        })),
+        spawnSpy.mock.calls.map(
+          ([cmd, cmdArgs, cwd]: [string, ReadonlyArray<string>, string]) => ({
+            cmd: `${cmd} ${cmdArgs.join(' ')}`,
+            cwd,
+          }),
+        ),
       ).toEqual([
         {
           cmd: 'git rev-parse --show-toplevel',
@@ -202,21 +200,17 @@ describe('setupRepo', () => {
   });
 
   function mockGitClone() {
-    vi.spyOn(childProcess, 'spawnStream')
-      //@ts-expect-error
-      .mockImplementation((cmd, cmdArgs) => {
-        if (cmdArgs.includes('clone')) {
-          return {
-            on: (name, cb) => {
-              if (name === 'close') {
-                //@ts-expect-error
-                cb(0);
-              }
-            },
-            stderr: { on: () => null },
-          };
-        }
-      });
+    vi.spyOn(childProcess, 'spawnStream').mockImplementation(
+      (cmd, cmdArgs) =>
+        ({
+          on: (name: string, cb: (...args: any[]) => void) => {
+            if (cmdArgs.includes('clone') && name === 'close') {
+              cb(0, null);
+            }
+          },
+          stderr: { on: () => null },
+        }) as unknown as ReturnType<typeof childProcess.spawnStream>,
+    );
   }
 
   describe('if repo does not exists locally', () => {

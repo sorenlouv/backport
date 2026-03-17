@@ -122,7 +122,8 @@ describe('non interactive (json) error handling', () => {
     ]);
 
     const backportResult = JSON.parse(output) as BackportResponse;
-    const error = backportResult.results[0] as ErrorResult;
+    const error = backportResult
+      .results[0] as ErrorResult<'invalid-branch-exception'>;
     expect(error.status).toBe('error');
     expect(error.errorCode).toBe('invalid-branch-exception');
     expect(error.errorContext).toEqual({
@@ -141,7 +142,8 @@ describe('non interactive (json) error handling', () => {
     ]);
 
     const backportResult = JSON.parse(output) as BackportResponse;
-    const error = backportResult.results[0] as ErrorResult;
+    const error = backportResult
+      .results[0] as ErrorResult<'invalid-branch-exception'>;
     expect(error.status).toBe('error');
     expect(error.errorCode).toBe('invalid-branch-exception');
     expect(error.errorContext).toEqual({
@@ -177,11 +179,10 @@ describe('non interactive (json) error handling', () => {
     ]);
 
     const backportResult = JSON.parse(output) as BackportResponse;
-    const error = backportResult.results[0] as ErrorResult;
+    const error = backportResult
+      .results[0] as ErrorResult<'merge-conflict-exception'>;
     expect(error.status).toBe('error');
-    expect(
-      (error.errorContext as { conflictingFiles?: string[] })?.conflictingFiles,
-    ).toEqual(['la-liga.md']);
+    expect(error.errorContext?.conflictingFiles).toEqual(['la-liga.md']);
   });
 
   it('when `--source-branch` is invalid', async () => {

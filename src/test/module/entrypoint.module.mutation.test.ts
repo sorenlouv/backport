@@ -1,5 +1,5 @@
 import { Octokit } from '@octokit/rest';
-import type { BackportResponse } from '../../entrypoint.api.js';
+import type { BackportResponse, SuccessResult } from '../../entrypoint.api.js';
 import { backportRun } from '../../entrypoint.api.js';
 import { getShortSha } from '../../lib/github/commit-formatters.js';
 import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
@@ -50,8 +50,8 @@ describe('entrypoint.module', () => {
         },
       });
 
-      // @ts-expect-error
-      const pullRequestNumber = res.results[0].pullRequestNumber as number;
+      const pullRequestNumber = (res.results[0] as SuccessResult)
+        .pullRequestNumber;
 
       pullRequestResponse = await octokit.pulls.get({
         owner: REPO_OWNER,
@@ -163,8 +163,8 @@ describe('entrypoint.module', () => {
         },
       });
 
-      // @ts-expect-error
-      const pullRequestNumber = res.results[0].pullRequestNumber as number;
+      const pullRequestNumber = (res.results[0] as SuccessResult)
+        .pullRequestNumber;
 
       pullRequestResponse = await octokit.pulls.get({
         owner: REPO_OWNER,
@@ -269,8 +269,8 @@ describe('entrypoint.module', () => {
         },
       });
 
-      // @ts-expect-error
-      const pullRequestNumber = res.results[0].pullRequestNumber as number;
+      const pullRequestNumber = (res.results[0] as SuccessResult)
+        .pullRequestNumber;
 
       pullRequestResponse = await octokit.pulls.get({
         owner: REPO_OWNER,
@@ -408,8 +408,10 @@ async function deleteBranchOnGithub({
 
     return res.data;
   } catch (error) {
-    //@ts-expect-error
-    if (error.message === 'Reference does not exist') {
+    if (
+      error instanceof Error &&
+      error.message === 'Reference does not exist'
+    ) {
       return;
     }
 

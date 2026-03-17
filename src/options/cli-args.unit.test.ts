@@ -85,7 +85,7 @@ describe('getOptionsFromCliArgs', () => {
 
       expect(res.pullNumber).toEqual(1337);
 
-      //@ts-expect-error
+      // @ts-ignore
       expect(res.pr).toBe(undefined);
     });
   });
