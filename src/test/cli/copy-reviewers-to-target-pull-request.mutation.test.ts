@@ -29,7 +29,7 @@ describe('backport-org/repo-with-reviewed-pull-requests', () => {
     pullRequest = await getPullRequest(pullRequestNumber);
   });
 
-  it('copies labels over', async () => {
+  it('copies labels over', () => {
     const labels = pullRequest.data.labels.map((l) => l.name);
     expect(labels).toEqual([
       'documentation',
@@ -38,7 +38,7 @@ describe('backport-org/repo-with-reviewed-pull-requests', () => {
     ]);
   });
 
-  it('copies reviewers over', async () => {
+  it('copies reviewers over', () => {
     const reviewers = pullRequest.data.requested_reviewers?.map((r) => r.login);
     expect(reviewers).toEqual(['backport-demo-user']);
   });

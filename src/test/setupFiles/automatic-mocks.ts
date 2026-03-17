@@ -9,7 +9,7 @@ import { registerHandlebarsHelpers } from '../../lib/register-handlebars-helpers
 import * as packageVersionModule from '../../utils/package-version.js';
 
 vi.mock('find-up', () => {
-  return { findUp: vi.fn(async () => '/path/to/project/config') };
+  return { findUp: vi.fn(() => '/path/to/project/config') };
 });
 
 // Store the real version before mocking, accessible via globalThis

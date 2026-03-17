@@ -21,7 +21,7 @@ describe('backport-org/repo-with-changing-branchLabelMapping', () => {
         commit = JSON.parse(output).commits[2];
       });
 
-      it('suggests 3 target branches', async () => {
+      it('suggests 3 target branches', () => {
         expect(commit.suggestedTargetBranches).toEqual([
           '8.3',
           '8.2',
@@ -98,7 +98,7 @@ describe('backport-org/repo-with-changing-branchLabelMapping', () => {
         commit = JSON.parse(output).commits[0];
       });
 
-      it('suggests "production" as target branch', async () => {
+      it('suggests "production" as target branch', () => {
         expect(commit.suggestedTargetBranches).toContain('production');
       });
 

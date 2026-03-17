@@ -108,7 +108,7 @@ describe('entrypoint.module', () => {
         });
       });
 
-      it('should return handled error', async () => {
+      it('should return handled error', () => {
         expect(response.results[0]).toMatchObject({
           status: 'error',
           errorCode: 'invalid-branch-exception',
@@ -135,7 +135,7 @@ describe('entrypoint.module', () => {
         });
       });
 
-      it('should correct error code', async () => {
+      it('should correct error code', () => {
         expect(response.results[0]).toMatchObject({
           status: 'error',
           errorCode: 'no-branches-exception',
@@ -160,7 +160,7 @@ describe('entrypoint.module', () => {
         });
       });
 
-      it('should return successful backport response', async () => {
+      it('should return successful backport response', () => {
         expect(response).toEqual({
           results: [
             {

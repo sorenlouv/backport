@@ -90,15 +90,15 @@ describe('entrypoint.module', () => {
       });
     });
 
-    it('pull request: status code', async () => {
+    it('pull request: status code', () => {
       expect(pullRequestResponse.status).toEqual(200);
     });
 
-    it('pull request: title', async () => {
+    it('pull request: title', () => {
       expect(pullRequestResponse.data.title).toEqual('[7.x] Add ❤️ emoji');
     });
 
-    it('pull request: body', async () => {
+    it('pull request: body', () => {
       expect(pullRequestResponse.data.body).toMatchInlineSnapshot(`
         "# Backport
 
@@ -112,13 +112,13 @@ describe('entrypoint.module', () => {
       `);
     });
 
-    it('pull request: head branch is in fork repo', async () => {
+    it('pull request: head branch is in fork repo', () => {
       expect(pullRequestResponse.data.head.label).toEqual(
         `sorenlouv:${BRANCH_WITH_ONE_COMMIT}`,
       );
     });
 
-    it('pull request: base branch', async () => {
+    it('pull request: base branch', () => {
       expect(pullRequestResponse.data.base.label).toEqual('backport-org:7.x');
     });
 
@@ -215,17 +215,17 @@ describe('entrypoint.module', () => {
       });
     });
 
-    it('pull request: status code', async () => {
+    it('pull request: status code', () => {
       expect(pullRequestResponse.status).toEqual(200);
     });
 
-    it('pull request: title', async () => {
+    it('pull request: title', () => {
       expect(pullRequestResponse.data.title).toEqual(
         '[7.x] Add ❤️ emoji | Add family emoji (#2)',
       );
     });
 
-    it('pull request: body', async () => {
+    it('pull request: body', () => {
       expect(pullRequestResponse.data.body).toMatchInlineSnapshot(`
         "# Backport
 
@@ -240,13 +240,13 @@ describe('entrypoint.module', () => {
       `);
     });
 
-    it('pull request: head branch contains both commits in name', async () => {
+    it('pull request: head branch contains both commits in name', () => {
       expect(pullRequestResponse.data.head.label).toEqual(
         `sorenlouv:${BRANCH_WITH_TWO_COMMITS}`,
       );
     });
 
-    it('pull request: base branch', async () => {
+    it('pull request: base branch', () => {
       expect(pullRequestResponse.data.base.label).toEqual('backport-org:7.x');
     });
   });
@@ -279,11 +279,11 @@ describe('entrypoint.module', () => {
       });
     });
 
-    it('pull request: title', async () => {
+    it('pull request: title', () => {
       expect(pullRequestResponse.data.title).toEqual('[7.x] Add ❤️ emoji');
     });
 
-    it('pull request: body', async () => {
+    it('pull request: body', () => {
       expect(pullRequestResponse.data.body).toMatchInlineSnapshot(`
         "# Backport
 
@@ -297,13 +297,13 @@ describe('entrypoint.module', () => {
       `);
     });
 
-    it('pull request: head branch is in origin (non-fork) repo', async () => {
+    it('pull request: head branch is in origin (non-fork) repo', () => {
       expect(pullRequestResponse.data.head.label).toEqual(
         `backport-org:${BRANCH_WITH_ONE_COMMIT}`,
       );
     });
 
-    it('pull request: base branch', async () => {
+    it('pull request: base branch', () => {
       expect(pullRequestResponse.data.base.label).toEqual('backport-org:7.x');
     });
 

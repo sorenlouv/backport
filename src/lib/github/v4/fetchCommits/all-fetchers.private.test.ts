@@ -73,7 +73,7 @@ describe('allFetchers', () => {
     expect(commitByAuthor).toEqual(commitBySearchQuery);
   });
 
-  it('returns correct response for commitByAuthor', async () => {
+  it('returns correct response for commitByAuthor', () => {
     const expectedCommit: Commit = {
       author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
       suggestedTargetBranches: [],

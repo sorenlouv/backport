@@ -5,7 +5,7 @@ import { getOptionsFromGithub } from './get-options-from-github.js';
 const accessToken = getDevAccessToken();
 
 describe('getOptionsFromGithub', () => {
-  beforeAll(async () => {
+  beforeAll(() => {
     vi.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
   });
 
@@ -70,7 +70,7 @@ describe('getOptionsFromGithub', () => {
 
       const options = await getOptionsFromGithub(combinedOptions);
 
-      await expect(options.repoOwner).toEqual('backport-org');
+      expect(options.repoOwner).toEqual('backport-org');
     });
   });
 
@@ -87,7 +87,7 @@ describe('getOptionsFromGithub', () => {
 
         const options = await getOptionsFromGithub(combinedOptions);
 
-        await expect(options.sourceBranch).toEqual('my-custom-default-branch');
+        expect(options.sourceBranch).toEqual('my-custom-default-branch');
       });
     });
   });

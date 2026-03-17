@@ -22,7 +22,7 @@ describe('entrypoint cli', () => {
     expect(output).toEqual(process.env.npm_package_version);
   });
 
-  it('PACKAGE_VERSION should match', async () => {
+  it('PACKAGE_VERSION should match', () => {
     expect((globalThis as any).__UNMOCKED_PACKAGE_VERSION__).toBe(
       process.env.npm_package_version,
     );

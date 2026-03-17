@@ -177,7 +177,7 @@ describe('getTargetBranches', () => {
       targetBranchChoices = promptSpy.mock.calls[0][0].targetBranchChoices;
     });
 
-    it('should list the correct branches', async () => {
+    it('should list the correct branches', () => {
       expect(targetBranchChoices).toEqual([
         { checked: true, name: '7.x', value: '7.x' },
         { checked: false, name: '7.7', value: '7.7' },
@@ -186,13 +186,13 @@ describe('getTargetBranches', () => {
       ]);
     });
 
-    it('should not list the sourceBranch (master)', async () => {
+    it('should not list the sourceBranch (master)', () => {
       expect(targetBranchChoices).not.toContainEqual(
         expect.objectContaining({ name: 'master' }),
       );
     });
 
-    it('should select 7.x', async () => {
+    it('should select 7.x', () => {
       expect(targetBranchChoices).toContainEqual({
         name: '7.x',
         value: '7.x',

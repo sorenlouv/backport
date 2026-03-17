@@ -237,7 +237,7 @@ describe('setupRepo', () => {
       } as ValidConfigOptions);
     });
 
-    it('should clone it from github.com', async () => {
+    it('should clone it from github.com', () => {
       expect(spinnerSuccessSpy).toHaveBeenCalledWith(
         '100% Cloning repository from github.com (one-time operation)',
       );
@@ -270,7 +270,7 @@ describe('setupRepo', () => {
       } as ValidConfigOptions);
     });
 
-    it('should clone it from local folder', async () => {
+    it('should clone it from local folder', () => {
       expect(spinnerSuccessSpy).toHaveBeenCalledWith(
         '100% Cloning repository from /path/to/source/repo (one-time operation)',
       );

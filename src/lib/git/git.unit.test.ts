@@ -415,7 +415,7 @@ describe('deleteRemote', () => {
     });
 
     vi.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
-    await expect(await deleteRemote(options, remoteName)).toBe(undefined);
+    expect(await deleteRemote(options, remoteName)).toBe(undefined);
   });
 
   it('should swallow "no such remote" error on git 2.30.0 or later', async () => {
@@ -427,7 +427,7 @@ describe('deleteRemote', () => {
     });
 
     vi.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
-    await expect(await deleteRemote(options, remoteName)).toBe(undefined);
+    expect(await deleteRemote(options, remoteName)).toBe(undefined);
   });
 
   it('should swallow "no such remote" error on git 2.30.0+, even if it is not in English', async () => {
@@ -439,7 +439,7 @@ describe('deleteRemote', () => {
     });
 
     vi.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
-    await expect(await deleteRemote(options, remoteName)).toBe(undefined);
+    expect(await deleteRemote(options, remoteName)).toBe(undefined);
   });
 
   it('should rethrow normal error', async () => {
@@ -671,7 +671,7 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
   it('should return needsResolve:false when rerere.enabled + rerere.autoUpdate and all files are staged', async () => {
     const spawnSpy = vi.spyOn(childProcess, 'spawnPromise');
 
-    spawnSpy.mockImplementation(async (cmd, args) => {
+    spawnSpy.mockImplementation((cmd, args) => {
       if (args.includes('cherry-pick')) {
         throw new childProcess.SpawnError({
           code: 1,
@@ -685,7 +685,12 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
 
       // Mock getConflictingFiles (git diff --check) - no conflicts found
       if (isDiff && args.includes('--check')) {
-        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: '',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
 
       // Mock getUnstagedFiles (git diff --name-only) - no unstaged files
@@ -694,26 +699,41 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
         args.includes('--name-only') &&
         !args.includes('--cached')
       ) {
-        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: '',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
 
       // Mock getStagedFiles (git diff --name-only --cached) - has staged files
       if (isDiff && args.includes('--name-only') && args.includes('--cached')) {
-        return {
+        return Promise.resolve({
           stdout: 'resolved-file.txt\nother-file.js',
           stderr: '',
           code: 0,
           cmdArgs: args,
-        };
+        });
       }
 
       // Mock rerere config - enabled with autoUpdate
       if (args.includes('config') && args.includes('rerere.enabled')) {
-        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: 'true\n',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
 
       if (args.includes('config') && args.includes('rerere.autoUpdate')) {
-        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: 'true\n',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
 
       throw new Error(`Unexpected git command: ${cmd} ${args.join(' ')}`);
@@ -735,7 +755,7 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
   it('should return needsResolving:true when rerere.enabled && autoUpdate && mixed staged + unstaged', async () => {
     const base = '/myHomeDir/.backport/repositories/elastic/kibana';
     const spawnSpy = vi.spyOn(childProcess, 'spawnPromise');
-    spawnSpy.mockImplementation(async (cmd, args) => {
+    spawnSpy.mockImplementation((cmd, args) => {
       if (args.includes('cherry-pick')) {
         throw new childProcess.SpawnError({
           code: 1,
@@ -748,7 +768,12 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
 
       // getConflictingFiles: none
       if (isDiff && args.includes('--check')) {
-        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: '',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
       // getUnstagedFiles: has one unstaged file
       if (
@@ -756,18 +781,38 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
         args.includes('--name-only') &&
         !args.includes('--cached')
       ) {
-        return { stdout: 'u1\n', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: 'u1\n',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
       // getStagedFiles: has staged file(s)
       if (isDiff && args.includes('--name-only') && args.includes('--cached')) {
-        return { stdout: 's1\n', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: 's1\n',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
       // rerere.enabled=true, rerere.autoUpdate=true
       if (args.includes('config') && args.includes('rerere.enabled')) {
-        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: 'true\n',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
       if (args.includes('config') && args.includes('rerere.autoUpdate')) {
-        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: 'true\n',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
 
       throw new Error(`Unexpected git command: ${cmd} ${args.join(' ')}`);
@@ -785,7 +830,7 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
   it('should return needsResolving:true when rerere.enabled && !autoUpdate and unstaged present (no conflicts)', async () => {
     const base = '/myHomeDir/.backport/repositories/elastic/kibana';
     const spawnSpy = vi.spyOn(childProcess, 'spawnPromise');
-    spawnSpy.mockImplementation(async (cmd, args) => {
+    spawnSpy.mockImplementation((cmd, args) => {
       if (args.includes('cherry-pick')) {
         throw new childProcess.SpawnError({
           code: 1,
@@ -798,7 +843,12 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
 
       // getConflictingFiles: clean (no conflicts found)
       if (isDiff && args.includes('--check')) {
-        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: '',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
 
       // getUnstagedFiles: has unstaged paths
@@ -807,20 +857,40 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
         args.includes('--name-only') &&
         !args.includes('--cached')
       ) {
-        return { stdout: 'a.txt\nb.md\n', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: 'a.txt\nb.md\n',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
 
       // getStagedFiles: none staged
       if (isDiff && args.includes('--name-only') && args.includes('--cached')) {
-        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: '',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
 
       // rerere.enabled=true, rerere.autoUpdate=false
       if (args.includes('config') && args.includes('rerere.enabled')) {
-        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: 'true\n',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
       if (args.includes('config') && args.includes('rerere.autoUpdate')) {
-        return { stdout: 'false\n', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: 'false\n',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
 
       throw new Error(`Unexpected git command: ${cmd} ${args.join(' ')}`);
@@ -837,7 +907,7 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
 
   it('should rethrow cherry-pick error when rerere.enabled && autoUpdate && no staged and no unstaged files (no conflicts)', async () => {
     const spawnSpy = vi.spyOn(childProcess, 'spawnPromise');
-    spawnSpy.mockImplementation(async (cmd, args) => {
+    spawnSpy.mockImplementation((cmd, args) => {
       if (args.includes('cherry-pick')) {
         throw new childProcess.SpawnError({
           code: 1,
@@ -850,7 +920,12 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
 
       // getConflictingFiles: clean
       if (isDiff && args.includes('--check')) {
-        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: '',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
       // getUnstagedFiles: none
       if (
@@ -858,18 +933,38 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
         args.includes('--name-only') &&
         !args.includes('--cached')
       ) {
-        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: '',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
       // getStagedFiles: none
       if (isDiff && args.includes('--name-only') && args.includes('--cached')) {
-        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: '',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
       // rerere.enabled=true, rerere.autoUpdate=true
       if (args.includes('config') && args.includes('rerere.enabled')) {
-        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: 'true\n',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
       if (args.includes('config') && args.includes('rerere.autoUpdate')) {
-        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: 'true\n',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
 
       throw new Error(`Unexpected git command: ${cmd} ${args.join(' ')}`);
@@ -883,7 +978,7 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
   it('should return needsResolving:true when rerere.enabled && !autoUpdate with mixed staged and unstaged', async () => {
     const base = '/myHomeDir/.backport/repositories/elastic/kibana';
     const spawnSpy = vi.spyOn(childProcess, 'spawnPromise');
-    spawnSpy.mockImplementation(async (cmd, args) => {
+    spawnSpy.mockImplementation((cmd, args) => {
       if (args.includes('cherry-pick')) {
         throw new childProcess.SpawnError({
           code: 1,
@@ -896,7 +991,12 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
 
       // getConflictingFiles: clean
       if (isDiff && args.includes('--check')) {
-        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: '',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
       // getUnstagedFiles: has entries
       if (
@@ -904,18 +1004,38 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
         args.includes('--name-only') &&
         !args.includes('--cached')
       ) {
-        return { stdout: 'u1\nu2\n', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: 'u1\nu2\n',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
       // getStagedFiles: also has entries (mixed state)
       if (isDiff && args.includes('--name-only') && args.includes('--cached')) {
-        return { stdout: 's1\n', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: 's1\n',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
       // rerere.enabled=true, rerere.autoUpdate=false
       if (args.includes('config') && args.includes('rerere.enabled')) {
-        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: 'true\n',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
       if (args.includes('config') && args.includes('rerere.autoUpdate')) {
-        return { stdout: 'false\n', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: 'false\n',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
 
       throw new Error(`Unexpected git command: ${cmd} ${args.join(' ')}`);
@@ -934,7 +1054,7 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
     const base = '/myHomeDir/.backport/repositories/elastic/kibana';
     const spawnSpy = vi.spyOn(childProcess, 'spawnPromise');
 
-    spawnSpy.mockImplementation(async (cmd, args) => {
+    spawnSpy.mockImplementation((cmd, args) => {
       if (args.includes('cherry-pick')) {
         throw new childProcess.SpawnError({
           code: 1,
@@ -960,18 +1080,38 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
         args.includes('--name-only') &&
         !args.includes('--cached')
       ) {
-        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: '',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
       // getStagedFiles: none
       if (isDiff && args.includes('--name-only') && args.includes('--cached')) {
-        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: '',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
       // rerere.enabled=true, rerere.autoUpdate=true
       if (args.includes('config') && args.includes('rerere.enabled')) {
-        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: 'true\n',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
       if (args.includes('config') && args.includes('rerere.autoUpdate')) {
-        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: 'true\n',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
 
       throw new Error(`Unexpected git command: ${cmd} ${args.join(' ')}`);
@@ -991,7 +1131,7 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
   it('should return needsResolving:true and unstaged present (regardless of rerere)', async () => {
     const base = '/myHomeDir/.backport/repositories/elastic/kibana';
     const spawnSpy = vi.spyOn(childProcess, 'spawnPromise');
-    spawnSpy.mockImplementation(async (cmd, args) => {
+    spawnSpy.mockImplementation((cmd, args) => {
       if (args.includes('cherry-pick')) {
         throw new childProcess.SpawnError({
           code: 1,
@@ -1004,7 +1144,12 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
 
       // getConflictingFiles: clean
       if (isDiff && args.includes('--check')) {
-        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: '',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
       // getUnstagedFiles: has entries
       if (
@@ -1012,18 +1157,38 @@ Or refer to the git documentation for more information: https://git-scm.com/docs
         args.includes('--name-only') &&
         !args.includes('--cached')
       ) {
-        return { stdout: 'x\n', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: 'x\n',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
       // getStagedFiles: not needed but return none
       if (isDiff && args.includes('--name-only') && args.includes('--cached')) {
-        return { stdout: '', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: '',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
       // rerere.enabled=false; rerere.autoUpdate=false
       if (args.includes('config') && args.includes('rerere.enabled')) {
-        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: 'true\n',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
       if (args.includes('config') && args.includes('rerere.autoUpdate')) {
-        return { stdout: 'true\n', stderr: '', code: 0, cmdArgs: args };
+        return Promise.resolve({
+          stdout: 'true\n',
+          stderr: '',
+          code: 0,
+          cmdArgs: args,
+        });
       }
 
       throw new Error(`Unexpected git command: ${cmd} ${args.join(' ')}`);
@@ -1187,7 +1352,7 @@ describe('commitChanges', () => {
       cmdArgs: [],
     });
 
-    await expect(await commitChanges({ commit, commitAuthor, options })).toBe(
+    expect(await commitChanges({ commit, commitAuthor, options })).toBe(
       undefined,
     );
   });
@@ -1202,7 +1367,7 @@ describe('commitChanges', () => {
     });
 
     vi.spyOn(childProcess, 'spawnPromise').mockRejectedValueOnce(err);
-    await expect(await commitChanges({ commit, commitAuthor, options })).toBe(
+    expect(await commitChanges({ commit, commitAuthor, options })).toBe(
       undefined,
     );
   });
@@ -1260,8 +1425,8 @@ describe('commitChanges', () => {
       ]);
     });
 
-    it('should handle the error and resolve successfully', async () => {
-      await expect(res).toBe(undefined);
+    it('should handle the error and resolve successfully', () => {
+      expect(res).toBe(undefined);
     });
   });
 

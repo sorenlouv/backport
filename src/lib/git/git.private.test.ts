@@ -441,7 +441,7 @@ describe('git.private', () => {
       );
 
       //file should exist after clone
-      await expect(() => access(`${backportRepo}/my-file.txt`)).not.toThrow();
+      expect(() => access(`${backportRepo}/my-file.txt`)).not.toThrow();
     });
 
     it('clones a remote repo and continously updates the progress', async () => {

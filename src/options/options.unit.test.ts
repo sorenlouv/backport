@@ -177,7 +177,7 @@ describe('getOptions', () => {
 
   it('should merge config options and module options', async () => {
     mockGithubConfigOptions({});
-    const myFn = async () => true;
+    const myFn = () => true;
 
     const options = await getOptions({
       optionsFromCliArgs: {},

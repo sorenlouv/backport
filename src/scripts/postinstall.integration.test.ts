@@ -109,7 +109,7 @@ describe('postinstall (integration)', () => {
     expect(content).toBe(customContent);
   });
 
-  it('creates config with the expected template content', async () => {
+  it('creates config with the expected template content', () => {
     const configPath = path.join(fakeHomeDir, '.backport', 'config.json');
     const content = fs.readFileSync(configPath, 'utf8');
     const config = parseConfigFile(content);

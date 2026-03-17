@@ -197,7 +197,7 @@ describe('different-merge-strategies', () => {
       );
     });
 
-    it('has the right output', async () => {
+    it('has the right output', () => {
       expect(output).toMatchInlineSnapshot(`
         "- Initializing...
         repo: backport-org/different-merge-strategies | sourceBranch: main | pullNumber: 9 | author: sorenlouv
@@ -292,7 +292,7 @@ describe('different-merge-strategies', () => {
       ]);
     });
 
-    it('shows every commit in output', async () => {
+    it('shows every commit in output', () => {
       expect(
         output
           .split('\n')

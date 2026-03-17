@@ -37,15 +37,15 @@ describe('graphqlClient', () => {
       );
     });
 
-    it('includes status code', async () => {
+    it('includes status code', () => {
       expect(result.statusCode).toBe(401);
     });
 
-    it('does not include graphql errors', async () => {
+    it('does not include graphql errors', () => {
       expect(result.error?.graphQLErrors).toEqual([]);
     });
 
-    it('includes error message', async () => {
+    it('includes error message', () => {
       expect(result.error?.message).toBe('[Network] Unauthorized');
     });
   });
@@ -63,11 +63,11 @@ describe('graphqlClient', () => {
       );
     });
 
-    it('includes status code', async () => {
+    it('includes status code', () => {
       expect(result.statusCode).toBe(200);
     });
 
-    it('includes x-oauth-scopes headers', async () => {
+    it('includes x-oauth-scopes headers', () => {
       expect(result.responseHeaders?.get('x-oauth-scopes')).toContain('repo');
     });
   });
@@ -88,22 +88,22 @@ describe('graphqlClient', () => {
       );
     });
 
-    it('includes status code', async () => {
+    it('includes status code', () => {
       expect(result.statusCode).toBe(200);
     });
 
-    it('includes error path', async () => {
+    it('includes error path', () => {
       expect(result.error?.graphQLErrors[0].path).toEqual(['repository']);
     });
 
-    it('includes error type', async () => {
+    it('includes error type', () => {
       expect(
         (result.error?.graphQLErrors[0] as GitHubGraphQLError).originalError
           ?.type,
       ).toBe('NOT_FOUND');
     });
 
-    it('includes graphql errors', async () => {
+    it('includes graphql errors', () => {
       expect(result.error?.graphQLErrors).toMatchInlineSnapshot(`
         [
           [GraphQLError: Could not resolve to a Repository with the name 'sorenlouv/backportNonExisting'.],
@@ -111,13 +111,13 @@ describe('graphqlClient', () => {
       `);
     });
 
-    it('includes error message', async () => {
+    it('includes error message', () => {
       expect(result.error?.message).toBe(
         "[GraphQL] Could not resolve to a Repository with the name 'sorenlouv/backportNonExisting'.",
       );
     });
 
-    it('includes x-oauth-scopes headers', async () => {
+    it('includes x-oauth-scopes headers', () => {
       expect(result.responseHeaders?.get('x-oauth-scopes')).toContain('repo');
     });
   });

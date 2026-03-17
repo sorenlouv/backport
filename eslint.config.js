@@ -134,31 +134,26 @@ export default [
       ],
       'import-x/no-duplicates': 'error',
 
-      // Essential TypeScript rules
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': 'error',
       '@typescript-eslint/prefer-nullish-coalescing': 'error',
       '@typescript-eslint/prefer-optional-chain': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-floating-promises': 'error',
-
-      // Note: strict type safety rules are in a separate block below (production only)
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
+      '@typescript-eslint/no-misused-promises': 'error',
+      '@typescript-eslint/await-thenable': 'error',
 
       // Turn off base rule in favor of TypeScript version
       'no-unused-vars': 'off',
     },
-  },
+  }, 
 
-  // Test files - relaxed rules and Vitest globals
+  // Test files - additional globals and relaxed rules
   {
     files: ['**/*.{test,spec}.{js,ts}', '**/test/**/*.{js,ts}'],
     languageOptions: {
-      parser: tsparser,
-      parserOptions: {
-        project: './tsconfig.eslint.json',
-      },
       globals: {
-        ...nodeGlobals,
         describe: 'readonly',
         it: 'readonly',
         test: 'readonly',
@@ -174,31 +169,8 @@ export default [
         clearInterval: 'readonly',
       },
     },
-    plugins: {
-      '@typescript-eslint': tseslint,
-    },
     rules: {
-      ...js.configs.recommended.rules,
-      ...tseslint.configs.recommended.rules,
-      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/ban-ts-comment': 'off',
-      'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': 'error',
-    },
-  },
-
-  // Strict type safety rules (production code only)
-  {
-    files: ['**/*.ts'],
-    ignores: ['**/*.{test,spec}.{js,ts}', '**/test/**/*.{js,ts}'],
-    plugins: {
-      '@typescript-eslint': tseslint,
-    },
-    rules: {
-      '@typescript-eslint/switch-exhaustiveness-check': 'error',
-      '@typescript-eslint/no-misused-promises': 'error',
-      '@typescript-eslint/await-thenable': 'error',
-      '@typescript-eslint/require-await': 'error',
     },
   },
 ];

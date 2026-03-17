@@ -105,7 +105,7 @@ describe('fetchCommitsByAuthor', () => {
       });
     });
 
-    it('returns related OPEN PRs', async () => {
+    it('returns related OPEN PRs', () => {
       const commitWithOpenPR = res.find(
         (commit) => commit.sourcePullRequest?.number === 9,
       );
@@ -122,7 +122,7 @@ describe('fetchCommitsByAuthor', () => {
       ]);
     });
 
-    it('returns related MERGED PRs', async () => {
+    it('returns related MERGED PRs', () => {
       const commitWithMergedPRs = res.find(
         (commit) => commit.sourcePullRequest?.number === 5,
       );
@@ -169,7 +169,7 @@ describe('fetchCommitsByAuthor', () => {
       ]);
     });
 
-    it('returns missing pull requests', async () => {
+    it('returns missing pull requests', () => {
       const commitWithoutPRs = res.find(
         (commit) => commit.sourcePullRequest?.number === 8,
       );
