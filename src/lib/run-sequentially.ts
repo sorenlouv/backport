@@ -15,12 +15,12 @@ export type SuccessResult = {
   pullRequestNumber: number;
 };
 
-export type ErrorResult = {
+export type ErrorResult<TCode extends BackportErrorCode = BackportErrorCode> = {
   status: 'error';
   targetBranch?: string;
   errorMessage: string;
-  errorCode: BackportErrorCode | 'unhandled-exception';
-  errorContext?: ErrorContext;
+  errorCode: TCode | 'unhandled-exception';
+  errorContext?: Extract<ErrorContext, { code: TCode }>;
 };
 
 export type Result = SuccessResult | ErrorResult;

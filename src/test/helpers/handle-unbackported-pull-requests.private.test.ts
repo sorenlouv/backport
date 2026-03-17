@@ -1,4 +1,4 @@
-import type { Commit } from '../../entrypoint.api.js';
+import type { Commit, ErrorResult } from '../../entrypoint.api.js';
 import { getCommits, backportRun } from '../../entrypoint.api.js';
 import { getDevAccessToken } from './get-dev-access-token.js';
 import { getSandboxPath, resetSandbox } from './sandbox.js';
@@ -68,9 +68,10 @@ describe('Handle unbackported pull requests', () => {
       },
     });
 
+    const errorResult = result
+      .results[0] as ErrorResult<'merge-conflict-exception'>;
     const commit: Commit =
-      //@ts-expect-error
-      result.results[0].error.errorContext?.commitsWithoutBackports[0].commit;
+      errorResult.errorContext!.commitsWithoutBackports[0].commit;
 
     expect(commit.sourcePullRequest?.number).toBe(8);
   });

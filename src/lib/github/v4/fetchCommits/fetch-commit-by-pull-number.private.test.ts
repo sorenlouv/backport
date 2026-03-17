@@ -113,7 +113,7 @@ describe('fetchCommitByPullNumber', () => {
       };
 
       await expect(fetchCommitsByPullNumber(options)).rejects.toThrow(
-        `Could not resolve to a PullRequest with the number of 9999999999999. (Github API v4)`,
+        `[GraphQL] Could not resolve to a PullRequest with the number of 9999999999999.`,
       );
     });
   });
