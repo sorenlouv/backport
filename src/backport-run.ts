@@ -1,5 +1,6 @@
 /** Top-level orchestrator: parse args, resolve options, fetch commits, run backports, report results. */
 import chalk from 'chalk';
+import { ExitPromptError } from '@inquirer/core';
 import type { BackportErrorCode } from './lib/backport-error.js';
 import { BackportError } from './lib/backport-error.js';
 import { getLogfilePath } from './lib/env.js';
@@ -101,6 +102,11 @@ export async function backportRun({
     return backportResponse;
   } catch (error) {
     spinner.stop();
+
+    // Gracefully handle Ctrl+C during interactive prompts
+    if (error instanceof ExitPromptError) {
+      return { commits, results: [] };
+    }
 
     if (!(error instanceof Error)) {
       throw error;
