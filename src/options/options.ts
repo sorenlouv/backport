@@ -81,7 +81,7 @@ export async function getOptions({
 
   throwForEmptyStringOptions(merged);
 
-  return validOptionsSchema.strip().parse(merged) as ValidConfigOptions;
+  return validOptionsSchema.parse(merged) as ValidConfigOptions;
 }
 
 async function getRequiredOptions(combined: OptionsFromConfigAndCli) {
