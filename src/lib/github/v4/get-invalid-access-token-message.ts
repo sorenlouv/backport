@@ -40,7 +40,10 @@ export function getInvalidAccessTokenMessage({
 
       if (repoNotFound) {
         const hasRequiredScopes = isEmpty(
-          difference(requiredScopes.split(','), grantedScopes.split(',')),
+          difference(
+            requiredScopes.split(',').map((s) => s.trim()),
+            grantedScopes.split(',').map((s) => s.trim()),
+          ),
         );
 
         // user does not have permission to the repo
