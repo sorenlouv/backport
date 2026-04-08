@@ -30,7 +30,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "postinstall": "test -f ./dist/src/scripts/run-postinstall.js && node ./dist/src/scripts/run-postinstall.js || echo 'Dist folder missing'",
-    "prepare": "husky",
+    "prepare": "husky && npm run build",
     "prepublishOnly": "npm install && npm run lint && npm run build",
     "lint-and-test": "npm run lint && npm test",
     "lint": "tsc -p tsconfig.eslint.json --noEmit --incremental && eslint './**/*.{ts,js}' --fix --cache",

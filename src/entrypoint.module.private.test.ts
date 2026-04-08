@@ -353,7 +353,7 @@ describe('entrypoint.module', () => {
         repoName: 'kibana',
         repoOwner: 'elastic',
         dateUntil: '2021-06-02',
-        prFilter: 'label:Team:APM base:master',
+        prFilter: 'label:"Team:APM - DEPRECATED" base:master',
         maxNumber: 3,
       });
 
@@ -375,15 +375,15 @@ describe('entrypoint.module', () => {
           },
           {
             "branchLabelMapping": undefined,
-            "committedDate": "2021-04-30T15:03:32Z",
-            "message": "docs: update service overview for comparison (#98843)",
-            "sha": "bab9065f3deed1c8987c750eb1ccbc1b2833810f",
+            "committedDate": "2021-05-28T19:43:30Z",
+            "message": "[APM] Move APM tutorial from apm_oss to x-pack/apm (#100780)",
+            "sha": "0bcd78b0e999feb95057f5e6eafdb572b9b2fe39",
           },
           {
             "branchLabelMapping": undefined,
-            "committedDate": "2021-04-30T17:08:45Z",
-            "message": "[Exploratory view] Restore links for ux/synthetics data (#98759)",
-            "sha": "d9bc1636033473ca863c89f48030001408932798",
+            "committedDate": "2021-05-18T10:33:16Z",
+            "message": "Migrate from Joi to @kbn/config-schema in "home" and "features" plugins (#100201)",
+            "sha": "574f6595ad2e5452fa90e6a3111220a599e473c0",
           },
         ]
       `);
@@ -423,7 +423,6 @@ describe('entrypoint.module', () => {
                 "Team:APM - DEPRECATED",
                 "apm:test-plan-done",
                 "v7.11.0",
-                "apm:test-plan-7.11.0",
               ],
               "mergeCommit": {
                 "message": "[APM] Fix broken link to ML when time range is not set (#85976)",
