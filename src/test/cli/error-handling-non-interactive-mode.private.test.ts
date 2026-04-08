@@ -92,7 +92,7 @@ describe('non interactive (json) error handling', () => {
     const error = backportResult.results[0] as ErrorResult;
     expect(error.status).toBe('error');
     expect(error.errorMessage).toEqual(
-      'The repository "backport-org/backport-e2e-foo" doesn\'t exist',
+      `The repository "backport-org/backport-e2e-foo" doesn't exist`,
     );
   });
 

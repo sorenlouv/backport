@@ -100,6 +100,29 @@ describe('getInvalidAccessTokenMessage', () => {
       `);
     });
 
+    it('should ignore whitespace when comparing scopes', () => {
+      const result = {
+        statusCode: 200,
+        responseHeaders: new Headers({
+          'x-oauth-scopes': 'gist, read:org, repo, workflow',
+          'x-accepted-oauth-scopes': 'repo',
+        }),
+        error: {
+          graphQLErrors: [
+            { originalError: { type: 'NOT_FOUND' }, path: ['repository'] },
+          ],
+        },
+      } as unknown as OperationResultWithMeta;
+
+      return expect(
+        getInvalidAccessTokenMessage({
+          result,
+          repoOwner: 'elastic',
+          repoName: 'kibana',
+        }),
+      ).toBe(`The repository "elastic/kibana" doesn't exist`);
+    });
+
     it('should not handle unknown cases', () => {
       const result = {
         statusCode: 500,
