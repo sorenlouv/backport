@@ -1,6 +1,6 @@
+import type winston from 'winston';
 import { z } from 'zod';
 import { BackportError } from '../lib/backport-error.js';
-import type { AutoFixConflictsHandler } from './config-options.js';
 
 export const PROJECT_CONFIG_DOCS_LINK =
   'https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson';
@@ -8,6 +8,27 @@ export const PROJECT_CONFIG_DOCS_LINK =
 export const GLOBAL_CONFIG_DOCS_LINK =
   'https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson';
 
+// ── Helper types ────────────────────────────────────────────────────
+export interface TargetBranchChoice {
+  name: string;
+  value: string;
+  checked?: boolean;
+}
+export type TargetBranchChoiceOrString = string | TargetBranchChoice;
+
+export type AutoFixConflictsHandler = ({
+  files,
+  directory,
+  logger,
+  targetBranch,
+}: {
+  files: string[];
+  directory: string;
+  logger: winston.Logger;
+  targetBranch: string;
+}) => boolean | Promise<boolean>;
+
+// ── Schema helpers ──────────────────────────────────────────────────
 /**
  * Target branch choice — either a plain string or an object with name/value/checked.
  */
@@ -22,6 +43,7 @@ const targetBranchChoiceSchema = z.union([
     .transform((obj) => ({ ...obj, value: obj.value ?? obj.name })),
 ]);
 
+// ── Core config schema ──────────────────────────────────────────────
 /**
  * Schema for options that can appear in config files, module API, or CLI.
  * This is the single source of truth for option types and defaults.
@@ -112,6 +134,37 @@ export type ResolvedConfigOptions = z.output<typeof configOptionsSchema>;
 export const defaultConfigOptions: ResolvedConfigOptions =
   configOptionsSchema.parse({});
 
+// ── Config file schema (includes deprecated fields) ─────────────────
+/**
+ * Extended schema for JSON config files that might contain deprecated fields.
+ * The deprecated fields are stripped during parsing in `read-config-file.ts`.
+ */
+export const configFileOptionsSchema = configOptionsSchema.extend({
+  // yargs options (allowed in configs for passthrough)
+  help: z.boolean().optional(),
+  version: z.boolean().optional(),
+  v: z.boolean().optional(),
+
+  /** @deprecated Replaced by `repoOwner` and `repoName` */
+  upstream: z.string().optional(),
+
+  /** @deprecated Replaced by `targetBranchChoices` */
+  branches: z.array(targetBranchChoiceSchema).optional(),
+
+  /** @deprecated Replaced by `targetPRLabels` */
+  labels: z.array(z.string()).optional(),
+
+  /** @deprecated Replaced by `copySourcePRReviewers` */
+  addOriginalReviewers: z.boolean().optional(),
+});
+
+/**
+ * The type used by consumers to pass config-file-style options.
+ * This is the public API type (exported from entrypoint.api.ts).
+ */
+export type ConfigFileOptions = z.input<typeof configFileOptionsSchema>;
+
+// ── Valid (fully resolved) options schema ───────────────────────────
 /**
  * Schema for the final validated options that include required fields
  * resolved during startup (access token, repo info, authenticated user).

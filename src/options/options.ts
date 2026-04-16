@@ -1,4 +1,15 @@
-/** Merges config from defaults, config files, GitHub remote config, and CLI args into ValidConfigOptions. */
+/**
+ * Merges config from defaults, config files, GitHub remote config, and CLI args
+ * into a fully validated `ValidConfigOptions`.
+ *
+ * Precedence order (highest wins):
+ *   1. defaults (from Zod schema)
+ *   2. global config file (~/.backport/config.json)
+ *   3. project config file (.backportrc.json)
+ *   4. module options (programmatic API)
+ *   5. remote GitHub config (.backportrc.json on default branch)
+ *   6. CLI args (highest precedence)
+ */
 import chalk from 'chalk';
 import { BackportError } from '../lib/backport-error.js';
 import { getGlobalConfigPath } from '../lib/env.js';
@@ -6,10 +17,8 @@ import { getRepoOwnerAndNameFromGitRemotes } from '../lib/github/v4/get-repo-own
 import { getOptionsFromGithub } from '../lib/github/v4/getOptionsFromGithub/get-options-from-github.js';
 import { setAccessToken } from '../lib/logger.js';
 import type { OptionsFromCliArgs } from './cli-args.js';
-import type { OptionsFromConfigFiles } from './config/config.js';
 import { getOptionsFromConfigFiles } from './config/config.js';
-import type { ConfigFileOptions } from './config-options.js';
-import type { ValidConfigOptions } from './option-schema.js';
+import type { ConfigFileOptions, ValidConfigOptions } from './option-schema.js';
 import {
   defaultConfigOptions,
   validOptionsSchema,
@@ -26,65 +35,126 @@ export async function getOptions({
   optionsFromCliArgs: OptionsFromCliArgs;
   optionsFromModule: ConfigFileOptions;
 }): Promise<ValidConfigOptions> {
-  const optionsFromConfigFiles = await getOptionsFromConfigFiles({
+  // ── Step 1: load config files ─────────────────────────────────────
+  const { globalConfig, projectConfig } = await getOptionsFromConfigFiles({
     optionsFromCliArgs,
     optionsFromModule,
   });
 
-  // combined options from cli and config files
-  const combined = getMergedOptionsFromConfigAndCli({
-    optionsFromConfigFiles,
-    optionsFromCliArgs,
-  });
+  // ── Step 2: merge to resolve access token + repo ──────────────────
+  // Apply layers in precedence order (lowest → highest) to determine
+  // the access token, repo owner/name needed for the GitHub API call.
+  const combined = {
+    ...defaultConfigOptions,
+    ...globalConfig,
+    ...projectConfig,
+    ...optionsFromModule,
+    ...optionsFromCliArgs,
+  };
 
   const { accessToken, repoName, repoOwner } =
-    await getRequiredOptions(combined);
+    await resolveRequiredOptions(combined);
 
   // update logger
   setAccessToken(accessToken);
 
+  // ── Step 3: fetch options from GitHub ──────────────────────────────
   const optionsFromGithub = await getOptionsFromGithub({
     ...combined,
-
-    // required options
     accessToken,
     repoName,
     repoOwner,
   });
 
-  const merged = {
-    // default author to filter commits by
-    author: optionsFromGithub.authenticatedUsername,
+  // ── Step 4: final merge with full precedence ──────────────────────
+  const merged = mergeOptions({
+    defaultConfigOptions,
+    globalConfig,
+    projectConfig,
+    optionsFromModule,
+    optionsFromGithub,
+    optionsFromCliArgs,
+    accessToken,
+    repoName,
+    repoOwner,
+  });
 
-    // default fork owner
-    repoForkOwner: optionsFromGithub.authenticatedUsername,
+  // ── Step 5: reject empty strings before Zod parse ─────────────────
+  throwForEmptyStringOptions(merged);
 
-    // default values have lowest precedence
+  // ── Step 6: validate via Zod ──────────────────────────────────────
+  return validOptionsSchema.parse(merged) as ValidConfigOptions;
+}
+
+/**
+ * Merges all option layers into a single object with explicit precedence.
+ * Each subsequent spread wins over previous ones.
+ */
+function mergeOptions({
+  defaultConfigOptions,
+  globalConfig,
+  projectConfig,
+  optionsFromModule,
+  optionsFromGithub,
+  optionsFromCliArgs,
+  accessToken,
+  repoName,
+  repoOwner,
+}: {
+  defaultConfigOptions: Record<string, unknown>;
+  globalConfig: ConfigFileOptions;
+  projectConfig: ConfigFileOptions;
+  optionsFromModule: ConfigFileOptions;
+  optionsFromGithub: Record<string, unknown>;
+  optionsFromCliArgs: OptionsFromCliArgs;
+  accessToken: string;
+  repoName: string;
+  repoOwner: string;
+}) {
+  return {
+    // defaults for author and repoForkOwner come from the authenticated user
+    author: (optionsFromGithub as { authenticatedUsername?: string })
+      .authenticatedUsername,
+    repoForkOwner: (optionsFromGithub as { authenticatedUsername?: string })
+      .authenticatedUsername,
+
+    // 1. schema defaults (lowest precedence)
     ...defaultConfigOptions,
 
-    // local config options override default options
-    ...optionsFromConfigFiles,
+    // 2. global config (~/.backport/config.json)
+    ...globalConfig,
 
-    // remote config options override local config options
+    // 3. project config (.backportrc.json)
+    ...projectConfig,
+
+    // 4. module options (programmatic API)
+    ...optionsFromModule,
+
+    // 5. remote GitHub config
     ...optionsFromGithub,
 
-    // cli args override the above
+    // 6. CLI args (highest precedence)
     ...optionsFromCliArgs,
 
-    editor: optionsFromCliArgs.editor === 'false' ? undefined : combined.editor,
-
-    // required properties
+    // required properties (always set regardless of precedence)
     accessToken,
     repoName,
     repoOwner,
   };
-
-  throwForEmptyStringOptions(merged);
-
-  return validOptionsSchema.parse(merged) as ValidConfigOptions;
 }
 
-async function getRequiredOptions(combined: OptionsFromConfigAndCli) {
+/**
+ * Resolves access token, repo owner, and repo name — the minimum required
+ * options that must be available before we can call the GitHub API.
+ */
+async function resolveRequiredOptions(combined: {
+  accessToken?: string;
+  repoName?: string;
+  repoOwner?: string;
+  globalConfigFile?: string;
+  cwd: string;
+  githubApiBaseUrlV4?: string;
+}) {
   const { accessToken, repoName, repoOwner, globalConfigFile } = combined;
 
   if (accessToken && repoName && repoOwner) {
@@ -121,6 +191,7 @@ async function getRequiredOptions(combined: OptionsFromConfigAndCli) {
   };
 }
 
+// ── Empty string validation ─────────────────────────────────────────
 // Disallow empty strings for options that should be undefined instead.
 // This is primarily an issue in Github Actions where inputs default to empty
 // strings instead of undefined — failing early provides a better UX.
@@ -155,23 +226,6 @@ function throwForEmptyStringOptions(options: Record<string, unknown>) {
       });
     }
   }
-}
-
-type OptionsFromConfigAndCli = ReturnType<
-  typeof getMergedOptionsFromConfigAndCli
->;
-function getMergedOptionsFromConfigAndCli({
-  optionsFromConfigFiles,
-  optionsFromCliArgs,
-}: {
-  optionsFromConfigFiles: OptionsFromConfigFiles;
-  optionsFromCliArgs: OptionsFromCliArgs;
-}) {
-  return {
-    ...defaultConfigOptions,
-    ...optionsFromConfigFiles,
-    ...optionsFromCliArgs,
-  };
 }
 
 export function getActiveOptionsFormatted(options: ValidConfigOptions) {

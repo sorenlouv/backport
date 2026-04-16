@@ -19,10 +19,12 @@ describe('getOptionsFromConfigFiles', () => {
     });
   });
 
-  it('should return values from config files', () => {
-    expect(res).toEqual({
+  it('should return globalConfig and projectConfig separately', () => {
+    expect(res.globalConfig).toEqual({
       accessToken: 'abc',
       editor: 'vim',
+    });
+    expect(res.projectConfig).toEqual({
       repoName: 'kibana',
       repoOwner: 'elastic',
     });
