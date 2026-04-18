@@ -7,7 +7,7 @@ import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
 import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 
-const accessToken = getDevAccessToken();
+const githubToken = getDevAccessToken();
 vi.setConfig({ testTimeout: 15_000 });
 
 describe('non interactive (json) error handling', () => {
@@ -31,7 +31,7 @@ describe('non interactive (json) error handling', () => {
     expect(error.status).toBe('error');
     expect(errorMessage).toMatchInlineSnapshot(`
       "Please update your config file: "<GLOBAL_CONFIG_FILE>".
-      It must contain a valid "accessToken".
+      It must contain a valid "githubToken".
 
       Read more: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson"
     `);
@@ -42,7 +42,7 @@ describe('non interactive (json) error handling', () => {
       '--json',
       '--repo=backport-org/backport-e2e',
       '--pr=9',
-      `--accessToken=${accessToken}`,
+      `--github-token=${githubToken}`,
     ]);
 
     expect(code).toBe(0);
@@ -58,7 +58,7 @@ describe('non interactive (json) error handling', () => {
   it(`when target branch and branch label mapping are missing`, async () => {
     const { output, code } = await runBackportViaCli([
       '--json',
-      `--access-token=${accessToken}`,
+      `--access-token=${githubToken}`,
     ]);
 
     expect(code).toBe(1);
@@ -85,7 +85,7 @@ describe('non interactive (json) error handling', () => {
     const { output } = await runBackportViaCli([
       '--json',
       '--repo=backport-org/backport-e2e-foo',
-      `--accessToken=${accessToken}`,
+      `--github-token=${githubToken}`,
     ]);
 
     const backportResult = JSON.parse(output) as BackportResponse;
@@ -101,7 +101,7 @@ describe('non interactive (json) error handling', () => {
       '--json',
       '--repo=backport-org/backport-e2e',
       '--sha=abcdefg',
-      `--accessToken=${accessToken}`,
+      `--github-token=${githubToken}`,
     ]);
 
     const backportResult = JSON.parse(output) as BackportResponse;
@@ -118,7 +118,7 @@ describe('non interactive (json) error handling', () => {
       '--repo=backport-org/backport-e2e',
       '--pr=9',
       '--branch=foobar',
-      `--accessToken=${accessToken}`,
+      `--github-token=${githubToken}`,
     ]);
 
     const backportResult = JSON.parse(output) as BackportResponse;
@@ -138,7 +138,7 @@ describe('non interactive (json) error handling', () => {
       '--repo=backport-org/backport-e2e',
       '--pr=9',
       '--branch=--foo bar',
-      `--accessToken=${accessToken}`,
+      `--github-token=${githubToken}`,
     ]);
 
     const backportResult = JSON.parse(output) as BackportResponse;
@@ -158,7 +158,7 @@ describe('non interactive (json) error handling', () => {
       '--repo=backport-org/backport-e2e',
       '--pr=900',
       '--branch=7.x',
-      `--accessToken=${accessToken}`,
+      `--github-token=${githubToken}`,
     ]);
 
     const backportResult = JSON.parse(output) as BackportResponse;
@@ -175,7 +175,7 @@ describe('non interactive (json) error handling', () => {
       '--repo=backport-org/repo-with-conflicts',
       '--pr=12',
       '--branch=7.x',
-      `--accessToken=${accessToken}`,
+      `--github-token=${githubToken}`,
     ]);
 
     const backportResult = JSON.parse(output) as BackportResponse;
@@ -192,7 +192,7 @@ describe('non interactive (json) error handling', () => {
       '--pr=9',
       '--branch=7.x',
       '--source-branch=foo',
-      `--accessToken=${accessToken}`,
+      `--github-token=${githubToken}`,
     ]);
 
     const backportResult = JSON.parse(output) as BackportResponse;
@@ -210,7 +210,7 @@ describe('non interactive (json) error handling', () => {
       '--json',
       '--repo=backport-org/backport-e2e',
       '--pr=12',
-      `--accessToken=${accessToken}`,
+      `--github-token=${githubToken}`,
     ]);
 
     const backportResult = JSON.parse(output) as BackportResponse;

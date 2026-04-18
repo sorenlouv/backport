@@ -11,7 +11,7 @@ describe('getOptionsFromCliArgs', () => {
       ];
 
       const res = getOptionsFromCliArgs(argv);
-      expect(res.accessToken).toEqual('my access token');
+      expect(res.githubToken).toEqual('my access token');
       expect('access-token' in res).toEqual(false);
       expect(res.githubApiBaseUrlV3).toEqual('my api hostname');
       expect('api-hostname' in res).toEqual(false);
@@ -28,7 +28,7 @@ describe('getOptionsFromCliArgs', () => {
       ];
       const res = getOptionsFromCliArgs(argv);
       expect(res).toEqual({
-        accessToken: 'my access token',
+        githubToken: 'my access token',
         repoOwner: 'elastic',
         repoName: 'kibana',
       });
@@ -220,15 +220,15 @@ describe('getOptionsFromCliArgs', () => {
     });
   });
 
-  describe('cherrypickRef', () => {
+  describe('cherryPickRef', () => {
     it('should be undefined by default', () => {
       const res = getOptionsFromCliArgs([]);
-      expect(res.cherrypickRef).toBe(undefined);
+      expect(res.cherryPickRef).toBe(undefined);
     });
 
     it('can be disabled', () => {
-      const res = getOptionsFromCliArgs(['--no-cherrypick-ref']);
-      expect(res.cherrypickRef).toBe(false);
+      const res = getOptionsFromCliArgs(['--no-cherry-pick-ref']);
+      expect(res.cherryPickRef).toBe(false);
     });
   });
 
@@ -284,7 +284,7 @@ describe('getOptionsFromCliArgs', () => {
     });
   });
 
-  describe('dateSince and dateUntil', () => {
+  describe('since and until', () => {
     it('should always be UTC time (configured globally in vitest.config.ts)', () => {
       expect(new Date().getTimezoneOffset()).toBe(0);
     });
@@ -297,22 +297,22 @@ describe('getOptionsFromCliArgs', () => {
         '2020-08-15T14:00:00.000Z',
       ];
       const res = getOptionsFromCliArgs(argv);
-      expect(res.dateSince).toEqual('2020-08-15T00:00:00.000Z');
-      expect(res.dateUntil).toEqual('2020-08-15T14:00:00.000Z');
+      expect(res.since).toEqual('2020-08-15T00:00:00.000Z');
+      expect(res.until).toEqual('2020-08-15T14:00:00.000Z');
     });
 
     it('accepts non-ISO dates', () => {
       const argv = ['--since', '2020-08-15', '--until', '2020-08-15 14:00'];
       const res = getOptionsFromCliArgs(argv);
-      expect(res.dateSince).toEqual('2020-08-15T00:00:00.000Z');
-      expect(res.dateUntil).toEqual('2020-08-15T14:00:00.000Z');
+      expect(res.since).toEqual('2020-08-15T00:00:00.000Z');
+      expect(res.until).toEqual('2020-08-15T14:00:00.000Z');
     });
 
     it('accepts years', () => {
       const argv = ['--since', '2020', '--until', '2021'];
       const res = getOptionsFromCliArgs(argv);
-      expect(res.dateSince).toEqual('2020-01-01T00:00:00.000Z');
-      expect(res.dateUntil).toEqual('2021-01-01T00:00:00.000Z');
+      expect(res.since).toEqual('2020-01-01T00:00:00.000Z');
+      expect(res.until).toEqual('2021-01-01T00:00:00.000Z');
     });
   });
 });

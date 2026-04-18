@@ -7,7 +7,7 @@ import type { Commit } from '../sourceCommit/parse-source-commit.js';
 export async function copySourcePullRequestReviewersToTargetPullRequest(
   options: ValidConfigOptions,
   commits: Commit[],
-  pullNumber: number,
+  pr: number,
 ) {
   const pullNumbers = commits
     .map((commit) => commit.sourcePullRequest?.number)
@@ -18,6 +18,6 @@ export async function copySourcePullRequestReviewersToTargetPullRequest(
     pullNumbers,
   });
   if (reviewers) {
-    await addReviewersToPullRequest({ ...options, pullNumber, reviewers });
+    await addReviewersToPullRequest({ ...options, pullNumber: pr, reviewers });
   }
 }

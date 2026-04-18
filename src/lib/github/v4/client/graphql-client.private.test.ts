@@ -29,7 +29,7 @@ describe('graphqlClient', () => {
     beforeAll(async () => {
       result = await graphqlRequest(
         {
-          accessToken: 'foobar',
+          githubToken: 'foobar',
           githubApiBaseUrlV4: 'https://api.github.com/graphql',
         },
         getViewerQuery,
@@ -51,11 +51,11 @@ describe('graphqlClient', () => {
   });
 
   describe('when the access token is valid', () => {
-    const accessToken = getDevAccessToken();
+    const githubToken = getDevAccessToken();
     beforeAll(async () => {
       result = await graphqlRequest(
         {
-          accessToken: accessToken,
+          githubToken: githubToken,
           githubApiBaseUrlV4: 'https://api.github.com/graphql',
         },
         getViewerQuery,
@@ -73,11 +73,11 @@ describe('graphqlClient', () => {
   });
 
   describe('when repo is not found', () => {
-    const accessToken = getDevAccessToken();
+    const githubToken = getDevAccessToken();
     beforeAll(async () => {
       result = await graphqlRequest(
         {
-          accessToken: accessToken,
+          githubToken: githubToken,
           githubApiBaseUrlV4: 'https://api.github.com/graphql',
         },
         getRepoQuery,

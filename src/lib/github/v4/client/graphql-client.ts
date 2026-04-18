@@ -24,10 +24,10 @@ export interface OperationResultWithMeta<Data = any> {
 export async function graphqlRequest<TData, TVars>(
   {
     githubApiBaseUrlV4 = 'https://api.github.com/graphql',
-    accessToken,
+    githubToken,
   }: {
     githubApiBaseUrlV4?: string;
-    accessToken: string;
+    githubToken: string;
   },
   document: TypedDocumentNode<TData, TVars>,
   variables: TVars,
@@ -48,7 +48,7 @@ export async function graphqlRequest<TData, TVars>(
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `bearer ${accessToken}`,
+          Authorization: `bearer ${githubToken}`,
         },
         body: JSON.stringify({ query, variables, operationName }),
       });

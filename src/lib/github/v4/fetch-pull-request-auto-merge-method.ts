@@ -7,16 +7,16 @@ export async function fetchPullRequestAutoMergeMethod(
   options: ValidConfigOptions,
   pullNumber: number,
 ) {
-  const { accessToken, githubApiBaseUrlV4, repoName, repoOwner } = options;
+  const { githubToken, githubApiBaseUrlV4, repoName, repoOwner } = options;
 
   const query = graphql(`
     query PullRequestAutoMergeMethod(
       $repoOwner: String!
       $repoName: String!
-      $pullNumber: Int!
+      $pr: Int!
     ) {
       repository(owner: $repoOwner, name: $repoName) {
-        pullRequest(number: $pullNumber) {
+        pullRequest(number: $pr) {
           autoMergeRequest {
             enabledAt
             mergeMethod
@@ -28,10 +28,10 @@ export async function fetchPullRequestAutoMergeMethod(
   const variables = {
     repoOwner,
     repoName,
-    pullNumber,
+    pr: pullNumber,
   };
   const result = await graphqlRequest(
-    { accessToken, githubApiBaseUrlV4 },
+    { githubToken, githubApiBaseUrlV4 },
     query,
     variables,
   );

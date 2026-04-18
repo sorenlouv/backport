@@ -2,19 +2,19 @@ import { getDevAccessToken } from '../../../../test/helpers/get-dev-access-token
 import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
 import { fetchCommitsByAuthor } from './fetch-commits-by-author.js';
 
-const accessToken = getDevAccessToken();
+const githubToken = getDevAccessToken();
 
 describe('fetchCommitsByAuthor', () => {
   describe('commitPaths', () => {
     const getOptions = () => ({
-      accessToken,
+      githubToken,
       author: 'sorenlouv',
-      maxNumber: 10,
+      maxCount: 10,
       repoName: 'repo-with-different-commit-paths',
       repoOwner: 'backport-org',
       sourceBranch: 'main',
-      dateSince: null,
-      dateUntil: null,
+      since: null,
+      until: null,
     });
 
     const getCommitMessages = (commits: Commit[]) => {
@@ -93,15 +93,15 @@ describe('fetchCommitsByAuthor', () => {
     let res: Awaited<ReturnType<typeof fetchCommitsByAuthor>>;
     beforeEach(async () => {
       res = await fetchCommitsByAuthor({
-        accessToken,
+        githubToken,
         commitPaths: [],
-        maxNumber: 10,
+        maxCount: 10,
         repoName: 'backport-e2e',
         repoOwner: 'backport-org',
         sourceBranch: 'master',
         author: null,
-        dateSince: null,
-        dateUntil: null,
+        since: null,
+        until: null,
       });
     });
 

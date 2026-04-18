@@ -2,7 +2,7 @@ import type { Commit } from '../../entrypoint.api.js';
 import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 
-const accessToken = getDevAccessToken();
+const githubToken = getDevAccessToken();
 vi.setConfig({ testTimeout: 15_000 });
 
 describe('backport-org/repo-with-changing-branchLabelMapping', () => {
@@ -13,7 +13,7 @@ describe('backport-org/repo-with-changing-branchLabelMapping', () => {
         const { output } = await runBackportViaCli([
           '--repo=backport-org/repo-with-changing-branchLabelMapping',
           '--no-fork',
-          `--accessToken=${accessToken}`,
+          `--github-token=${githubToken}`,
           '--json',
           '--ls',
         ]);
@@ -49,7 +49,7 @@ describe('backport-org/repo-with-changing-branchLabelMapping', () => {
           [
             '--repo=backport-org/repo-with-changing-branchLabelMapping',
             '--no-fork',
-            `--accessToken=${accessToken}`,
+            `--github-token=${githubToken}`,
           ],
           { waitForString: 'Select commit' },
         );
@@ -63,13 +63,13 @@ describe('backport-org/repo-with-changing-branchLabelMapping', () => {
             '--repo=backport-org/repo-with-changing-branchLabelMapping',
             '--no-fork',
             '--pr=6',
-            `--accessToken=${accessToken}`,
+            `--github-token=${githubToken}`,
           ],
           { waitForString: 'Select branch' },
         );
 
         expect(output).toMatchInlineSnapshot(`
-          "repo: backport-org/repo-with-changing-branchLabelMapping | sourceBranch: main | pullNumber: 6 | author: sorenlouv
+          "repo: backport-org/repo-with-changing-branchLabelMapping | sourceBranch: main | pr: 6 | author: sorenlouv
 
           ? Select branch
           ❯◯ 8.4
@@ -90,7 +90,7 @@ describe('backport-org/repo-with-changing-branchLabelMapping', () => {
         const { output } = await runBackportViaCli([
           '--repo=backport-org/repo-with-changing-branchLabelMapping',
           '--no-fork',
-          `--accessToken=${accessToken}`,
+          `--github-token=${githubToken}`,
           '--json',
           '--ls',
         ]);

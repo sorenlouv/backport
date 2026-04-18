@@ -2,13 +2,13 @@ import type { ValidConfigOptions } from '../../../options/options.js';
 import { getDevAccessToken } from '../../../test/helpers/get-dev-access-token.js';
 import { fetchExistingPullRequest } from './fetch-existing-pull-request.js';
 
-const accessToken = getDevAccessToken();
+const githubToken = getDevAccessToken();
 
 describe('fetchExistingPullRequest', () => {
   describe('when PR does not exist', () => {
     it('returns undefined', async () => {
       const options = {
-        accessToken,
+        githubToken,
       } as ValidConfigOptions;
 
       const prPayload = {
@@ -30,7 +30,7 @@ describe('fetchExistingPullRequest', () => {
   describe('when PR exists', () => {
     it('returns the PR number and url', async () => {
       const options = {
-        accessToken,
+        githubToken,
       } as ValidConfigOptions;
 
       const prPayload = {

@@ -4,7 +4,7 @@ import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
 import { removeLinesBreaksInConflictingFiles } from '../helpers/replace-string-and-linebreaks.js';
 import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
-const accessToken = getDevAccessToken();
+const githubToken = getDevAccessToken();
 
 vi.setConfig({ testTimeout: 40_000, hookTimeout: 40_000 });
 
@@ -14,14 +14,14 @@ describe('different-merge-strategies', () => {
       [
         '--branch=7.x',
         '--repo=backport-org/different-merge-strategies',
-        `--accessToken=${accessToken}`,
+        `--github-token=${githubToken}`,
         '-n=20',
       ],
       { waitForString: 'Select commit' },
     );
 
     expect(output).toMatchInlineSnapshot(`
-      "repo: backport-org/different-merge-strategies | sourceBranch: main | author: sorenlouv | maxNumber: 20
+      "repo: backport-org/different-merge-strategies | sourceBranch: main | author: sorenlouv | maxCount: 20
 
       ? Select commit
       ❯ 1. Downsides with "Rebase and merge"
@@ -63,7 +63,7 @@ describe('different-merge-strategies', () => {
         [
           '--branch=7.x',
           '--repo=backport-org/different-merge-strategies',
-          `--accessToken=${accessToken}`,
+          `--github-token=${githubToken}`,
           `--dir=${sandboxPath}`,
           '--pr=9',
           '--dry-run',
@@ -76,7 +76,7 @@ describe('different-merge-strategies', () => {
     it('runs to completion without errors', () => {
       expect(output).toMatchInlineSnapshot(`
         "- Initializing...
-        repo: backport-org/different-merge-strategies | sourceBranch: main | pullNumber: 9 | author: sorenlouv
+        repo: backport-org/different-merge-strategies | sourceBranch: main | pr: 9 | author: sorenlouv
 
         ? Select pull request Merge pull request #9 from backport-org/many-merge-commits
         ✔ 100% Cloning repository from github.com (one-time operation)
@@ -133,7 +133,7 @@ describe('different-merge-strategies', () => {
         [
           '--branch=7.x',
           '--repo=backport-org/different-merge-strategies',
-          `--accessToken=${accessToken}`,
+          `--github-token=${githubToken}`,
           `--dir=${sandboxPath}`,
           '--pr=1',
           '--dry-run',
@@ -164,7 +164,7 @@ describe('different-merge-strategies', () => {
         [
           '--branch=7.1',
           '--repo=backport-org/different-merge-strategies',
-          `--accessToken=${accessToken}`,
+          `--github-token=${githubToken}`,
           `--dir=${sandboxPath}`,
           '--pr=9',
           '--dry-run',
@@ -200,7 +200,7 @@ describe('different-merge-strategies', () => {
     it('has the right output', () => {
       expect(output).toMatchInlineSnapshot(`
         "- Initializing...
-        repo: backport-org/different-merge-strategies | sourceBranch: main | pullNumber: 9 | author: sorenlouv
+        repo: backport-org/different-merge-strategies | sourceBranch: main | pr: 9 | author: sorenlouv
 
         ? Select pull request Merge pull request #9 from backport-org/many-merge-commits
         ✔ 100% Cloning repository from github.com (one-time operation)
@@ -272,7 +272,7 @@ describe('different-merge-strategies', () => {
         [
           '--branch=7.x',
           '--repo=backport-org/different-merge-strategies',
-          `--accessToken=${accessToken}`,
+          `--github-token=${githubToken}`,
           `--dir=${sandboxPath}`,
           '--pr=21',
           '--dry-run',

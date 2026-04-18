@@ -15,11 +15,11 @@ Example:
 
 ```json
 {
-  "accessToken": "very-secret-token"
+  "githubToken": "very-secret-token"
 }
 ```
 
-#### `accessToken` **required**
+#### `githubToken` **required**
 
 Personal access token.
 Access tokens can be created in the [GitHub Developer Settings, Personal Access Tokens, Tokens (classic)](https://github.com/settings/tokens/new?description=backport%20cli&scopes=repo,workflow)
@@ -206,27 +206,21 @@ Automatically detect which branches a pull request should be backported to, base
 
 _Note: backslashes must be escaped._
 
-#### `commitConflicts`
+#### `conflictResolution`
 
-When running backport on CI (aka in non-interactive mode) any commit conflicts will result in the backport being aborted. When `commitConflicts: true` even files with conflicts will be committed and a backport PR created. It is then up to a user to manually resolve the conflict, If auto-merge is enabled, this will be disabled for this PR specifically to avoid merging unresolved conflicts.
+When running backport on CI (aka in non-interactive mode) any commit conflicts will normally result in the backport being aborted. This behavior can be changed using `conflictResolution`.
 
-```json
-{
-  "commitConflicts": true
-}
-```
-
-#### `autoResolveConflictsWithTheirs`
-
-When running backport in non-interactive mode, any cherry-pick conflicts will normally result in the backport being aborted. When `autoResolveConflictsWithTheirs: true`, the failed cherry-pick will be aborted and retried with `--strategy-option=theirs`, which resolves all conflicts in favor of the source commit's version. This produces a clean PR without conflict markers. If auto-merge is enabled, it will be disabled for this PR specifically since the conflict resolution was automatic and may need review.
+- `abort` (default): Abort the backport if there are conflicts.
+- `commit`: Even files with conflicts will be committed and a backport PR created. It is then up to a user to manually resolve the conflict. If auto-merge is enabled, this will be disabled for this PR specifically to avoid merging unresolved conflicts.
+- `theirs`: The failed cherry-pick will be aborted and retried with `--strategy-option=theirs`, which resolves all conflicts in favor of the source commit's version. This produces a clean PR. If auto-merge is enabled, it will be disabled for this PR specifically since the conflict resolution was automatic and may need review.
 
 ```json
 {
-  "autoResolveConflictsWithTheirs": true
+  "conflictResolution": "theirs"
 }
 ```
 
-#### `dir`
+#### `workdir`
 
 Clone repository into custom directory
 
@@ -234,15 +228,15 @@ Default: `~/.backport/repositories/`
 
 ```json
 {
-  "dir": "/my/custom/tmp/repo/location"
+  "workdir": "/my/custom/tmp/repo/location"
 }
 ```
 
-#### `dateSince`
+#### `since`
 
 Only display commits newer than the specified date
 
-#### `dateUntil`
+#### `until`
 
 Only display commits older than the specified date
 
@@ -305,7 +299,7 @@ When backporting a merge commit the parent id must be specified. This is directl
 - Defaults to 1 when no parent id is given: `backport --mainline`
 - Specifying parent id: `backport --mainline 2`
 
-#### maxNumber
+#### `maxCount`
 
 Number of commits that will be listed for the user to choose from.
 
@@ -313,7 +307,7 @@ Default: 10
 
 ```json
 {
-  "maxNumber": 20
+  "maxCount": 20
 }
 ```
 
@@ -410,13 +404,13 @@ alias backport-skip-ci='backport --pr-description "{defaultPrDescription} [skip-
 
 See [source code](https://github.com/sorenlouv/backport/blob/main/src/lib/github/v3/createPullRequest.test.ts) for more examples.
 
-#### `prFilter`
+#### `prQuery`
 
 Filter source pull requests by any [Github query](https://help.github.com/en/github/searching-for-information-on-github/understanding-the-search-syntax). Text with whitespace [must contain escaped quotes](https://help.github.com/en/github/searching-for-information-on-github/understanding-the-search-syntax#use-quotation-marks-for-queries-with-whitespace).
 
 ```json
 {
-  "prFilter": "label: \"Backport Needed\""
+  "prQuery": "label: \"Backport Needed\""
 }
 ```
 

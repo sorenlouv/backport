@@ -1,7 +1,7 @@
 import { getDevAccessToken } from '../../../test/helpers/get-dev-access-token.js';
 import { getReviewersFromPullRequests } from './get-reviewers-from-pull-requests.js';
 
-const accessToken = getDevAccessToken();
+const githubToken = getDevAccessToken();
 
 describe('getReviewersFromPullRequests', () => {
   it('returns reviewers', async () => {
@@ -9,7 +9,7 @@ describe('getReviewersFromPullRequests', () => {
       options: {
         repoOwner: 'backport-org',
         repoName: 'repo-with-reviewed-pull-requests',
-        accessToken,
+        githubToken,
         authenticatedUsername: 'foobar',
         interactive: true,
       },
@@ -24,7 +24,7 @@ describe('getReviewersFromPullRequests', () => {
       options: {
         repoOwner: 'backport-org',
         repoName: 'repo-with-reviewed-pull-requests',
-        accessToken,
+        githubToken,
         authenticatedUsername: 'sorenlouv',
         interactive: false,
       },

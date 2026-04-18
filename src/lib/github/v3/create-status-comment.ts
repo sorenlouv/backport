@@ -12,10 +12,10 @@ export async function createStatusComment({
   options: ValidConfigOptions;
   backportResponse: BackportResponse;
 }): Promise<void> {
-  const { githubApiBaseUrlV3, repoName, repoOwner, accessToken } = options;
+  const { githubApiBaseUrlV3, repoName, repoOwner, githubToken } = options;
 
   try {
-    const octokit = createOctokitClient({ accessToken, githubApiBaseUrlV3 });
+    const octokit = createOctokitClient({ githubToken, githubApiBaseUrlV3 });
 
     await Promise.all(
       backportResponse.commits

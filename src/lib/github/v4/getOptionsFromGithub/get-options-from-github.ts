@@ -25,7 +25,7 @@ export type OptionsFromGithub = Awaited<
   ReturnType<typeof getOptionsFromGithub>
 >;
 export async function getOptionsFromGithub(options: {
-  accessToken: string;
+  githubToken: string;
   cwd?: string;
   githubApiBaseUrlV4?: string;
   repoName: string;
@@ -35,7 +35,7 @@ export async function getOptionsFromGithub(options: {
   sourceBranch?: string;
 }) {
   const {
-    accessToken,
+    githubToken,
     githubApiBaseUrlV4,
     repoName,
     repoOwner,
@@ -66,7 +66,7 @@ export async function getOptionsFromGithub(options: {
 
   const variables = { repoOwner, repoName };
   const result = await graphqlRequest(
-    { accessToken, githubApiBaseUrlV4 },
+    { githubToken, githubApiBaseUrlV4 },
     query,
     variables,
   );

@@ -4,7 +4,7 @@ import { getSandboxPath, resetSandbox } from '../../../test/helpers/sandbox.js';
 import { getRepoOwnerAndNameFromGitRemotes } from './get-repo-owner-and-name-from-git-remotes.js';
 
 const sandboxPath = getSandboxPath({ filename: import.meta.filename });
-const accessToken = getDevAccessToken();
+const githubToken = getDevAccessToken();
 
 describe('fetchRemoteProjectConfig', () => {
   describe('when the remote is a fork', () => {
@@ -19,7 +19,7 @@ describe('fetchRemoteProjectConfig', () => {
 
       expect(
         await getRepoOwnerAndNameFromGitRemotes({
-          accessToken,
+          githubToken,
           cwd: sandboxPath,
         }),
       ).toEqual({
@@ -40,7 +40,7 @@ describe('fetchRemoteProjectConfig', () => {
 
       expect(
         await getRepoOwnerAndNameFromGitRemotes({
-          accessToken,
+          githubToken,
           cwd: sandboxPath,
         }),
       ).toEqual({});
@@ -55,7 +55,7 @@ describe('fetchRemoteProjectConfig', () => {
 
       expect(
         await getRepoOwnerAndNameFromGitRemotes({
-          accessToken,
+          githubToken,
           cwd: sandboxPath,
         }),
       ).toEqual({});

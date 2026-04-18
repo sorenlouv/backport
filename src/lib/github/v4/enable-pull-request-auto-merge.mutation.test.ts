@@ -15,7 +15,7 @@ import { fetchPullRequestAutoMergeMethod } from './fetch-pull-request-auto-merge
 const TEST_REPO_OWNER = 'backport-org';
 const TEST_REPO_NAME = 'repo-with-auto-merge-enabled';
 const INITIAL_SHA = '70aa879411e95b6662f8ddcb80a944fc4444579f';
-const accessToken = getDevAccessToken();
+const githubToken = getDevAccessToken();
 
 vi.setConfig({ testTimeout: 20_000 });
 
@@ -31,17 +31,11 @@ function resetReference(octokit: Octokit) {
   });
 }
 
-async function closePr({
-  octokit,
-  pullNumber,
-}: {
-  octokit: Octokit;
-  pullNumber: number;
-}) {
+async function closePr({ octokit, pr }: { octokit: Octokit; pr: number }) {
   await octokit.pulls.update({
     owner: TEST_REPO_OWNER,
     repo: TEST_REPO_NAME,
-    pull_number: pullNumber,
+    pull_number: pr,
     state: 'closed',
   });
 }
@@ -122,7 +116,7 @@ async function addCommit(octokit: Octokit) {
 
 describe('enablePullRequestAutoMerge', () => {
   describe('create a PR and enable auto-merge against "approvals-required-branch"', () => {
-    let pullNumber: number;
+    let pr: number;
     let branchName: string;
     let octokit: Octokit;
     let options: ValidConfigOptions;
@@ -132,17 +126,17 @@ describe('enablePullRequestAutoMerge', () => {
       branchName = `test-${randomString}`;
 
       options = {
-        accessToken,
+        githubToken,
         repoOwner: TEST_REPO_OWNER,
         repoName: TEST_REPO_NAME,
       } as ValidConfigOptions;
 
-      octokit = new Octokit({ auth: accessToken });
+      octokit = new Octokit({ auth: githubToken });
       await resetReference(octokit);
 
       const sha = await addCommit(octokit);
       await createBranch({ octokit, branchName, sha });
-      pullNumber = await createPr({
+      pr = await createPr({
         options,
         headBranch: branchName,
         baseBranch: 'approvals-required-branch',
@@ -151,20 +145,20 @@ describe('enablePullRequestAutoMerge', () => {
 
     // cleanup
     afterAll(async () => {
-      await closePr({ octokit, pullNumber });
+      await closePr({ octokit, pr });
       await deleteBranch({ octokit, branchName });
       await resetReference(octokit);
     });
 
     // reset auto-merge state between runs
     afterEach(async () => {
-      await disablePullRequestAutoMerge(options, pullNumber);
+      await disablePullRequestAutoMerge(options, pr);
     });
 
     it('should initially have auto-merge disabled', async () => {
       const autoMergeMethod = await fetchPullRequestAutoMergeMethod(
         options,
-        pullNumber,
+        pr,
       );
       expect(autoMergeMethod).toBe(undefined);
     });
@@ -172,7 +166,7 @@ describe('enablePullRequestAutoMerge', () => {
     it('should enable auto-merge via merge', async () => {
       await enablePullRequestAutoMerge(
         { ...options, autoMergeMethod: 'merge' },
-        pullNumber,
+        pr,
       );
 
       // ensure Github API reflects the change before querying
@@ -180,7 +174,7 @@ describe('enablePullRequestAutoMerge', () => {
 
       const autoMergeMethod = await fetchPullRequestAutoMergeMethod(
         options,
-        pullNumber,
+        pr,
       );
       expect(autoMergeMethod).toBe('MERGE');
     });
@@ -192,7 +186,7 @@ describe('enablePullRequestAutoMerge', () => {
       try {
         await enablePullRequestAutoMerge(
           { ...options, autoMergeMethod: 'rebase' },
-          pullNumber,
+          pr,
         );
       } catch (error) {
         const err = error as BackportError;
@@ -211,7 +205,7 @@ describe('enablePullRequestAutoMerge', () => {
 
       const autoMergeMethod = await fetchPullRequestAutoMergeMethod(
         options,
-        pullNumber,
+        pr,
       );
       expect(autoMergeMethod).toBe(undefined);
     });
@@ -219,7 +213,7 @@ describe('enablePullRequestAutoMerge', () => {
     it('should enable auto-merge via squash', async () => {
       await enablePullRequestAutoMerge(
         { ...options, autoMergeMethod: 'squash' },
-        pullNumber,
+        pr,
       );
 
       // ensure Github API reflects the change before querying
@@ -227,14 +221,14 @@ describe('enablePullRequestAutoMerge', () => {
 
       const autoMergeMethod = await fetchPullRequestAutoMergeMethod(
         options,
-        pullNumber,
+        pr,
       );
       expect(autoMergeMethod).toBe('SQUASH');
     });
   });
 
   describe('when creating a PR against "no-checks-required-branch"', () => {
-    let pullNumber: number;
+    let pr: number;
     let branchName: string;
     let octokit: Octokit;
     let options: ValidConfigOptions;
@@ -244,17 +238,17 @@ describe('enablePullRequestAutoMerge', () => {
       branchName = `test-${randomString}`;
 
       options = {
-        accessToken,
+        githubToken,
         repoOwner: TEST_REPO_OWNER,
         repoName: TEST_REPO_NAME,
       } as ValidConfigOptions;
 
-      octokit = new Octokit({ auth: accessToken });
+      octokit = new Octokit({ auth: githubToken });
       await resetReference(octokit);
 
       const sha = await addCommit(octokit);
       await createBranch({ octokit, branchName, sha });
-      pullNumber = await createPr({
+      pr = await createPr({
         options,
         headBranch: branchName,
         baseBranch: 'no-checks-required-branch',
@@ -263,7 +257,7 @@ describe('enablePullRequestAutoMerge', () => {
 
     // cleanup
     afterAll(async () => {
-      await closePr({ octokit, pullNumber });
+      await closePr({ octokit, pr });
       await deleteBranch({ octokit, branchName });
       await resetReference(octokit);
     });
@@ -274,7 +268,7 @@ describe('enablePullRequestAutoMerge', () => {
       try {
         await enablePullRequestAutoMerge(
           { ...options, autoMergeMethod: 'merge' },
-          pullNumber,
+          pr,
         );
       } catch (error) {
         const err = error as BackportError;
@@ -290,7 +284,7 @@ describe('enablePullRequestAutoMerge', () => {
   });
 
   describe('when createing a PR against "status-checks-required-branch"', () => {
-    let pullNumber: number;
+    let pr: number;
     let branchName: string;
     let octokit: Octokit;
     let options: ValidConfigOptions;
@@ -300,17 +294,17 @@ describe('enablePullRequestAutoMerge', () => {
       branchName = `test-${randomString}`;
 
       options = {
-        accessToken,
+        githubToken,
         repoOwner: TEST_REPO_OWNER,
         repoName: TEST_REPO_NAME,
       } as ValidConfigOptions;
 
-      octokit = new Octokit({ auth: accessToken });
+      octokit = new Octokit({ auth: githubToken });
       await resetReference(octokit);
 
       const sha = await addCommit(octokit);
       await createBranch({ octokit, branchName, sha });
-      pullNumber = await createPr({
+      pr = await createPr({
         options,
         headBranch: branchName,
         baseBranch: 'status-checks-required-branch',
@@ -319,7 +313,7 @@ describe('enablePullRequestAutoMerge', () => {
 
     // cleanup
     afterAll(async () => {
-      await closePr({ octokit, pullNumber });
+      await closePr({ octokit, pr });
       await deleteBranch({ octokit, branchName });
       await resetReference(octokit);
     });
@@ -331,7 +325,7 @@ describe('enablePullRequestAutoMerge', () => {
       try {
         await enablePullRequestAutoMerge(
           { ...options, autoMergeMethod: 'merge' },
-          pullNumber,
+          pr,
         );
       } catch (error) {
         const err = error as BackportError;
@@ -341,7 +335,7 @@ describe('enablePullRequestAutoMerge', () => {
 
       const autoMergeMethod = await fetchPullRequestAutoMergeMethod(
         options,
-        pullNumber,
+        pr,
       );
 
       expect(autoMergeMethod).toBe(undefined);

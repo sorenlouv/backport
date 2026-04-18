@@ -28,6 +28,5 @@ export async function getOptionsFromConfigFiles({
   return {
     globalConfig: globalConfig ?? {},
     projectConfig: projectConfig ?? {},
-    moduleOptions: optionsFromModule,
   };
 }

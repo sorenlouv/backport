@@ -14,15 +14,15 @@ import { commitsByAuthorMock } from '../mocks/commits-by-author-mock.js';
 import { fetchCommitsByAuthor } from './fetch-commits-by-author.js';
 
 const defaultOptions = {
-  accessToken: 'myAccessToken',
+  githubToken: 'myAccessToken',
   author: 'sorenlouv',
   githubApiBaseUrlV4: 'http://localhost/graphql',
-  maxNumber: 10,
+  maxCount: 10,
   repoName: 'kibana',
   repoOwner: 'elastic',
   sourceBranch: 'source-branch-from-options',
-  dateSince: null,
-  dateUntil: null,
+  since: null,
+  until: null,
 };
 
 const authorIdMockData = { user: { id: 'myUserId' } } as const;
@@ -63,7 +63,7 @@ describe('fetchCommitsByAuthor', () => {
       cleanupFetchMock();
     });
 
-    it('should return a list of commits with pullNumber and existing backports', () => {
+    it('should return a list of commits with pr and existing backports', () => {
       const expectedCommits: Commit[] = [
         {
           author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },

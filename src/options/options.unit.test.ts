@@ -22,7 +22,7 @@ const defaultConfigs = {
     repoName: 'kibana',
     targetBranchChoices: ['7.9', '8.0'],
   },
-  globalConfig: { accessToken: 'abc', editor: 'code' },
+  globalConfig: { githubToken: 'abc', editor: 'code' },
 };
 
 describe('getOptions', () => {
@@ -45,10 +45,10 @@ describe('getOptions', () => {
       mockGithubConfigOptions({});
     });
 
-    it('when accessToken is missing', async () => {
+    it('when githubToken is missing', async () => {
       mockConfigFiles({
         projectConfig: defaultConfigs.projectConfig,
-        globalConfig: { accessToken: undefined },
+        globalConfig: { githubToken: undefined },
       });
 
       await expect(() =>
@@ -57,7 +57,7 @@ describe('getOptions', () => {
           optionsFromModule: {},
         }),
       ).rejects.toThrow(
-        'Please update your config file: "/myHomeDir/.backport/config.json".\nIt must contain a valid "accessToken".',
+        'Please update your config file: "/myHomeDir/.backport/config.json".\nIt must contain a valid "githubToken".',
       );
     });
 
@@ -104,14 +104,14 @@ describe('getOptions', () => {
         ).rejects.toThrow('"author" cannot be empty!');
       });
 
-      it('throws for "accessToken"', async () => {
+      it('throws for "githubToken"', async () => {
         await expect(() =>
           getOptions({
             optionsFromCliArgs: {},
-            optionsFromModule: { accessToken: '' },
+            optionsFromModule: { githubToken: '' },
           }),
         ).rejects.toThrow(
-          'Please update your config file: "/myHomeDir/.backport/config.json".\nIt must contain a valid "accessToken".',
+          'Please update your config file: "/myHomeDir/.backport/config.json".\nIt must contain a valid "githubToken".',
         );
       });
     });
@@ -204,7 +204,7 @@ describe('getOptions', () => {
     });
 
     expect(options).toEqual({
-      accessToken: 'abc',
+      githubToken: 'abc',
       assignees: [],
       authenticatedUsername: 'john.diller',
       author: 'john.diller',
@@ -212,14 +212,13 @@ describe('getOptions', () => {
       autoMerge: false,
       autoMergeMethod: 'merge',
       backportBinary: 'backport',
-      cherrypickRef: true,
-      commitConflicts: false,
-      autoResolveConflictsWithTheirs: false,
+      cherryPickRef: true,
+      conflictResolution: 'abort',
       commitPaths: [],
       cwd: expect.any(String),
-      dateSince: null,
-      dateUntil: null,
-      details: false,
+      since: null,
+      until: null,
+      verbose: false,
       draft: false,
       editor: 'code',
       fork: true,
@@ -227,7 +226,7 @@ describe('getOptions', () => {
       githubApiBaseUrlV4: 'http://localhost/graphql',
       interactive: true,
       isRepoPrivate: false,
-      maxNumber: 10,
+      maxCount: 10,
       multipleBranches: true,
       multipleCommits: false,
       noUnmergedBackportsHelp: false,
@@ -442,42 +441,42 @@ describe('getOptions', () => {
     });
   });
 
-  describe('cherrypickRef', () => {
+  describe('cherryPickRef', () => {
     beforeEach(() => {
       mockGithubConfigOptions({});
     });
 
     it('should default to true', async () => {
-      const { cherrypickRef } = await getOptions({
+      const { cherryPickRef } = await getOptions({
         optionsFromCliArgs: {},
         optionsFromModule: {},
       });
-      expect(cherrypickRef).toBe(true);
+      expect(cherryPickRef).toBe(true);
     });
 
     it('should be settable via config file', async () => {
-      mockProjectConfig({ cherrypickRef: false });
-      const { cherrypickRef } = await getOptions({
+      mockProjectConfig({ cherryPickRef: false });
+      const { cherryPickRef } = await getOptions({
         optionsFromCliArgs: {},
         optionsFromModule: {},
       });
-      expect(cherrypickRef).toBe(false);
+      expect(cherryPickRef).toBe(false);
     });
 
     it('cli args overwrites config', async () => {
-      mockProjectConfig({ cherrypickRef: false });
-      const { cherrypickRef } = await getOptions({
-        optionsFromCliArgs: { cherrypickRef: true },
+      mockProjectConfig({ cherryPickRef: false });
+      const { cherryPickRef } = await getOptions({
+        optionsFromCliArgs: { cherryPickRef: true },
         optionsFromModule: {},
       });
-      expect(cherrypickRef).toBe(true);
+      expect(cherryPickRef).toBe(true);
     });
   });
 });
 
 function mockProjectConfig(projectConfig: ConfigFileOptions) {
   return mockConfigFiles({
-    globalConfig: { accessToken: 'abc' },
+    globalConfig: { githubToken: 'abc' },
     projectConfig: {
       githubApiBaseUrlV4: 'http://localhost/graphql',
       repoOwner: 'elastic',

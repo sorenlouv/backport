@@ -9,7 +9,7 @@ describe('getOptionsFromConfigFiles', () => {
     vi.spyOn(fs, 'writeFile').mockResolvedValueOnce();
     vi.spyOn(fs, 'chmod').mockResolvedValue();
     mockConfigFiles({
-      globalConfig: { accessToken: 'abc', editor: 'vim' },
+      globalConfig: { githubToken: 'abc', editor: 'vim' },
       projectConfig: { repoName: 'kibana', repoOwner: 'elastic' },
     });
 
@@ -21,7 +21,7 @@ describe('getOptionsFromConfigFiles', () => {
 
   it('should return globalConfig and projectConfig separately', () => {
     expect(res.globalConfig).toEqual({
-      accessToken: 'abc',
+      githubToken: 'abc',
       editor: 'vim',
     });
     expect(res.projectConfig).toEqual({

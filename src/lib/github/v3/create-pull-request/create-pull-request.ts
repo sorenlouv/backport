@@ -34,7 +34,7 @@ export async function createPullRequest({
     `${msg} with title: "${prPayload.title}". ${prPayload.head} -> ${prPayload.base}`,
   );
 
-  const { accessToken, githubApiBaseUrlV3 } = options;
+  const { githubToken, githubApiBaseUrlV3 } = options;
   const spinner = ora(options.interactive, msg).start();
 
   if (options.dryRun) {
@@ -43,7 +43,7 @@ export async function createPullRequest({
   }
 
   try {
-    const octokit = createOctokitClient({ accessToken, githubApiBaseUrlV3 });
+    const octokit = createOctokitClient({ githubToken, githubApiBaseUrlV3 });
 
     const res = await retryOctokitRequest(() =>
       octokit.pulls.create(prPayload),

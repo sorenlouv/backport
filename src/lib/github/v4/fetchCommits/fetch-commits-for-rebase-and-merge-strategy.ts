@@ -7,7 +7,7 @@ import { fetchCommitBySha } from './fetch-commit-by-sha.js';
 
 export async function fetchCommitsForRebaseAndMergeStrategy(
   options: {
-    accessToken: string;
+    githubToken: string;
     githubApiBaseUrlV4?: string;
     pullNumber: number;
     repoName: string;
@@ -17,7 +17,7 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
   commitsTotalCount: number,
 ): Promise<Commit[] | undefined> {
   const {
-    accessToken,
+    githubToken,
     githubApiBaseUrlV4 = 'https://api.github.com/graphql',
     pullNumber,
     repoName,
@@ -28,11 +28,11 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
     query CommitsForRebaseAndMergeStrategy(
       $repoOwner: String!
       $repoName: String!
-      $pullNumber: Int!
+      $pr: Int!
       $commitsTotalCount: Int!
     ) {
       repository(owner: $repoOwner, name: $repoName) {
-        pullRequest(number: $pullNumber) {
+        pullRequest(number: $pr) {
           number
           commits(first: $commitsTotalCount) {
             totalCount
@@ -69,9 +69,9 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
     }
   `);
 
-  const variables = { repoOwner, repoName, pullNumber, commitsTotalCount };
+  const variables = { repoOwner, repoName, pr: pullNumber, commitsTotalCount };
   const result = await graphqlRequest(
-    { accessToken, githubApiBaseUrlV4 },
+    { githubToken, githubApiBaseUrlV4 },
     query,
     variables,
   );

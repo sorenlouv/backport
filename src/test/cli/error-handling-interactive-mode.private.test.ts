@@ -3,7 +3,7 @@ import { removeLinesBreaksInConflictingFiles } from '../helpers/replace-string-a
 import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 
-const accessToken = getDevAccessToken();
+const githubToken = getDevAccessToken();
 vi.setConfig({ testTimeout: 15_000 });
 
 describe('interactive error handling', () => {
@@ -11,7 +11,7 @@ describe('interactive error handling', () => {
     const { output } = await runBackportViaCli([
       '--skip-remote-config',
       '--repo=backport-org/backport-e2e',
-      `--accessToken=${accessToken}`,
+      `--github-token=${githubToken}`,
     ]);
     expect(output).toMatchInlineSnapshot(`
       "Please specify a target branch: "--branch 6.1".
@@ -32,7 +32,7 @@ describe('interactive error handling', () => {
     const { output } = await runBackportViaCli([
       '--branch=foo',
       '--repo=foo/bar',
-      '--accessToken=some-token',
+      '--github-token=some-token',
     ]);
     expect(output).toContain(
       'Please check your access token and make sure it is valid',
@@ -44,7 +44,7 @@ describe('interactive error handling', () => {
       '--branch=foo',
       '--repo=foo/bar',
       '--author=sorenlouv',
-      `--accessToken=${accessToken}`,
+      `--github-token=${githubToken}`,
     ]);
     expect(output).toMatchInlineSnapshot(
       `"The repository "foo/bar" doesn't exist"`,
@@ -57,7 +57,7 @@ describe('interactive error handling', () => {
         '--branch=foo',
         '--repo=backport-org/backport-e2e',
         '--pr=9',
-        `--accessToken=${accessToken}`,
+        `--github-token=${githubToken}`,
       ],
       { showOra: true },
     );
@@ -73,7 +73,7 @@ describe('interactive error handling', () => {
         '--repo=backport-org/repo-with-conflicts',
         '--pr=12',
         '--branch=7.x',
-        `--accessToken=${accessToken}`,
+        `--github-token=${githubToken}`,
         `--dir=${backportDir}`,
         '--dry-run',
       ],
@@ -88,7 +88,7 @@ describe('interactive error handling', () => {
         '<BACKPORT_DIR>',
       ),
     ).toMatchInlineSnapshot(`
-      "repo: backport-org/repo-with-conflicts | sourceBranch: main | pullNumber: 12 | author: sorenlouv
+      "repo: backport-org/repo-with-conflicts | sourceBranch: main | pr: 12 | author: sorenlouv
 
 
       Backporting to 7.x:

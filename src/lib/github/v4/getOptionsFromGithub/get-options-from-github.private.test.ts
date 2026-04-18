@@ -2,7 +2,7 @@ import os from 'node:os';
 import { getDevAccessToken } from '../../../../test/helpers/get-dev-access-token.js';
 import { getOptionsFromGithub } from './get-options-from-github.js';
 
-const accessToken = getDevAccessToken();
+const githubToken = getDevAccessToken();
 
 describe('getOptionsFromGithub', () => {
   beforeAll(() => {
@@ -14,7 +14,7 @@ describe('getOptionsFromGithub', () => {
       it('throws an error', async () => {
         const combinedOptions = {
           author: 'sorenlouv',
-          accessToken: 'foo',
+          githubToken: 'foo',
           repoOwner: 'backport-org',
           repoName: 'backport-e2e',
           cwd: process.cwd(),
@@ -30,7 +30,7 @@ describe('getOptionsFromGithub', () => {
       it('returns the options', async () => {
         const combinedOptions = {
           author: 'sorenlouv',
-          accessToken,
+          githubToken,
           repoOwner: 'backport-org',
           repoName: 'backport-e2e',
           cwd: process.cwd(),
@@ -62,7 +62,7 @@ describe('getOptionsFromGithub', () => {
     it('returns original repoOwner', async () => {
       const combinedOptions = {
         author: 'sorenlouv',
-        accessToken,
+        githubToken,
         repoOwner: 'sorenlouv',
         repoName: 'backport-e2e',
         cwd: process.cwd(),
@@ -79,7 +79,7 @@ describe('getOptionsFromGithub', () => {
       it('uses the default branch of the repo', async () => {
         const combinedOptions = {
           author: 'sorenlouv',
-          accessToken,
+          githubToken,
           repoOwner: 'backport-org',
           repoName: 'repo-with-non-standard-main-branch',
           cwd: process.cwd(),
@@ -97,7 +97,7 @@ describe('getOptionsFromGithub', () => {
       it('shows a warning', async () => {
         const combinedOptions = {
           author: 'sorenlouv',
-          accessToken,
+          githubToken,
           repoOwner: 'backport-org',
           repoName: 'repo-with-branch-named-backport',
           cwd: process.cwd(),
@@ -116,7 +116,7 @@ describe('getOptionsFromGithub', () => {
     it('does not throw', async () => {
       const combinedOptions = {
         author: 'sorenlouv',
-        accessToken,
+        githubToken,
         repoOwner: 'backport-org',
         repoName: 'repo-with-backportrc-removed',
         cwd: process.cwd(),

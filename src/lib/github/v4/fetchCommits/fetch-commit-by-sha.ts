@@ -7,7 +7,7 @@ import { parseSourceCommit } from '../../../sourceCommit/parse-source-commit.js'
 import { graphqlRequest } from '../client/graphql-client.js';
 
 export async function fetchCommitBySha(options: {
-  accessToken: string;
+  githubToken: string;
   branchLabelMapping?: ValidConfigOptions['branchLabelMapping'];
   githubApiBaseUrlV4?: string;
   repoName: string;
@@ -16,7 +16,7 @@ export async function fetchCommitBySha(options: {
   sourceBranch: string;
 }): Promise<Commit> {
   const {
-    accessToken,
+    githubToken,
     githubApiBaseUrlV4 = 'https://api.github.com/graphql',
     repoName,
     repoOwner,
@@ -37,7 +37,7 @@ export async function fetchCommitBySha(options: {
 
   const variables = { repoOwner, repoName, sha };
   const result = await graphqlRequest(
-    { accessToken, githubApiBaseUrlV4 },
+    { githubToken, githubApiBaseUrlV4 },
     query,
     variables,
   );

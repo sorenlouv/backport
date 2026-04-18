@@ -27,7 +27,7 @@ export { getProjectConfig } from './options/config/project-config.js';
 export function getOptionsFromGithub(
   options: Parameters<typeof _getOptionsFromGithub>[0],
 ) {
-  initLogger({ interactive: false, accessToken: options.accessToken });
+  initLogger({ interactive: false, githubToken: options.githubToken });
   return _getOptionsFromGithub(options);
 }
 
@@ -56,25 +56,25 @@ export async function backportRun({
 
 export async function getCommits(options: {
   // required
-  accessToken: string;
+  githubToken: string;
   repoName: string;
   repoOwner: string;
 
   // optional
   author?: string;
   branchLabelMapping?: ValidConfigOptions['branchLabelMapping'];
-  dateSince?: string;
-  dateUntil?: string;
+  since?: string;
+  until?: string;
   githubApiBaseUrlV4?: string;
-  maxNumber?: number;
+  maxCount?: number;
   onlyMissing?: boolean;
-  prFilter?: string;
+  prQuery?: string;
   pullNumber?: number | number[];
   sha?: string | string[];
   skipRemoteConfig?: boolean;
   sourceBranch?: string;
 }): Promise<Commit[]> {
-  initLogger({ interactive: false, accessToken: options.accessToken });
+  initLogger({ interactive: false, githubToken: options.githubToken });
 
   const optionsFromGithub = await _getOptionsFromGithub(options);
 
@@ -106,14 +106,14 @@ export async function getCommits(options: {
     );
   }
 
-  if (options.prFilter) {
+  if (options.prQuery) {
     return fetchPullRequestsBySearchQuery({
       ...optionsFromGithub,
       ...options,
-      prFilter: options.prFilter,
+      prQuery: options.prQuery,
       author: options.author ?? null,
-      dateSince: options.dateSince ?? null,
-      dateUntil: options.dateUntil ?? null,
+      since: options.since ?? null,
+      until: options.until ?? null,
     });
   }
 
@@ -122,12 +122,12 @@ export async function getCommits(options: {
       ...optionsFromGithub,
       ...options,
       author: options.author,
-      dateSince: options.dateSince ?? null,
-      dateUntil: options.dateUntil ?? null,
+      since: options.since ?? null,
+      until: options.until ?? null,
     });
   }
 
   throw new Error(
-    'Must supply one of: `pullNumber`, `sha`, `prFilter` or `author`',
+    'Must supply one of: `pullNumber`, `sha`, `prQuery` or `author`',
   );
 }

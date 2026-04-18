@@ -10,7 +10,7 @@ Backport a commit programatically. Commits can be selected via `pullNumber` or `
 
 All of the options listed on [config-file-options.md](/docs/config-file-options.md) are valid. The most common options are:
 
-`options.accessToken` _string_ **(Required)**<br/>
+`options.githubToken` _string_ **(Required)**<br/>
 Github access token to authenticate the request
 
 `options.repoName` _string_ **(Required)**<br/>
@@ -41,7 +41,7 @@ import { backportRun } from 'backport';
 
 const result = await backportRun({
   options: {
-    accessToken: 'very secret',
+    githubToken: 'very secret',
     repoName: 'kibana',
     repoOwner: 'elastic',
     pullNumber: 121633,
@@ -58,7 +58,7 @@ Retrieve information about commits and whether they are backported
 
 #### Arguments:
 
-`accessToken` _string_ **(Required)**<br/>
+`githubToken` _string_ **(Required)**<br/>
 Github access token to authenticate the request
 
 `repoName` _string_ **(Required)**<br/>
@@ -85,7 +85,7 @@ The branch to display commits from. Defaults to the default branch (normally "ma
 import { getCommits } from 'backport';
 
 const commits = await getCommits({
-  accessToken: 'abc',
+  githubToken: 'abc',
   repoName: 'kibana',
   repoOwner: 'elastic',
   pullNumber: 121633,

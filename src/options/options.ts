@@ -52,16 +52,16 @@ export async function getOptions({
     ...optionsFromCliArgs,
   };
 
-  const { accessToken, repoName, repoOwner } =
+  const { githubToken, repoName, repoOwner } =
     await resolveRequiredOptions(combined);
 
   // update logger
-  setAccessToken(accessToken);
+  setAccessToken(githubToken);
 
   // ── Step 3: fetch options from GitHub ──────────────────────────────
   const optionsFromGithub = await getOptionsFromGithub({
     ...combined,
-    accessToken,
+    githubToken,
     repoName,
     repoOwner,
   });
@@ -74,7 +74,7 @@ export async function getOptions({
     optionsFromModule,
     optionsFromGithub,
     optionsFromCliArgs,
-    accessToken,
+    githubToken,
     repoName,
     repoOwner,
   });
@@ -97,7 +97,7 @@ function mergeOptions({
   optionsFromModule,
   optionsFromGithub,
   optionsFromCliArgs,
-  accessToken,
+  githubToken,
   repoName,
   repoOwner,
 }: {
@@ -107,7 +107,7 @@ function mergeOptions({
   optionsFromModule: ConfigFileOptions;
   optionsFromGithub: Record<string, unknown>;
   optionsFromCliArgs: OptionsFromCliArgs;
-  accessToken: string;
+  githubToken: string;
   repoName: string;
   repoOwner: string;
 }) {
@@ -137,7 +137,7 @@ function mergeOptions({
     ...optionsFromCliArgs,
 
     // required properties (always set regardless of precedence)
-    accessToken,
+    githubToken,
     repoName,
     repoOwner,
   };
@@ -148,25 +148,25 @@ function mergeOptions({
  * options that must be available before we can call the GitHub API.
  */
 async function resolveRequiredOptions(combined: {
-  accessToken?: string;
+  githubToken?: string;
   repoName?: string;
   repoOwner?: string;
   globalConfigFile?: string;
   cwd: string;
   githubApiBaseUrlV4?: string;
 }) {
-  const { accessToken, repoName, repoOwner, globalConfigFile } = combined;
+  const { githubToken, repoName, repoOwner, globalConfigFile } = combined;
 
-  if (accessToken && repoName && repoOwner) {
-    return { accessToken, repoName, repoOwner };
+  if (githubToken && repoName && repoOwner) {
+    return { githubToken, repoName, repoOwner };
   }
 
   // require access token
-  if (!accessToken) {
+  if (!githubToken) {
     const globalConfigPath = getGlobalConfigPath(globalConfigFile);
     throw new BackportError({
       code: 'invalid-credentials-exception',
-      message: `Please update your config file: "${globalConfigPath}".\nIt must contain a valid "accessToken".\n\nRead more: ${GLOBAL_CONFIG_DOCS_LINK}`,
+      message: `Please update your config file: "${globalConfigPath}".\nIt must contain a valid "githubToken".\n\nRead more: ${GLOBAL_CONFIG_DOCS_LINK}`,
     });
   }
 
@@ -174,7 +174,7 @@ async function resolveRequiredOptions(combined: {
   const gitRemote = await getRepoOwnerAndNameFromGitRemotes({
     cwd: combined.cwd,
     githubApiBaseUrlV4: combined.githubApiBaseUrlV4,
-    accessToken,
+    githubToken,
   });
 
   if (!gitRemote.repoName || !gitRemote.repoOwner) {
@@ -185,7 +185,7 @@ async function resolveRequiredOptions(combined: {
   }
 
   return {
-    accessToken,
+    githubToken,
     repoName: gitRemote.repoName,
     repoOwner: gitRemote.repoOwner,
   };
@@ -196,12 +196,12 @@ async function resolveRequiredOptions(combined: {
 // This is primarily an issue in Github Actions where inputs default to empty
 // strings instead of undefined — failing early provides a better UX.
 const DISALLOW_EMPTY_STRING_OPTIONS = [
-  'accessToken',
+  'githubToken',
   'author',
   'autoMergeMethod',
   'backportBinary',
   'backportBranchName',
-  'dir',
+  'workdir',
   'editor',
   'gitHostname',
   'githubApiBaseUrlV3',
@@ -235,7 +235,7 @@ export function getActiveOptionsFormatted(options: ValidConfigOptions) {
   ];
 
   if (options.pullNumber) {
-    customOptions.push(['pullNumber', `${options.pullNumber}`]);
+    customOptions.push(['pr', `${options.pullNumber}`]);
   }
 
   if (options.sha) {
@@ -250,16 +250,16 @@ export function getActiveOptionsFormatted(options: ValidConfigOptions) {
     customOptions.push(['autoMerge', `${options.autoMerge}`]);
   }
 
-  if (options.maxNumber !== defaultConfigOptions.maxNumber) {
-    customOptions.push(['maxNumber', `${options.maxNumber}`]);
+  if (options.maxCount !== defaultConfigOptions.maxCount) {
+    customOptions.push(['maxCount', `${options.maxCount}`]);
   }
 
-  if (options.dateSince) {
-    customOptions.push(['since', `${options.dateSince}`]);
+  if (options.since) {
+    customOptions.push(['since', `${options.since}`]);
   }
 
-  if (options.dateUntil) {
-    customOptions.push(['until', `${options.dateUntil}`]);
+  if (options.until) {
+    customOptions.push(['until', `${options.until}`]);
   }
 
   return (

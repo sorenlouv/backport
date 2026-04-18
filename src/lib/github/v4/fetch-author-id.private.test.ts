@@ -2,13 +2,13 @@ import type { ValidConfigOptions } from '../../../options/options.js';
 import { getDevAccessToken } from '../../../test/helpers/get-dev-access-token.js';
 import { fetchAuthorId } from './fetch-author-id.js';
 
-const accessToken = getDevAccessToken();
+const githubToken = getDevAccessToken();
 
 describe('fetchAuthorId', () => {
   describe('author = null', () => {
     it('returns null', async () => {
       const options = {
-        accessToken,
+        githubToken,
         author: null,
       } as ValidConfigOptions;
 
@@ -19,7 +19,7 @@ describe('fetchAuthorId', () => {
   describe('author is "sorenlouv"', () => {
     it('returns author id', async () => {
       const options = {
-        accessToken,
+        githubToken,
         author: 'sorenlouv',
       } as ValidConfigOptions;
 

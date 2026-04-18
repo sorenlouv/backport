@@ -57,8 +57,8 @@ function parseYargsOptions(processArgs: readonly string[]) {
     .wrap(Math.max(100, Math.min(120, y.terminalWidth())))
 
     // ── GitHub & Authentication ──────────────────────────────────────
-    .option('accessToken', {
-      alias: 'accesstoken',
+    .option('githubToken', {
+      alias: ['token', 'accessToken', 'accesstoken'],
       description: 'Github access token',
       type: 'string',
     })
@@ -100,30 +100,21 @@ function parseYargsOptions(processArgs: readonly string[]) {
 
     .option('author', {
       description: 'Show commits by a specific user',
-      alias: 'author',
       type: 'string',
       conflicts: 'all',
     })
 
     // ── Cherry-pick & Conflict Handling ─────────────────────────────
-    .option('cherrypickRef', {
+    .option('cherryPickRef', {
       description: 'Append commit message with "(cherry picked from commit...)',
       type: 'boolean',
-      conflicts: ['noCherrypickRef'],
+      conflicts: ['noCherryPickRef'],
     })
 
-    .option('commitConflicts', {
-      description:
-        'Commit conflicts instead of aborting. Only takes effect in `non-interactive` mode. Defaults to false',
-      type: 'boolean',
-      conflicts: ['autoResolveConflictsWithTheirs'],
-    })
-
-    .option('autoResolveConflictsWithTheirs', {
-      description:
-        'Continue past conflicts by resolving them in favor of the source commit. Only takes effect in `non-interactive` mode. Defaults to false',
-      type: 'boolean',
-      conflicts: ['commitConflicts'],
+    .option('conflictResolution', {
+      description: 'Conflict resolution strategy. Defaults to "abort"',
+      type: 'string',
+      choices: ['abort', 'commit', 'theirs'],
     })
 
     // ── Paths & Config ─────────────────────────────────────────────
@@ -144,8 +135,7 @@ function parseYargsOptions(processArgs: readonly string[]) {
       type: 'string',
     })
 
-    .option('dateSince', {
-      alias: 'since',
+    .option('since', {
       description: 'ISO-8601 date for filtering commits',
       type: 'string',
       coerce: (since) => {
@@ -155,8 +145,7 @@ function parseYargsOptions(processArgs: readonly string[]) {
       },
     })
 
-    .option('dateUntil', {
-      alias: 'until',
+    .option('until', {
       description: 'ISO-8601 date for filtering commits',
       type: 'string',
       coerce: (until) => {
@@ -166,13 +155,15 @@ function parseYargsOptions(processArgs: readonly string[]) {
       },
     })
 
-    .option('dir', {
+    .option('workdir', {
       description: 'Path to temporary backport repo',
+      alias: 'dir',
       type: 'string',
     })
 
-    .option('details', {
+    .option('verbose', {
       description: 'Show details about each commit',
+      alias: 'details',
       type: 'boolean',
     })
 
@@ -278,10 +269,10 @@ function parseYargsOptions(processArgs: readonly string[]) {
       alias: ['s'],
     })
 
-    // display 10 commits to pick from
-    .option('maxNumber', {
+    // limit number of commits to choose from
+    .option('maxCount', {
       description: 'Number of commits to choose from',
-      alias: ['number', 'n'],
+      alias: ['n', 'number'],
       type: 'number',
     })
 
@@ -306,11 +297,11 @@ function parseYargsOptions(processArgs: readonly string[]) {
       conflicts: ['multiple'],
     })
 
-    .option('noCherrypickRef', {
+    .option('noCherryPickRef', {
       description:
         'Do not append commit message with "(cherry picked from commit...)"',
       type: 'boolean',
-      conflicts: ['cherrypickRef'],
+      conflicts: ['cherryPickRef'],
     })
 
     // cli-only
@@ -355,16 +346,17 @@ function parseYargsOptions(processArgs: readonly string[]) {
       type: 'string',
     })
 
-    .option('prFilter', {
+    .option('prQuery', {
       conflicts: ['pullNumber', 'sha', 'path'],
       description: `Filter source pull requests by a query`,
+      alias: ['q'],
       type: 'string',
     })
 
     .option('pullNumber', {
-      conflicts: ['sha', 'prFilter'],
+      conflicts: ['sha', 'prQuery'],
       description: 'Pull request to backport',
-      alias: 'pr',
+      alias: ['pr'],
       type: 'number',
     })
 
@@ -408,7 +400,7 @@ function parseYargsOptions(processArgs: readonly string[]) {
     })
 
     .option('sha', {
-      conflicts: ['pullNumber', 'prFilter'],
+      conflicts: ['pullNumber', 'prQuery'],
       description: 'Commit sha to backport',
       alias: 'commit',
       type: 'string',
@@ -527,7 +519,7 @@ function transformCliArgs(rawArgs: ReturnType<typeof parseYargsOptions>) {
     author,
 
     // negation flags
-    noCherrypickRef,
+    noCherryPickRef,
     noFork,
     noStatusComment,
     noVerify,
@@ -583,7 +575,7 @@ function transformCliArgs(rawArgs: ReturnType<typeof parseYargsOptions>) {
     targetPRLabels: targetPRLabel,
 
     // negation flags → resolved to their canonical option names
-    cherrypickRef: noCherrypickRef === true ? false : restOptions.cherrypickRef,
+    cherryPickRef: noCherryPickRef === true ? false : restOptions.cherryPickRef,
     fork: noFork === true ? false : restOptions.fork,
     noVerify: verify ?? noVerify,
     publishStatusCommentOnSuccess: noStatusComment === true ? false : undefined,

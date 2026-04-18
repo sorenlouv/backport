@@ -7,25 +7,21 @@ export async function fetchPullRequestId(
   options: ValidConfigOptions,
   pullNumber: number,
 ) {
-  const { accessToken, githubApiBaseUrlV4, repoName, repoOwner } = options;
+  const { githubToken, githubApiBaseUrlV4, repoName, repoOwner } = options;
 
   const query = graphql(`
-    query PullRequestId(
-      $repoOwner: String!
-      $repoName: String!
-      $pullNumber: Int!
-    ) {
+    query PullRequestId($repoOwner: String!, $repoName: String!, $pr: Int!) {
       repository(owner: $repoOwner, name: $repoName) {
-        pullRequest(number: $pullNumber) {
+        pullRequest(number: $pr) {
           id
         }
       }
     }
   `);
 
-  const variables = { repoOwner, repoName, pullNumber };
+  const variables = { repoOwner, repoName, pr: pullNumber };
   const result = await graphqlRequest(
-    { accessToken, githubApiBaseUrlV4 },
+    { githubToken, githubApiBaseUrlV4 },
     query,
     variables,
   );

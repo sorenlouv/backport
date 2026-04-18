@@ -11,7 +11,7 @@ export async function enablePullRequestAutoMerge(
   targetPullRequestNumber: number,
 ) {
   const {
-    accessToken,
+    githubToken,
     githubApiBaseUrlV4,
     autoMergeMethod = 'merge',
   } = options;
@@ -49,7 +49,7 @@ export async function enablePullRequestAutoMerge(
   };
 
   const result = await graphqlRequest(
-    { accessToken, githubApiBaseUrlV4 },
+    { githubToken, githubApiBaseUrlV4 },
     query,
     variables,
   );

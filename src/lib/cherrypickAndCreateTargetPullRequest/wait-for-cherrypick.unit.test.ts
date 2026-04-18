@@ -40,7 +40,7 @@ function makeOptions(
     repoOwner: 'org',
     repoName: 'repo',
     interactive: false,
-    autoResolveConflictsWithTheirs: true,
+    conflictResolution: 'theirs',
     ...overrides,
   } as ValidConfigOptions;
 }
@@ -57,7 +57,7 @@ const cleanCherrypickResult = {
   needsResolving: false,
 };
 
-describe('waitForCherrypick with autoResolveConflictsWithTheirs', () => {
+describe('waitForCherrypick with conflictResolution=theirs', () => {
   let cherrypickSpy: MockInstance;
   let cherrypickAbortSpy: MockInstance;
 
@@ -107,25 +107,6 @@ describe('waitForCherrypick with autoResolveConflictsWithTheirs', () => {
     expect((logger as any).spy).toHaveBeenCalledWith(
       expect.stringContaining(
         'Cherry-pick retry with --strategy-option=theirs still has unresolved files',
-      ),
-      undefined,
-    );
-  });
-
-  it('should warn when both autoResolveConflictsWithTheirs and commitConflicts are set', async () => {
-    cherrypickSpy
-      .mockResolvedValueOnce(conflictingCherrypickResult)
-      .mockResolvedValueOnce(cleanCherrypickResult);
-
-    await waitForCherrypick(
-      makeOptions({ commitConflicts: true }),
-      makeCommit(),
-      '7.x',
-    );
-
-    expect((logger as any).spy).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'Both "autoResolveConflictsWithTheirs" and "commitConflicts" are enabled',
       ),
       undefined,
     );

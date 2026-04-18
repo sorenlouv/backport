@@ -146,12 +146,23 @@ export default [
 
       // Turn off base rule in favor of TypeScript version
       'no-unused-vars': 'off',
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'MemberExpression[object.name="process"][property.name="env"]',
+          message: 'Use strictly typed env fetchers (like getDevAccessToken) or dedicate specific env files instead of directly accessing process.env.',
+        },
+      ],
     },
   }, 
 
   // Test files - additional globals and relaxed rules
   {
-    files: ['**/*.{test,spec}.{js,ts}', '**/test/**/*.{js,ts}'],
+    files: [
+      '**/*.{test,spec}.{js,ts}',
+      '**/test/**/*.{js,ts}',
+      'vitest.config*.ts',
+    ],
     languageOptions: {
       globals: {
         describe: 'readonly',
@@ -171,6 +182,8 @@ export default [
     },
     rules: {
       '@typescript-eslint/ban-ts-comment': 'off',
+      // Allow process.env strictly in tests and vitest configs
+      'no-restricted-syntax': 'off',
     },
   },
 ];

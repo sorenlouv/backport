@@ -22,9 +22,9 @@ describe('createStatusComment', () => {
     cleanupFetchMock();
   });
 
-  it('redacts accessToken if it is included in the error message', async () => {
-    const accessToken = 'ghp_abcdefg';
-    setAccessToken(accessToken);
+  it('redacts githubToken if it is included in the error message', async () => {
+    const githubToken = 'ghp_abcdefg';
+    setAccessToken(githubToken);
 
     const calls = mockFetchResponse({
       url: 'https://api.github.com/repos/elastic/kibana/issues/100/comments',
@@ -36,7 +36,7 @@ describe('createStatusComment', () => {
       options: {
         repoName: 'kibana',
         repoOwner: 'elastic',
-        accessToken,
+        githubToken,
         backportBinary: 'node scripts/backport',
         publishStatusCommentOnSuccess: true,
         publishStatusCommentOnFailure: true,
@@ -49,7 +49,7 @@ describe('createStatusComment', () => {
           {
             status: 'error',
             errorCode: 'unhandled-exception',
-            errorMessage: `Error message containing very secret access token: ${accessToken}.`,
+            errorMessage: `Error message containing very secret access token: ${githubToken}.`,
           },
         ],
       } as BackportResponse,

@@ -4,8 +4,8 @@ import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 
 vi.setConfig({ testTimeout: 25_000 });
-const accessToken = getDevAccessToken();
-const octokit = new Octokit({ auth: accessToken });
+const githubToken = getDevAccessToken();
+const octokit = new Octokit({ auth: githubToken });
 
 describe('Programatically add new commits', () => {
   it('should backport commits added after the first run', async () => {
@@ -18,7 +18,7 @@ describe('Programatically add new commits', () => {
         '--repo=backport-org/repo-with-programatically-added-commits',
         '--pr=1',
         '--branch=7.x',
-        `--accessToken=${accessToken}`,
+        `--github-token=${githubToken}`,
         `--dir=${sandboxPath}`,
         '--dry-run',
       ],
@@ -45,7 +45,7 @@ describe('Programatically add new commits', () => {
         '--repo=backport-org/repo-with-programatically-added-commits',
         `--sha=${sha}`,
         '--branch=7.x',
-        `--accessToken=${accessToken}`,
+        `--github-token=${githubToken}`,
         `--dir=${sandboxPath}`,
         '--dry-run',
       ],

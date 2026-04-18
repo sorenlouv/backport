@@ -1,18 +1,10 @@
 import { writeFileSync } from 'node:fs';
-import dotenv from 'dotenv';
-import { getIntrospectionQuery, buildClientSchema, printSchema } from 'graphql';
+import { buildClientSchema, getIntrospectionQuery, printSchema } from 'graphql';
+import { getDevAccessToken } from '../src/test/helpers/get-dev-access-token.js';
 import { SCHEMA_PATH } from './graphql-extract.js';
 
-dotenv.config({ path: new URL('../.env', import.meta.url).pathname });
-
 async function main() {
-  const accessToken = process.env.ACCESS_TOKEN;
-  if (!accessToken) {
-    console.error(
-      'ACCESS_TOKEN environment variable is required.\nSet it in .env or export it before running this script.',
-    );
-    process.exit(1);
-  }
+  const accessToken = getDevAccessToken();
 
   console.log('Fetching GitHub GraphQL schema via introspection...');
 

@@ -7,7 +7,7 @@ export async function addAssigneesToPullRequest({
   githubApiBaseUrlV3,
   repoName,
   repoOwner,
-  accessToken,
+  githubToken,
   autoAssign,
   interactive,
   dryRun,
@@ -19,7 +19,7 @@ export async function addAssigneesToPullRequest({
   githubApiBaseUrlV3?: string;
   repoName: string;
   repoOwner: string;
-  accessToken: string;
+  githubToken: string;
   autoAssign: boolean;
   interactive: boolean;
   dryRun?: boolean;
@@ -39,7 +39,7 @@ export async function addAssigneesToPullRequest({
   }
 
   try {
-    const octokit = createOctokitClient({ accessToken, githubApiBaseUrlV3 });
+    const octokit = createOctokitClient({ githubToken, githubApiBaseUrlV3 });
 
     await retryOctokitRequest(() =>
       octokit.issues.addAssignees({

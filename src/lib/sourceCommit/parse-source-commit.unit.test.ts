@@ -5,8 +5,8 @@ import type { Commit } from './parse-source-commit.js';
 import { parseSourceCommit } from './parse-source-commit.js';
 
 describe('parseSourceCommit', () => {
-  describe('pullNumber', () => {
-    it('receives `pullNumber` from the associated pull request', () => {
+  describe('pr', () => {
+    it('receives `pr` from the associated pull request', () => {
       const mockSourceCommit = getMockSourceCommit({
         sourceCommit: { message: 'My commit message (#1234)' },
         sourcePullRequest: { number: 55 },

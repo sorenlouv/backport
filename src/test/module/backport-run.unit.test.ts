@@ -44,7 +44,7 @@ describe('backportRun integration', () => {
         githubApiBaseUrlV3: REST_URL,
       },
       globalConfig: {
-        accessToken: 'my-token',
+        githubToken: 'my-token',
       },
     });
   });
@@ -221,7 +221,7 @@ describe('backportRun integration', () => {
       errorCode: 'invalid-credentials-exception',
     });
     if (error0.status === 'error') {
-      expect(error0.errorMessage).toContain('accessToken');
+      expect(error0.errorMessage).toContain('githubToken');
     }
   });
 

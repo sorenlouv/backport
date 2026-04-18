@@ -23,13 +23,30 @@ export async function readConfigFile(
 // ensure backwards compatability when config options are renamed
 export function parseConfigFile(fileContents: string): ConfigFileOptions {
   const configWithoutComments = stripJsonComments(fileContents);
-  const { upstream, labels, branches, addOriginalReviewers, ...config } =
-    JSON.parse(configWithoutComments);
+  const parsed = JSON.parse(configWithoutComments) as ConfigFileOptions & {
+    upstream?: string;
+    labels?: string[];
+    branches?: string[];
+    addOriginalReviewers?: boolean;
+    accessToken?: string;
+  };
+
+  const {
+    upstream,
+    labels,
+    branches,
+    addOriginalReviewers,
+    accessToken,
+    ...config
+  } = parsed;
 
   const { repoName, repoOwner } = parseUpstream(upstream, config);
 
   return excludeUndefined({
     ...config,
+
+    // `accessToken` was renamed `githubToken`
+    githubToken: config.githubToken ?? accessToken,
 
     // `branches` was renamed `targetBranchChoices`
     targetBranchChoices: config.targetBranchChoices ?? branches,

@@ -6,11 +6,11 @@ import { graphqlRequest } from './client/graphql-client.js';
 
 // This method should be used to get the origin owner (instead of a fork owner)
 export async function getRepoOwnerAndNameFromGitRemotes({
-  accessToken,
+  githubToken,
   githubApiBaseUrlV4,
   cwd,
 }: {
-  accessToken: string;
+  githubToken: string;
   githubApiBaseUrlV4?: string;
   cwd: string;
 }): Promise<{ repoOwner?: string; repoName?: string }> {
@@ -45,7 +45,7 @@ export async function getRepoOwnerAndNameFromGitRemotes({
     `);
 
     const result = await graphqlRequest(
-      { accessToken, githubApiBaseUrlV4 },
+      { githubToken, githubApiBaseUrlV4 },
       query,
       variables,
     );

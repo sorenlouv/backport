@@ -1,16 +1,16 @@
 import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 
-const accessToken = getDevAccessToken();
+const githubToken = getDevAccessToken();
 vi.setConfig({ testTimeout: 15_000 });
 
-describe('date filters (dateSince, dateUntil)', () => {
+describe('date filters (since, until)', () => {
   it(`filters commits by "since" and "until"`, async () => {
     const { output } = await runBackportViaCli(
       [
         '--branch=7.x',
         '--repo=backport-org/backport-e2e',
-        `--accessToken=${accessToken}`,
+        `--github-token=${githubToken}`,
         '--since=2020-08-15T10:00:00.000Z',
         '--until=2020-08-15T10:30:00.000Z',
       ],
@@ -30,20 +30,20 @@ describe('date filters (dateSince, dateUntil)', () => {
     `);
   });
 
-  it('combined with --pr-filter', async () => {
+  it('combined with --pr-query', async () => {
     const options = [
       '--branch=7.x',
       '--repo=elastic/kibana',
-      `--accessToken=${accessToken}`,
+      `--github-token=${githubToken}`,
       '--since=2023-09-01',
       '--until=2023-10-01',
     ];
 
-    const { output: outputWithoutPrFilter } = await runBackportViaCli(options, {
+    const { output: outputWithoutPrQuery } = await runBackportViaCli(options, {
       waitForString: 'Select commit',
     });
 
-    expect(outputWithoutPrFilter).toMatchInlineSnapshot(`
+    expect(outputWithoutPrQuery).toMatchInlineSnapshot(`
       "repo: elastic/kibana | sourceBranch: main | author: sorenlouv | autoMerge: true | since: 2023-09-01T00:00:00.000Z | until: 2023-10-01T00:00:00.000Z
 
       ? Select commit
@@ -56,12 +56,12 @@ describe('date filters (dateSince, dateUntil)', () => {
       ↑↓ navigate • ⏎ select"
     `);
 
-    const { output: outputWithPrFilter } = await runBackportViaCli(
-      [...options, `--pr-filter="label:release_note:fix"`],
+    const { output: outputWithPrQuery } = await runBackportViaCli(
+      [...options, `--pr-query="label:release_note:fix"`],
       { waitForString: 'Select commit' },
     );
 
-    expect(outputWithPrFilter).toMatchInlineSnapshot(`
+    expect(outputWithPrQuery).toMatchInlineSnapshot(`
       "repo: elastic/kibana | sourceBranch: main | author: sorenlouv | autoMerge: true | since: 2023-09-01T00:00:00.000Z | until: 2023-10-01T00:00:00.000Z
 
       ? Select commit

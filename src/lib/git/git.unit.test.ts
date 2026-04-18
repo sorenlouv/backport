@@ -1443,7 +1443,7 @@ describe('commitChanges', () => {
 
 describe('addRemote', () => {
   const options = {
-    accessToken: 'myAccessToken',
+    githubToken: 'myAccessToken',
     repoOwner: 'elastic',
     repoName: 'kibana',
     gitHostname: 'github.com',

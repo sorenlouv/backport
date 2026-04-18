@@ -33,7 +33,7 @@ The remaining documentation focuses on the Backport CLI tool (not the Github Act
 npm install -g backport
 ```
 
-After installation you should add an access token to the [global config](/docs/config-file-options.md#global-config-backportconfigjson) in `~/.backport/config.json`. See the [documentation](/docs/config-file-options.md#accesstoken-required) for how the access token is generated.
+After installation you should add an access token to the [global config](/docs/config-file-options.md#global-config-backportconfigjson) in `~/.backport/config.json`. See the [documentation](/docs/config-file-options.md#githubtoken-required) for how the access token is generated.
 
 ## Quick start
 
@@ -70,7 +70,7 @@ Add personal access token to [global config](/docs/config-file-options.md#global
 ```js
 // ~/.backport/config.json
 {
-  "accessToken": "ghp_very_secret"
+  "githubToken": "ghp_very_secret"
 }
 ```
 
@@ -110,7 +110,7 @@ This tools is for anybody who is working on a codebase where they have to mainta
 - backport a commit by specifying a PR: `backport --pr 1337`
 - list and backport commits by a particular user: `backport --author john`
 - list and backport commits by a particular path: `backport --path src/plugins/chatbot`
-- list PRs filtered by a query: `backport --pr-filter label:backport-v2` (will list commits from PRs with the label "backport-v2")
+- list PRs filtered by a query: `backport --pr-query label:backport-v2` (will list commits from PRs with the label "backport-v2")
 - forward port commits: `backport --source-branch 7.x --branch master` (will forwardport from 7.x to master)
 - backport merge commits: `backport --mainline`
 

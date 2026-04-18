@@ -48,6 +48,7 @@ export async function spawnPromise(
       cwd,
 
       // ensure that git commands return English error messages
+      // eslint-disable-next-line no-restricted-syntax
       env: { ...process.env, LANG: 'C' },
       ...(isInteractive ? { stdio: 'inherit' } : undefined),
     });
@@ -101,6 +102,7 @@ export async function spawnPromise(
 
 export const spawnStream = (cmd: string, cmdArgs: ReadonlyArray<string>) => {
   return childProcess.spawn(cmd, cmdArgs, {
+    // eslint-disable-next-line no-restricted-syntax
     env: { ...process.env, LANG: 'C' },
   });
 };

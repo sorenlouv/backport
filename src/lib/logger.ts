@@ -13,14 +13,14 @@ let _interactive: boolean;
 
 export function initLogger({
   interactive,
-  accessToken,
+  githubToken,
   logFilePath,
 }: {
   interactive: boolean;
-  accessToken?: string;
+  githubToken?: string;
   logFilePath?: string;
 }) {
-  _accessToken = accessToken;
+  _accessToken = githubToken;
   _interactive = interactive;
 
   logger = winston.createLogger({
@@ -63,8 +63,8 @@ export function consoleLog(message: string) {
   }
 }
 
-export function setAccessToken(accessToken: string) {
-  _accessToken = accessToken;
+export function setAccessToken(githubToken: string) {
+  _accessToken = githubToken;
 }
 
 export function redactAccessToken(str: string) {

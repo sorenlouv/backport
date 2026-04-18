@@ -1,5 +1,6 @@
 import { relative } from 'node:path';
 import dotenv from 'dotenv';
+import { getDevAccessToken } from '../src/test/helpers/get-dev-access-token.js';
 import {
   extractQueries,
   extractQueriesMap,
@@ -63,14 +64,7 @@ async function main() {
     process.exit(0);
   }
 
-  const accessToken = process.env.ACCESS_TOKEN;
-  if (!accessToken) {
-    console.error('Error: ACCESS_TOKEN not found in .env file.');
-    console.error(
-      'Create a .env file in the project root with: ACCESS_TOKEN=ghp_...',
-    );
-    process.exit(1);
-  }
+  const accessToken = getDevAccessToken();
 
   let query: string;
 

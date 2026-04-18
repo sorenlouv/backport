@@ -49,7 +49,7 @@ const targetBranchChoiceSchema = z.union([
  * This is the single source of truth for option types and defaults.
  */
 export const configOptionsSchema = z.object({
-  accessToken: z.string().optional(),
+  githubToken: z.string().optional(),
   assignees: z.array(z.string()).default([]),
   author: z.string().nullable().optional(),
   autoAssign: z.boolean().default(false),
@@ -61,19 +61,18 @@ export const configOptionsSchema = z.object({
   backportBinary: z.string().default('backport'),
   backportBranchName: z.string().optional(),
   branchLabelMapping: z.record(z.string(), z.string()).optional(),
-  cherrypickRef: z.boolean().default(true),
-  commitConflicts: z.boolean().default(false),
-  autoResolveConflictsWithTheirs: z.boolean().default(false),
+  cherryPickRef: z.boolean().default(true),
+  conflictResolution: z.enum(['abort', 'commit', 'theirs']).default('abort'),
   commitPaths: z.array(z.string()).default([]),
   copySourcePRLabels: z
     .union([z.boolean(), z.string(), z.array(z.string())])
     .default(false),
   copySourcePRReviewers: z.boolean().default(false),
   cwd: z.string().default(process.cwd()),
-  dateSince: z.string().nullable().default(null),
-  dateUntil: z.string().nullable().default(null),
-  details: z.boolean().default(false),
-  dir: z.string().optional(),
+  since: z.string().nullable().default(null),
+  until: z.string().nullable().default(null),
+  verbose: z.boolean().default(false),
+  workdir: z.string().optional(),
   draft: z.boolean().default(false),
   dryRun: z.boolean().optional(),
   editor: z.string().optional(),
@@ -89,14 +88,14 @@ export const configOptionsSchema = z.object({
   logFilePath: z.string().optional(),
   mainline: z.number().optional(),
   ls: z.boolean().optional(),
-  maxNumber: z.number().default(10),
+  maxCount: z.number().default(10),
   multipleBranches: z.boolean().default(true),
   multipleCommits: z.boolean().default(false),
   noVerify: z.boolean().default(true),
   noUnmergedBackportsHelp: z.boolean().default(false),
   onlyMissing: z.boolean().optional(),
   prDescription: z.string().optional(),
-  prFilter: z.string().optional(),
+  prQuery: z.string().optional(),
   prTitle: z.string().optional(),
   projectConfigFile: z.string().optional(),
   publishStatusCommentOnAbort: z.boolean().default(false),
@@ -145,6 +144,9 @@ export const configFileOptionsSchema = configOptionsSchema.extend({
   version: z.boolean().optional(),
   v: z.boolean().optional(),
 
+  /** Backwards compatible alias for `accessToken` */
+  accessToken: z.string().optional(),
+
   /** @deprecated Replaced by `repoOwner` and `repoName` */
   upstream: z.string().optional(),
 
@@ -171,7 +173,7 @@ export type ConfigFileOptions = z.input<typeof configFileOptionsSchema>;
  */
 export const validOptionsSchema = configOptionsSchema
   .extend({
-    accessToken: z.string().min(1),
+    githubToken: z.string().min(1),
     author: z.string().nullable().default(null),
     repoName: z.string().min(1),
     repoOwner: z.string().min(1),

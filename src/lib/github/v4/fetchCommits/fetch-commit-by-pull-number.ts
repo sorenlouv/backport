@@ -8,7 +8,7 @@ import { fetchCommitBySha } from './fetch-commit-by-sha.js';
 import { fetchCommitsForRebaseAndMergeStrategy } from './fetch-commits-for-rebase-and-merge-strategy.js';
 
 export async function fetchCommitsByPullNumber(options: {
-  accessToken: string;
+  githubToken: string;
   branchLabelMapping?: ValidConfigOptions['branchLabelMapping'];
   githubApiBaseUrlV4?: string;
   pullNumber: number;
@@ -17,7 +17,7 @@ export async function fetchCommitsByPullNumber(options: {
   sourceBranch: string;
 }): Promise<Commit[]> {
   const {
-    accessToken,
+    githubToken,
     githubApiBaseUrlV4 = 'https://api.github.com/graphql',
     pullNumber,
     repoName,
@@ -28,10 +28,10 @@ export async function fetchCommitsByPullNumber(options: {
     query CommitByPullNumber(
       $repoOwner: String!
       $repoName: String!
-      $pullNumber: Int!
+      $pr: Int!
     ) {
       repository(owner: $repoOwner, name: $repoName) {
-        pullRequest(number: $pullNumber) {
+        pullRequest(number: $pr) {
           # used to determine if "Rebase and Merge" strategy was used
           commits(last: 1) {
             totalCount
@@ -63,9 +63,9 @@ export async function fetchCommitsByPullNumber(options: {
     }
   `);
 
-  const variables = { repoOwner, repoName, pullNumber };
+  const variables = { repoOwner, repoName, pr: pullNumber };
   const result = await graphqlRequest(
-    { accessToken, githubApiBaseUrlV4 },
+    { githubToken, githubApiBaseUrlV4 },
     query,
     variables,
   );

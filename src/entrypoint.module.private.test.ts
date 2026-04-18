@@ -7,7 +7,7 @@ import { getSandboxPath, resetSandbox } from './test/helpers/sandbox.js';
 
 vi.setConfig({ testTimeout: 10_000 });
 
-const accessToken = getDevAccessToken();
+const githubToken = getDevAccessToken();
 const sandboxPath = getSandboxPath({ filename: import.meta.filename });
 
 vi.unmock('del');
@@ -27,10 +27,10 @@ describe('entrypoint.module', () => {
             repoOwner: 'backport-org',
             repoName: 'repo-with-conflicts',
             interactive: false,
-            accessToken,
+            githubToken,
             pullNumber: 12,
             targetBranches: ['7.x'],
-            dir: sandboxPath,
+            workdir: sandboxPath,
           },
         });
       });
@@ -57,7 +57,7 @@ describe('entrypoint.module', () => {
       });
     });
 
-    describe('when running into merge conflict with autoResolveConflictsWithTheirs=true', () => {
+    describe('when running into merge conflict with conflictResolution=theirs', () => {
       let response: BackportResponse;
       beforeAll(async () => {
         response = await backportRun({
@@ -65,12 +65,12 @@ describe('entrypoint.module', () => {
             repoOwner: 'backport-org',
             repoName: 'repo-with-conflicts',
             interactive: false,
-            accessToken,
+            githubToken,
             pullNumber: 12,
             targetBranches: ['7.x'],
-            autoResolveConflictsWithTheirs: true,
+            conflictResolution: 'theirs',
             dryRun: true,
-            dir: sandboxPath,
+            workdir: sandboxPath,
           },
         });
       });
@@ -95,7 +95,7 @@ describe('entrypoint.module', () => {
       beforeAll(async () => {
         response = await backportRun({
           options: {
-            accessToken,
+            githubToken,
             branchLabelMapping: {
               [`^backport-to-(.+)$`]: '$1',
             },
@@ -103,7 +103,7 @@ describe('entrypoint.module', () => {
             pullNumber: 1,
             repoName: 'repo-with-invalid-target-branch-label',
             repoOwner: 'backport-org',
-            dir: sandboxPath,
+            workdir: sandboxPath,
           },
         });
       });
@@ -128,9 +128,9 @@ describe('entrypoint.module', () => {
             repoOwner: 'backport-org',
             repoName: 'repo-with-conflicts',
             interactive: false,
-            accessToken,
+            githubToken,
             pullNumber: 12,
-            dir: sandboxPath,
+            workdir: sandboxPath,
           },
         });
       });
@@ -152,10 +152,10 @@ describe('entrypoint.module', () => {
             repoOwner: 'backport-org',
             repoName: 'repo-with-conflicts',
             interactive: false,
-            accessToken,
+            githubToken,
             pullNumber: 8,
             dryRun: true,
-            dir: sandboxPath,
+            workdir: sandboxPath,
           },
         });
       });
@@ -212,7 +212,7 @@ describe('entrypoint.module', () => {
   describe('getCommits', () => {
     it('pullNumber', async () => {
       const commits = await getCommits({
-        accessToken: accessToken,
+        githubToken: githubToken,
         repoName: 'kibana',
         repoOwner: 'elastic',
         pullNumber: 88_188,
@@ -280,7 +280,7 @@ describe('entrypoint.module', () => {
 
     it('sha', async () => {
       const commits = await getCommits({
-        accessToken: accessToken,
+        githubToken: githubToken,
         repoName: 'kibana',
         repoOwner: 'elastic',
         sha: 'd1b348e6213c5ad48653dfaad6eaf4928b2c688b',
@@ -347,14 +347,14 @@ describe('entrypoint.module', () => {
       expect(commits).toEqual(expectedCommits);
     });
 
-    it('prFilter', async () => {
+    it('prQuery', async () => {
       const commits = await getCommits({
-        accessToken: accessToken,
+        githubToken: githubToken,
         repoName: 'kibana',
         repoOwner: 'elastic',
-        dateUntil: '2021-06-02',
-        prFilter: 'label:"Team:APM - DEPRECATED" base:master',
-        maxNumber: 3,
+        until: '2021-06-02',
+        prQuery: 'label:"Team:APM - DEPRECATED" base:master',
+        maxCount: 3,
       });
 
       const commitMessage = commits.map((commit) => {
@@ -391,12 +391,12 @@ describe('entrypoint.module', () => {
 
     it('author', async () => {
       const commits = await getCommits({
-        accessToken: accessToken,
+        githubToken: githubToken,
         repoName: 'kibana',
         repoOwner: 'elastic',
         author: 'sorenlouv',
-        dateUntil: '2021-01-01T10:00:00Z',
-        maxNumber: 3,
+        until: '2021-01-01T10:00:00Z',
+        maxCount: 3,
       });
 
       expect(commits).toMatchInlineSnapshot(`
@@ -568,13 +568,13 @@ describe('entrypoint.module', () => {
     it('throws when missing a filter', async () => {
       await expect(() =>
         getCommits({
-          accessToken: accessToken,
+          githubToken: githubToken,
           repoName: 'kibana',
           repoOwner: 'elastic',
-          maxNumber: 3,
+          maxCount: 3,
         }),
       ).rejects.toThrow(
-        'Must supply one of: `pullNumber`, `sha`, `prFilter` or `author`',
+        'Must supply one of: `pullNumber`, `sha`, `prQuery` or `author`',
       );
     });
   });

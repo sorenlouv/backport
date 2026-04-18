@@ -2,14 +2,14 @@ import type { ValidConfigOptions } from '../../../options/options.js';
 import { getDevAccessToken } from '../../../test/helpers/get-dev-access-token.js';
 import { validateTargetBranch } from './validate-target-branch.js';
 
-const accessToken = getDevAccessToken();
+const githubToken = getDevAccessToken();
 
 describe('validateTargetBranch', () => {
   it('throws when branch is invalid', async () => {
     const options = {
       repoOwner: 'backport-org',
       repoName: 'repo-with-target-branches',
-      accessToken,
+      githubToken,
     } as ValidConfigOptions;
 
     await expect(() =>
@@ -21,7 +21,7 @@ describe('validateTargetBranch', () => {
     const options = {
       repoOwner: 'backport-org',
       repoName: 'repo-with-target-branches',
-      accessToken,
+      githubToken,
     } as ValidConfigOptions;
 
     expect(

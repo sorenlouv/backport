@@ -60,7 +60,7 @@ export async function setupRepo(options: ValidConfigOptions) {
   // delete default "origin" remote to avoid confusion
   await deleteRemote(options, 'origin');
 
-  // ensure remote are setup with latest accessToken
+  // ensure remote are setup with latest githubToken
   await deleteRemote(options, options.repoForkOwner);
   await addRemote(options, options.repoForkOwner);
 

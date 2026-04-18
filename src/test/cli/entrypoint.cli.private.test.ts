@@ -4,7 +4,7 @@ import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 
 vi.setConfig({ testTimeout: 15_000 });
-const accessToken = getDevAccessToken();
+const githubToken = getDevAccessToken();
 
 describe('entrypoint cli', () => {
   it('--version', async () => {
@@ -39,7 +39,8 @@ describe('entrypoint cli', () => {
       "entrypoint.cli.ts [args]
 
       Options:
-            --accessToken, --accesstoken                    Github access token                   [string]
+            --githubToken, --token, --accessToken,          Github access token
+            --accesstoken                                                                         [string]
         -a, --all                                           List all commits                     [boolean]
             --assignee, --assign                            Add assignees to the target pull request
                                                                                                    [array]
@@ -50,21 +51,18 @@ describe('entrypoint cli', () => {
             --autoMergeMethod                               Sets auto-merge method when using
                                                             --auto-merge. Default: merge
                                                            [string] [choices: "merge", "rebase", "squash"]
-            --cherrypickRef                                 Append commit message with "(cherry picked
+            --author                                        Show commits by a specific user       [string]
+            --cherryPickRef                                 Append commit message with "(cherry picked
                                                             from commit...)                      [boolean]
-            --commitConflicts                               Commit conflicts instead of aborting. Only
-                                                            takes effect in \`non-interactive\` mode.
-                                                            Defaults to false                    [boolean]
-            --autoResolveConflictsWithTheirs                Continue past conflicts by resolving them in
-                                                            favor of the source commit. Only takes effect
-                                                            in \`non-interactive\` mode. Defaults to false
-                                                                                                 [boolean]
+            --conflictResolution                            Conflict resolution strategy. Defaults to
+                                                            "abort"
+                                                           [string] [choices: "abort", "commit", "theirs"]
             --projectConfigFile, --config                   Path to project config                [string]
             --globalConfigFile                              Path to global config                 [string]
-            --dateSince, --since                            ISO-8601 date for filtering commits   [string]
-            --dateUntil, --until                            ISO-8601 date for filtering commits   [string]
-            --dir                                           Path to temporary backport repo       [string]
-            --details                                       Show details about each commit       [boolean]
+            --since                                         ISO-8601 date for filtering commits   [string]
+            --until                                         ISO-8601 date for filtering commits   [string]
+            --workdir, --dir                                Path to temporary backport repo       [string]
+            --verbose, --details                            Show details about each commit       [boolean]
             --draft                                         Publish pull request as draft        [boolean]
             --dryRun                                        Run backport locally without pushing to Github
                                                                                                  [boolean]
@@ -84,11 +82,11 @@ describe('entrypoint cli', () => {
                                                             supplied without arguments            [number]
         -s, --signoff                                       Pass the --signoff option to the cherry-pick
                                                             command                              [boolean]
-        -n, --maxNumber, --number                           Number of commits to choose from      [number]
+        -n, --maxCount, --number                            Number of commits to choose from      [number]
             --multiple                                      Select multiple branches/commits     [boolean]
             --multipleBranches                              Backport to multiple branches        [boolean]
             --multipleCommits                               Backport multiple commits            [boolean]
-            --noCherrypickRef                               Do not append commit message with "(cherry
+            --noCherryPickRef                               Do not append commit message with "(cherry
                                                             picked from commit...)"              [boolean]
             --noStatusComment                               Don't publish status comment to Github
                                                                                                  [boolean]
@@ -102,7 +100,7 @@ describe('entrypoint cli', () => {
             --prDescription, --description                  Description to be added to pull request
                                                                                                   [string]
             --prTitle, --title                              Title of pull request                 [string]
-            --prFilter                                      Filter source pull requests by a query[string]
+        -q, --prQuery                                       Filter source pull requests by a query[string]
             --pullNumber, --pr                              Pull request to backport              [number]
             --resetAuthor                                   Set yourself as commit author        [boolean]
             --reviewer                                      Add reviewer to the target PR          [array]
@@ -145,7 +143,7 @@ describe('entrypoint cli', () => {
     );
 
     const { output } = await runBackportViaCli(
-      [`--accessToken=${accessToken}`],
+      [`--github-token=${githubToken}`],
       {
         cwd: sandboxPath,
         waitForString: 'Select commit',
@@ -177,14 +175,14 @@ describe('entrypoint cli', () => {
         '--branch=7.x',
         '--repo=backport-org/backport-e2e',
         '--author=sorenlouv',
-        `--accessToken=${accessToken}`,
-        '--max-number=6',
+        `--github-token=${githubToken}`,
+        '--max-count=20',
       ],
       { waitForString: 'Select commit' },
     );
 
     expect(output).toMatchInlineSnapshot(`
-      "repo: backport-org/backport-e2e | sourceBranch: master | author: sorenlouv | maxNumber: 6
+      "repo: backport-org/backport-e2e | sourceBranch: master | author: sorenlouv | maxCount: 20
 
       ? Select commit
       ❯ 1. Add sheep emoji (#9) 7.8
@@ -193,6 +191,14 @@ describe('entrypoint cli', () => {
         4. Add family emoji (#2) 7.x
         5. Add \`backport\` dep
         6. Merge pull request #1 from backport-org/add-heart-emoji
+        7. Add ❤️ emoji
+        8. Update .backportrc.json
+        9. Bump to 8.0.0
+        10.Add package.json
+        11.Update .backportrc.json
+        12.Create .backportrc.json
+        13.Add Odyssey by Homer
+        14.Add "Romeo and Julie" by Shakespeare
 
       ↑↓ navigate • ⏎ select"
     `);
@@ -204,15 +210,15 @@ describe('entrypoint cli', () => {
         '--branch=7.x',
         '--repo=backport-org/backport-e2e',
         '--author=sorenlouv',
-        `--accessToken=${accessToken}`,
-        '--max-number=6',
+        `--github-token=${githubToken}`,
+        '--max-count=6',
         '--source-branch=7.x',
       ],
       { waitForString: 'Select commit' },
     );
 
     expect(output).toMatchInlineSnapshot(`
-      "repo: backport-org/backport-e2e | sourceBranch: 7.x | author: sorenlouv | maxNumber: 6
+      "repo: backport-org/backport-e2e | sourceBranch: 7.x | author: sorenlouv | maxCount: 6
 
       ? Select commit
       ❯ 1. Add 🍏 emoji (#5) (#6)

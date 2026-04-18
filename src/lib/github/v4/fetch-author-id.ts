@@ -3,11 +3,11 @@ import { BackportError } from '../../backport-error.js';
 import { graphqlRequest } from './client/graphql-client.js';
 
 export async function fetchAuthorId({
-  accessToken,
+  githubToken,
   author,
   githubApiBaseUrlV4 = 'https://api.github.com/graphql',
 }: {
-  accessToken: string;
+  githubToken: string;
   author: string | null;
   githubApiBaseUrlV4?: string;
 }) {
@@ -25,7 +25,7 @@ export async function fetchAuthorId({
   const variables = { author };
 
   const result = await graphqlRequest(
-    { accessToken, githubApiBaseUrlV4 },
+    { githubToken, githubApiBaseUrlV4 },
     query,
     variables,
   );

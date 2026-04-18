@@ -8,7 +8,7 @@ import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 const ROOT = process.cwd();
 const pkg = JSON.parse(readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
 
-const accessToken = getDevAccessToken();
+const githubToken = getDevAccessToken();
 const sandboxPath = getSandboxPath({ filename: import.meta.filename });
 
 describe('CLI "backport" binary', () => {
@@ -43,8 +43,8 @@ describe('CLI "backport" binary', () => {
         binPath,
         '--repo',
         'elastic/kibana',
-        `--accessToken`,
-        accessToken,
+        `--github-token`,
+        githubToken,
         `--dir=${sandboxPath}`,
       ],
       {

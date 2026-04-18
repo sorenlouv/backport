@@ -5,8 +5,8 @@ export function mergePullRequest(
   options: ValidConfigOptions,
   pullNumber: number,
 ) {
-  const { accessToken, githubApiBaseUrlV3 } = options;
-  const octokit = createOctokitClient({ accessToken, githubApiBaseUrlV3 });
+  const { githubToken, githubApiBaseUrlV3 } = options;
+  const octokit = createOctokitClient({ githubToken, githubApiBaseUrlV3 });
 
   return retryOctokitRequest(() =>
     octokit.request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge', {
