@@ -14,6 +14,7 @@ import chalk from 'chalk';
 import { BackportError } from '../lib/backport-error.js';
 import { getGlobalConfigPath } from '../lib/env.js';
 import { getRepoOwnerAndNameFromGitRemotes } from '../lib/github/v4/get-repo-owner-and-name-from-git-remotes.js';
+import type { OptionsFromGithub } from '../lib/github/v4/getOptionsFromGithub/get-options-from-github.js';
 import { getOptionsFromGithub } from '../lib/github/v4/getOptionsFromGithub/get-options-from-github.js';
 import { setAccessToken } from '../lib/logger.js';
 import type { OptionsFromCliArgs } from './cli-args.js';
@@ -105,7 +106,7 @@ function mergeOptions({
   globalConfig: ConfigFileOptions;
   projectConfig: ConfigFileOptions;
   optionsFromModule: ConfigFileOptions;
-  optionsFromGithub: Record<string, unknown>;
+  optionsFromGithub: OptionsFromGithub;
   optionsFromCliArgs: OptionsFromCliArgs;
   githubToken: string;
   repoName: string;
@@ -113,10 +114,8 @@ function mergeOptions({
 }) {
   return {
     // defaults for author and repoForkOwner come from the authenticated user
-    author: (optionsFromGithub as { authenticatedUsername?: string })
-      .authenticatedUsername,
-    repoForkOwner: (optionsFromGithub as { authenticatedUsername?: string })
-      .authenticatedUsername,
+    author: optionsFromGithub.authenticatedUsername,
+    repoForkOwner: optionsFromGithub.authenticatedUsername,
 
     // 1. schema defaults (lowest precedence)
     ...defaultConfigOptions,

@@ -144,7 +144,7 @@ export const configFileOptionsSchema = configOptionsSchema.extend({
   version: z.boolean().optional(),
   v: z.boolean().optional(),
 
-  /** Backwards compatible alias for `accessToken` */
+  /** @deprecated Use `githubToken` instead. Kept for backward compatibility. */
   accessToken: z.string().optional(),
 
   /** @deprecated Replaced by `repoOwner` and `repoName` */
