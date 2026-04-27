@@ -33,7 +33,7 @@ The remaining documentation focuses on the Backport CLI tool (not the Github Act
 npm install -g backport
 ```
 
-After installation you should add an access token to the [global config](/docs/config-file-options.md#global-config-backportconfigjson) in `~/.backport/config.json`. See the [documentation](/docs/config-file-options.md#githubtoken-required) for how the access token is generated.
+After installation you should add an access token to the [global config](/docs/configuration.md#global-config-backportconfigjson) in `~/.backport/config.json`. See the [documentation](/docs/configuration.md#githubtoken-required) for how the access token is generated.
 
 ## Quick start
 
@@ -41,7 +41,7 @@ After installation you should add an access token to the [global config](/docs/c
 npm install backport
 ```
 
-Add a [project config](/docs/config-file-options.md#project-config-backportrcjson) to the root of your repository:
+Add a [project config](/docs/configuration.md#project-config-backportrcjson) to the root of your repository:
 
 ```js
 // .backportrc.json
@@ -65,7 +65,7 @@ Add a [project config](/docs/config-file-options.md#project-config-backportrcjso
 }
 ```
 
-Add personal access token to [global config](/docs/config-file-options.md#global-config-backportconfigjson):
+Add personal access token to [global config](/docs/configuration.md#global-config-backportconfigjson):
 
 ```js
 // ~/.backport/config.json
@@ -84,9 +84,8 @@ _This will start an interactive prompt. You can use your keyboards arrow keys to
 
 ## Documentation
 
-- [Config file options](/docs/config-file-options.md)
-- [CLI options](/docs/cli-options.md)
-- [Module API](/docs/api.md)
+- [Configuration Options](/docs/configuration.md)
+- [Programmatic API](/docs/api.md)
 
 ### What is backporting?
 

@@ -3,10 +3,10 @@ import { z } from 'zod';
 import { BackportError } from '../lib/backport-error.js';
 
 export const PROJECT_CONFIG_DOCS_LINK =
-  'https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson';
+  'https://github.com/sorenlouv/backport/blob/main/docs/configuration.md#project-config-backportrcjson';
 
 export const GLOBAL_CONFIG_DOCS_LINK =
-  'https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson';
+  'https://github.com/sorenlouv/backport/blob/main/docs/configuration.md#global-config-backportconfigjson';
 
 // ── Helper types ────────────────────────────────────────────────────
 export interface TargetBranchChoice {
