@@ -73,7 +73,7 @@ export async function getCommits(options: ValidConfigOptions) {
       throw new BackportError({
         code: 'config-error-exception',
         message:
-          'When "--interactive" is disabled either `--sha` or `--pullNumber` must be specified',
+          'When "--interactive" is disabled either `--sha` or `--pr` must be specified',
       });
     }
 
