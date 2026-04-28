@@ -20,7 +20,7 @@ export async function readConfigFile(
     });
   }
 }
-// ensure backwards compatability when config options are renamed
+// ensure backwards compatibility when config options are renamed
 export function parseConfigFile(fileContents: string): ConfigFileOptions {
   const configWithoutComments = stripJsonComments(fileContents);
   const parsed = JSON.parse(configWithoutComments) as ConfigFileOptions & {
