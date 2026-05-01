@@ -21,26 +21,9 @@ export async function readConfigFile(
   }
 }
 // ensure backwards compatibility when config options are renamed
-export function parseConfigFile(fileContents: string): ConfigFileOptions {
-  const configWithoutComments = stripJsonComments(fileContents);
-  const parsed = JSON.parse(configWithoutComments) as ConfigFileOptions & {
-    upstream?: string;
-    labels?: string[];
-    branches?: string[];
-    addOriginalReviewers?: boolean;
-    accessToken?: string;
-    commitConflicts?: boolean;
-    autoResolveConflictsWithTheirs?: boolean;
-    maxNumber?: number;
-    prFilter?: string;
-    dateSince?: string;
-    dateUntil?: string;
-    dir?: string;
-    cherrypickRef?: boolean;
-    details?: boolean;
-    all?: boolean;
-  };
-
+export function normalizeDeprecatedOptions(
+  options: ConfigFileOptions,
+): ConfigFileOptions {
   const {
     upstream,
     labels,
@@ -58,7 +41,7 @@ export function parseConfigFile(fileContents: string): ConfigFileOptions {
     details,
     all,
     ...config
-  } = parsed;
+  } = options;
 
   const { repoName, repoOwner } = parseUpstream(upstream, config);
 
@@ -112,6 +95,14 @@ export function parseConfigFile(fileContents: string): ConfigFileOptions {
     // `all` was previously merged with CLI options and meant `author: null`
     author: all ? null : config.author,
   });
+}
+
+// ensure backwards compatibility when config options are renamed
+export function parseConfigFile(fileContents: string): ConfigFileOptions {
+  const configWithoutComments = stripJsonComments(fileContents);
+  const parsed = JSON.parse(configWithoutComments);
+
+  return normalizeDeprecatedOptions(parsed);
 }
 
 function parseUpstream(

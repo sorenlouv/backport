@@ -19,6 +19,7 @@ import { getOptionsFromGithub } from '../lib/github/v4/getOptionsFromGithub/get-
 import { setAccessToken } from '../lib/logger.js';
 import type { OptionsFromCliArgs } from './cli-args.js';
 import { getOptionsFromConfigFiles } from './config/config.js';
+import { normalizeDeprecatedOptions } from './config/read-config-file.js';
 import type { ConfigFileOptions, ValidConfigOptions } from './option-schema.js';
 import {
   defaultConfigOptions,
@@ -43,13 +44,9 @@ export async function getOptions({
   });
 
   // ── Step 2: merge to resolve access token + repo ──────────────────
-  // Normalize legacy `accessToken` → `githubToken` for programmatic API
-  // consumers so that `resolveRequiredOptions` can find the token regardless
-  // of which key the caller used.
-  const normalizedModuleOptions = {
-    ...optionsFromModule,
-    githubToken: optionsFromModule.githubToken ?? optionsFromModule.accessToken,
-  };
+  // Normalize all legacy options (e.g. accessToken -> githubToken, maxNumber -> maxCount)
+  // for programmatic API consumers.
+  const normalizedModuleOptions = normalizeDeprecatedOptions(optionsFromModule);
 
   // Apply layers in precedence order (lowest → highest) to determine
   // the access token, repo owner/name needed for the GitHub API call.
