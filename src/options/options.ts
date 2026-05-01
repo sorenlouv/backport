@@ -43,13 +43,21 @@ export async function getOptions({
   });
 
   // ── Step 2: merge to resolve access token + repo ──────────────────
+  // Normalize legacy `accessToken` → `githubToken` for programmatic API
+  // consumers so that `resolveRequiredOptions` can find the token regardless
+  // of which key the caller used.
+  const normalizedModuleOptions = {
+    ...optionsFromModule,
+    githubToken: optionsFromModule.githubToken ?? optionsFromModule.accessToken,
+  };
+
   // Apply layers in precedence order (lowest → highest) to determine
   // the access token, repo owner/name needed for the GitHub API call.
   const combined = {
     ...defaultConfigOptions,
     ...globalConfig,
     ...projectConfig,
-    ...optionsFromModule,
+    ...normalizedModuleOptions,
     ...optionsFromCliArgs,
   };
 
@@ -72,7 +80,7 @@ export async function getOptions({
     defaultConfigOptions,
     globalConfig,
     projectConfig,
-    optionsFromModule,
+    optionsFromModule: normalizedModuleOptions,
     optionsFromGithub,
     optionsFromCliArgs,
     githubToken,
