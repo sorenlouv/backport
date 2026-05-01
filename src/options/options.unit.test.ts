@@ -502,6 +502,37 @@ describe('getOptions', () => {
       expect(options.workdir).toBe('/tmp/legacy');
       expect(options.verbose).toBe(true);
     });
+
+    it('should normalize legacy config file options to their modern counterparts', async () => {
+      mockProjectConfig({
+        accessToken: 'my-legacy-token',
+        branches: ['legacy-branch'],
+        targetBranchChoices: undefined, // Must unset default
+        upstream: 'legacy/repo',
+        repoOwner: undefined, // Must unset default
+        repoName: undefined, // Must unset default
+        labels: ['legacy-label'],
+        commitConflicts: true,
+        maxNumber: 42,
+        dir: '/tmp/legacy',
+        details: true,
+      } as any);
+
+      const options = await getOptions({
+        optionsFromCliArgs: {},
+        optionsFromModule: {},
+      });
+
+      expect(options.githubToken).toBe('my-legacy-token');
+      expect(options.targetBranchChoices).toEqual(['legacy-branch']);
+      expect(options.repoOwner).toBe('legacy');
+      expect(options.repoName).toBe('repo');
+      expect(options.targetPRLabels).toEqual(['legacy-label']);
+      expect(options.conflictResolution).toBe('commit');
+      expect(options.maxCount).toBe(42);
+      expect(options.workdir).toBe('/tmp/legacy');
+      expect(options.verbose).toBe(true);
+    });
   });
 });
 
