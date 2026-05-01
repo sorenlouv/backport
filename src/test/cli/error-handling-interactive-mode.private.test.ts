@@ -16,7 +16,7 @@ describe('interactive error handling', () => {
     expect(output).toMatchInlineSnapshot(`
       "Please specify a target branch: "--branch 6.1".
 
-      Read more: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson"
+      Read more: https://github.com/sorenlouv/backport/blob/main/docs/configuration.md#project-config-backportrcjson"
     `);
   });
 

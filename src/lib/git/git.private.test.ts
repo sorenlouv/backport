@@ -192,7 +192,7 @@ describe('git.private', () => {
         });
       }).rejects.toThrowErrorMatchingInlineSnapshot(`
         [BackportError: Error pushing to https://github.com/sorenlouv/repo-with-conflicts. Repository does not exist. Either fork the repository (https://github.com/sorenlouv/repo-with-conflicts) or disable fork mode via "--no-fork".
-        Read more about fork mode in the docs: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#fork]
+        Read more about fork mode in the docs: https://github.com/sorenlouv/backport/blob/main/docs/configuration.md#fork]
       `);
     });
   });
