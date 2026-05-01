@@ -158,6 +158,36 @@ export const configFileOptionsSchema = configOptionsSchema.extend({
 
   /** @deprecated Replaced by `copySourcePRReviewers` */
   addOriginalReviewers: z.boolean().optional(),
+
+  /** @deprecated Replaced by `conflictResolution: 'commit'` */
+  commitConflicts: z.boolean().optional(),
+
+  /** @deprecated Replaced by `conflictResolution: 'theirs'` */
+  autoResolveConflictsWithTheirs: z.boolean().optional(),
+
+  /** @deprecated Replaced by `maxCount` */
+  maxNumber: z.number().optional(),
+
+  /** @deprecated Replaced by `prQuery` */
+  prFilter: z.string().optional(),
+
+  /** @deprecated Replaced by `since` */
+  dateSince: z.string().optional(),
+
+  /** @deprecated Replaced by `until` */
+  dateUntil: z.string().optional(),
+
+  /** @deprecated Replaced by `workdir` */
+  dir: z.string().optional(),
+
+  /** @deprecated Replaced by `cherryPickRef` */
+  cherrypickRef: z.boolean().optional(),
+
+  /** @deprecated Replaced by `verbose` */
+  details: z.boolean().optional(),
+
+  /** @deprecated Replaced by `author: null` */
+  all: z.boolean().optional(),
 });
 
 /**

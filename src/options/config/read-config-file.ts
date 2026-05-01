@@ -29,6 +29,16 @@ export function parseConfigFile(fileContents: string): ConfigFileOptions {
     branches?: string[];
     addOriginalReviewers?: boolean;
     accessToken?: string;
+    commitConflicts?: boolean;
+    autoResolveConflictsWithTheirs?: boolean;
+    maxNumber?: number;
+    prFilter?: string;
+    dateSince?: string;
+    dateUntil?: string;
+    dir?: string;
+    cherrypickRef?: boolean;
+    details?: boolean;
+    all?: boolean;
   };
 
   const {
@@ -37,6 +47,16 @@ export function parseConfigFile(fileContents: string): ConfigFileOptions {
     branches,
     addOriginalReviewers,
     accessToken,
+    commitConflicts,
+    autoResolveConflictsWithTheirs,
+    maxNumber,
+    prFilter,
+    dateSince,
+    dateUntil,
+    dir,
+    cherrypickRef,
+    details,
+    all,
     ...config
   } = parsed;
 
@@ -60,6 +80,37 @@ export function parseConfigFile(fileContents: string): ConfigFileOptions {
 
     // `labels` was renamed `targetPRLabels`
     targetPRLabels: config.targetPRLabels ?? labels,
+
+    // `commitConflicts` and `autoResolveConflictsWithTheirs` were merged into `conflictResolution`
+    conflictResolution:
+      config.conflictResolution ??
+      (autoResolveConflictsWithTheirs
+        ? 'theirs'
+        : commitConflicts
+          ? 'commit'
+          : undefined),
+
+    // `maxNumber` was renamed `maxCount`
+    maxCount: config.maxCount ?? maxNumber,
+
+    // `prFilter` was renamed `prQuery`
+    prQuery: config.prQuery ?? prFilter,
+
+    // `dateSince`/`dateUntil` were renamed `since`/`until`
+    since: config.since ?? dateSince,
+    until: config.until ?? dateUntil,
+
+    // `dir` was renamed `workdir`
+    workdir: config.workdir ?? dir,
+
+    // `cherrypickRef` was renamed `cherryPickRef`
+    cherryPickRef: config.cherryPickRef ?? cherrypickRef,
+
+    // `details` was renamed `verbose`
+    verbose: config.verbose ?? details,
+
+    // `all` was previously merged with CLI options and meant `author: null`
+    author: all ? null : config.author,
   });
 }
 
