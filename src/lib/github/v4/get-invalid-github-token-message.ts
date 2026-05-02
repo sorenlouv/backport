@@ -3,7 +3,7 @@ import { getGlobalConfigPath } from '../../env.js';
 import { logger } from '../../logger.js';
 import type { OperationResultWithMeta } from './client/graphql-client.js';
 
-export function getInvalidAccessTokenMessage({
+export function getInvalidGithubTokenMessage({
   result,
   repoOwner,
   repoName,
@@ -50,7 +50,7 @@ export function getInvalidAccessTokenMessage({
 
         // user does not have permission to the repo
         if (!hasRequiredScopes) {
-          return `You do not have access to the repository "${repoOwner}/${repoName}". Please make sure your access token has the required scopes.\n\nRequired scopes: ${requiredScopes}\nAccess token scopes: ${grantedScopes}`;
+          return `You do not have access to the repository "${repoOwner}/${repoName}". Please make sure your GitHub token has the required scopes.\n\nRequired scopes: ${requiredScopes}\nGranted scopes: ${grantedScopes}`;
         }
 
         // repo does not exist
@@ -65,7 +65,7 @@ export function getInvalidAccessTokenMessage({
 
       // user does not have permissions
       if (repoAccessForbidden && ssoAuthUrl) {
-        return `Please follow the link to authorize your personal access token with SSO:\n\n${ssoAuthUrl}`;
+        return `Please follow the link to authorize your GitHub token with SSO:\n\n${ssoAuthUrl}`;
       }
       break;
     }

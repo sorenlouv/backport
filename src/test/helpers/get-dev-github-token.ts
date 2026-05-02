@@ -9,7 +9,7 @@ declare global {
   }
 }
 
-export function getDevAccessToken(): string {
+export function getDevGithubToken(): string {
   const githubToken = process.env.GITHUB_TOKEN;
   if (!githubToken) {
     throw new Error(

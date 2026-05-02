@@ -14,11 +14,11 @@ import {
 } from '../../../remote-config.js';
 import type { OperationResultWithMeta } from '../client/graphql-client.js';
 import { graphqlRequest } from '../client/graphql-client.js';
-import { getInvalidAccessTokenMessage } from '../get-invalid-access-token-message.js';
+import { getInvalidGithubTokenMessage } from '../get-invalid-github-token-message.js';
 
 // fetches the default source branch for the repo (normally "master")
 // startup checks:
-// - verify the access token
+// - verify the github token
 // - ensure no branch named "backport" exists
 
 export type OptionsFromGithub = Awaited<
@@ -72,7 +72,7 @@ export async function getOptionsFromGithub(options: {
   );
 
   if (result.error) {
-    const isInvalidAccessTokenMessage = getInvalidAccessTokenMessage({
+    const invalidGithubTokenMessage = getInvalidGithubTokenMessage({
       result,
       repoName,
       repoOwner,
@@ -80,10 +80,10 @@ export async function getOptionsFromGithub(options: {
       githubToken,
     });
 
-    if (isInvalidAccessTokenMessage) {
+    if (invalidGithubTokenMessage) {
       throw new BackportError({
         code: 'invalid-credentials-exception',
-        message: isInvalidAccessTokenMessage,
+        message: invalidGithubTokenMessage,
       });
     }
 
@@ -126,7 +126,7 @@ export async function getOptionsFromGithub(options: {
     throw new BackportError({
       code: 'config-error-exception',
       message:
-        'Failed to fetch options from GitHub. Please check your access token and repository settings.',
+        'Failed to fetch options from GitHub. Please check your GitHub token and repository settings.',
     });
   }
 
@@ -209,17 +209,17 @@ function getInsufficientPermissionsErrorMessage(
     return;
   }
 
-  const accessTokenScopes = new Set(
+  const tokenScopes = new Set(
     accessScopesHeader.split(',').map((scope) => scope.trim()),
   );
 
   const isRepoPrivate = res.data?.repository?.isPrivate;
 
-  if (isRepoPrivate && !accessTokenScopes.has('repo')) {
-    return `You must grant the "repo" scope to your personal access token`;
+  if (isRepoPrivate && !tokenScopes.has('repo')) {
+    return `You must grant the "repo" scope to your GitHub token`;
   }
 
-  if (!accessTokenScopes.has('repo') && !accessTokenScopes.has('public_repo')) {
-    return `You must grant the "repo" or "public_repo" scope to your personal access token`;
+  if (!tokenScopes.has('repo') && !tokenScopes.has('public_repo')) {
+    return `You must grant the "repo" or "public_repo" scope to your GitHub token`;
   }
 }

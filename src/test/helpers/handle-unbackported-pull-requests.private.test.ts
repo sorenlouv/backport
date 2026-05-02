@@ -1,9 +1,9 @@
 import type { Commit, ErrorResult } from '../../entrypoint.api.js';
 import { getCommits, backportRun } from '../../entrypoint.api.js';
-import { getDevAccessToken } from './get-dev-access-token.js';
+import { getDevGithubToken } from './get-dev-github-token.js';
 import { getSandboxPath, resetSandbox } from './sandbox.js';
 
-const githubToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 vi.unmock('find-up');
 vi.setConfig({ testTimeout: 20_000 });
 

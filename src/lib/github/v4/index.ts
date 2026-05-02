@@ -23,7 +23,7 @@ export { disablePullRequestAutoMerge } from './disable-pull-request-auto-merge.j
 
 // Auth & config
 export { fetchAuthorId } from './fetch-author-id.js';
-export { getInvalidAccessTokenMessage } from './get-invalid-access-token-message.js';
+export { getInvalidGithubTokenMessage } from './get-invalid-github-token-message.js';
 export { getRepoOwnerAndNameFromGitRemotes } from './get-repo-owner-and-name-from-git-remotes.js';
 export { getOptionsFromGithub } from './getOptionsFromGithub/get-options-from-github.js';
 export type { OptionsFromGithub } from './getOptionsFromGithub/get-options-from-github.js';

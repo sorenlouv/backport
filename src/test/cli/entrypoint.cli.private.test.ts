@@ -1,10 +1,10 @@
 import { exec } from '../helpers/child-process-helper.js';
-import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../helpers/get-dev-github-token.js';
 import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 
 vi.setConfig({ testTimeout: 15_000 });
-const githubToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 
 describe('entrypoint cli', () => {
   it('--version', async () => {
@@ -39,7 +39,7 @@ describe('entrypoint cli', () => {
       "entrypoint.cli.ts [args]
 
       Options:
-            --githubToken, --token, --accessToken,          Github access token
+            --githubToken, --token, --accessToken,          GitHub token
             --accesstoken                                                                         [string]
         -a, --all                                           List all commits                     [boolean]
             --assignee, --assign                            Add assignees to the target pull request

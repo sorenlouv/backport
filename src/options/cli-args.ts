@@ -59,7 +59,7 @@ function parseYargsOptions(processArgs: readonly string[]) {
     // ── GitHub & Authentication ──────────────────────────────────────
     .option('githubToken', {
       alias: ['token', 'accessToken', 'accesstoken'],
-      description: 'Github access token',
+      description: 'GitHub token',
       type: 'string',
     })
 

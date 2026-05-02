@@ -1,8 +1,8 @@
-import { getDevAccessToken } from '../../../../test/helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../../../../test/helpers/get-dev-github-token.js';
 import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
 import { fetchPullRequestsBySearchQuery } from './fetch-pull-requests-by-search-query.js';
 
-const githubToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 
 describe('fetchPullRequestsBySearchQuery', () => {
   describe('when filter does not match any PRs', () => {

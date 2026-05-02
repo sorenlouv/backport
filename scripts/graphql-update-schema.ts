@@ -1,10 +1,10 @@
 import { writeFileSync } from 'node:fs';
 import { buildClientSchema, getIntrospectionQuery, printSchema } from 'graphql';
-import { getDevAccessToken } from '../src/test/helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../src/test/helpers/get-dev-github-token.js';
 import { SCHEMA_PATH } from './graphql-extract.js';
 
 async function main() {
-  const accessToken = getDevAccessToken();
+  const githubToken = getDevGithubToken();
 
   console.log('Fetching GitHub GraphQL schema via introspection...');
 
@@ -12,7 +12,7 @@ async function main() {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `bearer ${accessToken}`,
+      Authorization: `bearer ${githubToken}`,
     },
     body: JSON.stringify({ query: getIntrospectionQuery() }),
   });

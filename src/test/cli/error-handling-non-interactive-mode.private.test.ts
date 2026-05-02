@@ -3,15 +3,15 @@ import path from 'node:path';
 import type { BackportResponse } from '../../backport-run.js';
 import type { ConfigFileOptions } from '../../entrypoint.api.js';
 import type { ErrorResult } from '../../lib/run-sequentially.js';
-import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../helpers/get-dev-github-token.js';
 import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 
-const githubToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 vi.setConfig({ testTimeout: 15_000 });
 
 describe('non interactive (json) error handling', () => {
-  it(`when access token is missing`, async () => {
+  it(`when github token is missing`, async () => {
     const configFilePath = await createConfigFile({ editor: 'code' });
     const { output, code } = await runBackportViaCli([
       '--json',

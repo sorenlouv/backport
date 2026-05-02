@@ -1,6 +1,6 @@
-import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../helpers/get-dev-github-token.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
-const githubToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 
 describe('repo-with-backportrc-removed (missing .backportrc.json config file)', () => {
   it('lists commits', async () => {

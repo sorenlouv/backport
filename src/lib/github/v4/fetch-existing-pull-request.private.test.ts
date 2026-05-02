@@ -1,8 +1,8 @@
 import type { ValidConfigOptions } from '../../../options/options.js';
-import { getDevAccessToken } from '../../../test/helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../../../test/helpers/get-dev-github-token.js';
 import { fetchExistingPullRequest } from './fetch-existing-pull-request.js';
 
-const githubToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 
 describe('fetchExistingPullRequest', () => {
   describe('when PR does not exist', () => {

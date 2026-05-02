@@ -1,9 +1,9 @@
 import { Octokit } from '@octokit/rest';
 import type { SuccessResult } from '../../entrypoint.api.js';
-import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../helpers/get-dev-github-token.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 
-const githubToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 const octokit = new Octokit({ auth: githubToken });
 
 vi.setConfig({ testTimeout: 25_000, hookTimeout: 60_000 });

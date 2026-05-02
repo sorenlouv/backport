@@ -66,7 +66,7 @@ export async function createGlobalConfigIfNotExist(
 
 function getConfigTemplate() {
   return `{
-    // Create a personal access token here: https://github.com/settings/tokens
+    // Create a GitHub token here: https://github.com/settings/tokens
     // Must have "Repo: Full control of private repositories"
     "githubToken": ""
   }`;

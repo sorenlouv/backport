@@ -32,7 +32,7 @@ export async function setupRepo(options: ValidConfigOptions) {
       const remoteRepoPath = getRemoteUrl(options, options.repoOwner);
       const sourcePath = localRepoPath ?? remoteRepoPath;
 
-      // show the full path for local repos, but only the host name for remote repos (to avoid showing the access token)
+      // show the full path for local repos, but only the host name for remote repos (to avoid showing the github token)
       const sourcePathHumanReadable = localRepoPath
         ? sourcePath
         : options.gitHostname;

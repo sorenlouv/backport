@@ -1,5 +1,5 @@
 import { graphql } from '../../../../graphql/generated/index.js';
-import { getDevAccessToken } from '../../../../test/helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../../../../test/helpers/get-dev-github-token.js';
 import type {
   GitHubGraphQLError,
   OperationResultWithMeta,
@@ -25,7 +25,7 @@ const getRepoQuery = graphql(`
 describe('graphqlClient', () => {
   let result: OperationResultWithMeta;
 
-  describe('when the access token is invalid', () => {
+  describe('when the github token is invalid', () => {
     beforeAll(async () => {
       result = await graphqlRequest(
         {
@@ -50,8 +50,8 @@ describe('graphqlClient', () => {
     });
   });
 
-  describe('when the access token is valid', () => {
-    const githubToken = getDevAccessToken();
+  describe('when the github token is valid', () => {
+    const githubToken = getDevGithubToken();
     beforeAll(async () => {
       result = await graphqlRequest(
         {
@@ -73,7 +73,7 @@ describe('graphqlClient', () => {
   });
 
   describe('when repo is not found', () => {
-    const githubToken = getDevAccessToken();
+    const githubToken = getDevGithubToken();
     beforeAll(async () => {
       result = await graphqlRequest(
         {

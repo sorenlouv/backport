@@ -1,8 +1,8 @@
-import { getDevAccessToken } from '../../../../test/helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../../../../test/helpers/get-dev-github-token.js';
 import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
 import { fetchCommitsByPullNumber } from './fetch-commit-by-pull-number.js';
 
-const githubToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 
 describe('fetchCommitByPullNumber', () => {
   describe('when PR was merged', () => {

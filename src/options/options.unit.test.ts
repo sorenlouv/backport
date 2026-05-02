@@ -186,11 +186,11 @@ describe('getOptions', () => {
     expect(options.autoFixConflicts).toBe(myFn);
   });
 
-  it('should call setAccessToken', async () => {
+  it('should call setGithubToken', async () => {
     mockGithubConfigOptions({});
     await getOptions({ optionsFromCliArgs: {}, optionsFromModule: {} });
 
-    expect(logger.setAccessToken).toHaveBeenCalledTimes(1);
+    expect(logger.setGithubToken).toHaveBeenCalledTimes(1);
   });
 
   it('should return options', async () => {
@@ -396,7 +396,7 @@ describe('getOptions', () => {
     });
   });
 
-  describe('access token scopes', () => {
+  describe('github token scopes', () => {
     it('throw if no scopes are granted', async () => {
       mockGithubConfigOptions({ headers: { 'x-oauth-scopes': '' } });
 
@@ -406,7 +406,7 @@ describe('getOptions', () => {
           optionsFromModule: {},
         }),
       ).rejects.toThrow(
-        'You must grant the "repo" or "public_repo" scope to your personal access token',
+        'You must grant the "repo" or "public_repo" scope to your GitHub token',
       );
     });
 
@@ -421,9 +421,7 @@ describe('getOptions', () => {
           optionsFromCliArgs: {},
           optionsFromModule: {},
         }),
-      ).rejects.toThrow(
-        'You must grant the "repo" scope to your personal access token',
-      );
+      ).rejects.toThrow('You must grant the "repo" scope to your GitHub token');
     });
 
     it('should not throw if `public_repo` scope is granted and the repo is public', async () => {

@@ -1,10 +1,10 @@
 import { Octokit } from '@octokit/rest';
-import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../helpers/get-dev-github-token.js';
 import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 
 vi.setConfig({ testTimeout: 25_000 });
-const githubToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 const octokit = new Octokit({ auth: githubToken });
 
 describe('Programatically add new commits', () => {

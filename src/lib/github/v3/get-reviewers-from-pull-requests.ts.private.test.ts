@@ -1,7 +1,7 @@
-import { getDevAccessToken } from '../../../test/helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../../../test/helpers/get-dev-github-token.js';
 import { getReviewersFromPullRequests } from './get-reviewers-from-pull-requests.js';
 
-const githubToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 
 describe('getReviewersFromPullRequests', () => {
   it('returns reviewers', async () => {

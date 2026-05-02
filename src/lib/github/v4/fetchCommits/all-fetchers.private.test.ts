@@ -1,11 +1,11 @@
-import { getDevAccessToken } from '../../../../test/helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../../../../test/helpers/get-dev-github-token.js';
 import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
 import { fetchCommitsByPullNumber } from './fetch-commit-by-pull-number.js';
 import { fetchCommitBySha } from './fetch-commit-by-sha.js';
 import { fetchCommitsByAuthor } from './fetch-commits-by-author.js';
 import { fetchPullRequestsBySearchQuery } from './fetch-pull-requests-by-search-query.js';
 
-const githubToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 vi.setConfig({ testTimeout: 15_000 });
 
 describe('allFetchers', () => {

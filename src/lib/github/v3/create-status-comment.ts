@@ -1,7 +1,7 @@
 import type { BackportResponse } from '../../../backport-run.js';
 import type { ValidConfigOptions } from '../../../options/options.js';
 import { getPackageVersion } from '../../../utils/package-version.js';
-import { logger, redactAccessToken } from '../../logger.js';
+import { logger, redactGithubToken } from '../../logger.js';
 import { getFirstLine } from '../commit-formatters.js';
 import { createOctokitClient, retryOctokitRequest } from './octokit-client.js';
 
@@ -38,7 +38,7 @@ export async function createStatusComment({
               owner: repoOwner,
               repo: repoName,
               issue_number: commit.sourcePullRequest!.number,
-              body: redactAccessToken(body),
+              body: redactGithubToken(body),
             }),
           );
         }),

@@ -17,7 +17,7 @@ import { getGlobalConfigPath } from '../lib/env.js';
 import { getRepoOwnerAndNameFromGitRemotes } from '../lib/github/v4/get-repo-owner-and-name-from-git-remotes.js';
 import type { OptionsFromGithub } from '../lib/github/v4/getOptionsFromGithub/get-options-from-github.js';
 import { getOptionsFromGithub } from '../lib/github/v4/getOptionsFromGithub/get-options-from-github.js';
-import { setAccessToken } from '../lib/logger.js';
+import { setGithubToken } from '../lib/logger.js';
 import type { OptionsFromCliArgs } from './cli-args.js';
 import { getOptionsFromConfigFiles } from './config/config.js';
 import { normalizeDeprecatedOptions } from './config/read-config-file.js';
@@ -44,13 +44,16 @@ export async function getOptions({
     optionsFromModule,
   });
 
-  // ── Step 2: merge to resolve access token + repo ──────────────────
+  // ── Step 2: merge to resolve github token + repo ──────────────────
   // Normalize all legacy options (e.g. accessToken -> githubToken, maxNumber -> maxCount)
-  // for programmatic API consumers.
+  // from every source so that downstream code only sees canonical names.
+  //
+  // First partial merge resolves just enough (global + project + module + CLI) to obtain
+  // the github token, repo owner/name needed for the GitHub API call.
   const normalizedModuleOptions = normalizeDeprecatedOptions(optionsFromModule);
 
   // Apply layers in precedence order (lowest → highest) to determine
-  // the access token, repo owner/name needed for the GitHub API call.
+  // the github token, repo owner/name needed for the GitHub API call.
   const combined = {
     ...defaultConfigOptions,
     ...globalConfig,
@@ -63,7 +66,7 @@ export async function getOptions({
     await resolveRequiredOptions(combined);
 
   // update logger
-  setAccessToken(githubToken);
+  setGithubToken(githubToken);
 
   // ── Step 3: fetch options from GitHub ──────────────────────────────
   const optionsFromGithub = await getOptionsFromGithub({
@@ -159,7 +162,7 @@ function mergeOptions({
 }
 
 /**
- * Resolves access token, repo owner, and repo name — the minimum required
+ * Resolves github token, repo owner, and repo name — the minimum required
  * options that must be available before we can call the GitHub API.
  */
 async function resolveRequiredOptions(combined: {
@@ -176,7 +179,7 @@ async function resolveRequiredOptions(combined: {
     return { githubToken, repoName, repoOwner };
   }
 
-  // require access token
+  // require github token
   if (!githubToken) {
     const globalConfigPath = getGlobalConfigPath(globalConfigFile);
     throw new BackportError({

@@ -1,8 +1,8 @@
 import type { ValidConfigOptions } from '../../../options/options.js';
-import { getDevAccessToken } from '../../../test/helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../../../test/helpers/get-dev-github-token.js';
 import { fetchAuthorId } from './fetch-author-id.js';
 
-const githubToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 
 describe('fetchAuthorId', () => {
   describe('author = null', () => {

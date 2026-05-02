@@ -1,7 +1,7 @@
-import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../helpers/get-dev-github-token.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 
-const githubToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 vi.setConfig({ testTimeout: 15_000 });
 
 describe('date filters (since, until)', () => {

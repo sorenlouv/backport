@@ -2,7 +2,7 @@ import { Octokit } from '@octokit/rest';
 import type { BackportResponse, SuccessResult } from '../../entrypoint.api.js';
 import { backportRun } from '../../entrypoint.api.js';
 import { getShortSha } from '../../lib/github/commit-formatters.js';
-import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../helpers/get-dev-github-token.js';
 import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 
 vi.unmock('find-up');
@@ -11,7 +11,7 @@ vi.unmock('make-dir');
 
 vi.setConfig({ testTimeout: 25_000, hookTimeout: 25_000 });
 
-const githubToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 const octokit = new Octokit({ auth: githubToken });
 const sandboxPath = getSandboxPath({ filename: import.meta.filename });
 

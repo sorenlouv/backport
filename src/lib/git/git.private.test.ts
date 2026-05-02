@@ -3,7 +3,7 @@ import path from 'node:path';
 import type { Commit } from '../../entrypoint.api.js';
 import type { ValidConfigOptions } from '../../options/options.js';
 import { exec } from '../../test/helpers/child-process-helper.js';
-import { getDevAccessToken } from '../../test/helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../../test/helpers/get-dev-github-token.js';
 import { getSandboxPath, resetSandbox } from '../../test/helpers/sandbox.js';
 import * as childProcess from '../child-process-promisified.js';
 import { getShortSha } from '../github/commit-formatters.js';
@@ -25,7 +25,7 @@ import {
 } from './index.js';
 
 const commitAuthor = { name: 'Soren L', email: 'soren@mail.dk' };
-const githubToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 
 describe('git.private', () => {
   describe('getIsCommitInBranch', () => {

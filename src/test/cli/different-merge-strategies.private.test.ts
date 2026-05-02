@@ -1,10 +1,10 @@
 import fs from 'node:fs/promises';
 import { exec } from '../helpers/child-process-helper.js';
-import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../helpers/get-dev-github-token.js';
 import { removeLinesBreaksInConflictingFiles } from '../helpers/replace-string-and-linebreaks.js';
 import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
-const githubToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 
 vi.setConfig({ testTimeout: 40_000, hookTimeout: 40_000 });
 

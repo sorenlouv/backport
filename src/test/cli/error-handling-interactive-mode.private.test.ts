@@ -1,9 +1,9 @@
-import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../helpers/get-dev-github-token.js';
 import { removeLinesBreaksInConflictingFiles } from '../helpers/replace-string-and-linebreaks.js';
 import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 
-const githubToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 vi.setConfig({ testTimeout: 15_000 });
 
 describe('interactive error handling', () => {
@@ -28,7 +28,7 @@ describe('interactive error handling', () => {
     `);
   });
 
-  it('when access token is invalid', async () => {
+  it('when github token is invalid', async () => {
     const { output } = await runBackportViaCli([
       '--branch=foo',
       '--repo=foo/bar',

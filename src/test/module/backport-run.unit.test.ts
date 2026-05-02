@@ -197,7 +197,7 @@ describe('backportRun integration', () => {
     expect(pushCall).toBeDefined();
   });
 
-  it('returns failure when access token is missing', async () => {
+  it('returns failure when github token is missing', async () => {
     mockConfigFiles({
       projectConfig: {
         repoOwner: 'my-org',
@@ -304,7 +304,7 @@ describe('backportRun integration', () => {
       expect(process.exitCode).toBe(1);
     });
 
-    it('sets process.exitCode = 1 for missing access token', async () => {
+    it('sets process.exitCode = 1 for missing github token', async () => {
       mockConfigFiles({
         projectConfig: {
           repoOwner: 'my-org',

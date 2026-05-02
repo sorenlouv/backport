@@ -202,7 +202,7 @@ export type ConfigFileOptions = z.input<typeof configFileOptionsSchema>;
 // ── Valid (fully resolved) options schema ───────────────────────────
 /**
  * Schema for the final validated options that include required fields
- * resolved during startup (access token, repo info, authenticated user).
+ * resolved during startup (github token, repo info, authenticated user).
  */
 export const validOptionsSchema = configOptionsSchema
   .extend({

@@ -53,7 +53,7 @@ describe('config', () => {
       });
     });
 
-    it('should load config using legacy accessToken', async () => {
+    it('should load config using legacy accessToken (backward compat)', async () => {
       vi.spyOn(fs, 'chmod').mockResolvedValueOnce();
       vi.spyOn(fs, 'writeFile').mockResolvedValueOnce();
       vi.spyOn(fs, 'readFile').mockResolvedValueOnce(

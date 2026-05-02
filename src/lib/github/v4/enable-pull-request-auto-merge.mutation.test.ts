@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 import { Octokit } from '@octokit/rest';
 import type { ValidConfigOptions } from '../../../options/options.js';
-import { getDevAccessToken } from '../../../test/helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../../../test/helpers/get-dev-github-token.js';
 import type { BackportError } from '../../backport-error.js';
 import type { PullRequestPayload } from '../v3/create-pull-request/create-pull-request.js';
 import { createPullRequest } from '../v3/create-pull-request/create-pull-request.js';
@@ -15,7 +15,7 @@ import { fetchPullRequestAutoMergeMethod } from './fetch-pull-request-auto-merge
 const TEST_REPO_OWNER = 'backport-org';
 const TEST_REPO_NAME = 'repo-with-auto-merge-enabled';
 const INITIAL_SHA = '70aa879411e95b6662f8ddcb80a944fc4444579f';
-const githubToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 
 vi.setConfig({ testTimeout: 20_000 });
 

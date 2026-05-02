@@ -1,15 +1,15 @@
 import os from 'node:os';
-import { getDevAccessToken } from '../../../../test/helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../../../../test/helpers/get-dev-github-token.js';
 import { getOptionsFromGithub } from './get-options-from-github.js';
 
-const githubToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 
 describe('getOptionsFromGithub', () => {
   beforeAll(() => {
     vi.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
   });
 
-  describe('access token', () => {
+  describe('github token', () => {
     describe('is invalid', () => {
       it('throws an error', async () => {
         const combinedOptions = {
