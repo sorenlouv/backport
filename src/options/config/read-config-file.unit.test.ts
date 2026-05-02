@@ -49,7 +49,6 @@ describe('parseConfigFile', () => {
   describe('conflictResolution', () => {
     it('should map commitConflicts to conflictResolution: commit', () => {
       const config = parseConfigFile('{ "commitConflicts": true }');
-      // @ts-expect-error
       expect(config.conflictResolution).toEqual('commit');
       expect('commitConflicts' in config).toBe(false);
     });
@@ -58,7 +57,6 @@ describe('parseConfigFile', () => {
       const config = parseConfigFile(
         '{ "autoResolveConflictsWithTheirs": true }',
       );
-      // @ts-expect-error
       expect(config.conflictResolution).toEqual('theirs');
       expect('autoResolveConflictsWithTheirs' in config).toBe(false);
     });
@@ -67,7 +65,6 @@ describe('parseConfigFile', () => {
       const config = parseConfigFile(
         '{ "autoResolveConflictsWithTheirs": true, "commitConflicts": true }',
       );
-      // @ts-expect-error
       expect(config.conflictResolution).toEqual('theirs');
     });
 
@@ -75,7 +72,6 @@ describe('parseConfigFile', () => {
       const config = parseConfigFile(
         '{ "conflictResolution": "abort", "commitConflicts": true }',
       );
-      // @ts-expect-error
       expect(config.conflictResolution).toEqual('abort');
     });
   });
@@ -83,14 +79,12 @@ describe('parseConfigFile', () => {
   describe('renamed cli arguments', () => {
     it('should map maxNumber to maxCount', () => {
       const config = parseConfigFile('{ "maxNumber": 20 }');
-      // @ts-expect-error
       expect(config.maxCount).toEqual(20);
       expect('maxNumber' in config).toBe(false);
     });
 
     it('should map prFilter to prQuery', () => {
       const config = parseConfigFile('{ "prFilter": "is:pr" }');
-      // @ts-expect-error
       expect(config.prQuery).toEqual('is:pr');
       expect('prFilter' in config).toBe(false);
     });
@@ -99,9 +93,7 @@ describe('parseConfigFile', () => {
       const config = parseConfigFile(
         '{ "dateSince": "2020", "dateUntil": "2021" }',
       );
-      // @ts-expect-error
       expect(config.since).toEqual('2020');
-      // @ts-expect-error
       expect(config.until).toEqual('2021');
       expect('dateSince' in config).toBe(false);
       expect('dateUntil' in config).toBe(false);
@@ -109,21 +101,18 @@ describe('parseConfigFile', () => {
 
     it('should map dir to workdir', () => {
       const config = parseConfigFile('{ "dir": "/tmp" }');
-      // @ts-expect-error
       expect(config.workdir).toEqual('/tmp');
       expect('dir' in config).toBe(false);
     });
 
     it('should map cherrypickRef to cherryPickRef', () => {
       const config = parseConfigFile('{ "cherrypickRef": false }');
-      // @ts-expect-error
       expect(config.cherryPickRef).toEqual(false);
       expect('cherrypickRef' in config).toBe(false);
     });
 
     it('should map details to verbose', () => {
       const config = parseConfigFile('{ "details": true }');
-      // @ts-expect-error
       expect(config.verbose).toEqual(true);
       expect('details' in config).toBe(false);
     });
