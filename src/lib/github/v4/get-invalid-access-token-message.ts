@@ -75,7 +75,7 @@ export function getInvalidAccessTokenMessage({
       const redactedToken = githubToken
         ? `${githubToken.slice(0, 4)}...${githubToken.slice(-4)}`
         : 'undefined';
-      return `The GitHub token "${redactedToken}" is invalid. Please make sure your global config (${globalConfigPath}) contains a valid token:\n\n{\n  "githubToken": "<valid_token>"\n}`;
+      return `The GitHub token "${redactedToken}" is invalid. Please make sure your global config (${globalConfigPath}) contains a valid token:\n\n{ "githubToken": "<valid_token>" }`;
     }
 
     case undefined: {
