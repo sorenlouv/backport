@@ -103,6 +103,16 @@ Copy labels from the source PR to the target PR. Can be `true` to copy all, or a
 **CLI**: `--copySourcePRReviewers`  
 Copy reviewers from the source PR to the target PR. (Default: `false`)
 
+### `draft`
+
+**CLI**: `--draft`  
+Publish the backport pull request as a draft. (Default: `false`)
+
+### `dryRun`
+
+**CLI**: `--dry-run`  
+Run the backport locally without pushing to GitHub or creating a pull request.
+
 ### `editor`
 
 **CLI**: `--editor`  
@@ -112,6 +122,11 @@ Editor (e.g., `code`) to open and resolve conflicts.
 
 **CLI**: `--fork`, `--no-fork` (to disable)  
 Create backport branch in the user's fork (`true`) or in the origin repository (`false`). (Default: `true`)
+
+### `gitAuthorName` / `gitAuthorEmail`
+
+**CLI**: `--git-author-name`, `--git-author-email`  
+Override the commit author name and/or email for the backported commits.
 
 ### `gitHostname`
 
@@ -174,6 +189,11 @@ Allow selecting multiple commits to backport. (Default: `false`)
 
 **CLI**: `--no-verify`, `--verify` (to enforce)  
 Bypass the pre-commit and commit-msg hooks. (Default: `true`)
+
+### `onlyMissing`
+
+**CLI**: `--only-missing`  
+Only list commits with missing or unmerged backports.
 
 ### `prDescription`
 
@@ -246,6 +266,11 @@ Pass the `--signoff` option to the `git cherry-pick` command. (Default: `false`)
 **CLI**: `--since`, `--until`  
 Only display commits newer/older than the specified ISO-8601 date.
 
+### `skipRemoteConfig`
+
+**CLI**: `--skip-remote-config`  
+Use the local `.backportrc.json` config instead of loading from the repository's default branch on GitHub.
+
 ### `sourceBranch`
 
 **CLI**: `--source-branch`  
@@ -278,6 +303,11 @@ Overrides `targetBranchChoices` and bypasses the branch selection prompt, backpo
 
 **CLI**: `--target-pr-label`, `--label`, `-l`  
 Labels that will be added to the target (backport) pull request.
+
+### `verbose`
+
+**CLI**: `--verbose`  
+Show additional details about each commit in the interactive prompt. (Default: `false`)
 
 ### `workdir`
 

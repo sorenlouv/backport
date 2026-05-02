@@ -11,6 +11,7 @@
  *   6. CLI args (highest precedence)
  */
 import chalk from 'chalk';
+import { ZodError } from 'zod';
 import { BackportError } from '../lib/backport-error.js';
 import { getGlobalConfigPath } from '../lib/env.js';
 import { getRepoOwnerAndNameFromGitRemotes } from '../lib/github/v4/get-repo-owner-and-name-from-git-remotes.js';
@@ -89,7 +90,17 @@ export async function getOptions({
   throwForEmptyStringOptions(merged);
 
   // ── Step 6: validate via Zod ──────────────────────────────────────
-  return validOptionsSchema.parse(merged) as ValidConfigOptions;
+  try {
+    return validOptionsSchema.parse(merged) as ValidConfigOptions;
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new BackportError({
+        code: 'config-error-exception',
+        message: error.issues.map((i) => i.message).join('\n'),
+      });
+    }
+    throw error;
+  }
 }
 
 /**

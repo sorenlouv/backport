@@ -43,6 +43,35 @@ export function normalizeDeprecatedOptions(
     ...config
   } = options;
 
+  // Warn about deprecated options that are actually present
+  const deprecatedMappings: Array<[unknown, string, string]> = [
+    [accessToken, 'accessToken', 'githubToken'],
+    [branches, 'branches', 'targetBranchChoices'],
+    [upstream, 'upstream', 'repoOwner/repoName'],
+    [addOriginalReviewers, 'addOriginalReviewers', 'copySourcePRReviewers'],
+    [labels, 'labels', 'targetPRLabels'],
+    [commitConflicts, 'commitConflicts', 'conflictResolution'],
+    [
+      autoResolveConflictsWithTheirs,
+      'autoResolveConflictsWithTheirs',
+      'conflictResolution',
+    ],
+    [maxNumber, 'maxNumber', 'maxCount'],
+    [prFilter, 'prFilter', 'prQuery'],
+    [dateSince, 'dateSince', 'since'],
+    [dateUntil, 'dateUntil', 'until'],
+    [dir, 'dir', 'workdir'],
+    [cherrypickRef, 'cherrypickRef', 'cherryPickRef'],
+    [details, 'details', 'verbose'],
+    [all, 'all', 'author'],
+  ];
+
+  for (const [value, oldKey, newKey] of deprecatedMappings) {
+    if (value !== undefined) {
+      logger.warn(`"${oldKey}" is deprecated. Use "${newKey}" instead.`);
+    }
+  }
+
   const { repoName, repoOwner } = parseUpstream(upstream, config);
 
   return excludeUndefined({

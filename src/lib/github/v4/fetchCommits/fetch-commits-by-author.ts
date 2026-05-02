@@ -97,7 +97,7 @@ async function fetchByCommitPath({
     if (result.statusCode === 502 && maxCount > 50) {
       throw new BackportError({
         code: 'github-api-exception',
-        message: `The GitHub API returned a 502 error. Try reducing the number of commits to display: "--max-number 20"`,
+        message: `The GitHub API returned a 502 error. Try reducing the number of commits to display: "--max-count 20" (or "-n 20")`,
       });
     }
 

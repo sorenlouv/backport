@@ -1,6 +1,5 @@
 import type winston from 'winston';
 import { z } from 'zod';
-import { BackportError } from '../lib/backport-error.js';
 
 export const PROJECT_CONFIG_DOCS_LINK =
   'https://github.com/sorenlouv/backport/blob/main/docs/configuration.md#project-config-backportrcjson';
@@ -137,6 +136,10 @@ export const defaultConfigOptions: ResolvedConfigOptions =
 /**
  * Extended schema for JSON config files that might contain deprecated fields.
  * The deprecated fields are stripped during parsing in `read-config-file.ts`.
+ *
+ * IMPORTANT: When adding or removing deprecated fields here, also update
+ * `normalizeDeprecatedOptions()` in `read-config-file.ts` — it handles the
+ * runtime mapping from old keys to new keys.
  */
 export const configFileOptionsSchema = configOptionsSchema.extend({
   // yargs options (allowed in configs for passthrough)
@@ -213,7 +216,7 @@ export const validOptionsSchema = configOptionsSchema
     isRepoPrivate: z.boolean().optional(),
   })
   // Require target branches unless running in list-only mode (--ls)
-  .superRefine((data) => {
+  .superRefine((data, ctx) => {
     if (
       !data.ls &&
       data.targetBranches.length === 0 &&
@@ -221,9 +224,10 @@ export const validOptionsSchema = configOptionsSchema
       (!data.branchLabelMapping ||
         Object.keys(data.branchLabelMapping).length === 0)
     ) {
-      throw new BackportError({
-        code: 'config-error-exception',
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
         message: `Please specify a target branch: "--branch 6.1".\n\nRead more: ${PROJECT_CONFIG_DOCS_LINK}`,
+        fatal: true,
       });
     }
   });
