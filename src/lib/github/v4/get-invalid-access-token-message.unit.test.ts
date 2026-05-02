@@ -3,7 +3,7 @@ import { getInvalidAccessTokenMessage } from './get-invalid-access-token-message
 
 describe('getInvalidAccessTokenMessage', () => {
   describe('when status code is', () => {
-    it('should handle invalid access token', () => {
+    it('should handle invalid access token (no token provided)', () => {
       const result = {
         statusCode: 401,
         responseHeaders: new Headers({}),
@@ -15,7 +15,23 @@ describe('getInvalidAccessTokenMessage', () => {
           repoOwner: 'elastic',
           repoName: 'kibana',
         }),
-      ).toContain('Please check your access token and make sure it is valid');
+      ).toContain('The GitHub token "undefined" is invalid');
+    });
+
+    it('should handle invalid access token (token provided)', () => {
+      const result = {
+        statusCode: 401,
+        responseHeaders: new Headers({}),
+      } as OperationResultWithMeta;
+
+      return expect(
+        getInvalidAccessTokenMessage({
+          result,
+          repoOwner: 'elastic',
+          repoName: 'kibana',
+          githubToken: 'ghp_abc123xyz789',
+        }),
+      ).toContain('The GitHub token "ghp_...z789" is invalid');
     });
 
     it('should handle SSO error', () => {

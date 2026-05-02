@@ -34,9 +34,7 @@ describe('interactive error handling', () => {
       '--repo=foo/bar',
       '--github-token=some-token',
     ]);
-    expect(output).toContain(
-      'Please check your access token and make sure it is valid',
-    );
+    expect(output).toContain('The GitHub token "some...oken" is invalid');
   });
 
   it(`when repo doesn't exist`, async () => {

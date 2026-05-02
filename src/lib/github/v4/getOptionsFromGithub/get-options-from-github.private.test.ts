@@ -21,7 +21,7 @@ describe('getOptionsFromGithub', () => {
         };
 
         await expect(getOptionsFromGithub(combinedOptions)).rejects.toThrow(
-          'Please check your access token and make sure it is valid.\nConfig: /myHomeDir/.backport/config.json',
+          'The GitHub token "foo...foo" is invalid',
         );
       });
     });

@@ -8,11 +8,13 @@ export function getInvalidAccessTokenMessage({
   repoOwner,
   repoName,
   globalConfigFile,
+  githubToken,
 }: {
   result: OperationResultWithMeta;
   repoOwner: string;
   repoName: string;
   globalConfigFile?: string;
+  githubToken?: string;
 }): string | undefined {
   function getSSOAuthUrl(ssoHeader?: string | null) {
     const matches = ssoHeader?.match(/url=(.*)/);
@@ -69,9 +71,11 @@ export function getInvalidAccessTokenMessage({
     }
 
     case 401: {
-      return `Please check your access token and make sure it is valid.\nConfig: ${getGlobalConfigPath(
-        globalConfigFile,
-      )}`;
+      const globalConfigPath = getGlobalConfigPath(globalConfigFile);
+      const redactedToken = githubToken
+        ? `${githubToken.slice(0, 4)}...${githubToken.slice(-4)}`
+        : 'undefined';
+      return `The GitHub token "${redactedToken}" is invalid. Please make sure your global config (${globalConfigPath}) contains a valid token:\n\n{\n  "githubToken": "<valid_token>"\n}`;
     }
 
     case undefined: {

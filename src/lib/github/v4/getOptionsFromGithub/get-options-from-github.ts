@@ -77,6 +77,7 @@ export async function getOptionsFromGithub(options: {
       repoName,
       repoOwner,
       globalConfigFile,
+      githubToken,
     });
 
     if (isInvalidAccessTokenMessage) {
