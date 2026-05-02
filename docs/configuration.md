@@ -140,8 +140,6 @@ Create a token in [GitHub Developer Settings → Personal Access Tokens (classic
 
 <img width="971" alt="PAT scopes for public repos only" src="https://user-images.githubusercontent.com/7416358/226398088-715a5bab-7ac8-4733-b48c-d94da593ca04.png">
 
-Alternatively, set the `BACKPORT_GITHUB_TOKEN` environment variable instead of storing the token in the config file.
-
 ### `interactive`
 
 **CLI**: `--interactive`, `--non-interactive` (or `--json` to disable)  
@@ -285,5 +283,3 @@ Labels that will be added to the target (backport) pull request.
 
 **CLI**: `--workdir`  
 Directory where `backport` clones the repository and performs git operations. (Default: `~/.backport/repositories/`)
-
-
