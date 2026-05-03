@@ -1,9 +1,9 @@
 import { exec } from '../helpers/child-process-helper.js';
-import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../helpers/get-dev-github-token.js';
 import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 
-const accessToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 vi.setConfig({ testTimeout: 25_000 });
 
 describe('gracefully handle corrupted repo', () => {
@@ -17,7 +17,7 @@ describe('gracefully handle corrupted repo', () => {
         '--repo=backport-org/integration-test',
         '--sha=16cfd987b82f49a79ebc663506f5d215b7a81c5c',
         '--branch=7.x',
-        `--accessToken=${accessToken}`,
+        `--github-token=${githubToken}`,
         `--dir=${sandboxPath}`,
         '--dry-run',
       ],
@@ -35,7 +35,7 @@ describe('gracefully handle corrupted repo', () => {
         '--repo=backport-org/integration-test',
         '--sha=16cfd987b82f49a79ebc663506f5d215b7a81c5c',
         '--branch=7.x',
-        `--accessToken=${accessToken}`,
+        `--github-token=${githubToken}`,
         `--dir=${sandboxPath}`,
         '--dry-run',
       ],

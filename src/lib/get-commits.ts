@@ -1,4 +1,4 @@
-/** Dispatches to the correct fetch* function based on options (pullNumber, sha, author, prFilter). */
+/** Dispatches to the correct fetch* function based on options (pullNumber, sha, author, prQuery). */
 import chalk from 'chalk';
 import type { ValidConfigOptions } from '../options/options.js';
 import { BackportError } from './backport-error.js';
@@ -77,16 +77,16 @@ export async function getCommits(options: ValidConfigOptions) {
       });
     }
 
-    spinner.text = options.prFilter
+    spinner.text = options.prQuery
       ? 'Loading pull requests...'
       : `Loading commits from branch "${options.sourceBranch}"...`;
 
     const commitChoices =
-      options.prFilter === undefined
+      options.prQuery === undefined
         ? await fetchCommitsByAuthor(options)
         : await fetchPullRequestsBySearchQuery({
             ...options,
-            prFilter: options.prFilter,
+            prQuery: options.prQuery,
           });
     spinner.stop();
 
@@ -97,7 +97,7 @@ export async function getCommits(options: ValidConfigOptions) {
     return promptForCommits({
       commitChoices,
       isMultipleChoice: options.multipleCommits,
-      showDetails: options.details,
+      showDetails: options.verbose,
     });
   } catch (error) {
     if (options.ls) {

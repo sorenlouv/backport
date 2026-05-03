@@ -1,10 +1,10 @@
 import { Octokit } from '@octokit/rest';
 import type { SuccessResult } from '../../entrypoint.api.js';
-import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../helpers/get-dev-github-token.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 
-const accessToken = getDevAccessToken();
-const octokit = new Octokit({ auth: accessToken });
+const githubToken = getDevGithubToken();
+const octokit = new Octokit({ auth: githubToken });
 
 vi.setConfig({ testTimeout: 25_000, hookTimeout: 60_000 });
 
@@ -20,7 +20,7 @@ describe('backport-org/repo-with-reviewed-pull-requests', () => {
       '--pr=2',
       '--branch=production',
       '--no-fork',
-      `--accessToken=${accessToken}`,
+      `--github-token=${githubToken}`,
       '--json',
     ]);
 
@@ -44,11 +44,11 @@ describe('backport-org/repo-with-reviewed-pull-requests', () => {
   });
 });
 
-function getPullRequest(pullNumber: number) {
+function getPullRequest(pr: number) {
   return octokit.pulls.get({
     owner: 'backport-org',
     repo: 'repo-with-reviewed-pull-requests',
-    pull_number: pullNumber,
+    pull_number: pr,
   });
 }
 

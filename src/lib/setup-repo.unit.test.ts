@@ -146,7 +146,7 @@ describe('setupRepo', () => {
       vi.spyOn(gitModule, 'cloneRepo');
 
       await setupRepo({
-        accessToken: 'myAccessToken',
+        githubToken: 'myAccessToken',
         authenticatedUsername: 'sqren_authenticated',
         cwd: '/path/to/source/repo',
         fork: true,
@@ -228,7 +228,7 @@ describe('setupRepo', () => {
       mockGitClone();
 
       await setupRepo({
-        accessToken: 'myAccessToken',
+        githubToken: 'myAccessToken',
         gitHostname: 'github.com',
         repoName: 'kibana',
         repoOwner: 'elastic',
@@ -291,7 +291,7 @@ describe('setupRepo', () => {
           repoName: 'kibana',
           repoOwner: 'elastic',
           cwd: '/myHomeDir/.backport/repositories/owner/repo/foo',
-          dir: '/myHomeDir/.backport/repositories/owner/repo',
+          workdir: '/myHomeDir/.backport/repositories/owner/repo',
           interactive: false,
         } as ValidConfigOptions),
       ).rejects.toThrow(

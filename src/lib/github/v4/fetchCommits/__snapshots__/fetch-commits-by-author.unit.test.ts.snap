@@ -20,18 +20,18 @@ exports[`fetchCommitsByAuthor > when commit has an associated pull request > sho
 [
   {
     "operationName": "CommitsByAuthor",
-    "query": "query CommitsByAuthor($authorId: ID, $commitPath: String, $dateSince: GitTimestamp, $dateUntil: GitTimestamp, $maxNumber: Int!, $repoName: String!, $repoOwner: String!, $sourceBranch: String!) {
+    "query": "query CommitsByAuthor($authorId: ID, $commitPath: String, $since: GitTimestamp, $until: GitTimestamp, $maxCount: Int!, $repoName: String!, $repoOwner: String!, $sourceBranch: String!) {
   repository(owner: $repoOwner, name: $repoName) {
     ref(qualifiedName: $sourceBranch) {
       target {
         ... on Commit {
           __typename
           history(
-            first: $maxNumber
+            first: $maxCount
             author: {id: $authorId}
             path: $commitPath
-            since: $dateSince
-            until: $dateUntil
+            since: $since
+            until: $until
           ) {
             edges {
               node {
@@ -147,12 +147,12 @@ fragment SourceCommitWithTargetPullRequestFragment on Commit {
     "variables": {
       "authorId": "myUserId",
       "commitPath": null,
-      "dateSince": null,
-      "dateUntil": null,
-      "maxNumber": 10,
+      "maxCount": 10,
       "repoName": "kibana",
       "repoOwner": "elastic",
+      "since": null,
       "sourceBranch": "source-branch-from-options",
+      "until": null,
     },
   },
 ]

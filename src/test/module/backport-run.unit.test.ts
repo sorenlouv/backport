@@ -44,7 +44,7 @@ describe('backportRun integration', () => {
         githubApiBaseUrlV3: REST_URL,
       },
       globalConfig: {
-        accessToken: 'my-token',
+        githubToken: 'my-token',
       },
     });
   });
@@ -197,7 +197,7 @@ describe('backportRun integration', () => {
     expect(pushCall).toBeDefined();
   });
 
-  it('returns failure when access token is missing', async () => {
+  it('returns failure when github token is missing', async () => {
     mockConfigFiles({
       projectConfig: {
         repoOwner: 'my-org',
@@ -221,7 +221,7 @@ describe('backportRun integration', () => {
       errorCode: 'invalid-credentials-exception',
     });
     if (error0.status === 'error') {
-      expect(error0.errorMessage).toContain('accessToken');
+      expect(error0.errorMessage).toContain('githubToken');
     }
   });
 
@@ -304,7 +304,7 @@ describe('backportRun integration', () => {
       expect(process.exitCode).toBe(1);
     });
 
-    it('sets process.exitCode = 1 for missing access token', async () => {
+    it('sets process.exitCode = 1 for missing github token', async () => {
       mockConfigFiles({
         projectConfig: {
           repoOwner: 'my-org',

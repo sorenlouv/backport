@@ -8,14 +8,14 @@ export interface TargetBranchResponse {
 }
 
 export async function validateTargetBranch({
-  accessToken,
+  githubToken,
   repoName,
   repoOwner,
   branchName,
   githubApiBaseUrlV4 = 'https://api.github.com/graphql',
   interactive,
 }: {
-  accessToken: string;
+  githubToken: string;
   repoOwner: string;
   repoName: string;
   branchName: string;
@@ -39,7 +39,7 @@ export async function validateTargetBranch({
   const spinner = ora(interactive, '').start();
   const variables = { repoOwner, repoName, branchName };
   const result = await graphqlRequest(
-    { accessToken, githubApiBaseUrlV4 },
+    { githubToken, githubApiBaseUrlV4 },
     query,
     variables,
   );

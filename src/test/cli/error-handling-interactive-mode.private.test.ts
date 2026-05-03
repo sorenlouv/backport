@@ -1,9 +1,9 @@
-import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../helpers/get-dev-github-token.js';
 import { removeLinesBreaksInConflictingFiles } from '../helpers/replace-string-and-linebreaks.js';
 import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 
-const accessToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 vi.setConfig({ testTimeout: 15_000 });
 
 describe('interactive error handling', () => {
@@ -11,12 +11,12 @@ describe('interactive error handling', () => {
     const { output } = await runBackportViaCli([
       '--skip-remote-config',
       '--repo=backport-org/backport-e2e',
-      `--accessToken=${accessToken}`,
+      `--github-token=${githubToken}`,
     ]);
     expect(output).toMatchInlineSnapshot(`
       "Please specify a target branch: "--branch 6.1".
 
-      Read more: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson"
+      Read more: https://github.com/sorenlouv/backport/blob/main/docs/configuration.md#project-config-backportrcjson"
     `);
   });
 
@@ -28,15 +28,13 @@ describe('interactive error handling', () => {
     `);
   });
 
-  it('when access token is invalid', async () => {
+  it('when github token is invalid', async () => {
     const { output } = await runBackportViaCli([
       '--branch=foo',
       '--repo=foo/bar',
-      '--accessToken=some-token',
+      '--github-token=some-token',
     ]);
-    expect(output).toContain(
-      'Please check your access token and make sure it is valid',
-    );
+    expect(output).toContain('The GitHub token "some...oken" is invalid');
   });
 
   it(`when repo doesn't exist`, async () => {
@@ -44,7 +42,7 @@ describe('interactive error handling', () => {
       '--branch=foo',
       '--repo=foo/bar',
       '--author=sorenlouv',
-      `--accessToken=${accessToken}`,
+      `--github-token=${githubToken}`,
     ]);
     expect(output).toMatchInlineSnapshot(
       `"The repository "foo/bar" doesn't exist"`,
@@ -57,7 +55,7 @@ describe('interactive error handling', () => {
         '--branch=foo',
         '--repo=backport-org/backport-e2e',
         '--pr=9',
-        `--accessToken=${accessToken}`,
+        `--github-token=${githubToken}`,
       ],
       { showOra: true },
     );
@@ -73,7 +71,7 @@ describe('interactive error handling', () => {
         '--repo=backport-org/repo-with-conflicts',
         '--pr=12',
         '--branch=7.x',
-        `--accessToken=${accessToken}`,
+        `--github-token=${githubToken}`,
         `--dir=${backportDir}`,
         '--dry-run',
       ],
@@ -88,7 +86,7 @@ describe('interactive error handling', () => {
         '<BACKPORT_DIR>',
       ),
     ).toMatchInlineSnapshot(`
-      "repo: backport-org/repo-with-conflicts | sourceBranch: main | pullNumber: 12 | author: sorenlouv
+      "repo: backport-org/repo-with-conflicts | sourceBranch: main | pr: 12 | author: sorenlouv
 
 
       Backporting to 7.x:

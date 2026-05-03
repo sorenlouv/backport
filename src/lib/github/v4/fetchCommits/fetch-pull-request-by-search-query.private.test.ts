@@ -1,19 +1,19 @@
-import { getDevAccessToken } from '../../../../test/helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../../../../test/helpers/get-dev-github-token.js';
 import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
 import { fetchPullRequestsBySearchQuery } from './fetch-pull-requests-by-search-query.js';
 
-const accessToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 
 describe('fetchPullRequestsBySearchQuery', () => {
   describe('when filter does not match any PRs', () => {
     it('throws an error', async () => {
       const options = {
-        accessToken,
+        githubToken,
         author: 'sorenlouv',
-        dateSince: null,
-        dateUntil: null,
-        maxNumber: 10,
-        prFilter: 'label:non-existing',
+        since: null,
+        until: null,
+        maxCount: 10,
+        prQuery: 'label:non-existing',
         repoName: 'backport-e2e',
         repoOwner: 'backport-org',
         sourceBranch: 'master',
@@ -32,12 +32,12 @@ describe('fetchPullRequestsBySearchQuery', () => {
   describe('when filter matches PRs', () => {
     it('returns the merge commits for those PRs', async () => {
       const options = {
-        accessToken,
+        githubToken,
         author: 'sorenlouv',
-        dateSince: null,
-        dateUntil: null,
-        maxNumber: 10,
-        prFilter: 'label:v7.8.0',
+        since: null,
+        until: null,
+        maxCount: 10,
+        prQuery: 'label:v7.8.0',
         repoName: 'backport-e2e',
         repoOwner: 'backport-org',
         sourceBranch: 'master',

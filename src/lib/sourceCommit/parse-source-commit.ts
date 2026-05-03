@@ -83,9 +83,9 @@ export function parseSourceCommit({
   return {
     author: sourceCommit.author,
     sourceCommit: {
-      committedDate: sourceCommit.committedDate,
+      committedDate: String(sourceCommit.committedDate),
       message: sourceCommit.message,
-      sha: sourceCommit.sha,
+      sha: String(sourceCommit.sha),
       branchLabelMapping: sourceCommitBranchLabelMapping,
     },
     sourcePullRequest: sourcePullRequest
@@ -96,11 +96,11 @@ export function parseSourceCommit({
               .filter(filterNil) ?? [],
           title: sourcePullRequest.title,
           number: sourcePullRequest.number,
-          url: sourcePullRequest.url,
+          url: String(sourcePullRequest.url),
           mergeCommit: sourcePullRequest.mergeCommit
             ? {
                 message: sourcePullRequest.mergeCommit.message,
-                sha: sourcePullRequest.mergeCommit.sha,
+                sha: String(sourcePullRequest.mergeCommit.sha),
               }
             : undefined,
         }

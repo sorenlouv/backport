@@ -22,7 +22,7 @@ const defaultConfigs = {
     repoName: 'kibana',
     targetBranchChoices: ['7.9', '8.0'],
   },
-  globalConfig: { accessToken: 'abc', editor: 'code' },
+  globalConfig: { githubToken: 'abc', editor: 'code' },
 };
 
 describe('getOptions', () => {
@@ -45,10 +45,10 @@ describe('getOptions', () => {
       mockGithubConfigOptions({});
     });
 
-    it('when accessToken is missing', async () => {
+    it('when githubToken is missing', async () => {
       mockConfigFiles({
         projectConfig: defaultConfigs.projectConfig,
-        globalConfig: { accessToken: undefined },
+        globalConfig: { githubToken: undefined },
       });
 
       await expect(() =>
@@ -57,7 +57,7 @@ describe('getOptions', () => {
           optionsFromModule: {},
         }),
       ).rejects.toThrow(
-        'Please update your config file: "/myHomeDir/.backport/config.json".\nIt must contain a valid "accessToken".',
+        'Please update your config file: "/myHomeDir/.backport/config.json".\nIt must contain a valid "githubToken".',
       );
     });
 
@@ -104,14 +104,14 @@ describe('getOptions', () => {
         ).rejects.toThrow('"author" cannot be empty!');
       });
 
-      it('throws for "accessToken"', async () => {
+      it('throws for "githubToken"', async () => {
         await expect(() =>
           getOptions({
             optionsFromCliArgs: {},
-            optionsFromModule: { accessToken: '' },
+            optionsFromModule: { githubToken: '' },
           }),
         ).rejects.toThrow(
-          'Please update your config file: "/myHomeDir/.backport/config.json".\nIt must contain a valid "accessToken".',
+          'Please update your config file: "/myHomeDir/.backport/config.json".\nIt must contain a valid "githubToken".',
         );
       });
     });
@@ -186,11 +186,11 @@ describe('getOptions', () => {
     expect(options.autoFixConflicts).toBe(myFn);
   });
 
-  it('should call setAccessToken', async () => {
+  it('should call setGithubToken', async () => {
     mockGithubConfigOptions({});
     await getOptions({ optionsFromCliArgs: {}, optionsFromModule: {} });
 
-    expect(logger.setAccessToken).toHaveBeenCalledTimes(1);
+    expect(logger.setGithubToken).toHaveBeenCalledTimes(1);
   });
 
   it('should return options', async () => {
@@ -204,7 +204,7 @@ describe('getOptions', () => {
     });
 
     expect(options).toEqual({
-      accessToken: 'abc',
+      githubToken: 'abc',
       assignees: [],
       authenticatedUsername: 'john.diller',
       author: 'john.diller',
@@ -212,14 +212,13 @@ describe('getOptions', () => {
       autoMerge: false,
       autoMergeMethod: 'merge',
       backportBinary: 'backport',
-      cherrypickRef: true,
-      commitConflicts: false,
-      autoResolveConflictsWithTheirs: false,
+      cherryPickRef: true,
+      conflictResolution: 'abort',
       commitPaths: [],
       cwd: expect.any(String),
-      dateSince: null,
-      dateUntil: null,
-      details: false,
+      since: null,
+      until: null,
+      verbose: false,
       draft: false,
       editor: 'code',
       fork: true,
@@ -227,7 +226,7 @@ describe('getOptions', () => {
       githubApiBaseUrlV4: 'http://localhost/graphql',
       interactive: true,
       isRepoPrivate: false,
-      maxNumber: 10,
+      maxCount: 10,
       multipleBranches: true,
       multipleCommits: false,
       noUnmergedBackportsHelp: false,
@@ -397,7 +396,7 @@ describe('getOptions', () => {
     });
   });
 
-  describe('access token scopes', () => {
+  describe('github token scopes', () => {
     it('throw if no scopes are granted', async () => {
       mockGithubConfigOptions({ headers: { 'x-oauth-scopes': '' } });
 
@@ -407,7 +406,7 @@ describe('getOptions', () => {
           optionsFromModule: {},
         }),
       ).rejects.toThrow(
-        'You must grant the "repo" or "public_repo" scope to your personal access token',
+        'You must grant the "repo" or "public_repo" scope to your GitHub token',
       );
     });
 
@@ -422,9 +421,7 @@ describe('getOptions', () => {
           optionsFromCliArgs: {},
           optionsFromModule: {},
         }),
-      ).rejects.toThrow(
-        'You must grant the "repo" scope to your personal access token',
-      );
+      ).rejects.toThrow('You must grant the "repo" scope to your GitHub token');
     });
 
     it('should not throw if `public_repo` scope is granted and the repo is public', async () => {
@@ -442,42 +439,104 @@ describe('getOptions', () => {
     });
   });
 
-  describe('cherrypickRef', () => {
+  describe('cherryPickRef', () => {
     beforeEach(() => {
       mockGithubConfigOptions({});
     });
 
     it('should default to true', async () => {
-      const { cherrypickRef } = await getOptions({
+      const { cherryPickRef } = await getOptions({
         optionsFromCliArgs: {},
         optionsFromModule: {},
       });
-      expect(cherrypickRef).toBe(true);
+      expect(cherryPickRef).toBe(true);
     });
 
     it('should be settable via config file', async () => {
-      mockProjectConfig({ cherrypickRef: false });
-      const { cherrypickRef } = await getOptions({
+      mockProjectConfig({ cherryPickRef: false });
+      const { cherryPickRef } = await getOptions({
         optionsFromCliArgs: {},
         optionsFromModule: {},
       });
-      expect(cherrypickRef).toBe(false);
+      expect(cherryPickRef).toBe(false);
     });
 
     it('cli args overwrites config', async () => {
-      mockProjectConfig({ cherrypickRef: false });
-      const { cherrypickRef } = await getOptions({
-        optionsFromCliArgs: { cherrypickRef: true },
+      mockProjectConfig({ cherryPickRef: false });
+      const { cherryPickRef } = await getOptions({
+        optionsFromCliArgs: { cherryPickRef: true },
         optionsFromModule: {},
       });
-      expect(cherrypickRef).toBe(true);
+      expect(cherryPickRef).toBe(true);
+    });
+  });
+  describe('backwards compatibility', () => {
+    beforeEach(() => {
+      mockGithubConfigOptions({});
+    });
+
+    it('should normalize legacy module options to their modern counterparts', async () => {
+      const options = await getOptions({
+        optionsFromCliArgs: {},
+        optionsFromModule: {
+          accessToken: 'my-legacy-token',
+          branches: ['legacy-branch'],
+          upstream: 'legacy/repo',
+          labels: ['legacy-label'],
+          commitConflicts: true,
+          maxNumber: 42,
+          dir: '/tmp/legacy',
+          details: true,
+        } as any,
+      });
+
+      expect(options.githubToken).toBe('my-legacy-token');
+      expect(options.targetBranchChoices).toEqual(['legacy-branch']);
+      expect(options.repoOwner).toBe('legacy');
+      expect(options.repoName).toBe('repo');
+      expect(options.targetPRLabels).toEqual(['legacy-label']);
+      expect(options.conflictResolution).toBe('commit');
+      expect(options.maxCount).toBe(42);
+      expect(options.workdir).toBe('/tmp/legacy');
+      expect(options.verbose).toBe(true);
+    });
+
+    it('should normalize legacy config file options to their modern counterparts', async () => {
+      mockProjectConfig({
+        accessToken: 'my-legacy-token',
+        branches: ['legacy-branch'],
+        targetBranchChoices: undefined, // Must unset default
+        upstream: 'legacy/repo',
+        repoOwner: undefined, // Must unset default
+        repoName: undefined, // Must unset default
+        labels: ['legacy-label'],
+        commitConflicts: true,
+        maxNumber: 42,
+        dir: '/tmp/legacy',
+        details: true,
+      } as any);
+
+      const options = await getOptions({
+        optionsFromCliArgs: {},
+        optionsFromModule: {},
+      });
+
+      expect(options.githubToken).toBe('my-legacy-token');
+      expect(options.targetBranchChoices).toEqual(['legacy-branch']);
+      expect(options.repoOwner).toBe('legacy');
+      expect(options.repoName).toBe('repo');
+      expect(options.targetPRLabels).toEqual(['legacy-label']);
+      expect(options.conflictResolution).toBe('commit');
+      expect(options.maxCount).toBe(42);
+      expect(options.workdir).toBe('/tmp/legacy');
+      expect(options.verbose).toBe(true);
     });
   });
 });
 
 function mockProjectConfig(projectConfig: ConfigFileOptions) {
   return mockConfigFiles({
-    globalConfig: { accessToken: 'abc' },
+    globalConfig: { githubToken: 'abc' },
     projectConfig: {
       githubApiBaseUrlV4: 'http://localhost/graphql',
       repoOwner: 'elastic',

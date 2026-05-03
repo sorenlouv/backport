@@ -1,10 +1,10 @@
 import { exec } from '../../../test/helpers/child-process-helper.js';
-import { getDevAccessToken } from '../../../test/helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../../../test/helpers/get-dev-github-token.js';
 import { getSandboxPath, resetSandbox } from '../../../test/helpers/sandbox.js';
 import { getRepoOwnerAndNameFromGitRemotes } from './get-repo-owner-and-name-from-git-remotes.js';
 
 const sandboxPath = getSandboxPath({ filename: import.meta.filename });
-const accessToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 
 describe('fetchRemoteProjectConfig', () => {
   describe('when the remote is a fork', () => {
@@ -19,7 +19,7 @@ describe('fetchRemoteProjectConfig', () => {
 
       expect(
         await getRepoOwnerAndNameFromGitRemotes({
-          accessToken,
+          githubToken,
           cwd: sandboxPath,
         }),
       ).toEqual({
@@ -40,7 +40,7 @@ describe('fetchRemoteProjectConfig', () => {
 
       expect(
         await getRepoOwnerAndNameFromGitRemotes({
-          accessToken,
+          githubToken,
           cwd: sandboxPath,
         }),
       ).toEqual({});
@@ -55,7 +55,7 @@ describe('fetchRemoteProjectConfig', () => {
 
       expect(
         await getRepoOwnerAndNameFromGitRemotes({
-          accessToken,
+          githubToken,
           cwd: sandboxPath,
         }),
       ).toEqual({});

@@ -2,7 +2,7 @@ import { Octokit } from '@octokit/rest';
 import type { BackportResponse, SuccessResult } from '../../entrypoint.api.js';
 import { backportRun } from '../../entrypoint.api.js';
 import { getShortSha } from '../../lib/github/commit-formatters.js';
-import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../helpers/get-dev-github-token.js';
 import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 
 vi.unmock('find-up');
@@ -11,8 +11,8 @@ vi.unmock('make-dir');
 
 vi.setConfig({ testTimeout: 25_000, hookTimeout: 25_000 });
 
-const accessToken = getDevAccessToken();
-const octokit = new Octokit({ auth: accessToken });
+const githubToken = getDevGithubToken();
+const octokit = new Octokit({ auth: githubToken });
 const sandboxPath = getSandboxPath({ filename: import.meta.filename });
 
 // repo
@@ -38,11 +38,11 @@ describe('entrypoint.module', () => {
     let pullRequestResponse: Awaited<ReturnType<typeof octokit.pulls.get>>;
 
     beforeAll(async () => {
-      await resetState(accessToken);
+      await resetState(githubToken);
       res = await backportRun({
         options: {
-          dir: sandboxPath,
-          accessToken,
+          workdir: sandboxPath,
+          githubToken,
           repoOwner: 'backport-org',
           repoName: 'integration-test',
           sha: COMMIT_SHA_1,
@@ -124,7 +124,7 @@ describe('entrypoint.module', () => {
 
     it('does not create any new branches in origin (backport-org/integration-test)', async () => {
       const branches = await getBranchesOnGithub({
-        accessToken,
+        githubToken,
         repoOwner: REPO_OWNER,
         repoName: REPO_NAME,
       });
@@ -133,7 +133,7 @@ describe('entrypoint.module', () => {
 
     it('creates a branch in the fork (sorenlouv/integration-test)', async () => {
       const branches = await getBranchesOnGithub({
-        accessToken,
+        githubToken,
         repoOwner: AUTHOR,
         repoName: REPO_NAME,
       });
@@ -151,11 +151,11 @@ describe('entrypoint.module', () => {
     let pullRequestResponse: Awaited<ReturnType<typeof octokit.pulls.get>>;
 
     beforeAll(async () => {
-      await resetState(accessToken);
+      await resetState(githubToken);
       res = await backportRun({
         options: {
-          dir: sandboxPath,
-          accessToken,
+          workdir: sandboxPath,
+          githubToken,
           repoOwner: 'backport-org',
           repoName: 'integration-test',
           sha: [COMMIT_SHA_1, COMMIT_SHA_2],
@@ -256,12 +256,12 @@ describe('entrypoint.module', () => {
     let pullRequestResponse: Awaited<ReturnType<typeof octokit.pulls.get>>;
 
     beforeAll(async () => {
-      await resetState(accessToken);
+      await resetState(githubToken);
       res = await backportRun({
         options: {
           fork: false,
-          dir: sandboxPath,
-          accessToken,
+          workdir: sandboxPath,
+          githubToken,
           repoOwner: 'backport-org',
           repoName: 'integration-test',
           sha: COMMIT_SHA_1,
@@ -339,7 +339,7 @@ describe('entrypoint.module', () => {
 
     it('creates a new branch in origin (backport-org/integration-test)', async () => {
       const branches = await getBranchesOnGithub({
-        accessToken,
+        githubToken,
         repoOwner: REPO_OWNER,
         repoName: REPO_NAME,
       });
@@ -352,7 +352,7 @@ describe('entrypoint.module', () => {
 
     it('does not create branches in the fork (sorenlouv/integration-test)', async () => {
       const branches = await getBranchesOnGithub({
-        accessToken,
+        githubToken,
         repoOwner: AUTHOR,
         repoName: REPO_NAME,
       });
@@ -362,16 +362,16 @@ describe('entrypoint.module', () => {
 });
 
 async function getBranchesOnGithub({
-  accessToken,
+  githubToken,
   repoOwner,
   repoName,
 }: {
-  accessToken: string;
+  githubToken: string;
   repoOwner: string;
   repoName: string;
 }) {
   const octokit = new Octokit({
-    auth: accessToken,
+    auth: githubToken,
   });
 
   const res = await octokit.repos.listBranches({
@@ -383,19 +383,19 @@ async function getBranchesOnGithub({
 }
 
 async function deleteBranchOnGithub({
-  accessToken,
+  githubToken,
   repoOwner,
   repoName,
   branchName,
 }: {
-  accessToken: string;
+  githubToken: string;
   repoOwner: string;
   repoName: string;
   branchName: string;
 }) {
   try {
     const octokit = new Octokit({
-      auth: accessToken,
+      auth: githubToken,
     });
 
     const opts = {
@@ -419,9 +419,9 @@ async function deleteBranchOnGithub({
   }
 }
 
-async function resetState(accessToken: string) {
+async function resetState(githubToken: string) {
   const ownerBranches = await getBranchesOnGithub({
-    accessToken,
+    githubToken,
     repoOwner: REPO_OWNER,
     repoName: REPO_NAME,
   });
@@ -432,7 +432,7 @@ async function resetState(accessToken: string) {
       .filter((b) => b.name !== 'master' && b.name !== '7.x')
       .map((b) => {
         return deleteBranchOnGithub({
-          accessToken,
+          githubToken,
           repoOwner: REPO_OWNER,
           repoName: REPO_NAME,
           branchName: b.name,
@@ -441,7 +441,7 @@ async function resetState(accessToken: string) {
   );
 
   const forkBranches = await getBranchesOnGithub({
-    accessToken,
+    githubToken,
     repoOwner: AUTHOR,
     repoName: REPO_NAME,
   });
@@ -452,7 +452,7 @@ async function resetState(accessToken: string) {
       .filter((b) => b.name !== 'master' && b.name !== '7.x')
       .map((b) => {
         return deleteBranchOnGithub({
-          accessToken,
+          githubToken,
           repoOwner: AUTHOR,
           repoName: REPO_NAME,
           branchName: b.name,

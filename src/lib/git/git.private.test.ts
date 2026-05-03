@@ -3,7 +3,7 @@ import path from 'node:path';
 import type { Commit } from '../../entrypoint.api.js';
 import type { ValidConfigOptions } from '../../options/options.js';
 import { exec } from '../../test/helpers/child-process-helper.js';
-import { getDevAccessToken } from '../../test/helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../../test/helpers/get-dev-github-token.js';
 import { getSandboxPath, resetSandbox } from '../../test/helpers/sandbox.js';
 import * as childProcess from '../child-process-promisified.js';
 import { getShortSha } from '../github/commit-formatters.js';
@@ -25,7 +25,7 @@ import {
 } from './index.js';
 
 const commitAuthor = { name: 'Soren L', email: 'soren@mail.dk' };
-const accessToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 
 describe('git.private', () => {
   describe('getIsCommitInBranch', () => {
@@ -63,7 +63,7 @@ describe('git.private', () => {
 
     it('should contain the first commit', async () => {
       const isFirstCommitInBranch = await getIsCommitInBranch(
-        { dir: cwd } as ValidConfigOptions,
+        { workdir: cwd } as ValidConfigOptions,
         firstSha,
       );
 
@@ -72,7 +72,7 @@ describe('git.private', () => {
 
     it('should not contain the second commit', async () => {
       const isSecondCommitInBranch = await getIsCommitInBranch(
-        { dir: cwd } as ValidConfigOptions,
+        { workdir: cwd } as ValidConfigOptions,
         secondSha,
       );
 
@@ -81,7 +81,7 @@ describe('git.private', () => {
 
     it('should not contain a random commit', async () => {
       const isSecondCommitInBranch = await getIsCommitInBranch(
-        { dir: cwd } as ValidConfigOptions,
+        { workdir: cwd } as ValidConfigOptions,
         'abcdefg',
       );
 
@@ -99,7 +99,7 @@ describe('git.private', () => {
       const options = {
         repoName: 'kibana',
         repoOwner: 'elastic',
-        dir: cwd,
+        workdir: cwd,
       } as ValidConfigOptions;
 
       await resetSandbox(cwd);
@@ -128,7 +128,7 @@ describe('git.private', () => {
       await createBackportBranch({
         options: {
           repoOwner: 'origin',
-          dir: cwd,
+          workdir: cwd,
         } as ValidConfigOptions,
         sourceBranch: 'main',
         targetBranch: '7.x',
@@ -143,7 +143,7 @@ describe('git.private', () => {
         await createBackportBranch({
           options: {
             repoOwner: 'origin',
-            dir: cwd,
+            workdir: cwd,
           } as ValidConfigOptions,
           sourceBranch: 'main',
           targetBranch: 'foo',
@@ -168,14 +168,14 @@ describe('git.private', () => {
       await createBackportBranch({
         options: {
           repoOwner: 'origin',
-          dir: cwd,
+          workdir: cwd,
         } as ValidConfigOptions,
         sourceBranch: 'main',
         targetBranch: '7.x',
         backportBranch: 'my-backport-branch',
       });
       await exec(
-        `git remote add sorenlouv https://x-access-token:${accessToken}@github.com/sorenlouv/repo-with-conflicts.git`,
+        `git remote add sorenlouv https://x-access-token:${githubToken}@github.com/sorenlouv/repo-with-conflicts.git`,
         { cwd },
       );
     });
@@ -186,13 +186,13 @@ describe('git.private', () => {
           options: {
             repoOwner: 'sorenlouv',
             repoName: 'repo-with-conflicts',
-            dir: cwd,
+            workdir: cwd,
           } as ValidConfigOptions,
           backportBranch: 'my-backport-branch',
         });
       }).rejects.toThrowErrorMatchingInlineSnapshot(`
         [BackportError: Error pushing to https://github.com/sorenlouv/repo-with-conflicts. Repository does not exist. Either fork the repository (https://github.com/sorenlouv/repo-with-conflicts) or disable fork mode via "--no-fork".
-        Read more about fork mode in the docs: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#fork]
+        Read more about fork mode in the docs: https://github.com/sorenlouv/backport/blob/main/docs/configuration.md#fork]
       `);
     });
   });
@@ -251,7 +251,7 @@ describe('git.private', () => {
       const shortSha = getShortSha(firstSha);
       await expect(() =>
         cherrypick({
-          options: { dir: cwd } as ValidConfigOptions,
+          options: { workdir: cwd } as ValidConfigOptions,
           sha: firstSha,
           commitAuthor: { name: 'Soren L', email: 'soren@mail.dk' },
         }),
@@ -263,8 +263,8 @@ describe('git.private', () => {
     it('should cherrypick commit cleanly', async () => {
       const res = await cherrypick({
         options: {
-          cherrypickRef: false,
-          dir: cwd,
+          cherryPickRef: false,
+          workdir: cwd,
         } as ValidConfigOptions,
         sha: secondSha,
         commitAuthor,
@@ -282,8 +282,8 @@ describe('git.private', () => {
     it('should cherrypick commit cleanly and append "(cherry picked from commit...)"', async () => {
       const res = await cherrypick({
         options: {
-          cherrypickRef: true,
-          dir: cwd,
+          cherryPickRef: true,
+          workdir: cwd,
         } as ValidConfigOptions,
         sha: secondSha,
         commitAuthor,
@@ -303,7 +303,7 @@ describe('git.private', () => {
 
     it('should cherrypick commit with conflicts', async () => {
       const res = await cherrypick({
-        options: { dir: cwd } as ValidConfigOptions,
+        options: { workdir: cwd } as ValidConfigOptions,
         sha: fourthSha,
         commitAuthor,
       });
@@ -329,7 +329,7 @@ describe('git.private', () => {
     });
 
     it('should return without error if user already committed manually (and there therefore is nothing to commit)', async () => {
-      const options = { dir: cwd } as ValidConfigOptions;
+      const options = { workdir: cwd } as ValidConfigOptions;
       const commit = { sourceCommit: { message: 'my message' } } as Commit;
       await gitInit(cwd);
       await createAndCommitFile({
@@ -345,7 +345,7 @@ describe('git.private', () => {
     });
 
     it('should return without error if user aborts the cherrypick process', async () => {
-      const options = { dir: cwd } as ValidConfigOptions;
+      const options = { workdir: cwd } as ValidConfigOptions;
       const commit = {
         sourceCommit: { message: 'my fallback commit message' },
       } as Commit;
@@ -364,7 +364,7 @@ describe('git.private', () => {
     });
 
     it('should commit cherypicked changes after conflicts have been resolved', async () => {
-      const options = { dir: cwd } as ValidConfigOptions;
+      const options = { workdir: cwd } as ValidConfigOptions;
       const commit = {
         sourceCommit: { message: 'my fallback commit message' },
       } as Commit;
@@ -653,7 +653,7 @@ describe('git.private', () => {
     describe('getIsMergeCommit', () => {
       it('returns true for first merge commit', async () => {
         const res = await getIsMergeCommit(
-          { dir: cwd } as ValidConfigOptions,
+          { workdir: cwd } as ValidConfigOptions,
           MERGE_COMMIT_HASH_1,
         );
 
@@ -662,7 +662,7 @@ describe('git.private', () => {
 
       it('returns true for second merge commit', async () => {
         const res = await getIsMergeCommit(
-          { dir: cwd } as ValidConfigOptions,
+          { workdir: cwd } as ValidConfigOptions,
           MERGE_COMMIT_HASH_2,
         );
 
@@ -671,7 +671,7 @@ describe('git.private', () => {
 
       it('returns false for rebased commits', async () => {
         const res = await getIsMergeCommit(
-          { dir: cwd } as ValidConfigOptions,
+          { workdir: cwd } as ValidConfigOptions,
           REBASE_COMMIT_HASH,
         );
 
@@ -680,7 +680,7 @@ describe('git.private', () => {
 
       it('returns false for squashed commits', async () => {
         const res = await getIsMergeCommit(
-          { dir: cwd } as ValidConfigOptions,
+          { workdir: cwd } as ValidConfigOptions,
           SQUASH_COMMIT_HASH,
         );
 
@@ -691,7 +691,7 @@ describe('git.private', () => {
     describe('getShasInMergeCommit', () => {
       it('returns a list of commit hashes - excluding the merge hash itself', async () => {
         const shas = await getShasInMergeCommit(
-          { dir: cwd } as ValidConfigOptions,
+          { workdir: cwd } as ValidConfigOptions,
           MERGE_COMMIT_HASH_1,
         );
 
@@ -711,7 +711,7 @@ describe('git.private', () => {
 
       it('returns empty for squash commits', async () => {
         const shas = await getShasInMergeCommit(
-          { dir: cwd } as ValidConfigOptions,
+          { workdir: cwd } as ValidConfigOptions,
           SQUASH_COMMIT_HASH,
         );
 

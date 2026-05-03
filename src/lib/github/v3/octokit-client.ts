@@ -4,14 +4,14 @@ import pRetry from 'p-retry';
 import { logger } from '../../logger.js';
 
 export function createOctokitClient({
-  accessToken,
+  githubToken,
   githubApiBaseUrlV3,
 }: {
-  accessToken: string;
+  githubToken: string;
   githubApiBaseUrlV3?: string;
 }): InstanceType<typeof Octokit> {
   return new Octokit({
-    auth: accessToken,
+    auth: githubToken,
     baseUrl: githubApiBaseUrlV3,
     log: logger,
   });

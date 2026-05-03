@@ -1,14 +1,14 @@
-import { getDevAccessToken } from '../../../../test/helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../../../../test/helpers/get-dev-github-token.js';
 import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
 import { fetchCommitsByPullNumber } from './fetch-commit-by-pull-number.js';
 
-const accessToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 
 describe('fetchCommitByPullNumber', () => {
   describe('when PR was merged', () => {
     it('the pull request response is returned', async () => {
       const options = {
-        accessToken,
+        githubToken,
         pullNumber: 5,
         repoName: 'backport-e2e',
         repoOwner: 'backport-org',
@@ -89,7 +89,7 @@ describe('fetchCommitByPullNumber', () => {
   describe('when PR is still open', () => {
     it('throws an error', async () => {
       const options = {
-        accessToken,
+        githubToken,
         pullNumber: 11,
         repoName: 'backport-e2e',
         repoOwner: 'backport-org',
@@ -105,7 +105,7 @@ describe('fetchCommitByPullNumber', () => {
   describe('when PR does not exist', () => {
     it('throws an error', async () => {
       const options = {
-        accessToken,
+        githubToken,
         pullNumber: 9_999_999_999_999,
         repoName: 'backport-e2e',
         repoOwner: 'backport-org',

@@ -12,7 +12,7 @@ export async function getReviewersFromPullRequests({
     githubApiBaseUrlV3?: string;
     repoName: string;
     repoOwner: string;
-    accessToken: string;
+    githubToken: string;
     interactive: boolean;
     authenticatedUsername: string;
   };
@@ -22,7 +22,7 @@ export async function getReviewersFromPullRequests({
     githubApiBaseUrlV3,
     repoName,
     repoOwner,
-    accessToken,
+    githubToken,
     interactive,
     authenticatedUsername,
   } = options;
@@ -30,15 +30,15 @@ export async function getReviewersFromPullRequests({
   const text = `Retrieving original reviewers`;
   const spinner = ora(interactive, text).start();
 
-  const octokit = createOctokitClient({ accessToken, githubApiBaseUrlV3 });
+  const octokit = createOctokitClient({ githubToken, githubApiBaseUrlV3 });
 
   try {
-    const promises = pullNumbers.map(async (pullNumber) => {
+    const promises = pullNumbers.map(async (pr) => {
       const reviews = await retryOctokitRequest(() =>
         octokit.pulls.listReviews({
           owner: repoOwner,
           repo: repoName,
-          pull_number: pullNumber,
+          pull_number: pr,
         }),
       );
 

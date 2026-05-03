@@ -7,10 +7,10 @@ import { getRepoPath } from '../env.js';
 import { logger } from '../logger.js';
 
 export function getRemoteUrl(
-  { repoName, accessToken, gitHostname = 'github.com' }: ValidConfigOptions,
+  { repoName, githubToken, gitHostname = 'github.com' }: ValidConfigOptions,
   repoOwner: string,
 ) {
-  return `https://x-access-token:${accessToken}@${gitHostname}/${repoOwner}/${repoName}.git`;
+  return `https://x-access-token:${githubToken}@${gitHostname}/${repoOwner}/${repoName}.git`;
 }
 
 export async function deleteRemote(
@@ -88,9 +88,9 @@ export function getRepoForkOwner(options: ValidConfigOptions) {
   return options.fork ? options.repoForkOwner : options.repoOwner;
 }
 
-export async function getGitProjectRootPath(dir: string) {
+export async function getGitProjectRootPath(workdir: string) {
   try {
-    const cwd = dir;
+    const cwd = workdir;
     const { stdout } = await spawnPromise(
       'git',
       ['rev-parse', '--show-toplevel'],

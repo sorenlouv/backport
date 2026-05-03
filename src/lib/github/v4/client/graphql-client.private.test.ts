@@ -1,5 +1,5 @@
 import { graphql } from '../../../../graphql/generated/index.js';
-import { getDevAccessToken } from '../../../../test/helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../../../../test/helpers/get-dev-github-token.js';
 import type {
   GitHubGraphQLError,
   OperationResultWithMeta,
@@ -25,11 +25,11 @@ const getRepoQuery = graphql(`
 describe('graphqlClient', () => {
   let result: OperationResultWithMeta;
 
-  describe('when the access token is invalid', () => {
+  describe('when the github token is invalid', () => {
     beforeAll(async () => {
       result = await graphqlRequest(
         {
-          accessToken: 'foobar',
+          githubToken: 'foobar',
           githubApiBaseUrlV4: 'https://api.github.com/graphql',
         },
         getViewerQuery,
@@ -50,12 +50,12 @@ describe('graphqlClient', () => {
     });
   });
 
-  describe('when the access token is valid', () => {
-    const accessToken = getDevAccessToken();
+  describe('when the github token is valid', () => {
+    const githubToken = getDevGithubToken();
     beforeAll(async () => {
       result = await graphqlRequest(
         {
-          accessToken: accessToken,
+          githubToken: githubToken,
           githubApiBaseUrlV4: 'https://api.github.com/graphql',
         },
         getViewerQuery,
@@ -73,11 +73,11 @@ describe('graphqlClient', () => {
   });
 
   describe('when repo is not found', () => {
-    const accessToken = getDevAccessToken();
+    const githubToken = getDevGithubToken();
     beforeAll(async () => {
       result = await graphqlRequest(
         {
-          accessToken: accessToken,
+          githubToken: githubToken,
           githubApiBaseUrlV4: 'https://api.github.com/graphql',
         },
         getRepoQuery,

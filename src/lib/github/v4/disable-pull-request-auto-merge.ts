@@ -8,7 +8,7 @@ export async function disablePullRequestAutoMerge(
   options: ValidConfigOptions,
   pullNumber: number,
 ) {
-  const { accessToken, githubApiBaseUrlV4 } = options;
+  const { githubToken, githubApiBaseUrlV4 } = options;
   const pullRequestId = await fetchPullRequestId(options, pullNumber);
 
   const query = graphql(`
@@ -22,7 +22,7 @@ export async function disablePullRequestAutoMerge(
   `);
 
   const result = await graphqlRequest(
-    { accessToken, githubApiBaseUrlV4 },
+    { githubToken, githubApiBaseUrlV4 },
     query,
     {
       pullRequestId,

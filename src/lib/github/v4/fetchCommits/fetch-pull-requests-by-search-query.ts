@@ -9,34 +9,34 @@ import { parseSourceCommit } from '../../../sourceCommit/parse-source-commit.js'
 import { graphqlRequest } from '../client/graphql-client.js';
 
 export async function fetchPullRequestsBySearchQuery(options: {
-  accessToken: string;
+  githubToken: string;
   author: string | null;
-  dateSince: string | null;
-  dateUntil: string | null;
+  since: string | null;
+  until: string | null;
   githubApiBaseUrlV4?: string;
-  maxNumber?: number;
+  maxCount?: number;
   onlyMissing?: boolean;
-  prFilter: string;
+  prQuery: string;
   repoName: string;
   repoOwner: string;
   sourceBranch: string;
 }): Promise<Commit[]> {
   const {
-    accessToken,
+    githubToken,
     author,
-    dateSince,
-    dateUntil,
+    since,
+    until,
     githubApiBaseUrlV4 = 'https://api.github.com/graphql',
-    maxNumber = 10,
-    prFilter,
+    maxCount = 10,
+    prQuery,
     repoName,
     repoOwner,
     sourceBranch,
   } = options;
 
   const query = graphql(`
-    query PullRequestBySearchQuery($query: String!, $maxNumber: Int!) {
-      search(query: $query, type: ISSUE, first: $maxNumber) {
+    query PullRequestBySearchQuery($query: String!, $maxCount: Int!) {
+      search(query: $query, type: ISSUE, first: $maxCount) {
         nodes {
           ... on PullRequest {
             __typename
@@ -51,16 +51,16 @@ export async function fetchPullRequestsBySearchQuery(options: {
   `);
 
   function dateFilter() {
-    if (dateUntil && dateSince) {
-      return [`merged:${dateSince}..${dateUntil}`];
+    if (until && since) {
+      return [`merged:${since}..${until}`];
     }
 
-    if (dateUntil) {
-      return [`merged:<${dateUntil}`];
+    if (until) {
+      return [`merged:<${until}`];
     }
 
-    if (dateSince) {
-      return [`merged:>${dateSince}`];
+    if (since) {
+      return [`merged:>${since}`];
     }
 
     return [];
@@ -72,18 +72,18 @@ export async function fetchPullRequestsBySearchQuery(options: {
     'sort:created-desc',
     `repo:${repoOwner}/${repoName}`,
     ...(options.author ? [`author:${options.author}`] : []),
-    ...(prFilter.includes('base:') ? [] : [`base:${sourceBranch}`]),
+    ...(prQuery.includes('base:') ? [] : [`base:${sourceBranch}`]),
     ...dateFilter(),
-    prFilter,
+    prQuery,
   ].join(' ');
 
   const variables = {
     query: searchQuery,
-    maxNumber,
+    maxCount,
   };
 
   const result = await graphqlRequest(
-    { accessToken, githubApiBaseUrlV4 },
+    { githubToken, githubApiBaseUrlV4 },
     query,
     variables,
   );

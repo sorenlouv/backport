@@ -1,21 +1,37 @@
 import type { OperationResultWithMeta } from './client/graphql-client.js';
-import { getInvalidAccessTokenMessage } from './get-invalid-access-token-message.js';
+import { getInvalidGithubTokenMessage } from './get-invalid-github-token-message.js';
 
-describe('getInvalidAccessTokenMessage', () => {
+describe('getInvalidGithubTokenMessage', () => {
   describe('when status code is', () => {
-    it('should handle invalid access token', () => {
+    it('should handle invalid github token (no token provided)', () => {
       const result = {
         statusCode: 401,
         responseHeaders: new Headers({}),
       } as OperationResultWithMeta;
 
       return expect(
-        getInvalidAccessTokenMessage({
+        getInvalidGithubTokenMessage({
           result,
           repoOwner: 'elastic',
           repoName: 'kibana',
         }),
-      ).toContain('Please check your access token and make sure it is valid');
+      ).toContain('The GitHub token "undefined" is invalid');
+    });
+
+    it('should handle invalid github token (token provided)', () => {
+      const result = {
+        statusCode: 401,
+        responseHeaders: new Headers({}),
+      } as OperationResultWithMeta;
+
+      return expect(
+        getInvalidGithubTokenMessage({
+          result,
+          repoOwner: 'elastic',
+          repoName: 'kibana',
+          githubToken: 'ghp_abc123xyz789',
+        }),
+      ).toContain('The GitHub token "ghp_...z789" is invalid');
     });
 
     it('should handle SSO error', () => {
@@ -37,13 +53,13 @@ describe('getInvalidAccessTokenMessage', () => {
       } as unknown as OperationResultWithMeta;
 
       return expect(
-        getInvalidAccessTokenMessage({
+        getInvalidGithubTokenMessage({
           result,
           repoOwner: 'elastic',
           repoName: 'kibana',
         }),
       ).toMatchInlineSnapshot(`
-        "Please follow the link to authorize your personal access token with SSO:
+        "Please follow the link to authorize your GitHub token with SSO:
 
         https://ssourl.com"
       `);
@@ -64,7 +80,7 @@ describe('getInvalidAccessTokenMessage', () => {
       } as unknown as OperationResultWithMeta;
 
       return expect(
-        getInvalidAccessTokenMessage({
+        getInvalidGithubTokenMessage({
           result,
           repoOwner: 'elastic',
           repoName: 'kibana',
@@ -87,16 +103,16 @@ describe('getInvalidAccessTokenMessage', () => {
       } as unknown as OperationResultWithMeta;
 
       return expect(
-        getInvalidAccessTokenMessage({
+        getInvalidGithubTokenMessage({
           result,
           repoOwner: 'elastic',
           repoName: 'kibana',
         }),
       ).toMatchInlineSnapshot(`
-        "You do not have access to the repository "elastic/kibana". Please make sure your access token has the required scopes.
+        "You do not have access to the repository "elastic/kibana". Please make sure your GitHub token has the required scopes.
 
         Required scopes: a,b,c
-        Access token scopes: a,b"
+        Granted scopes: a,b"
       `);
     });
 
@@ -115,7 +131,7 @@ describe('getInvalidAccessTokenMessage', () => {
       } as unknown as OperationResultWithMeta;
 
       return expect(
-        getInvalidAccessTokenMessage({
+        getInvalidGithubTokenMessage({
           result,
           repoOwner: 'elastic',
           repoName: 'kibana',
@@ -130,7 +146,7 @@ describe('getInvalidAccessTokenMessage', () => {
       } as OperationResultWithMeta;
 
       return expect(
-        getInvalidAccessTokenMessage({
+        getInvalidGithubTokenMessage({
           result,
           repoOwner: 'elastic',
           repoName: 'kibana',

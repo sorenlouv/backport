@@ -1,4 +1,4 @@
-import { PullRequestState } from '../../graphql/generated/graphql.js';
+import type { PullRequestState } from '../../graphql/generated/graphql.js';
 import { getMockSourceCommit } from './get-mock-source-commit.js';
 import { getPullRequestStates } from './get-pull-request-states.js';
 
@@ -25,7 +25,7 @@ describe('getPullRequestStates', () => {
       sourcePullRequest: { number: 1234 },
       timelineItems: [
         {
-          state: PullRequestState.Merged,
+          state: 'MERGED' satisfies PullRequestState,
           targetBranch: '6.x',
           commitMessages: ['identical messages (#1234)'], // this message
           number: 5678,
@@ -40,7 +40,7 @@ describe('getPullRequestStates', () => {
     expect(expectedTargetPRs).toEqual([
       {
         branch: '6.x',
-        state: PullRequestState.Merged,
+        state: 'MERGED' satisfies PullRequestState,
         number: 5678,
         url: 'https://github.com/elastic/kibana/pull/5678',
         mergeCommit: {
@@ -57,7 +57,7 @@ describe('getPullRequestStates', () => {
       sourcePullRequest: { number: 1234 },
       timelineItems: [
         {
-          state: PullRequestState.Merged,
+          state: 'MERGED' satisfies PullRequestState,
           targetBranch: '6.x',
           commitMessages: ['identical messages (#1234)'],
           number: 5678,
@@ -79,7 +79,7 @@ describe('getPullRequestStates', () => {
       sourcePullRequest: { number: 1234 },
       timelineItems: [
         {
-          state: PullRequestState.Merged,
+          state: 'MERGED' satisfies PullRequestState,
           targetBranch: '6.x',
           commitMessages: ['identical messages (#1234)'],
           number: 5678,
@@ -101,7 +101,7 @@ describe('getPullRequestStates', () => {
       sourcePullRequest: { number: 1234 },
       timelineItems: [
         {
-          state: PullRequestState.Merged,
+          state: 'MERGED' satisfies PullRequestState,
           targetBranch: '6.x',
           commitMessages: ['message two (#1234)'], // this commit message
           number: 5678,
@@ -122,7 +122,7 @@ describe('getPullRequestStates', () => {
       sourcePullRequest: { number: 1234 },
       timelineItems: [
         {
-          state: PullRequestState.Merged,
+          state: 'MERGED' satisfies PullRequestState,
           targetBranch: '6.x',
           commitMessages: ['message two (#1234)'], // message
           title: 'message one (#1234)', // title
@@ -138,7 +138,7 @@ describe('getPullRequestStates', () => {
     expect(targetPullRequestStates).toEqual([
       {
         branch: '6.x',
-        state: PullRequestState.Merged,
+        state: 'MERGED' satisfies PullRequestState,
         number: 5678,
         url: 'https://github.com/elastic/kibana/pull/5678',
         mergeCommit: {
@@ -155,7 +155,7 @@ describe('getPullRequestStates', () => {
       sourcePullRequest: { number: 1234 },
       timelineItems: [
         {
-          state: PullRequestState.Merged,
+          state: 'MERGED' satisfies PullRequestState,
           targetBranch: '6.x',
           commitMessages: ['message two (#1234)'],
           title: 'message one (#9999)',
@@ -177,7 +177,7 @@ describe('getPullRequestStates', () => {
       sourcePullRequest: { number: 1234 },
       timelineItems: [
         {
-          state: PullRequestState.Merged,
+          state: 'MERGED' satisfies PullRequestState,
           targetBranch: '6.x',
           commitMessages: ['message one (#1234)\n\nsomething else'],
           number: 5678,
@@ -192,7 +192,7 @@ describe('getPullRequestStates', () => {
     expect(targetPullRequestStates).toEqual([
       {
         branch: '6.x',
-        state: PullRequestState.Merged,
+        state: 'MERGED' satisfies PullRequestState,
         number: 5678,
         url: 'https://github.com/elastic/kibana/pull/5678',
         mergeCommit: {
@@ -247,7 +247,7 @@ describe('getPullRequestStates', () => {
       },
       timelineItems: [
         {
-          state: PullRequestState.Merged,
+          state: 'MERGED' satisfies PullRequestState,
           targetBranch: '7.2',
           commitMessages: ['identical messages (#1234)'],
           title: 'identical messages (#9999)',
@@ -269,7 +269,7 @@ describe('getPullRequestStates', () => {
         label: 'v7.2.0',
         isSourceBranch: false,
         branchLabelMappingKey: String.raw`^v(\d+).(\d+).\d+$`,
-        state: PullRequestState.Merged,
+        state: 'MERGED' satisfies PullRequestState,
         number: 5678,
         url: 'https://github.com/elastic/kibana/pull/5678',
         mergeCommit: {
@@ -568,7 +568,7 @@ describe('getPullRequestStates', () => {
       },
       timelineItems: [
         {
-          state: PullRequestState.Open,
+          state: 'OPEN' satisfies PullRequestState,
           targetBranch: 'branch-3',
           commitMessages: ['identical messages (#1234)'],
           number: 5678,
@@ -602,7 +602,7 @@ describe('getPullRequestStates', () => {
         number: 5678,
         isSourceBranch: false,
         branchLabelMappingKey: String.raw`label-(\d+)`,
-        state: PullRequestState.Open,
+        state: 'OPEN' satisfies PullRequestState,
         url: 'https://github.com/elastic/kibana/pull/5678',
       },
       {
@@ -628,7 +628,7 @@ describe('getPullRequestStates', () => {
       },
       timelineItems: [
         {
-          state: PullRequestState.Closed,
+          state: 'CLOSED' satisfies PullRequestState,
           targetBranch: 'branch-3',
           commitMessages: ['identical messages (#1234)'],
           number: 5678,
@@ -686,7 +686,7 @@ describe('getPullRequestStates', () => {
       },
       timelineItems: [
         {
-          state: PullRequestState.Merged,
+          state: 'MERGED' satisfies PullRequestState,
           targetBranch: 'branch-3',
           commitMessages: ['identical messages (#1234)'],
           number: 5678,
@@ -720,7 +720,7 @@ describe('getPullRequestStates', () => {
         isSourceBranch: false,
         branchLabelMappingKey: String.raw`label-(\d+)`,
         number: 5678,
-        state: PullRequestState.Merged,
+        state: 'MERGED' satisfies PullRequestState,
         url: 'https://github.com/elastic/kibana/pull/5678',
         mergeCommit: {
           message: 'identical messages (#1234)',

@@ -16,11 +16,11 @@ async function fetchByCommitPath({
   commitPath,
 }: {
   options: {
-    accessToken: string;
-    dateSince: string | null;
-    dateUntil: string | null;
+    githubToken: string;
+    since: string | null;
+    until: string | null;
     githubApiBaseUrlV4?: string;
-    maxNumber?: number;
+    maxCount?: number;
     repoName: string;
     repoOwner: string;
     sourceBranch: string;
@@ -29,11 +29,11 @@ async function fetchByCommitPath({
   commitPath: string | null;
 }) {
   const {
-    accessToken,
-    dateSince,
-    dateUntil,
+    githubToken,
+    since,
+    until,
     githubApiBaseUrlV4 = 'https://api.github.com/graphql',
-    maxNumber = 10,
+    maxCount = 10,
     repoName,
     repoOwner,
     sourceBranch,
@@ -43,9 +43,9 @@ async function fetchByCommitPath({
     query CommitsByAuthor(
       $authorId: ID
       $commitPath: String
-      $dateSince: GitTimestamp
-      $dateUntil: GitTimestamp
-      $maxNumber: Int!
+      $since: GitTimestamp
+      $until: GitTimestamp
+      $maxCount: Int!
       $repoName: String!
       $repoOwner: String!
       $sourceBranch: String!
@@ -56,11 +56,11 @@ async function fetchByCommitPath({
             ... on Commit {
               __typename
               history(
-                first: $maxNumber
+                first: $maxCount
                 author: { id: $authorId }
                 path: $commitPath
-                since: $dateSince
-                until: $dateUntil
+                since: $since
+                until: $until
               ) {
                 edges {
                   node {
@@ -80,24 +80,24 @@ async function fetchByCommitPath({
     repoOwner,
     repoName,
     sourceBranch,
-    maxNumber,
+    maxCount,
     authorId,
     commitPath,
-    dateSince,
-    dateUntil,
+    since,
+    until,
   };
 
   const result = await graphqlRequest(
-    { accessToken, githubApiBaseUrlV4 },
+    { githubToken, githubApiBaseUrlV4 },
     query,
     variables,
   );
 
   if (result.error) {
-    if (result.statusCode === 502 && maxNumber > 50) {
+    if (result.statusCode === 502 && maxCount > 50) {
       throw new BackportError({
         code: 'github-api-exception',
-        message: `The GitHub API returned a 502 error. Try reducing the number of commits to display: "--max-number 20"`,
+        message: `The GitHub API returned a 502 error. Try reducing the number of commits to display: "--max-count 20" (or "-n 20")`,
       });
     }
 
@@ -113,14 +113,14 @@ async function fetchByCommitPath({
 }
 
 export async function fetchCommitsByAuthor(options: {
-  accessToken: string;
+  githubToken: string;
   author: string | null;
   branchLabelMapping?: ValidConfigOptions['branchLabelMapping'];
   commitPaths?: string[];
-  dateSince: string | null;
-  dateUntil: string | null;
+  since: string | null;
+  until: string | null;
   githubApiBaseUrlV4?: string;
-  maxNumber?: number;
+  maxCount?: number;
   onlyMissing?: boolean;
   repoName: string;
   repoOwner: string;

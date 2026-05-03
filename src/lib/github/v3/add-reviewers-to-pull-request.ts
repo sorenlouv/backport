@@ -6,7 +6,7 @@ export async function addReviewersToPullRequest({
   githubApiBaseUrlV3,
   repoName,
   repoOwner,
-  accessToken,
+  githubToken,
   interactive,
   dryRun,
 
@@ -17,7 +17,7 @@ export async function addReviewersToPullRequest({
   githubApiBaseUrlV3?: string;
   repoName: string;
   repoOwner: string;
-  accessToken: string;
+  githubToken: string;
   interactive: boolean;
   dryRun?: boolean;
 
@@ -35,7 +35,7 @@ export async function addReviewersToPullRequest({
   }
 
   try {
-    const octokit = createOctokitClient({ accessToken, githubApiBaseUrlV3 });
+    const octokit = createOctokitClient({ githubToken, githubApiBaseUrlV3 });
 
     await retryOctokitRequest(() =>
       octokit.pulls.requestReviewers({

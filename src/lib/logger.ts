@@ -8,19 +8,19 @@ export let logger = winston.createLogger({
   ],
 });
 
-let _accessToken: string | undefined;
+let _githubToken: string | undefined;
 let _interactive: boolean;
 
 export function initLogger({
   interactive,
-  accessToken,
+  githubToken,
   logFilePath,
 }: {
   interactive: boolean;
-  accessToken?: string;
+  githubToken?: string;
   logFilePath?: string;
 }) {
-  _accessToken = accessToken;
+  _githubToken = githubToken;
   _interactive = interactive;
 
   logger = winston.createLogger({
@@ -52,32 +52,32 @@ function fileTransport({
   return new winston.transports.File({
     filename: getLogfilePath({ logFilePath, logLevel }),
     level: logLevel,
-    format: format.json({ replacer: accessTokenReplacer }),
+    format: format.json({ replacer: githubTokenReplacer }),
   });
 }
 
 // wrapper around console.log
 export function consoleLog(message: string) {
   if (_interactive) {
-    console.log(redactAccessToken(message));
+    console.log(redactGithubToken(message));
   }
 }
 
-export function setAccessToken(accessToken: string) {
-  _accessToken = accessToken;
+export function setGithubToken(githubToken: string) {
+  _githubToken = githubToken;
 }
 
-export function redactAccessToken(str: string) {
-  // `redactAccessToken` might be called before access token is set
-  if (_accessToken) {
-    return str.replaceAll(_accessToken, '<REDACTED>');
+export function redactGithubToken(str: string) {
+  // `redactGithubToken` might be called before github token is set
+  if (_githubToken) {
+    return str.replaceAll(_githubToken, '<REDACTED>');
   }
 
   return str;
 }
 
-export function accessTokenReplacer(key: string, value: unknown) {
-  return typeof value === 'string' ? redactAccessToken(value) : value;
+export function githubTokenReplacer(key: string, value: unknown) {
+  return typeof value === 'string' ? redactGithubToken(value) : value;
 }
 
 export type LogLevel = 'error' | 'warn' | 'info' | 'verbose' | 'debug';

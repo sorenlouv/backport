@@ -12,7 +12,7 @@ export async function fetchExistingPullRequest({
   options: ValidConfigOptions;
   prPayload: PullRequestPayload;
 }) {
-  const { githubApiBaseUrlV4, accessToken } = options;
+  const { githubApiBaseUrlV4, githubToken } = options;
   const query = graphql(`
     query ExistingPullRequest(
       $repoOwner: String!
@@ -51,7 +51,7 @@ export async function fetchExistingPullRequest({
     head: head,
   };
   const result = await graphqlRequest(
-    { accessToken, githubApiBaseUrlV4 },
+    { githubToken, githubApiBaseUrlV4 },
     query,
     variables,
   );

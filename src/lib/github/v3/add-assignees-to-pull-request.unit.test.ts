@@ -15,7 +15,7 @@ describe('addAssigneesToPullRequest', () => {
   });
 
   it('should add assignees to PR', async () => {
-    const pullNumber = 216;
+    const pr = 216;
     const assignees = ['sorenlouv'];
 
     const calls = mockFetchResponse({
@@ -27,10 +27,10 @@ describe('addAssigneesToPullRequest', () => {
     const res = await addAssigneesToPullRequest({
       repoName: 'kibana',
       repoOwner: 'elastic',
-      accessToken: 'my-token',
+      githubToken: 'my-token',
       autoAssign: false,
       interactive: false,
-      pullNumber,
+      pullNumber: pr,
       assignees,
     });
 

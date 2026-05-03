@@ -27,9 +27,13 @@ export function getGlobalConfigPath(globalConfigFile?: string) {
   return path.join(os.homedir(), '.backport', 'config.json');
 }
 
-export function getRepoPath({ repoOwner, repoName, dir }: ValidConfigOptions) {
-  if (dir) {
-    return dir;
+export function getRepoPath({
+  repoOwner,
+  repoName,
+  workdir,
+}: ValidConfigOptions) {
+  if (workdir) {
+    return workdir;
   }
 
   return path.join(

@@ -20,7 +20,7 @@ describe('config', () => {
       vi.spyOn(fs, 'writeFile').mockResolvedValueOnce();
       vi.spyOn(fs, 'readFile').mockResolvedValueOnce(
         JSON.stringify({
-          accessToken: 'myAccessToken',
+          githubToken: 'myAccessToken',
         }),
       );
       res = await getGlobalConfig();
@@ -49,7 +49,21 @@ describe('config', () => {
 
     it('should return config', () => {
       expect(res).toEqual({
-        accessToken: 'myAccessToken',
+        githubToken: 'myAccessToken',
+      });
+    });
+
+    it('should load config using legacy accessToken (backward compat)', async () => {
+      vi.spyOn(fs, 'chmod').mockResolvedValueOnce();
+      vi.spyOn(fs, 'writeFile').mockResolvedValueOnce();
+      vi.spyOn(fs, 'readFile').mockResolvedValueOnce(
+        JSON.stringify({
+          accessToken: 'myLegacyToken',
+        }),
+      );
+      const resLegacy = await getGlobalConfig();
+      expect(resLegacy).toEqual({
+        githubToken: 'myLegacyToken',
       });
     });
   });

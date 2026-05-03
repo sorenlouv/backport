@@ -1,4 +1,4 @@
-import { PullRequestMergeMethod } from '../../../graphql/generated/graphql.js';
+import type { PullRequestMergeMethod } from '../../../graphql/generated/graphql.js';
 import { graphql } from '../../../graphql/generated/index.js';
 import type { ValidConfigOptions } from '../../../options/options.js';
 import { BackportError } from '../../backport-error.js';
@@ -11,7 +11,7 @@ export async function enablePullRequestAutoMerge(
   targetPullRequestNumber: number,
 ) {
   const {
-    accessToken,
+    githubToken,
     githubApiBaseUrlV4,
     autoMergeMethod = 'merge',
   } = options;
@@ -37,19 +37,18 @@ export async function enablePullRequestAutoMerge(
   `);
 
   const mergeMethodMap: Record<string, PullRequestMergeMethod> = {
-    merge: PullRequestMergeMethod.Merge,
-    squash: PullRequestMergeMethod.Squash,
-    rebase: PullRequestMergeMethod.Rebase,
+    merge: 'MERGE',
+    squash: 'SQUASH',
+    rebase: 'REBASE',
   };
 
   const variables = {
     pullRequestId,
-    mergeMethod:
-      mergeMethodMap[autoMergeMethod] ?? PullRequestMergeMethod.Merge,
+    mergeMethod: mergeMethodMap[autoMergeMethod] ?? 'MERGE',
   };
 
   const result = await graphqlRequest(
-    { accessToken, githubApiBaseUrlV4 },
+    { githubToken, githubApiBaseUrlV4 },
     query,
     variables,
   );

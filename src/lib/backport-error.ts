@@ -70,7 +70,7 @@ function getMessage(errorContext: ErrorContext): string {
       return errorContext.message;
     }
     case 'repo-not-found-exception': {
-      return `Error pushing to https://github.com/${errorContext.repoForkOwner}/${errorContext.repoName}. Repository does not exist. Either fork the repository (https://github.com/${errorContext.repoOwner}/${errorContext.repoName}) or disable fork mode via "--no-fork".\nRead more about fork mode in the docs: https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#fork`;
+      return `Error pushing to https://github.com/${errorContext.repoForkOwner}/${errorContext.repoName}. Repository does not exist. Either fork the repository (https://github.com/${errorContext.repoOwner}/${errorContext.repoName}) or disable fork mode via "--no-fork".\nRead more about fork mode in the docs: https://github.com/sorenlouv/backport/blob/main/docs/configuration.md#fork`;
     }
     case 'branch-not-found-exception': {
       return `The branch "${errorContext.branchName}" is invalid or doesn't exist`;

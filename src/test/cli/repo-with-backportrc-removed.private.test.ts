@@ -1,6 +1,6 @@
-import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../helpers/get-dev-github-token.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
-const accessToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 
 describe('repo-with-backportrc-removed (missing .backportrc.json config file)', () => {
   it('lists commits', async () => {
@@ -8,7 +8,7 @@ describe('repo-with-backportrc-removed (missing .backportrc.json config file)', 
       [
         '--branch=production',
         '--repo=backport-org/repo-with-backportrc-removed',
-        `--accessToken=${accessToken}`,
+        `--github-token=${githubToken}`,
       ],
       { waitForString: 'Select commit', timeoutSeconds: 4 },
     );
@@ -35,7 +35,7 @@ describe('repo-with-backportrc-removed (missing .backportrc.json config file)', 
         '--branch=production',
         '--repo=backport-org/repo-with-backportrc-removed',
         '--pr=1',
-        `--accessToken=${accessToken}`,
+        `--github-token=${githubToken}`,
         '--dry-run',
       ],
       {
@@ -52,7 +52,7 @@ describe('repo-with-backportrc-removed (missing .backportrc.json config file)', 
         '--branch=production',
         '--repo=backport-org/repo-with-backportrc-removed',
         '--sha=be59df6912a550c8cb49ba3e18be3e512f3d608c',
-        `--accessToken=${accessToken}`,
+        `--github-token=${githubToken}`,
         '--dry-run',
       ],
       {

@@ -41,9 +41,9 @@ vi.mock('../../lib/logger', () => {
   };
   return {
     initLogger: vi.fn(() => logger),
-    redactAccessToken: vi.fn((str: string) => str),
+    redactGithubToken: vi.fn((str: string) => str),
     consoleLog: vi.fn(),
-    setAccessToken: vi.fn(),
+    setGithubToken: vi.fn(),
     logger,
   };
 });

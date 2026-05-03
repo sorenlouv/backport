@@ -2,13 +2,13 @@ import { spawnSync } from 'node:child_process';
 import fs, { readFileSync } from 'node:fs';
 import path from 'node:path';
 import stripAnsi from 'strip-ansi';
-import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../helpers/get-dev-github-token.js';
 import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 
 const ROOT = process.cwd();
 const pkg = JSON.parse(readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
 
-const accessToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 const sandboxPath = getSandboxPath({ filename: import.meta.filename });
 
 describe('CLI "backport" binary', () => {
@@ -43,8 +43,8 @@ describe('CLI "backport" binary', () => {
         binPath,
         '--repo',
         'elastic/kibana',
-        `--accessToken`,
-        accessToken,
+        `--github-token`,
+        githubToken,
         `--dir=${sandboxPath}`,
       ],
       {

@@ -1,16 +1,16 @@
 import type { Commit, ErrorResult } from '../../entrypoint.api.js';
 import { getCommits, backportRun } from '../../entrypoint.api.js';
-import { getDevAccessToken } from './get-dev-access-token.js';
+import { getDevGithubToken } from './get-dev-github-token.js';
 import { getSandboxPath, resetSandbox } from './sandbox.js';
 
-const accessToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 vi.unmock('find-up');
 vi.setConfig({ testTimeout: 20_000 });
 
 describe('Handle unbackported pull requests', () => {
   it('shows missing backports for PR number 8', async () => {
     const commits = await getCommits({
-      accessToken: accessToken,
+      githubToken: githubToken,
       repoOwner: 'backport-org',
       repoName: 'repo-with-conflicts',
       pullNumber: 8,
@@ -56,12 +56,12 @@ describe('Handle unbackported pull requests', () => {
 
     const result = await backportRun({
       options: {
-        accessToken: accessToken,
+        githubToken: githubToken,
         repoOwner: 'backport-org',
         repoName: 'repo-with-conflicts',
         pullNumber: 12,
         targetBranches: ['7.x'],
-        dir: sandboxPath,
+        workdir: sandboxPath,
         interactive: false,
         publishStatusCommentOnSuccess: false,
         publishStatusCommentOnFailure: false,

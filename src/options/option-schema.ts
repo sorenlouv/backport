@@ -1,13 +1,33 @@
+import type winston from 'winston';
 import { z } from 'zod';
-import { BackportError } from '../lib/backport-error.js';
-import type { AutoFixConflictsHandler } from './config-options.js';
 
 export const PROJECT_CONFIG_DOCS_LINK =
-  'https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#project-config-backportrcjson';
+  'https://github.com/sorenlouv/backport/blob/main/docs/configuration.md#project-config-backportrcjson';
 
 export const GLOBAL_CONFIG_DOCS_LINK =
-  'https://github.com/sorenlouv/backport/blob/main/docs/config-file-options.md#global-config-backportconfigjson';
+  'https://github.com/sorenlouv/backport/blob/main/docs/configuration.md#global-config-backportconfigjson';
 
+// ── Helper types ────────────────────────────────────────────────────
+export interface TargetBranchChoice {
+  name: string;
+  value: string;
+  checked?: boolean;
+}
+export type TargetBranchChoiceOrString = string | TargetBranchChoice;
+
+export type AutoFixConflictsHandler = ({
+  files,
+  directory,
+  logger,
+  targetBranch,
+}: {
+  files: string[];
+  directory: string;
+  logger: winston.Logger;
+  targetBranch: string;
+}) => boolean | Promise<boolean>;
+
+// ── Schema helpers ──────────────────────────────────────────────────
 /**
  * Target branch choice — either a plain string or an object with name/value/checked.
  */
@@ -22,12 +42,13 @@ const targetBranchChoiceSchema = z.union([
     .transform((obj) => ({ ...obj, value: obj.value ?? obj.name })),
 ]);
 
+// ── Core config schema ──────────────────────────────────────────────
 /**
  * Schema for options that can appear in config files, module API, or CLI.
  * This is the single source of truth for option types and defaults.
  */
 export const configOptionsSchema = z.object({
-  accessToken: z.string().optional(),
+  githubToken: z.string().optional(),
   assignees: z.array(z.string()).default([]),
   author: z.string().nullable().optional(),
   autoAssign: z.boolean().default(false),
@@ -39,19 +60,18 @@ export const configOptionsSchema = z.object({
   backportBinary: z.string().default('backport'),
   backportBranchName: z.string().optional(),
   branchLabelMapping: z.record(z.string(), z.string()).optional(),
-  cherrypickRef: z.boolean().default(true),
-  commitConflicts: z.boolean().default(false),
-  autoResolveConflictsWithTheirs: z.boolean().default(false),
+  cherryPickRef: z.boolean().default(true),
+  conflictResolution: z.enum(['abort', 'commit', 'theirs']).default('abort'),
   commitPaths: z.array(z.string()).default([]),
   copySourcePRLabels: z
     .union([z.boolean(), z.string(), z.array(z.string())])
     .default(false),
   copySourcePRReviewers: z.boolean().default(false),
   cwd: z.string().default(process.cwd()),
-  dateSince: z.string().nullable().default(null),
-  dateUntil: z.string().nullable().default(null),
-  details: z.boolean().default(false),
-  dir: z.string().optional(),
+  since: z.string().nullable().default(null),
+  until: z.string().nullable().default(null),
+  verbose: z.boolean().default(false),
+  workdir: z.string().optional(),
   draft: z.boolean().default(false),
   dryRun: z.boolean().optional(),
   editor: z.string().optional(),
@@ -67,14 +87,14 @@ export const configOptionsSchema = z.object({
   logFilePath: z.string().optional(),
   mainline: z.number().optional(),
   ls: z.boolean().optional(),
-  maxNumber: z.number().default(10),
+  maxCount: z.number().default(10),
   multipleBranches: z.boolean().default(true),
   multipleCommits: z.boolean().default(false),
   noVerify: z.boolean().default(true),
   noUnmergedBackportsHelp: z.boolean().default(false),
   onlyMissing: z.boolean().optional(),
   prDescription: z.string().optional(),
-  prFilter: z.string().optional(),
+  prQuery: z.string().optional(),
   prTitle: z.string().optional(),
   projectConfigFile: z.string().optional(),
   publishStatusCommentOnAbort: z.boolean().default(false),
@@ -112,13 +132,81 @@ export type ResolvedConfigOptions = z.output<typeof configOptionsSchema>;
 export const defaultConfigOptions: ResolvedConfigOptions =
   configOptionsSchema.parse({});
 
+// ── Config file schema (includes deprecated fields) ─────────────────
+/**
+ * Extended schema for JSON config files that might contain deprecated fields.
+ * The deprecated fields are stripped during parsing in `read-config-file.ts`.
+ *
+ * IMPORTANT: When adding or removing deprecated fields here, also update
+ * `normalizeDeprecatedOptions()` in `read-config-file.ts` — it handles the
+ * runtime mapping from old keys to new keys.
+ */
+export const configFileOptionsSchema = configOptionsSchema.extend({
+  // yargs options (allowed in configs for passthrough)
+  help: z.boolean().optional(),
+  version: z.boolean().optional(),
+  v: z.boolean().optional(),
+
+  /** @deprecated Use `githubToken` instead. Kept for backward compatibility. */
+  accessToken: z.string().optional(),
+
+  /** @deprecated Replaced by `repoOwner` and `repoName` */
+  upstream: z.string().optional(),
+
+  /** @deprecated Replaced by `targetBranchChoices` */
+  branches: z.array(targetBranchChoiceSchema).optional(),
+
+  /** @deprecated Replaced by `targetPRLabels` */
+  labels: z.array(z.string()).optional(),
+
+  /** @deprecated Replaced by `copySourcePRReviewers` */
+  addOriginalReviewers: z.boolean().optional(),
+
+  /** @deprecated Replaced by `conflictResolution: 'commit'` */
+  commitConflicts: z.boolean().optional(),
+
+  /** @deprecated Replaced by `conflictResolution: 'theirs'` */
+  autoResolveConflictsWithTheirs: z.boolean().optional(),
+
+  /** @deprecated Replaced by `maxCount` */
+  maxNumber: z.number().optional(),
+
+  /** @deprecated Replaced by `prQuery` */
+  prFilter: z.string().optional(),
+
+  /** @deprecated Replaced by `since` */
+  dateSince: z.string().optional(),
+
+  /** @deprecated Replaced by `until` */
+  dateUntil: z.string().optional(),
+
+  /** @deprecated Replaced by `workdir` */
+  dir: z.string().optional(),
+
+  /** @deprecated Replaced by `cherryPickRef` */
+  cherrypickRef: z.boolean().optional(),
+
+  /** @deprecated Replaced by `verbose` */
+  details: z.boolean().optional(),
+
+  /** @deprecated Replaced by `author: null` */
+  all: z.boolean().optional(),
+});
+
+/**
+ * The type used by consumers to pass config-file-style options.
+ * This is the public API type (exported from entrypoint.api.ts).
+ */
+export type ConfigFileOptions = z.input<typeof configFileOptionsSchema>;
+
+// ── Valid (fully resolved) options schema ───────────────────────────
 /**
  * Schema for the final validated options that include required fields
- * resolved during startup (access token, repo info, authenticated user).
+ * resolved during startup (github token, repo info, authenticated user).
  */
 export const validOptionsSchema = configOptionsSchema
   .extend({
-    accessToken: z.string().min(1),
+    githubToken: z.string().min(1),
     author: z.string().nullable().default(null),
     repoName: z.string().min(1),
     repoOwner: z.string().min(1),
@@ -128,7 +216,7 @@ export const validOptionsSchema = configOptionsSchema
     isRepoPrivate: z.boolean().optional(),
   })
   // Require target branches unless running in list-only mode (--ls)
-  .superRefine((data) => {
+  .superRefine((data, ctx) => {
     if (
       !data.ls &&
       data.targetBranches.length === 0 &&
@@ -136,9 +224,10 @@ export const validOptionsSchema = configOptionsSchema
       (!data.branchLabelMapping ||
         Object.keys(data.branchLabelMapping).length === 0)
     ) {
-      throw new BackportError({
-        code: 'config-error-exception',
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
         message: `Please specify a target branch: "--branch 6.1".\n\nRead more: ${PROJECT_CONFIG_DOCS_LINK}`,
+        fatal: true,
       });
     }
   });

@@ -75,8 +75,8 @@ describe('postinstall (integration)', () => {
     expect(fs.existsSync(configPath)).toBe(true);
 
     const content = fs.readFileSync(configPath, 'utf8');
-    // Basic shape: contains the accessToken field (empty string template)
-    expect(content).toContain('"accessToken"');
+    // Basic shape: contains the githubToken field (empty string template)
+    expect(content).toContain('"githubToken"');
 
     const stat = fs.statSync(configPath);
     // Mask to permission bits and ensure 0600 (owner read/write only)
@@ -91,7 +91,7 @@ describe('postinstall (integration)', () => {
 
     const configPath = path.join(newFakeHomeDir, '.backport', 'config.json');
     const customContent =
-      '{"accessToken": "test-token", "customSetting": true}';
+      '{"githubToken": "test-token", "customSetting": true}';
     fs.writeFileSync(configPath, customContent);
 
     // Install again with the new HOME
@@ -113,6 +113,6 @@ describe('postinstall (integration)', () => {
     const configPath = path.join(fakeHomeDir, '.backport', 'config.json');
     const content = fs.readFileSync(configPath, 'utf8');
     const config = parseConfigFile(content);
-    expect(config).toEqual({ accessToken: '' });
+    expect(config).toEqual({ githubToken: '' });
   });
 });

@@ -1,11 +1,11 @@
-import { getDevAccessToken } from '../../../../test/helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../../../../test/helpers/get-dev-github-token.js';
 import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
 import { fetchCommitsByPullNumber } from './fetch-commit-by-pull-number.js';
 import { fetchCommitBySha } from './fetch-commit-by-sha.js';
 import { fetchCommitsByAuthor } from './fetch-commits-by-author.js';
 import { fetchPullRequestsBySearchQuery } from './fetch-pull-requests-by-search-query.js';
 
-const accessToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 vi.setConfig({ testTimeout: 15_000 });
 
 describe('allFetchers', () => {
@@ -13,14 +13,14 @@ describe('allFetchers', () => {
 
   beforeEach(async () => {
     const commitsByAuthor = await fetchCommitsByAuthor({
-      accessToken,
+      githubToken,
       author: 'sorenlouv',
-      maxNumber: 1,
+      maxCount: 1,
       repoName: 'kibana',
       repoOwner: 'elastic',
       sourceBranch: 'main',
-      dateSince: '2021-01-10T00:00:00Z',
-      dateUntil: '2022-01-01T00:00:00Z',
+      since: '2021-01-10T00:00:00Z',
+      until: '2022-01-01T00:00:00Z',
       commitPaths: [] as Array<string>,
     });
 
@@ -35,7 +35,7 @@ describe('allFetchers', () => {
     const commitByPullNumber = await fetchCommitsByPullNumber({
       repoOwner: 'elastic',
       repoName: 'kibana',
-      accessToken,
+      githubToken,
       pullNumber: commitByAuthor.sourcePullRequest.number,
       sourceBranch: 'master',
     });
@@ -47,7 +47,7 @@ describe('allFetchers', () => {
     const commitBySha = await fetchCommitBySha({
       repoOwner: 'elastic',
       repoName: 'kibana',
-      accessToken,
+      githubToken,
       sha: commitByAuthor.sourceCommit.sha,
       sourceBranch: 'main',
     });
@@ -57,12 +57,12 @@ describe('allFetchers', () => {
 
   it('matches commitByAuthor with commitBySearchQuery', async () => {
     const commitsBySearchQuery = await fetchPullRequestsBySearchQuery({
-      accessToken,
+      githubToken,
       author: 'sorenlouv',
-      dateSince: null,
-      dateUntil: null,
-      maxNumber: 1,
-      prFilter: `created:2021-12-20..2021-12-20`,
+      since: null,
+      until: null,
+      maxCount: 1,
+      prQuery: `created:2021-12-20..2021-12-20`,
       repoName: 'kibana',
       repoOwner: 'elastic',
       sourceBranch: 'main',

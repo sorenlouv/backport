@@ -58,13 +58,13 @@ npx tsc --watch
 Tests are organized into three tiers:
 
 - **Unit tests** (`*.unit.test.ts`): Run with `npm run test:unit`. These use mocked HTTP responses and don't require any credentials.
-- **Private tests** (`*.private.test.ts`): Run with `npm run test:private`. Require an `ACCESS_TOKEN` environment variable with a GitHub token that has read access to `backport-org/backport-demo`.
-- **Mutation tests** (`*.mutation.test.ts`): Run with `npm run test:mutation`. Require an `ACCESS_TOKEN` with **write** access to `backport-org/backport-demo`. Only the repo owner can run these.
+- **Private tests** (`*.private.test.ts`): Run with `npm run test:private`. Require a `GITHUB_TOKEN` environment variable with a GitHub token that has read access to `backport-org/backport-demo`.
+- **Mutation tests** (`*.mutation.test.ts`): Run with `npm run test:mutation`. Require a `GITHUB_TOKEN` with **write** access to `backport-org/backport-demo`. Only the repo owner can run these.
 
 To run private or mutation tests:
 
 ```
-ACCESS_TOKEN=ghp_xxx npm run test:private
+GITHUB_TOKEN=ghp_xxx npm run test:private
 ```
 
 ### Architecture overview

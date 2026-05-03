@@ -1,8 +1,8 @@
 import { exec } from '../helpers/child-process-helper.js';
-import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../helpers/get-dev-github-token.js';
 import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
-const accessToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 vi.setConfig({ testTimeout: 15_000, hookTimeout: 30_000 });
 
 describe('test-that-repo-can-be-cloned', () => {
@@ -24,7 +24,7 @@ describe('test-that-repo-can-be-cloned', () => {
           '--pr=1',
           `--dir=${sandboxPath}`,
           '--dry-run',
-          `--accessToken=${accessToken}`,
+          `--github-token=${githubToken}`,
         ],
         { showOra: true, timeoutSeconds: 15 },
       );
@@ -36,7 +36,7 @@ describe('test-that-repo-can-be-cloned', () => {
       expect(output).toContain('Cloning repository from github.com');
       expect(output).toMatchInlineSnapshot(`
         "- Initializing...
-        repo: backport-org/test-that-repo-can-be-cloned | sourceBranch: main | pullNumber: 1 | author: sorenlouv
+        repo: backport-org/test-that-repo-can-be-cloned | sourceBranch: main | pr: 1 | author: sorenlouv
 
         ? Select pull request Beginning of a beautiful repo (#1)
         ✔ 100% Cloning repository from github.com (one-time operation)
@@ -58,7 +58,7 @@ describe('test-that-repo-can-be-cloned', () => {
       expect(output).not.toContain('Cloning repository from github.com');
       expect(output).toMatchInlineSnapshot(`
         "- Initializing...
-        repo: backport-org/test-that-repo-can-be-cloned | sourceBranch: main | pullNumber: 1 | author: sorenlouv
+        repo: backport-org/test-that-repo-can-be-cloned | sourceBranch: main | pr: 1 | author: sorenlouv
 
         ? Select pull request Beginning of a beautiful repo (#1)
 
@@ -100,7 +100,7 @@ describe('test-that-repo-can-be-cloned', () => {
           '--pr=1',
           `--dir=${backportRepo}`,
           '--dry-run',
-          `--accessToken=${accessToken}`,
+          `--github-token=${githubToken}`,
         ],
         { cwd: sourceRepo, showOra: true, timeoutSeconds: 15 },
       );

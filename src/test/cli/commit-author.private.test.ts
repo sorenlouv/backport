@@ -1,9 +1,9 @@
 import { exec } from '../helpers/child-process-helper.js';
-import { getDevAccessToken } from '../helpers/get-dev-access-token.js';
+import { getDevGithubToken } from '../helpers/get-dev-github-token.js';
 import { getSandboxPath, resetSandbox } from '../helpers/sandbox.js';
 import { runBackportViaCli } from './run-backport-via-cli.js';
 
-const accessToken = getDevAccessToken();
+const githubToken = getDevGithubToken();
 
 const COMMIT_BY_JOHN_DOE_SHA = 'c3f837226bea3c7a50f2ba16d807fbe846ed3453';
 
@@ -30,7 +30,7 @@ describe('commit author', () => {
     it('uses commit author from source commit', async () => {
       await runBackportViaCli(
         [
-          `--accessToken=${accessToken}`,
+          `--github-token=${githubToken}`,
           `--dir=${backportRepo}`,
           '--branch=production',
           `--sha=${COMMIT_BY_JOHN_DOE_SHA}`,
@@ -52,7 +52,7 @@ describe('commit author', () => {
     it('respects the settings', async () => {
       await runBackportViaCli(
         [
-          `--accessToken=${accessToken}`,
+          `--github-token=${githubToken}`,
           `--dir=${backportRepo}`,
           '--branch=production',
           `--sha=${COMMIT_BY_JOHN_DOE_SHA}`,
@@ -76,7 +76,7 @@ describe('commit author', () => {
     it('sets the current user as author of commit', async () => {
       await runBackportViaCli(
         [
-          `--accessToken=${accessToken}`,
+          `--github-token=${githubToken}`,
           `--dir=${backportRepo}`,
           '--branch=production',
           `--sha=${COMMIT_BY_JOHN_DOE_SHA}`,

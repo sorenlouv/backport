@@ -79,7 +79,7 @@ export async function runSequentially({
       }
 
       consoleLog(
-        `An unhandled error occurred while backporting commit. Please see the logs for details: ${getLogfilePath(
+        `An unhandled error occurred while backporting commit. Re-run with --verbose for details or see the logfile: ${getLogfilePath(
           { logFilePath: options.logFilePath, logLevel: 'info' },
         )}`,
       );
