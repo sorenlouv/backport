@@ -31,7 +31,7 @@
   "scripts": {
     "postinstall": "test -f ./dist/src/scripts/run-postinstall.js && node ./dist/src/scripts/run-postinstall.js || echo 'Dist folder missing'",
     "prepare": "husky && npm run build",
-    "prepublishOnly": "npm install && npm run lint && npm run build",
+    "prepublishOnly": "npm run lint",
     "lint-and-test": "npm run lint && npm test",
     "lint": "tsc -p tsconfig.eslint.json --noEmit --incremental && eslint './**/*.{ts,js}' --fix --cache",
     "start": "NODE_ENV=development tsx ./src/entrypoint.cli.ts",
