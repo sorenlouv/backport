@@ -46,6 +46,14 @@ describe('parseConfigFile', () => {
     });
   });
 
+  describe('copySourcePRReviewers', () => {
+    it('should map addOriginalReviewers to copySourcePRReviewers', () => {
+      const config = parseConfigFile('{ "addOriginalReviewers": true }');
+      expect(config.copySourcePRReviewers).toEqual(true);
+      expect('addOriginalReviewers' in config).toBe(false);
+    });
+  });
+
   describe('conflictResolution', () => {
     it('should map commitConflicts to conflictResolution: commit', () => {
       const config = parseConfigFile('{ "commitConflicts": true }');
