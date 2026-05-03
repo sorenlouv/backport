@@ -115,6 +115,9 @@ export async function fetchCommitsByPullNumber(options: {
     }
   }
 
-  const commit = await fetchCommitBySha({ ...options, sha: mergeCommit?.oid });
+  const commit = await fetchCommitBySha({
+    ...options,
+    sha: String(mergeCommit.oid),
+  });
   return [commit];
 }

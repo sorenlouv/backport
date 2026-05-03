@@ -115,9 +115,11 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
 
   if (didUseRebaseAndMergeStrategy) {
     const commits = await Promise.all(
-      commitsInBaseBranch.map((c) =>
-        fetchCommitBySha({ ...options, sha: c?.node?.oid }),
-      ),
+      commitsInBaseBranch
+        .filter((c) => c?.node?.oid != null)
+        .map((c) =>
+          fetchCommitBySha({ ...options, sha: String(c!.node!.oid) }),
+        ),
     );
 
     return commits;

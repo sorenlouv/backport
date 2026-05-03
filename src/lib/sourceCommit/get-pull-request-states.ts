@@ -85,12 +85,12 @@ export function getPullRequestStates({
       return {
         ...res,
         state: 'MERGED' as const,
-        url: sourcePullRequest.url,
+        url: String(sourcePullRequest.url),
         number: sourcePullRequest.number,
         mergeCommit: sourcePullRequest.mergeCommit
           ? {
               message: sourcePullRequest.mergeCommit.message,
-              sha: sourcePullRequest.mergeCommit.sha,
+              sha: String(sourcePullRequest.mergeCommit.sha),
             }
           : undefined,
       };
@@ -162,13 +162,13 @@ function getCreatedTargetPullRequests(
     .map((item) => {
       const { targetPullRequest } = item.node;
       return {
-        url: targetPullRequest.url,
+        url: String(targetPullRequest.url),
         number: targetPullRequest.number,
         branch: targetPullRequest.baseRefName,
         state: targetPullRequest.state,
         mergeCommit: targetPullRequest.targetMergeCommit
           ? {
-              sha: targetPullRequest.targetMergeCommit.sha,
+              sha: String(targetPullRequest.targetMergeCommit.sha),
               message: targetPullRequest.targetMergeCommit.message,
             }
           : undefined,

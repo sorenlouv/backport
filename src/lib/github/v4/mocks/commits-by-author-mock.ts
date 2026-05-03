@@ -1,5 +1,4 @@
 import type { CommitsByAuthorQuery } from '../../../../graphql/generated/graphql.js';
-import { PullRequestState } from '../../../../graphql/generated/graphql.js';
 
 export const commitsByAuthorMock: CommitsByAuthorQuery = {
   repository: {
@@ -118,7 +117,7 @@ export const commitsByAuthorMock: CommitsByAuthorQuery = {
                                   },
                                   url: 'https://github.com/elastic/kibana/pull/99',
                                   title: 'some title',
-                                  state: PullRequestState.Merged,
+                                  state: 'MERGED',
                                   number: 99,
                                   baseRefName: '6.3',
                                   commits: {

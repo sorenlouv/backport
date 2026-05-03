@@ -66,7 +66,7 @@ export async function createPullRequest({
       if (existingPR) {
         spinner.succeed('Updating existing pull request');
         return {
-          url: existingPR.url,
+          url: String(existingPR.url),
           number: existingPR.number,
         };
       }

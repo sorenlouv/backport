@@ -186,12 +186,12 @@ async function getRemoteConfigFileOptions(
 
     if (
       localCommitDate &&
-      localCommitDate > Date.parse(remoteConfig.committedDate)
+      localCommitDate > Date.parse(String(remoteConfig.committedDate))
     ) {
       logger.info(
         `Remote config: Skipping. Local config is newer: ${new Date(
           localCommitDate,
-        ).toISOString()} > ${remoteConfig.committedDate}`,
+        ).toISOString()} > ${String(remoteConfig.committedDate)}`,
       );
       return;
     }
