@@ -130,8 +130,9 @@ export const SourceCommitWithTargetPullRequestFragment = graphql(`
       email
     }
 
-    # Source pull request: PR where source commit was merged in
-    associatedPullRequests(first: 1) {
+    # Source pull request: PR where source commit was merged in.
+    # first: 100 disambiguates when multiple PRs' head branches contain the SHA.
+    associatedPullRequests(first: 100) {
       edges {
         node {
           title
