@@ -516,18 +516,19 @@ describe('getPullRequestBody', () => {
   describe('conflict resolution note', () => {
     it('should not append a note when hasAnyCommitWithConflicts is false', () => {
       const body = getPullRequestBody({
-        options: {} as ValidConfigOptions,
+        options: { conflictResolution: 'theirs' } as ValidConfigOptions,
         commits,
         targetBranch: '7.x',
         hasAnyCommitWithConflicts: false,
       });
 
       expect(body).not.toContain('auto-resolved');
+      expect(body).not.toContain('committed verbatim');
     });
 
-    it('should append a note when hasAnyCommitWithConflicts is true', () => {
+    it('should describe the `theirs` strategy when conflictResolution is "theirs"', () => {
       const body = getPullRequestBody({
-        options: {} as ValidConfigOptions,
+        options: { conflictResolution: 'theirs' } as ValidConfigOptions,
         commits,
         targetBranch: '7.x',
         hasAnyCommitWithConflicts: true,
@@ -539,11 +540,12 @@ describe('getPullRequestBody', () => {
       );
       expect(body).toContain('`--strategy-option=theirs`');
       expect(body).not.toContain('still had unresolved conflicts');
+      expect(body).not.toContain('committed verbatim');
     });
 
-    it('should list unresolved files when present', () => {
+    it('should list unresolved files when the `theirs` retry still failed on some files', () => {
       const body = getPullRequestBody({
-        options: {} as ValidConfigOptions,
+        options: { conflictResolution: 'theirs' } as ValidConfigOptions,
         commits,
         targetBranch: '7.x',
         hasAnyCommitWithConflicts: true,
@@ -553,6 +555,23 @@ describe('getPullRequestBody', () => {
       expect(body).toContain('still had unresolved conflicts after the retry');
       expect(body).toContain('`la-liga.md`');
       expect(body).toContain('`premier-league.md`');
+    });
+
+    it('should describe checked-in markers when conflictResolution is "commit"', () => {
+      const body = getPullRequestBody({
+        options: { conflictResolution: 'commit' } as ValidConfigOptions,
+        commits,
+        targetBranch: '7.x',
+        hasAnyCommitWithConflicts: true,
+        unresolvedFiles: [],
+      });
+
+      expect(body).toContain('conflict markers committed verbatim');
+      expect(body).toContain("`conflictResolution: 'commit'`");
+      expect(body).toContain('resolved manually before this PR can be merged');
+      // Must NOT claim auto-resolution — that's the opposite of what happened.
+      expect(body).not.toContain('auto-resolved');
+      expect(body).not.toContain('`--strategy-option=theirs`');
     });
   });
 });

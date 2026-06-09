@@ -85,15 +85,37 @@ export function getPullRequestBody({
   }
 
   if (hasAnyCommitWithConflicts) {
-    body += getConflictResolutionNote(unresolvedFiles);
+    body += getConflictResolutionNote(
+      options.conflictResolution,
+      unresolvedFiles,
+    );
   }
 
   return body;
 }
 
-function getConflictResolutionNote(unresolvedFiles: string[]): string {
+function getConflictResolutionNote(
+  conflictResolution: ValidConfigOptions['conflictResolution'],
+  unresolvedFiles: string[],
+): string {
+  const header = '\n\n---\n';
+
+  // `commit` mode commits the files with raw conflict markers (`<<<<<<<` /
+  // `=======` / `>>>>>>>`) checked in — nothing is auto-resolved. Saying the
+  // opposite would mislead reviewers into thinking the PR is ready to merge.
+  if (conflictResolution === 'commit') {
+    return (
+      header +
+      '**Note:** This PR was created with conflict markers committed verbatim ' +
+      "to the affected files (`conflictResolution: 'commit'`). " +
+      'The conflicting hunks must be resolved manually before this PR can be merged.'
+    );
+  }
+
+  // `theirs` mode: cherry-pick was retried with `--strategy-option=theirs`,
+  // resolving conflicts in favor of the source commit.
   const base =
-    '\n\n---\n' +
+    header +
     '**Note:** This PR was created with conflicts auto-resolved in favor of the source commit ' +
     '(`--strategy-option=theirs`). Please review the changes carefully.';
 
