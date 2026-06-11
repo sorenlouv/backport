@@ -572,6 +572,28 @@ describe('getPullRequestBody', () => {
       // Must NOT claim auto-resolution — that's the opposite of what happened.
       expect(body).not.toContain('auto-resolved');
       expect(body).not.toContain('`--strategy-option=theirs`');
+      // No file list when none provided.
+      expect(body).not.toContain('contain committed conflict markers');
+    });
+
+    it('should list conflicted files when conflictResolution is "commit" and files are provided', () => {
+      const body = getPullRequestBody({
+        options: { conflictResolution: 'commit' } as ValidConfigOptions,
+        commits,
+        targetBranch: '7.x',
+        hasAnyCommitWithConflicts: true,
+        unresolvedFiles: ['la-liga.md', 'premier-league.md'],
+      });
+
+      expect(body).toContain(
+        'The following files contain committed conflict markers:',
+      );
+      expect(body).toContain('`la-liga.md`');
+      expect(body).toContain('`premier-league.md`');
+      // Should not borrow the theirs-mode trailer wording.
+      expect(body).not.toContain(
+        'still had unresolved conflicts after the retry',
+      );
     });
   });
 });

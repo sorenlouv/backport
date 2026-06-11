@@ -100,34 +100,35 @@ function getConflictResolutionNote(
 ): string {
   const header = '\n\n---\n';
 
-  // `commit` mode commits the files with raw conflict markers (`<<<<<<<` /
-  // `=======` / `>>>>>>>`) checked in — nothing is auto-resolved. Saying the
-  // opposite would mislead reviewers into thinking the PR is ready to merge.
-  if (conflictResolution === 'commit') {
-    return (
-      header +
-      '**Note:** This PR was created with conflict markers committed verbatim ' +
-      "to the affected files (`conflictResolution: 'commit'`). " +
-      'The conflicting hunks must be resolved manually before this PR can be merged.'
-    );
-  }
+  // `commit` mode commits files with raw conflict markers checked in;
+  // `theirs` retries the cherry-pick with --strategy-option=theirs. Both end
+  // up with files the reviewer must look at — same trailer shape, different
+  // base text and file-list label.
+  const { base, fileListLabel } =
+    conflictResolution === 'commit'
+      ? {
+          base:
+            '**Note:** This PR was created with conflict markers committed verbatim ' +
+            "to the affected files (`conflictResolution: 'commit'`). " +
+            'The conflicting hunks must be resolved manually before this PR can be merged.',
+          fileListLabel:
+            'The following files contain committed conflict markers:',
+        }
+      : {
+          base:
+            '**Note:** This PR was created with conflicts auto-resolved in favor of the source commit ' +
+            '(`--strategy-option=theirs`). Please review the changes carefully.',
+          fileListLabel:
+            'The following files still had unresolved conflicts after the retry:',
+        };
 
-  // `theirs` mode: cherry-pick was retried with `--strategy-option=theirs`,
-  // resolving conflicts in favor of the source commit.
-  const base =
-    header +
-    '**Note:** This PR was created with conflicts auto-resolved in favor of the source commit ' +
-    '(`--strategy-option=theirs`). Please review the changes carefully.';
-
+  const note = header + base;
   if (unresolvedFiles.length === 0) {
-    return base;
+    return note;
   }
 
   const fileList = unresolvedFiles.map((f) => `\n - \`${f}\``).join('');
-  return (
-    base +
-    `\n\nThe following files still had unresolved conflicts after the retry:${fileList}`
-  );
+  return note + `\n\n${fileListLabel}${fileList}`;
 }
 
 function stripMarkdownComments(str: string): string {
