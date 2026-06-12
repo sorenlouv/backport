@@ -13,7 +13,7 @@ describe('fetchRemoteProjectConfig', () => {
       const execOpts = { cwd: sandboxPath };
       await exec(`git init`, execOpts);
       await exec(
-        `git remote add sorenlouv git@github.com:sorenlouv/kibana.git`,
+        `git remote add sorenlouv git@github.com:sorenlouv/backport-e2e.git`,
         execOpts,
       );
 
@@ -23,8 +23,8 @@ describe('fetchRemoteProjectConfig', () => {
           cwd: sandboxPath,
         }),
       ).toEqual({
-        repoName: 'kibana',
-        repoOwner: 'elastic',
+        repoName: 'backport-e2e',
+        repoOwner: 'backport-org',
       });
     });
   });
