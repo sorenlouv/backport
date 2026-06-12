@@ -152,7 +152,10 @@ async function cherrypickAndHandleConflicts({
   if (!options.interactive && options.conflictResolution === 'commit') {
     await gitAddAll({ options });
     await commitChanges({ options, commit, commitAuthor });
-    return { hasCommitsWithConflicts: true, unresolvedFiles: [] };
+    return {
+      hasCommitsWithConflicts: true,
+      unresolvedFiles: conflictingFiles.map((f) => f.relative),
+    };
   }
 
   const conflictingFilesRelative = conflictingFiles
