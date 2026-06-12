@@ -82,7 +82,7 @@ fragment SourceCommitWithTargetPullRequestFragment on Commit {
     name
     email
   }
-  associatedPullRequests(first: 1) {
+  associatedPullRequests(first: 20) {
     edges {
       node {
         title
