@@ -1,0 +1,42 @@
+name: release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# Queue releases instead of running them concurrently
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # push version tag and create GitHub release
+      issues: write # comment on issues resolved by the release
+      pull-requests: write # comment on PRs included in the release
+      id-token: write # npm trusted publishing (OIDC) and provenance
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # semantic-release determines the next version from tags and commit history
+          fetch-depth: 0
+
+      # Do not set registry-url here; it conflicts with npm trusted publishing
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22.x
+
+      - run: npm ci
+      - run: npm audit signatures
+      - run: npm run lint
+      - run: npm run test:unit
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release

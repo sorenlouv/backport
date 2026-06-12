@@ -1,5 +1,16 @@
 # Contributing
 
+### Pull request titles
+
+PRs are squash-merged, so the PR title becomes the commit message on `main`. Titles must follow [Conventional Commits](https://www.conventionalcommits.org) (enforced by the `pr-title` CI check) because they determine the next release:
+
+| PR title                                       | Release    |
+| ---------------------------------------------- | ---------- |
+| `fix: ...`                                     | patch      |
+| `feat: ...`                                    | minor      |
+| `feat!: ...` or `BREAKING CHANGE:` in the body | major      |
+| `chore: ...`, `docs: ...`, `refactor: ...`     | no release |
+
 ### Run
 
 ```
