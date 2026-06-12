@@ -11,12 +11,6 @@ PRs are squash-merged, so the PR title becomes the commit message on `main`. Tit
 | `feat!: ...` or `BREAKING CHANGE:` in the body | major      |
 | `chore: ...`, `docs: ...`, `refactor: ...`     | no release |
 
-### Releasing
-
-Releases are fully automated — there is no manual version bumping or publishing. On every push to `main`, the [release workflow](.github/workflows/release.yml) runs [semantic-release](https://github.com/semantic-release/semantic-release), which determines the next version from the commit messages since the last release, publishes to npm via [trusted publishing](https://docs.npmjs.com/trusted-publishers) (with provenance), pushes a `v*` git tag, and creates a GitHub release with the changelog.
-
-Note: the `version` field in `package.json` is **not** the source of truth — the latest git tag is. semantic-release injects the correct version into the published tarball. Direct commits to `main` must also follow Conventional Commits to trigger a release.
-
 ### Run
 
 ```
