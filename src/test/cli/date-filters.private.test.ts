@@ -33,10 +33,10 @@ describe('date filters (since, until)', () => {
   it('combined with --pr-query', async () => {
     const options = [
       '--branch=7.x',
-      '--repo=elastic/kibana',
+      '--repo=backport-org/backport-e2e',
       `--github-token=${githubToken}`,
-      '--since=2023-09-01',
-      '--until=2023-10-01',
+      '--since=2020-08-15',
+      '--until=2020-08-17',
     ];
 
     const { output: outputWithoutPrQuery } = await runBackportViaCli(options, {
@@ -44,28 +44,34 @@ describe('date filters (since, until)', () => {
     });
 
     expect(outputWithoutPrQuery).toMatchInlineSnapshot(`
-      "repo: elastic/kibana | sourceBranch: main | author: sorenlouv | autoMerge: true | since: 2023-09-01T00:00:00.000Z | until: 2023-10-01T00:00:00.000Z
+      "repo: backport-org/backport-e2e | sourceBranch: master | author: sorenlouv | since: 2020-08-15T00:00:00.000Z | until: 2020-08-17T00:00:00.000Z
 
       ? Select commit
-      ❯ 1. [APM] Add support for versioned APIs in diagnostics tool (#167050)
-        2. [APM] Add permissions for "input-only" package (#166234)
-        3. [APM] Add docs for Serverless API tests (#166147)
-        4. [APM] Paginate big traces (#165584) 8.10
-        5. [APM] Move index settings persistence to data access plugn (#165560)
+      ❯ 1. Add sheep emoji (#9) 7.8
+        2. Change Ulysses to Gretha (conflict) (#8) 7.x
+        3. Add 🍏 emoji (#5) 7.8, 7.x
+        4. Add family emoji (#2) 7.x
+        5. Add \`backport\` dep
+        6. Merge pull request #1 from backport-org/add-heart-emoji
+        7. Add ❤️ emoji
+        8. Update .backportrc.json
+        9. Bump to 8.0.0
+        10.Add package.json
 
       ↑↓ navigate • ⏎ select"
     `);
 
     const { output: outputWithPrQuery } = await runBackportViaCli(
-      [...options, `--pr-query="label:release_note:fix"`],
+      [...options, `--pr-query="label:v7.8.0"`],
       { waitForString: 'Select commit' },
     );
 
     expect(outputWithPrQuery).toMatchInlineSnapshot(`
-      "repo: elastic/kibana | sourceBranch: main | author: sorenlouv | autoMerge: true | since: 2023-09-01T00:00:00.000Z | until: 2023-10-01T00:00:00.000Z
+      "repo: backport-org/backport-e2e | sourceBranch: master | author: sorenlouv | since: 2020-08-15T00:00:00.000Z | until: 2020-08-17T00:00:00.000Z
 
       ? Select commit
-      ❯ 1. [APM] Paginate big traces (#165584) 8.10
+      ❯ 1. Add sheep emoji (#9) 7.8
+        2. Add 🍏 emoji (#5) 7.8, 7.x
 
       ↑↓ navigate • ⏎ select"
     `);

@@ -210,150 +210,102 @@ describe('entrypoint.module', () => {
   });
 
   describe('getCommits', () => {
+    const expectedAppleEmojiCommit: Commit = {
+      author: { name: 'Søren Louv-Jansen', email: 'sorenlouv@gmail.com' },
+      suggestedTargetBranches: [],
+      sourceCommit: {
+        branchLabelMapping: {
+          '^v8.0.0$': 'master',
+          '^v7.9.0$': '7.x',
+          '^v(\\d+).(\\d+).\\d+$': '$1.$2',
+        },
+        committedDate: '2020-08-15T12:40:19Z',
+        message: 'Add 🍏 emoji (#5)',
+        sha: 'ee8c492334cef1ca077a56addb79a26f79821d2f',
+      },
+      sourcePullRequest: {
+        labels: ['v7.8.0', 'v7.9.0', 'v8.0.0'],
+        number: 5,
+        title: 'Add 🍏 emoji',
+        url: 'https://github.com/backport-org/backport-e2e/pull/5',
+        mergeCommit: {
+          message: 'Add 🍏 emoji (#5)',
+          sha: 'ee8c492334cef1ca077a56addb79a26f79821d2f',
+        },
+      },
+      sourceBranch: 'master',
+      targetPullRequestStates: [
+        {
+          branch: '7.8',
+          label: 'v7.8.0',
+          branchLabelMappingKey: String.raw`^v(\d+).(\d+).\d+$`,
+          isSourceBranch: false,
+          state: 'MERGED',
+          number: 7,
+          url: 'https://github.com/backport-org/backport-e2e/pull/7',
+          mergeCommit: {
+            message: 'Add 🍏 emoji (#5) (#7)',
+            sha: '46cd6f9999effdf894a36dbc7db90e890f4be840',
+          },
+        },
+        {
+          branch: '7.x',
+          label: 'v7.9.0',
+          branchLabelMappingKey: '^v7.9.0$',
+          isSourceBranch: false,
+          state: 'MERGED',
+          number: 6,
+          url: 'https://github.com/backport-org/backport-e2e/pull/6',
+          mergeCommit: {
+            message: 'Add 🍏 emoji (#5) (#6)',
+            sha: '4bcd876d4ceaa73cf437bfc89b74d1a4e704c0a6',
+          },
+        },
+        {
+          branch: 'master',
+          label: 'v8.0.0',
+          branchLabelMappingKey: '^v8.0.0$',
+          isSourceBranch: true,
+          state: 'MERGED',
+          number: 5,
+          url: 'https://github.com/backport-org/backport-e2e/pull/5',
+          mergeCommit: {
+            message: 'Add 🍏 emoji (#5)',
+            sha: 'ee8c492334cef1ca077a56addb79a26f79821d2f',
+          },
+        },
+      ],
+    };
+
     it('pullNumber', async () => {
       const commits = await getCommits({
         githubToken: githubToken,
-        repoName: 'kibana',
-        repoOwner: 'elastic',
-        pullNumber: 88_188,
+        repoName: 'backport-e2e',
+        repoOwner: 'backport-org',
+        pullNumber: 5,
       });
 
-      const expectedCommits: Commit[] = [
-        {
-          author: { name: 'Søren Louv-Jansen', email: 'sorenlouv@gmail.com' },
-          suggestedTargetBranches: [],
-          sourceCommit: {
-            branchLabelMapping: {
-              '^v(\\d+).(\\d+).\\d+$': '$1.$2',
-              '^v7.12.0$': '7.x',
-              '^v8.0.0$': 'master',
-            },
-            committedDate: '2021-01-13T20:01:44Z',
-            message:
-              '[APM] Fix incorrect table column header (95th instead of avg) (#88188)',
-            sha: 'd1b348e6213c5ad48653dfaad6eaf4928b2c688b',
-          },
-          sourcePullRequest: {
-            labels: ['Team:APM - DEPRECATED', 'release_note:skip', 'v7.11.0'],
-            number: 88_188,
-            title:
-              '[APM] Fix incorrect table column header (95th instead of avg)',
-            url: 'https://github.com/elastic/kibana/pull/88188',
-            mergeCommit: {
-              message:
-                '[APM] Fix incorrect table column header (95th instead of avg) (#88188)',
-              sha: 'd1b348e6213c5ad48653dfaad6eaf4928b2c688b',
-            },
-          },
-          sourceBranch: 'master',
-          targetPullRequestStates: [
-            {
-              branch: '7.11',
-              isSourceBranch: false,
-              label: 'v7.11.0',
-              branchLabelMappingKey: String.raw`^v(\d+).(\d+).\d+$`,
-              mergeCommit: {
-                message:
-                  '[APM] Fix incorrect table column header (95th instead of avg) (#88188) (#88289)',
-                sha: 'b8194e9ec27d69f485d8b194d1cb5e4f6d8fef6d',
-              },
-              number: 88_289,
-              state: 'MERGED',
-              url: 'https://github.com/elastic/kibana/pull/88289',
-            },
-            {
-              branch: '7.x',
-              mergeCommit: {
-                message:
-                  '[7.x] [APM] Fix incorrect table column header (95th instead of avg) (#88188) (#88288)\n\nCo-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>',
-                sha: '52710be7add6811ec4783c7d383d4159c0aa76f5',
-              },
-              number: 88_288,
-              state: 'MERGED',
-              url: 'https://github.com/elastic/kibana/pull/88288',
-            },
-          ],
-        },
-      ];
-      expect(commits).toEqual(expectedCommits);
+      expect(commits).toEqual([expectedAppleEmojiCommit]);
     });
 
     it('sha', async () => {
       const commits = await getCommits({
         githubToken: githubToken,
-        repoName: 'kibana',
-        repoOwner: 'elastic',
-        sha: 'd1b348e6213c5ad48653dfaad6eaf4928b2c688b',
+        repoName: 'backport-e2e',
+        repoOwner: 'backport-org',
+        sha: 'ee8c492334cef1ca077a56addb79a26f79821d2f',
       });
 
-      const expectedCommits: Commit[] = [
-        {
-          author: { name: 'Søren Louv-Jansen', email: 'sorenlouv@gmail.com' },
-          suggestedTargetBranches: [],
-          sourceCommit: {
-            branchLabelMapping: {
-              '^v(\\d+).(\\d+).\\d+$': '$1.$2',
-              '^v7.12.0$': '7.x',
-              '^v8.0.0$': 'master',
-            },
-            committedDate: '2021-01-13T20:01:44Z',
-            message:
-              '[APM] Fix incorrect table column header (95th instead of avg) (#88188)',
-            sha: 'd1b348e6213c5ad48653dfaad6eaf4928b2c688b',
-          },
-          sourcePullRequest: {
-            labels: ['Team:APM - DEPRECATED', 'release_note:skip', 'v7.11.0'],
-            number: 88_188,
-            title:
-              '[APM] Fix incorrect table column header (95th instead of avg)',
-            url: 'https://github.com/elastic/kibana/pull/88188',
-            mergeCommit: {
-              message:
-                '[APM] Fix incorrect table column header (95th instead of avg) (#88188)',
-              sha: 'd1b348e6213c5ad48653dfaad6eaf4928b2c688b',
-            },
-          },
-          sourceBranch: 'master',
-          targetPullRequestStates: [
-            {
-              url: 'https://github.com/elastic/kibana/pull/88289',
-              number: 88_289,
-              branch: '7.11',
-              label: 'v7.11.0',
-              branchLabelMappingKey: String.raw`^v(\d+).(\d+).\d+$`,
-              isSourceBranch: false,
-              state: 'MERGED',
-              mergeCommit: {
-                sha: 'b8194e9ec27d69f485d8b194d1cb5e4f6d8fef6d',
-                message:
-                  '[APM] Fix incorrect table column header (95th instead of avg) (#88188) (#88289)',
-              },
-            },
-            {
-              url: 'https://github.com/elastic/kibana/pull/88288',
-              number: 88_288,
-              branch: '7.x',
-              state: 'MERGED',
-              mergeCommit: {
-                sha: '52710be7add6811ec4783c7d383d4159c0aa76f5',
-                message:
-                  '[7.x] [APM] Fix incorrect table column header (95th instead of avg) (#88188) (#88288)\n\nCo-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>',
-              },
-            },
-          ],
-        },
-      ];
-
-      expect(commits).toEqual(expectedCommits);
+      expect(commits).toEqual([expectedAppleEmojiCommit]);
     });
 
     it('prQuery', async () => {
       const commits = await getCommits({
         githubToken: githubToken,
-        repoName: 'kibana',
-        repoOwner: 'elastic',
-        until: '2021-06-02',
-        prQuery: 'label:"Team:APM - DEPRECATED" base:master',
+        repoName: 'backport-e2e',
+        repoOwner: 'backport-org',
+        until: '2021-01-01',
+        prQuery: 'label:v7.9.0 base:master',
         maxCount: 3,
       });
 
@@ -369,21 +321,21 @@ describe('entrypoint.module', () => {
         [
           {
             "branchLabelMapping": undefined,
-            "committedDate": "2021-05-28T12:41:42Z",
-            "message": "[Observability] Fix typo in readme for new navigation (#100861)",
-            "sha": "79945fe0275b2ec9c93747e26154110133ec51fb",
+            "committedDate": "2020-08-15T19:54:32Z",
+            "message": "Change Ulysses to Gretha (conflict) (#8)",
+            "sha": "b484e161b705b39dbbfc5005e67ca24d05b23c37",
           },
           {
             "branchLabelMapping": undefined,
-            "committedDate": "2021-05-28T19:43:30Z",
-            "message": "[APM] Move APM tutorial from apm_oss to x-pack/apm (#100780)",
-            "sha": "0bcd78b0e999feb95057f5e6eafdb572b9b2fe39",
+            "committedDate": "2020-08-15T12:40:19Z",
+            "message": "Add 🍏 emoji (#5)",
+            "sha": "ee8c492334cef1ca077a56addb79a26f79821d2f",
           },
           {
             "branchLabelMapping": undefined,
-            "committedDate": "2021-05-18T10:33:16Z",
-            "message": "Migrate from Joi to @kbn/config-schema in "home" and "features" plugins (#100201)",
-            "sha": "574f6595ad2e5452fa90e6a3111220a599e473c0",
+            "committedDate": "2020-08-15T10:44:04Z",
+            "message": "Add family emoji (#2)",
+            "sha": "59d6ff1ca90a4ce210c0a4f0e159214875c19d60",
           },
         ]
       `);
@@ -392,8 +344,8 @@ describe('entrypoint.module', () => {
     it('author', async () => {
       const commits = await getCommits({
         githubToken: githubToken,
-        repoName: 'kibana',
-        repoOwner: 'elastic',
+        repoName: 'backport-e2e',
+        repoOwner: 'backport-org',
         author: 'sorenlouv',
         until: '2021-01-01T10:00:00Z',
         maxCount: 3,
@@ -410,54 +362,36 @@ describe('entrypoint.module', () => {
             "sourceCommit": {
               "branchLabelMapping": {
                 "^v(\\d+).(\\d+).\\d+$": "$1.$2",
-                "^v7.11.0$": "7.x",
+                "^v7.9.0$": "7.x",
                 "^v8.0.0$": "master",
               },
-              "committedDate": "2020-12-16T15:17:03Z",
-              "message": "[APM] Fix broken link to ML when time range is not set (#85976)",
-              "sha": "744d6809ded7e1055bfda280c351cee3e8c0e3bf",
+              "committedDate": "2020-08-16T21:44:28Z",
+              "message": "Add sheep emoji (#9)",
+              "sha": "eebf165c82a4b718d95c11b3877e365b1949ff28",
             },
             "sourcePullRequest": {
               "labels": [
-                "release_note:fix",
-                "Team:APM - DEPRECATED",
-                "apm:test-plan-done",
-                "v7.11.0",
+                "v7.8.0",
               ],
               "mergeCommit": {
-                "message": "[APM] Fix broken link to ML when time range is not set (#85976)",
-                "sha": "744d6809ded7e1055bfda280c351cee3e8c0e3bf",
+                "message": "Add sheep emoji (#9)",
+                "sha": "eebf165c82a4b718d95c11b3877e365b1949ff28",
               },
-              "number": 85976,
-              "title": "[APM] Fix broken link to ML when time range is not set",
-              "url": "https://github.com/elastic/kibana/pull/85976",
+              "number": 9,
+              "title": "Add sheep emoji",
+              "url": "https://github.com/backport-org/backport-e2e/pull/9",
             },
             "suggestedTargetBranches": [],
             "targetPullRequestStates": [
               {
-                "branch": "7.x",
-                "branchLabelMappingKey": "^v7.11.0$",
+                "branch": "7.8",
+                "branchLabelMappingKey": "^v(\\d+).(\\d+).\\d+$",
                 "isSourceBranch": false,
-                "label": "v7.11.0",
-                "mergeCommit": {
-                  "message": "[APM] Fix broken link to ML when time range is not set (#85976) (#86227)
-
-        Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>",
-                  "sha": "2d361f018e0776c237d03b84ca8aa24615d16d99",
-                },
-                "number": 86227,
-                "state": "MERGED",
-                "url": "https://github.com/elastic/kibana/pull/86227",
-              },
-              {
-                "branch": "7.11",
-                "mergeCommit": {
-                  "message": "[APM] Fix broken link to ML when time range is not set (#85976) (#86228)",
-                  "sha": "c6c0015e01601cd852730d5cd20e1a906cbee900",
-                },
-                "number": 86228,
-                "state": "MERGED",
-                "url": "https://github.com/elastic/kibana/pull/86228",
+                "label": "v7.8.0",
+                "mergeCommit": undefined,
+                "number": 10,
+                "state": "OPEN",
+                "url": "https://github.com/backport-org/backport-e2e/pull/10",
               },
             ],
           },
@@ -470,47 +404,49 @@ describe('entrypoint.module', () => {
             "sourceCommit": {
               "branchLabelMapping": {
                 "^v(\\d+).(\\d+).\\d+$": "$1.$2",
-                "^v7.11.0$": "7.x",
+                "^v7.9.0$": "7.x",
                 "^v8.0.0$": "master",
               },
-              "committedDate": "2020-12-15T12:15:00Z",
-              "message": "[APM] Correlations polish (#85116)
-
-        Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>",
-              "sha": "20638a64e2a895d4e4a6597d4a37b5db7003f1e9",
+              "committedDate": "2020-08-15T19:54:32Z",
+              "message": "Change Ulysses to Gretha (conflict) (#8)",
+              "sha": "b484e161b705b39dbbfc5005e67ca24d05b23c37",
             },
             "sourcePullRequest": {
               "labels": [
-                "Team:APM - DEPRECATED",
-                "release_note:skip",
-                "v7.11.0",
+                "v7.9.0",
+                "v8.0.0",
               ],
               "mergeCommit": {
-                "message": "[APM] Correlations polish (#85116)
-
-        Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>",
-                "sha": "20638a64e2a895d4e4a6597d4a37b5db7003f1e9",
+                "message": "Change Ulysses to Gretha (conflict) (#8)",
+                "sha": "b484e161b705b39dbbfc5005e67ca24d05b23c37",
               },
-              "number": 85116,
-              "title": "[APM] Correlations polish",
-              "url": "https://github.com/elastic/kibana/pull/85116",
+              "number": 8,
+              "title": "Change Ulysses to Gretha (conflict)",
+              "url": "https://github.com/backport-org/backport-e2e/pull/8",
             },
-            "suggestedTargetBranches": [],
+            "suggestedTargetBranches": [
+              "7.x",
+            ],
             "targetPullRequestStates": [
               {
                 "branch": "7.x",
-                "branchLabelMappingKey": "^v7.11.0$",
+                "branchLabelMappingKey": "^v7.9.0$",
                 "isSourceBranch": false,
-                "label": "v7.11.0",
+                "label": "v7.9.0",
+                "state": "NOT_CREATED",
+              },
+              {
+                "branch": "master",
+                "branchLabelMappingKey": "^v8.0.0$",
+                "isSourceBranch": true,
+                "label": "v8.0.0",
                 "mergeCommit": {
-                  "message": "[7.x] [APM] Correlations polish (#85116) (#85940)
-
-        Co-authored-by: Kibana Machine <42973632+kibanamachine@users.noreply.github.com>",
-                  "sha": "42b3ecb40c344cd57800b8fa387ae32bad24bfc4",
+                  "message": "Change Ulysses to Gretha (conflict) (#8)",
+                  "sha": "b484e161b705b39dbbfc5005e67ca24d05b23c37",
                 },
-                "number": 85940,
+                "number": 8,
                 "state": "MERGED",
-                "url": "https://github.com/elastic/kibana/pull/85940",
+                "url": "https://github.com/backport-org/backport-e2e/pull/8",
               },
             ],
           },
@@ -523,41 +459,67 @@ describe('entrypoint.module', () => {
             "sourceCommit": {
               "branchLabelMapping": {
                 "^v(\\d+).(\\d+).\\d+$": "$1.$2",
-                "^v7.11.0$": "7.x",
+                "^v7.9.0$": "7.x",
                 "^v8.0.0$": "master",
               },
-              "committedDate": "2020-12-07T14:43:58Z",
-              "message": "[APM] Improve pointer event hook (#85117)",
-              "sha": "cee681afb3c5f87371112fab9a7e5dddbafea0a8",
+              "committedDate": "2020-08-15T12:40:19Z",
+              "message": "Add 🍏 emoji (#5)",
+              "sha": "ee8c492334cef1ca077a56addb79a26f79821d2f",
             },
             "sourcePullRequest": {
               "labels": [
-                "Team:APM - DEPRECATED",
-                "release_note:skip",
-                "v7.11.0",
+                "v7.8.0",
+                "v7.9.0",
+                "v8.0.0",
               ],
               "mergeCommit": {
-                "message": "[APM] Improve pointer event hook (#85117)",
-                "sha": "cee681afb3c5f87371112fab9a7e5dddbafea0a8",
+                "message": "Add 🍏 emoji (#5)",
+                "sha": "ee8c492334cef1ca077a56addb79a26f79821d2f",
               },
-              "number": 85117,
-              "title": "[APM] Improve pointer event hook",
-              "url": "https://github.com/elastic/kibana/pull/85117",
+              "number": 5,
+              "title": "Add 🍏 emoji",
+              "url": "https://github.com/backport-org/backport-e2e/pull/5",
             },
             "suggestedTargetBranches": [],
             "targetPullRequestStates": [
               {
-                "branch": "7.x",
-                "branchLabelMappingKey": "^v7.11.0$",
+                "branch": "7.8",
+                "branchLabelMappingKey": "^v(\\d+).(\\d+).\\d+$",
                 "isSourceBranch": false,
-                "label": "v7.11.0",
+                "label": "v7.8.0",
                 "mergeCommit": {
-                  "message": "[7.x] [APM] Improve pointer event hook (#85117) (#85142)",
-                  "sha": "3b72a4f3cc7c0abd0541073e1d0246b85cea3def",
+                  "message": "Add 🍏 emoji (#5) (#7)",
+                  "sha": "46cd6f9999effdf894a36dbc7db90e890f4be840",
                 },
-                "number": 85142,
+                "number": 7,
                 "state": "MERGED",
-                "url": "https://github.com/elastic/kibana/pull/85142",
+                "url": "https://github.com/backport-org/backport-e2e/pull/7",
+              },
+              {
+                "branch": "7.x",
+                "branchLabelMappingKey": "^v7.9.0$",
+                "isSourceBranch": false,
+                "label": "v7.9.0",
+                "mergeCommit": {
+                  "message": "Add 🍏 emoji (#5) (#6)",
+                  "sha": "4bcd876d4ceaa73cf437bfc89b74d1a4e704c0a6",
+                },
+                "number": 6,
+                "state": "MERGED",
+                "url": "https://github.com/backport-org/backport-e2e/pull/6",
+              },
+              {
+                "branch": "master",
+                "branchLabelMappingKey": "^v8.0.0$",
+                "isSourceBranch": true,
+                "label": "v8.0.0",
+                "mergeCommit": {
+                  "message": "Add 🍏 emoji (#5)",
+                  "sha": "ee8c492334cef1ca077a56addb79a26f79821d2f",
+                },
+                "number": 5,
+                "state": "MERGED",
+                "url": "https://github.com/backport-org/backport-e2e/pull/5",
               },
             ],
           },
@@ -569,8 +531,8 @@ describe('entrypoint.module', () => {
       await expect(() =>
         getCommits({
           githubToken: githubToken,
-          repoName: 'kibana',
-          repoOwner: 'elastic',
+          repoName: 'backport-e2e',
+          repoOwner: 'backport-org',
           maxCount: 3,
         }),
       ).rejects.toThrow(
