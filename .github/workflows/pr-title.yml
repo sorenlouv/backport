@@ -1,0 +1,43 @@
+name: pr-title
+
+# PRs are squash-merged, so the PR title becomes the commit message on main,
+# which semantic-release uses to determine the next version (see release.yml).
+# This check ensures PR titles follow Conventional Commits.
+on:
+  pull_request_target:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  pull-requests: write # post a comment when the title is invalid
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v6
+        id: lint_pr_title
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Leave a comment explaining the convention when validation fails
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: always() && (steps.lint_pr_title.outputs.error_message != null)
+        with:
+          header: pr-title-lint-error
+          message: |
+            👋 Thanks for the pull request!
+
+            PR titles must follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/), because the title becomes the squash-merge commit message that determines the next release (`fix:` → patch, `feat:` → minor, `feat!:` → major). See [CONTRIBUTING.md](https://github.com/sorenlouv/backport/blob/main/CONTRIBUTING.md#pull-request-titles) for details.
+
+            Error:
+
+            ```
+            ${{ steps.lint_pr_title.outputs.error_message }}
+            ```
+
+      # Remove the comment once the title has been fixed
+      - if: ${{ steps.lint_pr_title.outputs.error_message == null }}
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: pr-title-lint-error
+          delete: true
