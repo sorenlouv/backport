@@ -23,22 +23,22 @@ You can now use `backport` command anywhere, and it'll point to the development 
 
 ### Testing
 
-**Run all tests**
+**Run unit tests** (this is what contributors should use — no credentials required)
 
 ```
 npm test
 ```
 
-**Run unit tests only**
+**Run the full test suite** (all tiers; requires a `GITHUB_TOKEN`, see below)
 
 ```
-npm run test:unit
+npm run test:all
 ```
 
 **Run a single test file**
 
 ```
-npm test -- src/lib/git.unit.test.ts
+npm test -- src/lib/git/git.unit.test.ts
 ```
 
 **Run tests continuously**
@@ -55,16 +55,17 @@ npx tsc --watch
 
 #### Test tiers
 
-Tests are organized into three tiers:
+Tests are organized into four tiers:
 
-- **Unit tests** (`*.unit.test.ts`): Run with `npm run test:unit`. These use mocked HTTP responses and don't require any credentials.
-- **Private tests** (`*.private.test.ts`): Run with `npm run test:private`. Require a `GITHUB_TOKEN` environment variable with a GitHub token that has read access to `backport-org/backport-demo`.
-- **Mutation tests** (`*.mutation.test.ts`): Run with `npm run test:mutation`. Require a `GITHUB_TOKEN` with **write** access to `backport-org/backport-demo`. Only the repo owner can run these.
+- **Unit tests** (`*.unit.test.ts`): Run with `npm test` (alias: `npm run test:unit`). These use mocked HTTP responses and don't require any credentials.
+- **Private tests** (`*.private.test.ts`): Run with `npm run test:private`. Make live **read-only** GitHub API calls against fixture repos under the `backport-org` organization. Require a `GITHUB_TOKEN` environment variable — any classic personal access token with public-repo read access works. Create a `.env` file in the repo root containing `GITHUB_TOKEN="ghp_..."`.
+- **Mutation tests** (`*.mutation.test.ts`): Run with `npm run test:mutation`. Make live GitHub API calls that **write** to fixture repos under `backport-org`. Require a `GITHUB_TOKEN` with write access — maintainer-only.
+- **Integration tests** (`*.integration.test.ts`): Run with `npm run test:integration`. Pack the npm tarball and install it to verify the published artifact. No credentials required.
 
-To run private or mutation tests:
+To run a single file in a non-unit tier, use that tier's script:
 
 ```
-GITHUB_TOKEN=ghp_xxx npm run test:private
+npm run test:private -- src/lib/github/v4/fetch-author-id.private.test.ts
 ```
 
 ### Architecture overview
