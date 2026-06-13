@@ -1,7 +1,7 @@
-import type { Commit } from '../../../entrypoint.api.js';
 import { filterNil } from '../../../utils/filter-empty.js';
 import { getSourceBranchFromCommits } from '../../get-source-branch-from-commits.js';
 import { logger } from '../../logger.js';
+import type { Commit } from '../../sourceCommit/parse-source-commit.js';
 
 // Resolve labels defined in configuration (`targetPRLabels`) into their concrete
 // values for the current target branch. This includes expanding regex captures,

@@ -1,5 +1,5 @@
-import type { Commit } from '../entrypoint.api.js';
 import type { ValidConfigOptions } from '../options/options.js';
+import type { Commit } from './sourceCommit/parse-source-commit.js';
 
 export type CommitAuthor = { name: string; email: string };
 export function getCommitAuthor({

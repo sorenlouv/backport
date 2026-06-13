@@ -15,7 +15,7 @@ export type {
 } from '../lib/run-sequentially.js';
 
 // Backport response type (returned by backportRun)
-export type { BackportResponse } from '../backport-run.js';
+export type { BackportResponse } from '../lib/run-sequentially.js';
 
 // Configuration types
 export type { ValidConfigOptions } from '../options/option-schema.js';

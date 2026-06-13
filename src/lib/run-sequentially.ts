@@ -25,6 +25,11 @@ export type ErrorResult<TCode extends BackportErrorCode = BackportErrorCode> = {
 
 export type Result = SuccessResult | ErrorResult;
 
+export type BackportResponse = {
+  commits: Commit[];
+  results: Result[];
+};
+
 export async function runSequentially({
   options,
   commits,
