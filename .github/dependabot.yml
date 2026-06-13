@@ -3,16 +3,9 @@ updates:
   - package-ecosystem: 'npm'
     directory: '/'
     schedule:
-      interval: 'daily'
-    ignore:
-      - dependency-name: '*'
+      interval: 'weekly'
+    groups:
+      minor-and-patch:
         update-types:
-          ['version-update:semver-minor', 'version-update:semver-patch']
-      # Packages requiring ESM
-      - dependency-name: 'del'
-      - dependency-name: 'find-up'
-      - dependency-name: 'inquirer'
-      - dependency-name: 'ora '
-      - dependency-name: 'strip-json-comments'
-      - dependency-name: 'terminal-link'
-      - dependency-name: 'strip-ansi '
+          - 'minor'
+          - 'patch'
