@@ -13,7 +13,12 @@ export function getDevGithubToken(): string {
   const githubToken = process.env.GITHUB_TOKEN;
   if (!githubToken) {
     throw new Error(
-      'Please create ".env" file containing: `GITHUB_TOKEN="ghp_very_secret"`',
+      [
+        'Missing GitHub access token: private/mutation tests make live GitHub API calls and require a GITHUB_TOKEN.',
+        'Create a ".env" file in the repo root containing: GITHUB_TOKEN="ghp_..."',
+        '(any classic personal access token with public-repo read access works for the private tier).',
+        'To run only the offline tests (no token needed), use: npm run test:unit',
+      ].join('\n'),
     );
   }
 
