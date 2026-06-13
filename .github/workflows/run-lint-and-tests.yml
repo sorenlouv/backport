@@ -17,6 +17,11 @@ on:
 
 jobs:
   # Offline checks: run for every trigger, including fork PRs (no secrets needed)
+  #
+  # NOTE: this job was renamed from "lint-and-test". Branch protection on main
+  # requires the status check context "lint-and-test (22.x)" — when merging this
+  # change, update the required check to "lint-and-unit (22.x)" or every PR will
+  # hang on the orphaned "Expected — lint-and-test (22.x)" check.
   lint-and-unit:
     runs-on: ubuntu-latest
     strategy:
