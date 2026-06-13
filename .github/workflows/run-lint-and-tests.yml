@@ -11,9 +11,13 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  schedule:
+    # Nightly run of the live (credentialed) test suites at 03:00 UTC
+    - cron: '0 3 * * *'
 
 jobs:
-  lint-and-test:
+  # Offline checks: run for every trigger, including fork PRs (no secrets needed)
+  lint-and-unit:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -32,4 +36,50 @@ jobs:
       - run: npm run build
       - run: npm run lint
       - run: npm run test:unit
+      - run: npm run test:integration
+
+  # Credentialed tests: skipped on fork PRs (GitHub does not expose secrets to
+  # pull_request events from forks) and on the nightly schedule (covered by
+  # nightly-live-tests below)
+  private-tests:
+    if: github.event_name != 'schedule' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [22.x]
+
+    steps:
+      - uses: actions/checkout@v5
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - run: git config --global user.email "backportci@users.noreply.github.com "
+      - run: git config --global user.name "Backport CI"
+      - run: npm ci
+      - run: npm run build
       - run: GITHUB_TOKEN=${{ secrets.GH_ACCESS_TOKEN }} npm run test:private
+
+  # Drift canary: nightly run of all live suites against real GitHub data, so
+  # upstream changes to fixtures surface even when no commits are landing
+  nightly-live-tests:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [22.x]
+
+    steps:
+      - uses: actions/checkout@v5
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - run: git config --global user.email "backportci@users.noreply.github.com "
+      - run: git config --global user.name "Backport CI"
+      - run: npm ci
+      - run: npm run build
+      - run: GITHUB_TOKEN=${{ secrets.GH_ACCESS_TOKEN }} npm run test:private
+      - run: GITHUB_TOKEN=${{ secrets.GH_ACCESS_TOKEN }} npm run test:mutation
