@@ -1,5 +1,5 @@
 import { uniq } from 'lodash-es';
-import type { Commit } from '../../../entrypoint.api.js';
+import type { Commit } from '../../sourceCommit/parse-source-commit.js';
 import { getConfiguredTargetPRLabels } from './get-configured-target-pr-labels.js';
 import { getSourcePRLabelsToCopy } from './get-source-pr-labels-to-copy.js';
 

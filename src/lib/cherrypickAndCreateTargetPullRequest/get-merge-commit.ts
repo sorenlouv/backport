@@ -1,7 +1,7 @@
-import type { Commit } from '../../entrypoint.api.js';
 import type { ValidConfigOptions } from '../../options/options.js';
 import { getIsMergeCommit, getShasInMergeCommit } from '../git/index.js';
 import { fetchCommitBySha } from '../github/v4/fetchCommits/fetch-commit-by-sha.js';
+import type { Commit } from '../sourceCommit/parse-source-commit.js';
 
 export async function getMergeCommits(
   options: ValidConfigOptions,

@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { isEmpty, difference } from 'lodash-es';
-import { BackportError } from '../../entrypoint.api.js';
 import type { ValidConfigOptions } from '../../options/options.js';
+import { BackportError } from '../backport-error.js';
 import { getConflictingFiles, getUnstagedFiles } from '../git/index.js';
 import { consoleLog } from '../logger.js';
 import { confirmPrompt } from '../prompts.js';

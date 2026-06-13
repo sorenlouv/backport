@@ -1,9 +1,9 @@
 import chalk from 'chalk';
-import type { Commit } from '../../entrypoint.api.js';
 import type { ValidConfigOptions } from '../../options/options.js';
 import { getIsCommitInBranch } from '../git/index.js';
 import { getFirstLine } from '../github/commit-formatters.js';
 import { fetchCommitsByAuthor } from '../github/v4/fetchCommits/fetch-commits-by-author.js';
+import type { Commit } from '../sourceCommit/parse-source-commit.js';
 
 // when the user is facing a git conflict we should help them understand
 // why the conflict occurs. In many cases it's because one or more commits haven't been backported yet
