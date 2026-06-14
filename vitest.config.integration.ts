@@ -9,7 +9,7 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['src/**/*.integration.test.ts'],
-    retry: 3,
+    retry: 1,
     pool: 'forks',
     maxWorkers: 1,
   },

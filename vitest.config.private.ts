@@ -8,10 +8,10 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    // only include (private) tests that cannot run on CI because they require credentials
+    // "private" tests require a GITHUB_TOKEN, so they only run on CI for non-fork branches
     include: ['src/**/*.private.test.ts'],
     exclude: [],
-    retry: process.env.CI ? 3 : 1,
+    retry: process.env.CI ? 2 : 1,
     setupFiles: ['./src/test/setupFiles/automatic-mocks.ts'],
     clearMocks: true,
     snapshotSerializers: ['./src/test/setupFiles/snapshot-serializer-ansi.ts'],
