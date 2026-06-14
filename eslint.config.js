@@ -1,7 +1,7 @@
 import js from '@eslint/js';
 import tseslint from '@typescript-eslint/eslint-plugin';
 import tsparser from '@typescript-eslint/parser';
-import importPlugin from 'eslint-plugin-import-x';
+import importPlugin, { createNodeResolver } from 'eslint-plugin-import-x';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 
 const nodeGlobals = {
@@ -154,7 +154,46 @@ export default [
         },
       ],
     },
-  }, 
+  },
+
+  // Detect circular imports across the source tree
+  {
+    files: ['src/**/*.ts'],
+    settings: {
+      // Imports use ESM-style `.js` specifiers that point to `.ts` sources.
+      // Teach import-x to resolve (and traverse) them so `no-cycle` can build the module graph.
+      'import-x/extensions': ['.ts', '.js'],
+      'import-x/resolver-next': [
+        createNodeResolver({
+          extensions: ['.ts', '.js'],
+          extensionAlias: { '.js': ['.ts', '.js'] },
+        }),
+      ],
+    },
+    rules: {
+      'import-x/no-cycle': 'error',
+    },
+  },
+
+  // Internal modules must not depend on the public entrypoint (prevents circular imports)
+  {
+    files: ['src/lib/**/*.ts', 'src/options/**/*.ts', 'src/utils/**/*.ts'],
+    ignores: ['**/*.test.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['**/entrypoint.api.js', '**/backport-run.js'],
+              message:
+                'Internal modules must not import the public entrypoint — import from the canonical module (e.g. lib/backport-error.js, lib/sourceCommit/parse-source-commit.js) instead.',
+            },
+          ],
+        },
+      ],
+    },
+  },
 
   // Test files - additional globals and relaxed rules
   {

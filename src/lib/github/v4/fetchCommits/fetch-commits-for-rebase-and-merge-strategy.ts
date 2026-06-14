@@ -1,7 +1,7 @@
 import { first } from 'lodash-es';
-import type { Commit } from '../../../../entrypoint.api.js';
 import { graphql } from '../../../../graphql/generated/index.js';
 import { BackportError } from '../../../backport-error.js';
+import type { Commit } from '../../../sourceCommit/parse-source-commit.js';
 import { graphqlRequest } from '../client/graphql-client.js';
 import { fetchCommitBySha } from './fetch-commit-by-sha.js';
 

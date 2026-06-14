@@ -1,7 +1,7 @@
-import type { BackportResponse } from '../../../backport-run.js';
 import type { ValidConfigOptions } from '../../../options/options.js';
 import { getPackageVersion } from '../../../utils/package-version.js';
 import { logger, redactGithubToken } from '../../logger.js';
+import type { BackportResponse } from '../../run-sequentially.js';
 import { getFirstLine } from '../commit-formatters.js';
 import { createOctokitClient, retryOctokitRequest } from './octokit-client.js';
 
