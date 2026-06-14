@@ -18,6 +18,17 @@ npm run build
 - **Every PR**: lint, unit tests, and integration tests. These are fully offline/mocked and require no credentials — they must pass for your PR to be merged.
 - **Credentialed live suites** (`test:private` and `test:mutation`): these talk to real GitHub repos and require repository secrets, so they only run for branches pushed to the main repository and on a nightly schedule. If you open a PR from a fork, that job will show as **skipped** — this is expected and fine; a maintainer's nightly run covers it.
 
+## Pull request titles
+
+PRs are squash-merged, so the PR title becomes the commit message on `main`. Titles must follow [Conventional Commits](https://www.conventionalcommits.org) (enforced by the `pr-title` CI check) because they determine the next release:
+
+| PR title                                       | Release    |
+| ---------------------------------------------- | ---------- |
+| `fix: ...`                                     | patch      |
+| `feat: ...`                                    | minor      |
+| `feat!: ...` or `BREAKING CHANGE:` in the body | major      |
+| `chore: ...`, `docs: ...`, `refactor: ...`     | no release |
+
 ### Run
 
 ```
