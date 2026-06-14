@@ -1,5 +1,23 @@
 # Contributing
 
+## Getting started
+
+```
+git clone https://github.com/sorenlouv/backport.git
+cd backport
+npm install
+npm run build
+```
+
+- **Node.js >= 22 is required** (see `engines` in `package.json`).
+- **`npm run build` is not optional**: it runs the GraphQL codegen which generates TypeScript types into `src/graphql/generated/`. That directory is gitignored, so nothing compiles (tsc, eslint, vitest) until the build has run at least once. `npm install` triggers it automatically via the `prepare` script, but if compilation suddenly fails after a fresh clone or a clean, run `npm run build`.
+- **Optional:** create a `.env` file in the repo root with a `GITHUB_TOKEN=ghp_xxx` entry if you want to run the live test tiers (see [Test tiers](#test-tiers) below). It is gitignored and only needed for the private/mutation tests — unit tests run without any credentials.
+
+## What CI runs on your PR
+
+- **Every PR**: lint, unit tests, and integration tests. These are fully offline/mocked and require no credentials — they must pass for your PR to be merged.
+- **Credentialed live suites** (`test:private` and `test:mutation`): these talk to real GitHub repos and require repository secrets, so they only run for branches pushed to the main repository and on a nightly schedule. If you open a PR from a fork, that job will show as **skipped** — this is expected and fine; a maintainer's nightly run covers it.
+
 ### Run
 
 ```
