@@ -31,6 +31,11 @@ jobs:
         with:
           node-version: 22.x
 
+      # Node 22 bundles npm 10, but npm's OIDC trusted publishing requires
+      # npm >= 11.5.1. Without it, @semantic-release/npm cannot authenticate via
+      # OIDC and fails with ENONPMTOKEN. Upgrade before any npm command runs.
+      - run: npm install -g npm@latest
+
       - run: npm ci
       # Build (GraphQL codegen + tsc) before lint/test: the prepare script no
       # longer builds on install, and src/graphql/generated/ is gitignored, so
