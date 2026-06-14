@@ -16,11 +16,11 @@ describe('allFetchers', () => {
       githubToken,
       author: 'sorenlouv',
       maxCount: 1,
-      repoName: 'kibana',
-      repoOwner: 'elastic',
-      sourceBranch: 'main',
-      since: '2021-01-10T00:00:00Z',
-      until: '2022-01-01T00:00:00Z',
+      repoName: 'backport-e2e',
+      repoOwner: 'backport-org',
+      sourceBranch: 'master',
+      since: '2020-08-16T00:00:00Z',
+      until: '2020-08-17T00:00:00Z',
       commitPaths: [] as Array<string>,
     });
 
@@ -33,8 +33,8 @@ describe('allFetchers', () => {
     }
 
     const commitByPullNumber = await fetchCommitsByPullNumber({
-      repoOwner: 'elastic',
-      repoName: 'kibana',
+      repoOwner: 'backport-org',
+      repoName: 'backport-e2e',
       githubToken,
       pullNumber: commitByAuthor.sourcePullRequest.number,
       sourceBranch: 'master',
@@ -45,11 +45,11 @@ describe('allFetchers', () => {
 
   it('matches commitByAuthor with commitBySha', async () => {
     const commitBySha = await fetchCommitBySha({
-      repoOwner: 'elastic',
-      repoName: 'kibana',
+      repoOwner: 'backport-org',
+      repoName: 'backport-e2e',
       githubToken,
       sha: commitByAuthor.sourceCommit.sha,
-      sourceBranch: 'main',
+      sourceBranch: 'master',
     });
 
     expect(commitByAuthor).toEqual(commitBySha);
@@ -62,10 +62,10 @@ describe('allFetchers', () => {
       since: null,
       until: null,
       maxCount: 1,
-      prQuery: `created:2021-12-20..2021-12-20`,
-      repoName: 'kibana',
-      repoOwner: 'elastic',
-      sourceBranch: 'main',
+      prQuery: `created:2020-08-16..2020-08-16`,
+      repoName: 'backport-e2e',
+      repoOwner: 'backport-org',
+      sourceBranch: 'master',
     });
 
     const commitBySearchQuery = commitsBySearchQuery[0];
@@ -75,61 +75,38 @@ describe('allFetchers', () => {
 
   it('returns correct response for commitByAuthor', () => {
     const expectedCommit: Commit = {
-      author: { email: 'soren.louv@elastic.co', name: 'Søren Louv-Jansen' },
+      author: { email: 'sorenlouv@gmail.com', name: 'Søren Louv-Jansen' },
       suggestedTargetBranches: [],
       sourceCommit: {
         branchLabelMapping: {
+          '^v8.0.0$': 'master',
+          '^v7.9.0$': '7.x',
           '^v(\\d+).(\\d+).\\d+$': '$1.$2',
-          '^v8.1.0$': 'main',
         },
-        committedDate: '2021-12-20T14:20:16Z',
-        message: '[APM] Add note about synthtrace to APM docs (#121633)',
-        sha: 'd421ddcf6157150596581c7885afa3690cec6339',
+        committedDate: '2020-08-16T21:44:28Z',
+        message: 'Add sheep emoji (#9)',
+        sha: 'eebf165c82a4b718d95c11b3877e365b1949ff28',
       },
       sourcePullRequest: {
-        labels: [
-          'Team:APM - DEPRECATED',
-          'v8.0.0',
-          'release_note:skip',
-          'auto-backport',
-          'v8.1.0',
-        ],
-        number: 121_633,
-        title: '[APM] Add note about synthtrace to APM docs',
-        url: 'https://github.com/elastic/kibana/pull/121633',
+        labels: ['v7.8.0'],
+        number: 9,
+        title: 'Add sheep emoji',
+        url: 'https://github.com/backport-org/backport-e2e/pull/9',
         mergeCommit: {
-          message: '[APM] Add note about synthtrace to APM docs (#121633)',
-          sha: 'd421ddcf6157150596581c7885afa3690cec6339',
+          message: 'Add sheep emoji (#9)',
+          sha: 'eebf165c82a4b718d95c11b3877e365b1949ff28',
         },
       },
-      sourceBranch: 'main',
+      sourceBranch: 'master',
       targetPullRequestStates: [
         {
-          branch: '8.0',
-          label: 'v8.0.0',
+          branch: '7.8',
+          label: 'v7.8.0',
           branchLabelMappingKey: String.raw`^v(\d+).(\d+).\d+$`,
           isSourceBranch: false,
-          mergeCommit: {
-            message:
-              '[APM] Add note about synthtrace to APM docs (#121633) (#121643)\n\nCo-authored-by: Søren Louv-Jansen <soren.louv@elastic.co>',
-            sha: '842adfdeb5541b059231857522f9009771a46107',
-          },
-          number: 121_643,
-          state: 'MERGED',
-          url: 'https://github.com/elastic/kibana/pull/121643',
-        },
-        {
-          branch: 'main',
-          label: 'v8.1.0',
-          branchLabelMappingKey: '^v8.1.0$',
-          isSourceBranch: true,
-          mergeCommit: {
-            message: '[APM] Add note about synthtrace to APM docs (#121633)',
-            sha: 'd421ddcf6157150596581c7885afa3690cec6339',
-          },
-          number: 121_633,
-          state: 'MERGED',
-          url: 'https://github.com/elastic/kibana/pull/121633',
+          state: 'OPEN',
+          number: 10,
+          url: 'https://github.com/backport-org/backport-e2e/pull/10',
         },
       ],
     };

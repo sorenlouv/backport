@@ -42,7 +42,7 @@ describe('CLI "backport" binary', () => {
       [
         binPath,
         '--repo',
-        'elastic/kibana',
+        'backport-org/backport-e2e',
         `--github-token`,
         githubToken,
         `--dir=${sandboxPath}`,
@@ -53,7 +53,7 @@ describe('CLI "backport" binary', () => {
     );
 
     const strippedStdout = stripAnsi(result.stdout);
-    expect(strippedStdout).toContain('repo: elastic/kibana');
+    expect(strippedStdout).toContain('repo: backport-org/backport-e2e');
     expect(strippedStdout).toContain('Select commit');
   });
 

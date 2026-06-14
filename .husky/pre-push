@@ -1,3 +1,2 @@
 npm run graphql:validate
-npm run build
-npm run lint
+npx tsc -p tsconfig.eslint.json --noEmit

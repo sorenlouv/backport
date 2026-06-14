@@ -1,11 +1,10 @@
 import chalk from 'chalk';
-import type { Commit } from '../../entrypoint.api.js';
-import { BackportError } from '../../entrypoint.api.js';
 import type { Ora } from '../../lib/ora.js';
 import { ora } from '../../lib/ora.js';
 import type { ValidConfigOptions } from '../../options/options.js';
 import type { CommitAuthor } from '../author.js';
 import { getCommitAuthor } from '../author.js';
+import { BackportError } from '../backport-error.js';
 import { spawnPromise } from '../child-process-promisified.js';
 import { getRepoPath } from '../env.js';
 import type { ConflictingFiles } from '../git/index.js';
@@ -17,6 +16,7 @@ import {
 } from '../git/index.js';
 import { getFirstLine } from '../github/commit-formatters.js';
 import { consoleLog, logger } from '../logger.js';
+import type { Commit } from '../sourceCommit/parse-source-commit.js';
 import { getCommitsWithoutBackports } from './get-commits-without-backports.js';
 import { listConflictingAndUnstagedFiles } from './list-conflicting-and-unstaged-files.js';
 

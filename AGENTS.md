@@ -19,11 +19,16 @@ Test scenarios to cover:
 
 ## Tests
 
-- `npm test` — runs **all** test suites (unit + private + mutation). Always use this for final verification.
-- `npm test -- somefile.test.ts` — run a single test file (much faster than running all tests).
-- `*.unit.test.ts` — unit tests, run via `npm run test:unit`
-- `*.private.test.ts` — require `GITHUB_TOKEN` env var (GitHub PAT), run via `npm run test:private`
-- `*.mutation.test.ts` — sequential execution (mutate shared state), run via `npm run test:mutation`
+- `npm test` — runs **unit tests only**. No credentials needed. Use this for routine verification.
+- `npm run test:all` — runs **all** test tiers (unit + private + mutation + integration). Requires a `GITHUB_TOKEN` env var (GitHub PAT) and makes live GitHub API calls.
+- `npm test -- somefile.unit.test.ts` — run a single unit test file. For other tiers, use the tier script, e.g. `npm run test:private -- somefile.private.test.ts`.
+
+Test tiers:
+
+- `*.unit.test.ts` — offline unit tests (mocked HTTP), run via `npm run test:unit` (same as `npm test`)
+- `*.private.test.ts` — live read-only GitHub API calls, require `GITHUB_TOKEN`, run via `npm run test:private`
+- `*.mutation.test.ts` — live GitHub API calls with **write** access, sequential execution (mutate shared state), run via `npm run test:mutation`
+- `*.integration.test.ts` — pack and install the npm tarball to verify the published artifact, no credentials needed, run via `npm run test:integration`
 
 ## GraphQL
 

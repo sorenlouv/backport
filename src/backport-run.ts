@@ -10,7 +10,7 @@ import { createStatusComment } from './lib/github/v3/create-status-comment.js';
 import { consoleLog, initLogger } from './lib/logger.js';
 import { ora } from './lib/ora.js';
 import { registerHandlebarsHelpers } from './lib/register-handlebars-helpers.js';
-import type { ErrorResult, Result } from './lib/run-sequentially.js';
+import type { BackportResponse, ErrorResult } from './lib/run-sequentially.js';
 import { runSequentially } from './lib/run-sequentially.js';
 import { setupRepo } from './lib/setup-repo.js';
 import type { Commit } from './lib/sourceCommit/parse-source-commit.js';
@@ -23,10 +23,7 @@ import type { ConfigFileOptions } from './options/config-options.js';
 import type { ValidConfigOptions } from './options/options.js';
 import { getActiveOptionsFormatted, getOptions } from './options/options.js';
 
-export type BackportResponse = {
-  commits: Commit[];
-  results: Result[];
-};
+export type { BackportResponse } from './lib/run-sequentially.js';
 
 export async function backportRun({
   processArgs,
