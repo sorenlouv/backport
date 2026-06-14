@@ -32,6 +32,10 @@ jobs:
           node-version: 22.x
 
       - run: npm ci
+      # Build (GraphQL codegen + tsc) before lint/test: the prepare script no
+      # longer builds on install, and src/graphql/generated/ is gitignored, so
+      # the generated types are absent until the build runs.
+      - run: npm run build
       - run: npm audit signatures
       - run: npm run lint
       - run: npm run test:unit
