@@ -113,7 +113,7 @@
     "graphql-config": "^5.1.6",
     "graphql-request": "^7.4.0",
     "husky": "^9.1.7",
-    "lint-staged": "^16.4.0",
+    "lint-staged": "^17.0.7",
     "prettier": "^3.8.3",
     "strip-ansi": "^7.2.0",
     "tsx": "^4.21.0",
