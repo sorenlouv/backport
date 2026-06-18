@@ -119,3 +119,5 @@ This tools is for anybody who is working on a codebase where they have to mainta
 ## Contributing
 
 See [CONTRIBUTING.md](https://github.com/sorenlouv/backport/blob/master/CONTRIBUTING.md)
+
+<!-- release-gate verification PR; will be closed without merging -->
