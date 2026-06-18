@@ -3,6 +3,9 @@
 	<p>
     <b>A CLI tool that automates the process of backporting commits.</b>
 	</p>
+	<p>
+    <a href="https://www.npmjs.com/package/backport"><img src="https://img.shields.io/npm/v/backport.svg" alt="npm version"></a>
+	</p>
 	<br>
 </div>
 

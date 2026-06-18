@@ -18,16 +18,21 @@ npm run build
 - **Every PR**: lint, unit tests, and integration tests. These are fully offline/mocked and require no credentials — they must pass for your PR to be merged.
 - **Credentialed live suites** (`test:private` and `test:mutation`): these talk to real GitHub repos and require repository secrets, so they only run for branches pushed to the main repository and on a nightly schedule. If you open a PR from a fork, that job will show as **skipped** — this is expected and fine; a maintainer's nightly run covers it.
 
+## Release labels
+
+Every PR **must** carry exactly one release label. It determines how the version is bumped when the PR is merged — the merge automatically publishes a new version to npm and creates a matching GitHub Release (see `.github/workflows/release.yml`).
+
+| Label           | Version bump                  |
+| --------------- | ----------------------------- |
+| `release:patch` | bug fixes (`1.2.3` → `1.2.4`) |
+| `release:minor` | new features (`1.2.3` → `1.3.0`) |
+| `release:major` | breaking changes (`1.2.3` → `2.0.0`) |
+
+The `require-release-label` status check blocks merging until exactly one of these labels is present, so there is no "merge without releasing" path. If a change genuinely should not ship (rare for this repo, since `main` is always released), hold the PR rather than merging it.
+
 ## Pull request titles
 
-PRs are squash-merged, so the PR title becomes the commit message on `main`. Titles must follow [Conventional Commits](https://www.conventionalcommits.org) (enforced by the `pr-title` CI check) because they determine the next release:
-
-| PR title                                       | Release    |
-| ---------------------------------------------- | ---------- |
-| `fix: ...`                                     | patch      |
-| `feat: ...`                                    | minor      |
-| `feat!: ...` or `BREAKING CHANGE:` in the body | major      |
-| `chore: ...`, `docs: ...`, `refactor: ...`     | no release |
+PRs are squash-merged, so the PR title becomes the commit message on `main`. Titles must follow [Conventional Commits](https://www.conventionalcommits.org) (enforced by the `pr-title` CI check) for a clean, readable history and changelog. Unlike the release labels above, the title no longer determines the version bump.
 
 ### Run
 

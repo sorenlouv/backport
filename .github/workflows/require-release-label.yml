@@ -1,0 +1,43 @@
+name: require-release-label
+
+# Blocks merging a PR unless it carries exactly one release:{patch,minor,major}
+# label. That label drives the version bump in release.yml when the PR is merged.
+# This job is a required status check on main (branch protection), so a PR cannot
+# be merged without it.
+#
+# `labeled`/`unlabeled` re-run the check so adding or removing the label flips the
+# status; `synchronize` re-runs it on every new commit so the result is reported
+# against the current head SHA that branch protection evaluates.
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+jobs:
+  require-release-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require exactly one release:* label
+        env:
+          # JSON array of the PR's label names, e.g. ["bug","release:patch"]
+          LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
+        run: |
+          count=0
+          for level in patch minor major; do
+            # The surrounding quotes anchor the match to the exact label name.
+            if printf '%s' "$LABELS" | grep -q "\"release:$level\""; then
+              count=$((count + 1))
+            fi
+          done
+
+          if [ "$count" -eq 0 ]; then
+            echo "::error::Add a release label to set the version bump: release:patch, release:minor, or release:major."
+            exit 1
+          fi
+          if [ "$count" -gt 1 ]; then
+            echo "::error::This PR has multiple release:* labels; keep exactly one."
+            exit 1
+          fi
+          echo "Found exactly one release:* label. ✓"
