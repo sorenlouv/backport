@@ -1,8 +1,9 @@
 name: pr-title
 
-# PRs are squash-merged, so the PR title becomes the commit message on main,
-# which semantic-release uses to determine the next version (see release.yml).
-# This check ensures PR titles follow Conventional Commits.
+# PRs are squash-merged, so the PR title becomes the commit message on main.
+# This check ensures PR titles follow Conventional Commits for a clean history.
+# The version bump itself is driven by the PR's release:* label, not the title
+# (see release.yml and require-release-label.yml).
 on:
   pull_request_target:
     types: [opened, edited, synchronize, reopened]
@@ -27,7 +28,7 @@ jobs:
           message: |
             👋 Thanks for the pull request!
 
-            PR titles must follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/), because the title becomes the squash-merge commit message that determines the next release (`fix:` → patch, `feat:` → minor, `feat!:` → major). See [CONTRIBUTING.md](https://github.com/sorenlouv/backport/blob/main/CONTRIBUTING.md#pull-request-titles) for details.
+            PR titles must follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) because the title becomes the squash-merge commit message on `main`, keeping the history readable. The version bump is set by the PR's `release:*` label, not the title. See [CONTRIBUTING.md](https://github.com/sorenlouv/backport/blob/main/CONTRIBUTING.md#release-labels) for details.
 
             Error:
 

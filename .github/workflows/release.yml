@@ -1,51 +1,118 @@
 name: release
 
+# Label-driven release. When a PR is merged into main, the release:{patch,minor,major}
+# label on that PR determines the version bump. This job:
+#   1. bumps the version in package.json (+ package-lock.json)
+#   2. commits and pushes the bump back to main, with a matching vX.Y.Z tag
+#   3. publishes to npm via OIDC trusted publishing (no NPM_TOKEN needed)
+#   4. creates a GitHub Release from the tag
+#
+# The require-release-label check (a required status check on main) guarantees every
+# merged PR carries exactly one release:* label, so this never runs unlabeled.
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches: [main]
-
-permissions:
-  contents: read
 
 # Queue releases instead of running them concurrently
 concurrency:
   group: release
   cancel-in-progress: false
 
+permissions:
+  contents: read
+  id-token: write # npm trusted publishing (OIDC) + provenance
+
 jobs:
   release:
+    # Only release when the PR was actually merged, not merely closed
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # push version tag and create GitHub release
-      issues: write # comment on issues resolved by the release
-      pull-requests: write # comment on PRs included in the release
-      id-token: write # npm trusted publishing (OIDC) and provenance
     steps:
+      - name: Determine version bump from release label
+        id: bump
+        env:
+          # JSON array of the PR's label names, e.g. ["bug","release:patch"]
+          LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
+        run: |
+          level=""
+          for candidate in patch minor major; do
+            if printf '%s' "$LABELS" | grep -q "\"release:$candidate\""; then
+              if [ -n "$level" ]; then
+                echo "::error::Multiple release:* labels on the merged PR; expected exactly one."
+                exit 1
+              fi
+              level="$candidate"
+            fi
+          done
+          if [ -z "$level" ]; then
+            echo "::error::No release:* label on the merged PR; cannot determine the version bump."
+            exit 1
+          fi
+          echo "level=$level" >> "$GITHUB_OUTPUT"
+          echo "Release level: $level"
+
       - uses: actions/checkout@v5
         with:
-          # semantic-release determines the next version from tags and commit history
-          fetch-depth: 0
+          ref: main
+          fetch-depth: 0 # full history + tags
+          # A fine-grained PAT (owner is a repo admin) is required to push the bump:
+          # the default GITHUB_TOKEN cannot push to the protected main branch, and
+          # GitHub blocks github-actions[bot] from bypassing branch protection.
+          token: ${{ secrets.RELEASE_TOKEN }}
 
-      # Do not set registry-url here; it conflicts with npm trusted publishing
+      # Do not set registry-url here; it conflicts with npm trusted publishing.
       - uses: actions/setup-node@v5
         with:
           node-version: 22.x
 
-      # Node 22 bundles npm 10, but npm's OIDC trusted publishing requires
-      # npm >= 11.5.1. Without it, @semantic-release/npm cannot authenticate via
-      # OIDC and fails with ENONPMTOKEN. Upgrade before any npm command runs.
+      # Node 22 bundles npm 10, but npm's OIDC trusted publishing requires npm
+      # >= 11.5.1. Upgrade before any npm publish command runs.
       - run: npm install -g npm@latest
 
       - run: npm ci
-      # Build (GraphQL codegen + tsc) before lint/test: the prepare script no
-      # longer builds on install, and src/graphql/generated/ is gitignored, so
-      # the generated types are absent until the build runs.
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump version
+        id: version
+        run: |
+          npm version "${{ steps.bump.outputs.level }}" --no-git-tag-version
+          version="$(node -p "require('./package.json').version")"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+          echo "Bumped to v$version"
+
+      # Build with the bumped version in place, then re-validate before publishing.
+      # src/graphql/ holds generated types and is gitignored, so the build (codegen)
+      # must run before lint/test.
       - run: npm run build
-      - run: npm audit signatures
       - run: npm run lint
       - run: npm run test:unit
 
-      - name: Release
+      - name: Commit, tag and push the version bump
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          # dist/ and src/graphql/ are gitignored, so -a only stages the version
+          # bump in package.json + package-lock.json. [skip ci] stops the push from
+          # triggering a redundant run-lint-and-tests run on main.
+          git commit -am "chore(release): $TAG [skip ci]"
+          git tag -a "$TAG" -m "$TAG"
+          git push origin HEAD:main --follow-tags
+
+      # Publish the already-built package. Scripts are skipped because build + lint +
+      # test:unit already ran above; npm's prepublishOnly would otherwise re-run
+      # lint/test before prepack rebuilds, when the gitignored generated types from a
+      # clean prepack are not yet present.
+      - name: Publish to npm
+        run: npm publish --ignore-scripts
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: gh release create "$TAG" --title "$TAG" --generate-notes
