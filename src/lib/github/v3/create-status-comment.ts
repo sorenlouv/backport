@@ -62,6 +62,7 @@ export function getCommentBody({
     repoOwner,
     autoMerge,
     isRepoPrivate,
+    gitHostname,
     noUnmergedBackportsHelp,
     publishStatusCommentOnAbort,
     publishStatusCommentOnFailure,
@@ -128,7 +129,9 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
         return [
           '✅',
           result.targetBranch,
-          isRepoPrivate ? result.pullRequestUrl : prShield,
+          !isRepoPrivate && gitHostname === 'github.com'
+            ? prShield
+            : result.pullRequestUrl,
         ];
       }
 

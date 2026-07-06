@@ -114,6 +114,7 @@ describe('getCommentBody', () => {
         repoName: 'kibana',
         repoOwner: 'elastic',
         autoMerge: true,
+        gitHostname: 'github.com',
         ...opts,
       } as ValidConfigOptions,
       pullNumber: 55,
@@ -228,6 +229,7 @@ describe('getCommentBody', () => {
         repoOwner: 'elastic',
         autoMerge: true,
         backportBinary: 'node scripts/backport',
+        gitHostname: 'github.com',
         ...opts,
       } as ValidConfigOptions,
       pullNumber: 55,
@@ -289,6 +291,7 @@ describe('getCommentBody', () => {
         repoOwner: 'elastic',
         autoMerge: true,
         backportBinary: 'node scripts/backport',
+        gitHostname: 'github.com',
         ...opts,
       } as ValidConfigOptions,
       pullNumber: 55,
@@ -680,6 +683,7 @@ describe('getCommentBody', () => {
         autoMerge: true,
         backportBinary: 'node scripts/backport',
         publishStatusCommentOnSuccess: true,
+        gitHostname: 'github.com',
         ...opts,
       } as ValidConfigOptions,
       pullNumber: 55,
@@ -725,6 +729,28 @@ describe('getCommentBody', () => {
         | Status | Branch | Result |
         |:------:|:------:|:------|
         |✅|7.x|[<img src="https://img.shields.io/github/pulls/detail/state/elastic/kibana/55">](url-to-pr)|
+
+        Note: Successful backport PRs will be merged automatically after passing CI.
+
+        ### Questions ?
+        Please refer to the [Backport tool documentation](https://github.com/sorenlouv/backport)
+
+        <!--- Backport version: 1.2.3-mocked -->"
+      `);
+    });
+
+    it('posts a comment without shields.io badge when running against GitHub Enterprise`', () => {
+      const params = getParams({
+        isRepoPrivate: false,
+        gitHostname: 'github.my-company.com',
+      });
+      expect(getCommentBody(params)).not.toContain('img.shields.io');
+      expect(getCommentBody(params)).toMatchInlineSnapshot(`
+        "## 💚 All backports created successfully
+
+        | Status | Branch | Result |
+        |:------:|:------:|:------|
+        |✅|7.x|url-to-pr|
 
         Note: Successful backport PRs will be merged automatically after passing CI.
 
