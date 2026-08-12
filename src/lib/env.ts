@@ -27,6 +27,11 @@ export function getGlobalConfigPath(globalConfigFile?: string) {
   return path.join(os.homedir(), '.backport', 'config.json');
 }
 
+export function getGithubTokenFromEnv() {
+  // eslint-disable-next-line no-restricted-syntax
+  return process.env.BACKPORT_GITHUB_TOKEN;
+}
+
 export function getRepoPath({
   repoOwner,
   repoName,

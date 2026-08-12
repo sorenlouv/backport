@@ -137,10 +137,19 @@ Hostname for Git. (Default: `github.com`)
 
 Base URLs for Github REST and GraphQL APIs.
 
-### `githubToken` **(Required)**
+### `githubToken` **(Required unless `BACKPORT_GITHUB_TOKEN` is set)**
 
 **CLI**: `--github-token`  
 Personal access token for GitHub authentication.
+
+If `githubToken` is omitted or blank, Backport uses the
+`BACKPORT_GITHUB_TOKEN` environment variable. A token supplied through the CLI
+or configuration takes precedence.
+
+```sh
+export BACKPORT_GITHUB_TOKEN="ghp_very_secret"
+backport
+```
 
 Create a token in [GitHub Developer Settings → Personal Access Tokens (classic)](https://github.com/settings/tokens/new?description=backport%20cli&scopes=repo,workflow) with the following scopes:
 
