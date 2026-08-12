@@ -1,6 +1,9 @@
 import os from 'node:os';
 import type { MockInstance } from 'vitest';
-import type { ValidConfigOptions } from '../../options/options.js';
+import {
+  defaultConfigOptions,
+  type ValidConfigOptions,
+} from '../../options/options.js';
 import {
   cleanupFetchMock,
   mockFetchResponse,
@@ -15,6 +18,7 @@ import * as oraModule from '../ora.js';
 import type { Commit } from '../sourceCommit/parse-source-commit.js';
 import * as autoMergeNowOrLater from './auto-merge-now-or-later.js';
 import { cherrypickAndCreateTargetPullRequest } from './cherrypick-and-create-target-pull-request.js';
+import * as waitForCherrypickModule from './wait-for-cherrypick.js';
 
 describe('cherrypickAndCreateTargetPullRequest', () => {
   let execSpy: SpyHelper<typeof childProcess.spawnPromise>;
@@ -178,7 +182,11 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
     });
 
     it('returns the expected response', () => {
-      expect(res).toEqual({ url: 'myHtmlUrl', number: 1337 });
+      expect(res).toEqual({
+        url: 'myHtmlUrl',
+        number: 1337,
+        hasConflicts: false,
+      });
     });
 
     it('should make correct git commands', () => {
@@ -291,7 +299,11 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
     });
 
     it('returns the expected response', () => {
-      expect(res).toEqual({ url: 'myHtmlUrl', number: 1337 });
+      expect(res).toEqual({
+        url: 'myHtmlUrl',
+        number: 1337,
+        hasConflicts: false,
+      });
     });
   });
 
@@ -372,7 +384,11 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
     });
 
     it('returns the expected response', () => {
-      expect(res).toEqual({ url: 'myHtmlUrl', number: 1337 });
+      expect(res).toEqual({
+        url: 'myHtmlUrl',
+        number: 1337,
+        hasConflicts: false,
+      });
     });
   });
 
@@ -444,5 +460,169 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         expect.objectContaining({ assignees: ['sqren_authenticated'] }),
       );
     });
+  });
+
+  describe('WHEN a cherry-pick encounters conflicts', () => {
+    it.each([
+      {
+        conflictResolution: 'commit' as const,
+        conflictLabel: 'needs-resolution',
+        expectedLabels: ['backport', 'needs-resolution'],
+      },
+      {
+        conflictResolution: 'commit' as const,
+        conflictLabel: 'conflicts-present',
+        expectedLabels: ['backport', 'conflicts-present'],
+      },
+      {
+        conflictResolution: 'theirs' as const,
+        conflictLabel: 'needs-resolution',
+        expectedLabels: ['backport'],
+      },
+    ])(
+      'SHOULD return the conflict and apply the expected labels for $conflictResolution',
+      async ({ conflictResolution, conflictLabel, expectedLabels }) => {
+        vi.spyOn(
+          waitForCherrypickModule,
+          'waitForCherrypick',
+        ).mockResolvedValue({
+          hasCommitsWithConflicts: true,
+          unresolvedFiles: ['conflicted-file.ts'],
+        });
+
+        mockGraphqlRequest<TargetBranchResponse>({
+          operationName: 'GetBranchId',
+          body: { data: { repository: { ref: { id: 'foo' } } } },
+        });
+
+        mockFetchResponse({
+          url: '/repos/elastic/kibana/pulls',
+          method: 'POST',
+          responseBody: { number: 1337, html_url: 'myHtmlUrl' },
+        });
+
+        const response = await cherrypickAndCreateTargetPullRequest({
+          options: {
+            ...defaultConfigOptions,
+            assignees: [],
+            authenticatedUsername: 'authenticated-user',
+            author: 'sorenlouv',
+            autoMerge: false,
+            conflictLabel,
+            conflictResolution,
+            copySourcePRLabels: false,
+            copySourcePRReviewers: false,
+            fork: true,
+            githubToken: 'token',
+            githubApiBaseUrlV4: 'http://localhost/graphql',
+            interactive: false,
+            prTitle: '[{{targetBranch}}] {{commitMessages}}',
+            repoForkOwner: 'sorenlouv',
+            repoName: 'kibana',
+            repoOwner: 'elastic',
+            reviewers: [],
+            sourceBranch: '7.x',
+            sourcePRLabels: [],
+            targetPRLabels: ['backport'],
+          },
+          commits: [
+            {
+              author: {
+                email: 'soren@example.com',
+                name: 'Soren',
+              },
+              sourceBranch: '7.x',
+              suggestedTargetBranches: [],
+              sourceCommit: {
+                branchLabelMapping: undefined,
+                committedDate: '2026-01-01',
+                sha: 'mySha',
+                message: 'My commit',
+              },
+              targetPullRequestStates: [],
+            },
+          ],
+          targetBranch: '6.x',
+        });
+
+        expect(response.hasConflicts).toBe(true);
+        expect(addLabelsCalls[0]).toEqual({ labels: expectedLabels });
+      },
+    );
+
+    it.each([
+      [false, true],
+      [true, false],
+    ])(
+      'SHOULD preserve a conflict from either commit in a batch: %j',
+      async (firstHasConflicts, secondHasConflicts) => {
+        vi.spyOn(waitForCherrypickModule, 'waitForCherrypick')
+          .mockResolvedValueOnce({
+            hasCommitsWithConflicts: firstHasConflicts,
+            unresolvedFiles: firstHasConflicts ? ['first.ts'] : [],
+          })
+          .mockResolvedValueOnce({
+            hasCommitsWithConflicts: secondHasConflicts,
+            unresolvedFiles: secondHasConflicts ? ['second.ts'] : [],
+          });
+
+        mockGraphqlRequest<TargetBranchResponse>({
+          operationName: 'GetBranchId',
+          body: { data: { repository: { ref: { id: 'foo' } } } },
+        });
+        mockFetchResponse({
+          url: '/repos/elastic/kibana/pulls',
+          method: 'POST',
+          responseBody: { number: 1337, html_url: 'myHtmlUrl' },
+        });
+
+        const makeCommit = (sha: string): Commit => ({
+          author: { email: 'soren@example.com', name: 'Soren' },
+          sourceBranch: '7.x',
+          suggestedTargetBranches: [],
+          sourceCommit: {
+            branchLabelMapping: undefined,
+            committedDate: '2026-01-01',
+            sha,
+            message: `Commit ${sha}`,
+          },
+          targetPullRequestStates: [],
+        });
+
+        const response = await cherrypickAndCreateTargetPullRequest({
+          options: {
+            ...defaultConfigOptions,
+            assignees: [],
+            authenticatedUsername: 'authenticated-user',
+            author: 'sorenlouv',
+            autoMerge: true,
+            conflictLabel: 'conflicts-present',
+            conflictResolution: 'commit',
+            copySourcePRLabels: false,
+            copySourcePRReviewers: false,
+            fork: true,
+            githubToken: 'token',
+            githubApiBaseUrlV4: 'http://localhost/graphql',
+            interactive: false,
+            prTitle: '[{{targetBranch}}] {{commitMessages}}',
+            repoForkOwner: 'sorenlouv',
+            repoName: 'kibana',
+            repoOwner: 'elastic',
+            reviewers: [],
+            sourceBranch: '7.x',
+            sourcePRLabels: [],
+            targetPRLabels: ['backport'],
+          },
+          commits: [makeCommit('first'), makeCommit('second')],
+          targetBranch: '6.x',
+        });
+
+        expect(response.hasConflicts).toBe(true);
+        expect(addLabelsCalls[0]).toEqual({
+          labels: ['backport', 'conflicts-present'],
+        });
+        expect(autoMergeSpy).not.toHaveBeenCalled();
+      },
+    );
   });
 });

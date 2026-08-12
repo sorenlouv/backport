@@ -61,6 +61,7 @@ export const configOptionsSchema = z.object({
   backportBranchName: z.string().optional(),
   branchLabelMapping: z.record(z.string(), z.string()).optional(),
   cherryPickRef: z.boolean().default(true),
+  conflictLabel: z.string().default('merge-conflict'),
   conflictResolution: z.enum(['abort', 'commit', 'theirs']).default('abort'),
   commitPaths: z.array(z.string()).default([]),
   copySourcePRLabels: z
@@ -75,6 +76,7 @@ export const configOptionsSchema = z.object({
   draft: z.boolean().default(false),
   dryRun: z.boolean().optional(),
   editor: z.string().optional(),
+  failOnConflicts: z.boolean().default(true),
   fork: z.boolean().default(true),
   gitAuthorEmail: z.string().optional(),
   gitAuthorName: z.string().optional(),

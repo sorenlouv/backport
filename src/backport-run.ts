@@ -96,6 +96,19 @@ export async function backportRun({
 
     await createStatusComment({ options, backportResponse });
 
+    const hasCommittedConflicts = results.some(
+      (result) => result.status === 'success' && result.hasConflicts,
+    );
+
+    if (
+      exitCodeOnFailure &&
+      options.conflictResolution === 'commit' &&
+      options.failOnConflicts &&
+      hasCommittedConflicts
+    ) {
+      process.exitCode = 1;
+    }
+
     return backportResponse;
   } catch (error) {
     spinner.stop();

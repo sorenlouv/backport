@@ -175,4 +175,40 @@ describe('waitForCherrypick with conflictResolution=commit', () => {
     // No retry — commit mode commits the conflicts directly.
     expect(cherrypickSpy).toHaveBeenCalledTimes(1);
   });
+
+  it('should not report conflicts after autoFixConflicts resolves them', async () => {
+    cherrypickSpy.mockResolvedValueOnce(conflictingCherrypickResult);
+    const autoFixConflicts = vi.fn().mockResolvedValue(true);
+
+    const result = await waitForCherrypick(
+      makeOptions({ conflictResolution: 'commit', autoFixConflicts }),
+      makeCommit(),
+      '7.x',
+    );
+
+    expect(result).toEqual({
+      hasCommitsWithConflicts: false,
+      unresolvedFiles: [],
+    });
+    expect(autoFixConflicts).toHaveBeenCalledTimes(1);
+    expect(gitAddAllSpy).not.toHaveBeenCalled();
+  });
+
+  it('should commit conflicts when autoFixConflicts cannot resolve them', async () => {
+    cherrypickSpy.mockResolvedValueOnce(conflictingCherrypickResult);
+    const autoFixConflicts = vi.fn().mockResolvedValue(false);
+
+    const result = await waitForCherrypick(
+      makeOptions({ conflictResolution: 'commit', autoFixConflicts }),
+      makeCommit(),
+      '7.x',
+    );
+
+    expect(result).toEqual({
+      hasCommitsWithConflicts: true,
+      unresolvedFiles: ['la-liga.md'],
+    });
+    expect(autoFixConflicts).toHaveBeenCalledTimes(1);
+    expect(gitAddAllSpy).toHaveBeenCalledTimes(1);
+  });
 });

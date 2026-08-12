@@ -122,6 +122,7 @@ describe('getCommentBody', () => {
         results: [
           {
             status: 'success',
+            hasConflicts: false,
 
             targetBranch: '7.x',
             pullRequestNumber: 55,
@@ -129,6 +130,7 @@ describe('getCommentBody', () => {
           },
           {
             status: 'success',
+            hasConflicts: false,
 
             targetBranch: '7.1',
             pullRequestNumber: 66,
@@ -236,6 +238,7 @@ describe('getCommentBody', () => {
         results: [
           {
             status: 'success',
+            hasConflicts: false,
             targetBranch: '7.x',
             pullRequestNumber: 55,
             pullRequestUrl: 'url-to-pr-55',
@@ -297,6 +300,7 @@ describe('getCommentBody', () => {
         results: [
           {
             status: 'success',
+            hasConflicts: false,
             targetBranch: '7.x',
             pullRequestNumber: 55,
             pullRequestUrl: 'url-to-pr-55',
@@ -688,6 +692,7 @@ describe('getCommentBody', () => {
         results: [
           {
             status: 'success',
+            hasConflicts: false,
 
             targetBranch: '7.x',
             pullRequestNumber: 55,

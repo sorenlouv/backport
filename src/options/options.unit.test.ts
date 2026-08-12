@@ -104,6 +104,15 @@ describe('getOptions', () => {
         ).rejects.toThrow('"author" cannot be empty!');
       });
 
+      it('throws for "conflictLabel"', async () => {
+        await expect(() =>
+          getOptions({
+            optionsFromCliArgs: {},
+            optionsFromModule: { conflictLabel: '' },
+          }),
+        ).rejects.toThrow('"conflictLabel" cannot be empty!');
+      });
+
       it('throws for "githubToken"', async () => {
         await expect(() =>
           getOptions({
@@ -186,6 +195,24 @@ describe('getOptions', () => {
     expect(options.autoFixConflicts).toBe(myFn);
   });
 
+  it('should let CLI override conflict options configured by the module', async () => {
+    mockGithubConfigOptions({});
+
+    const options = await getOptions({
+      optionsFromCliArgs: {
+        conflictLabel: 'needs-resolution',
+        failOnConflicts: false,
+      },
+      optionsFromModule: {
+        conflictLabel: 'module-conflict',
+        failOnConflicts: true,
+      },
+    });
+
+    expect(options.conflictLabel).toBe('needs-resolution');
+    expect(options.failOnConflicts).toBe(false);
+  });
+
   it('should call setGithubToken', async () => {
     mockGithubConfigOptions({});
     await getOptions({ optionsFromCliArgs: {}, optionsFromModule: {} });
@@ -213,6 +240,7 @@ describe('getOptions', () => {
       autoMergeMethod: 'merge',
       backportBinary: 'backport',
       cherryPickRef: true,
+      conflictLabel: 'merge-conflict',
       conflictResolution: 'abort',
       commitPaths: [],
       cwd: expect.any(String),
@@ -221,6 +249,7 @@ describe('getOptions', () => {
       verbose: false,
       draft: false,
       editor: 'code',
+      failOnConflicts: true,
       fork: true,
       gitHostname: 'github.com',
       githubApiBaseUrlV4: 'http://localhost/graphql',

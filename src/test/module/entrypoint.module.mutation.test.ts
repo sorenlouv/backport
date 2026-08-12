@@ -79,6 +79,7 @@ describe('entrypoint.module', () => {
         ],
         results: [
           {
+            hasConflicts: false,
             pullRequestNumber: expect.any(Number),
             pullRequestUrl: expect.stringContaining(
               'https://github.com/backport-org/integration-test/pull/',
@@ -204,6 +205,7 @@ describe('entrypoint.module', () => {
         ],
         results: [
           {
+            hasConflicts: false,
             pullRequestNumber: expect.any(Number),
             pullRequestUrl: expect.stringContaining(
               'https://github.com/backport-org/integration-test/pull/',
@@ -326,6 +328,7 @@ describe('entrypoint.module', () => {
         ],
         results: [
           {
+            hasConflicts: false,
             pullRequestNumber: expect.any(Number),
             pullRequestUrl: expect.stringContaining(
               'https://github.com/backport-org/integration-test/pull/',

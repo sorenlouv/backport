@@ -35,7 +35,7 @@ export async function cherrypickAndCreateTargetPullRequest({
   options: ValidConfigOptions;
   commits: Commit[];
   targetBranch: string;
-}): Promise<{ url: string; number: number }> {
+}): Promise<{ url: string; number: number; hasConflicts: boolean }> {
   const backportBranch = getBackportBranchName({
     options,
     targetBranch,
@@ -124,6 +124,9 @@ export async function cherrypickAndCreateTargetPullRequest({
     copySourcePRLabels: options.copySourcePRLabels,
     commits,
     targetBranch,
+    conflictLabel: options.conflictLabel,
+    hasConflicts:
+      options.conflictResolution === 'commit' && hasAnyCommitWithConflicts,
   });
 
   // add labels to target pull request
@@ -157,5 +160,5 @@ export async function cherrypickAndCreateTargetPullRequest({
 
   consoleLog(`View pull request: ${targetPullRequest.url}`);
 
-  return targetPullRequest;
+  return { ...targetPullRequest, hasConflicts: hasAnyCommitWithConflicts };
 }

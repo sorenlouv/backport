@@ -9,12 +9,16 @@ export function getTargetPRLabels({
   commits,
   targetBranch,
   copySourcePRLabels,
+  conflictLabel,
+  hasConflicts,
 }: {
   interactive: boolean;
   targetPRLabels: string[];
   commits: Commit[];
   targetBranch: string;
   copySourcePRLabels: boolean | string | string[];
+  conflictLabel: string;
+  hasConflicts: boolean;
 }) {
   const configuredTargetPRLabels = getConfiguredTargetPRLabels({
     commits,
@@ -28,5 +32,9 @@ export function getTargetPRLabels({
     copySourcePRLabels: copySourcePRLabels,
   });
 
-  return uniq([...configuredTargetPRLabels, ...sourcePRLabelsToCopy]);
+  return uniq([
+    ...configuredTargetPRLabels,
+    ...sourcePRLabelsToCopy,
+    ...(hasConflicts ? [conflictLabel] : []),
+  ]);
 }

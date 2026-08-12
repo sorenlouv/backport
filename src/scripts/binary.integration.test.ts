@@ -79,7 +79,7 @@ describe('binary backport file', () => {
     expect(res.stdout.trim()).toBe(version);
   });
 
-  it('shows help with --help (smoke test)', () => {
+  it('shows conflict options with --help', () => {
     const res = spawnSync(binPath, ['--help'], {
       cwd: workDir,
       encoding: 'utf8',
@@ -89,7 +89,10 @@ describe('binary backport file', () => {
     });
     if (res.error) throw res.error;
     expect(res.status).toBe(0);
-    // Basic sanity: Should mention backport or usage
     expect(res.stdout.toLowerCase()).toContain('backport');
+    expect(res.stdout).toContain('--conflictLabel');
+    expect(res.stdout).toContain('Existing repository label to add');
+    expect(res.stdout).toContain('--failOnConflicts');
+    expect(res.stdout).toContain('Defaults to true');
   });
 });
