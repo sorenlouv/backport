@@ -117,6 +117,18 @@ function parseYargsOptions(processArgs: readonly string[]) {
       choices: ['abort', 'commit', 'theirs'],
     })
 
+    .option('conflictLabel', {
+      description:
+        'Existing repository label to add to pull requests containing committed conflicts. Defaults to "merge-conflict"',
+      type: 'string',
+    })
+
+    .option('failOnConflicts', {
+      description:
+        'Exit with status 1 after creating pull requests containing committed conflicts. Defaults to true',
+      type: 'boolean',
+    })
+
     // ── Paths & Config ─────────────────────────────────────────────
     .option('cwd', {
       hidden: true,

@@ -10,6 +10,7 @@ import type { Commit } from './sourceCommit/parse-source-commit.js';
 
 export type SuccessResult = {
   status: 'success';
+  hasConflicts: boolean;
   targetBranch: string;
   pullRequestUrl: string;
   pullRequestNumber: number;
@@ -46,15 +47,17 @@ export async function runSequentially({
   await sequentially(targetBranches, async (targetBranch) => {
     logger.info(`Backporting ${JSON.stringify(commits)} to ${targetBranch}`);
     try {
-      const { number, url } = await cherrypickAndCreateTargetPullRequest({
-        options,
-        commits,
-        targetBranch,
-      });
+      const { number, url, hasConflicts } =
+        await cherrypickAndCreateTargetPullRequest({
+          options,
+          commits,
+          targetBranch,
+        });
 
       results.push({
         targetBranch,
         status: 'success',
+        hasConflicts,
         pullRequestUrl: url,
         pullRequestNumber: number,
       });

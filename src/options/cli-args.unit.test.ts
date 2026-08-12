@@ -232,6 +232,29 @@ describe('getOptionsFromCliArgs', () => {
     });
   });
 
+  describe('WHEN conflict handling options are provided', () => {
+    it.each(['needs-resolution', 'backport-conflict'])(
+      'SHOULD parse conflictLabel=%s',
+      (conflictLabel) => {
+        const res = getOptionsFromCliArgs(['--conflict-label', conflictLabel]);
+
+        expect(res.conflictLabel).toBe(conflictLabel);
+      },
+    );
+
+    it('SHOULD parse bare failOnConflicts as true', () => {
+      const res = getOptionsFromCliArgs(['--fail-on-conflicts']);
+
+      expect(res.failOnConflicts).toBe(true);
+    });
+
+    it('SHOULD parse failOnConflicts=false', () => {
+      const res = getOptionsFromCliArgs(['--fail-on-conflicts', 'false']);
+
+      expect(res.failOnConflicts).toBe(false);
+    });
+  });
+
   describe('mainline', () => {
     it('should default to 1', () => {
       const argv = ['--mainline'];

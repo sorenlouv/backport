@@ -12,6 +12,8 @@ Backport one or more commits programmatically. Commits can be selected via `pull
 - `processArgs` _string[]_ — forward CLI arguments from the calling process (e.g. `process.argv.slice(2)`)
 - `exitCodeOnFailure` _boolean_ — if `true`, sets a non-zero exit code on failure. Default: `true`
 
+Each successful result includes `hasConflicts`, which reports whether non-interactive conflict handling used `commit` or `theirs`. With `conflictResolution: "commit"`, those conflicts remain committed in the pull request.
+
 **Example:**
 
 ```ts

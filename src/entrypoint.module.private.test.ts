@@ -165,6 +165,7 @@ describe('entrypoint.module', () => {
           results: [
             {
               status: 'success',
+              hasConflicts: false,
               pullRequestNumber: 1337,
               pullRequestUrl: 'this-is-a-dry-run',
               targetBranch: '7.x',

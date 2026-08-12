@@ -93,6 +93,12 @@ Only list commits touching files under the specified path.
 **CLI**: `--conflict-resolution`  
 Strategy when encountering merge conflicts. Only applies in non-interactive mode (e.g. `--non-interactive`, or when running via the [GitHub Action](https://github.com/sorenlouv/backport-github-action)). Choices: `abort`, `commit`, `theirs`. (Default: `abort`)
 
+### `conflictLabel`
+
+**CLI**: `--conflict-label`
+
+Existing repository label added to pull requests containing committed conflicts when `conflictResolution` is `commit`. The label must already exist in the target repository. (Default: `merge-conflict`)
+
 ### `copySourcePRLabels`
 
 **CLI**: `--copySourcePRLabels`  
@@ -122,6 +128,12 @@ Editor (e.g., `code`) to open and resolve conflicts.
 
 **CLI**: `--fork`, `--no-fork` (to disable)  
 Create backport branch in the user's fork (`true`) or in the origin repository (`false`). (Default: `true`)
+
+### `failOnConflicts`
+
+**CLI**: `--fail-on-conflicts`
+
+Exit with status `1` after creating pull requests containing committed conflicts when `conflictResolution` is `commit`. Set to `false` to preserve a successful exit status. (Default: `true`)
 
 ### `gitAuthorName` / `gitAuthorEmail`
 

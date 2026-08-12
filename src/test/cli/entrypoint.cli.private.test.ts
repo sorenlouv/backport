@@ -57,6 +57,12 @@ describe('entrypoint cli', () => {
             --conflictResolution                            Conflict resolution strategy. Defaults to
                                                             "abort"
                                                            [string] [choices: "abort", "commit", "theirs"]
+            --conflictLabel                                 Existing repository label to add to pull
+                                                            requests containing committed conflicts.
+                                                            Defaults to "merge-conflict"          [string]
+            --failOnConflicts                               Exit with status 1 after creating pull
+                                                            requests containing committed conflicts.
+                                                            Defaults to true                     [boolean]
             --projectConfigFile, --config                   Path to project config                [string]
             --globalConfigFile                              Path to global config                 [string]
             --since                                         ISO-8601 date for filtering commits   [string]

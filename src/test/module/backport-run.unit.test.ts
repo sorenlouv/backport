@@ -182,6 +182,7 @@ describe('backportRun integration', () => {
     expect(res.results).toHaveLength(1);
     expect(res.results[0].targetBranch).toBe('7.x');
     expect(res.results[0].status).toBe('success');
+    expect(res.results[0]).toMatchObject({ hasConflicts: false });
 
     // Verify PR was created with correct body
     expect(createPrCalls).toHaveLength(1);
