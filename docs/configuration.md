@@ -83,6 +83,11 @@ _Note: backslashes must be escaped in JSON (`\\` → `\`)._
 **CLI**: `--no-cherry-pick-ref` (to disable)  
 Append "(cherry picked from commit...)" to the commit message. (Default: `true`)
 
+### `cloneDepth` / `cloneFilter`
+
+**CLI**: `--clone-depth`, `--clone-filter`  
+Passed to `git clone --depth` / `--filter` when the repository is first cloned, e.g. `cloneFilter: "blob:none"` to skip file contents until needed. Only applies to the one-time clone of remote repositories.
+
 ### `commitPaths`
 
 **CLI**: `--path`, `-p`  

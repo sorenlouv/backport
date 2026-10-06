@@ -219,6 +219,7 @@ const DISALLOW_EMPTY_STRING_OPTIONS = [
   'autoMergeMethod',
   'backportBinary',
   'backportBranchName',
+  'cloneFilter',
   'workdir',
   'editor',
   'gitHostname',

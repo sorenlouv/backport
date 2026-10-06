@@ -43,7 +43,12 @@ export async function setupRepo(options: ValidConfigOptions) {
       await fs.rm(repoPath, { recursive: true, force: true });
 
       await cloneRepo(
-        { sourcePath, targetPath: repoPath },
+        {
+          sourcePath,
+          targetPath: repoPath,
+          depth: options.cloneDepth,
+          filter: options.cloneFilter,
+        },
         (progress: number) => {
           spinner.text = `${progress}% ${spinnerCloneText}`;
         },

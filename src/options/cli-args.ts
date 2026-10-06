@@ -111,6 +111,18 @@ function parseYargsOptions(processArgs: readonly string[]) {
       conflicts: ['noCherryPickRef'],
     })
 
+    .option('cloneDepth', {
+      description:
+        'Create a shallow clone with history truncated to the given number of commits',
+      type: 'number',
+    })
+
+    .option('cloneFilter', {
+      description:
+        'Partial clone filter passed to `git clone --filter` (e.g. "blob:none")',
+      type: 'string',
+    })
+
     .option('conflictResolution', {
       description: 'Conflict resolution strategy. Defaults to "abort"',
       type: 'string',

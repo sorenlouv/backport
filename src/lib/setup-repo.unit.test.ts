@@ -126,6 +126,56 @@ describe('setupRepo', () => {
     });
   });
 
+  describe('clone options', () => {
+    const mockSpawnStream = () =>
+      vi.spyOn(childProcess, 'spawnStream').mockImplementation(
+        () =>
+          ({
+            on: (name: string, cb: (...args: any[]) => void) => {
+              if (name === 'close') {
+                cb(0);
+              }
+            },
+            stderr: { on: vi.fn() },
+          }) as unknown as ReturnType<typeof childProcess.spawnStream>,
+      );
+
+    const setup = (options: Partial<ValidConfigOptions>) =>
+      setupRepo({
+        repoName: 'kibana',
+        repoOwner: 'elastic',
+        gitHostname: 'github.com',
+        cwd: '/path/to/source/repo',
+        interactive: false,
+        ...options,
+      } as ValidConfigOptions);
+
+    beforeEach(() => {
+      vi.spyOn(gitModule, 'getLocalSourceRepoPath').mockResolvedValue(
+        undefined as any,
+      );
+    });
+
+    it('passes --depth and --filter to git clone', async () => {
+      const spawnStreamSpy = mockSpawnStream();
+      await setup({ cloneDepth: 1, cloneFilter: 'blob:none' });
+
+      const cmdArgs = spawnStreamSpy.mock.calls[0][1];
+      expect(cmdArgs).toEqual(
+        expect.arrayContaining(['--depth', '1', '--filter', 'blob:none']),
+      );
+    });
+
+    it('does not pass --depth or --filter by default', async () => {
+      const spawnStreamSpy = mockSpawnStream();
+      await setup({});
+
+      const cmdArgs = spawnStreamSpy.mock.calls[0][1];
+      expect(cmdArgs).not.toContain('--depth');
+      expect(cmdArgs).not.toContain('--filter');
+    });
+  });
+
   describe('if repo is already cloned', () => {
     function mockGitProjectRootPath(value: string) {
       return spawnSpy.mockImplementationOnce(
