@@ -63,6 +63,7 @@ describe('cherrypickAndCreateTargetPullRequest', () => {
         author: 'sorenlouv',
         autoMerge: true,
         autoMergeMethod: 'squash',
+        cherryPickRef: true,
         fork: true,
         gitAuthorEmail: 'soren@louv.dk',
         gitAuthorName: 'Soren L',

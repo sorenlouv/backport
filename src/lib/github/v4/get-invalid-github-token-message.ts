@@ -38,7 +38,6 @@ export function getInvalidGithubTokenMessage({
       const grantedScopes = result.responseHeaders?.get('x-oauth-scopes') ?? '';
       const requiredScopes =
         result.responseHeaders?.get('x-accepted-oauth-scopes') ?? '';
-      const ssoHeader = result.responseHeaders?.get('x-github-sso');
 
       if (repoNotFound) {
         const hasRequiredScopes = isEmpty(
@@ -61,6 +60,7 @@ export function getInvalidGithubTokenMessage({
         ({ extensions }) => extensions.saml_failure === true,
       );
 
+      const ssoHeader = result.responseHeaders?.get('x-github-sso');
       const ssoAuthUrl = getSSOAuthUrl(ssoHeader);
 
       // user does not have permissions

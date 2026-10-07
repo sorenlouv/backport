@@ -23,21 +23,23 @@ export async function cloneRepo(
 
     subprocess.on('error', (err) => reject(err));
 
-    subprocess.stderr.on('data', (data: string) => {
-      logger.verbose(data.toString());
+    // No encoding is set on the stream, so chunks arrive as Buffers
+    subprocess.stderr.on('data', (chunk: Buffer) => {
+      const data = chunk.toString();
+      logger.verbose(data);
       const [, objectReceiveProgress] =
-        data.toString().match(/^Receiving objects:\s+(\d+)%/) ?? [];
+        data.match(/^Receiving objects:\s+(\d+)%/) ?? [];
 
       if (objectReceiveProgress) {
-        progress.objectReceive = Number.parseInt(objectReceiveProgress, 10);
+        progress.objectReceive = Number(objectReceiveProgress);
       }
 
       const [, fileUpdateProgress] =
-        data.toString().match(/^Updating files:\s+(\d+)%/) ?? [];
+        data.match(/^Updating files:\s+(\d+)%/) ?? [];
 
       if (fileUpdateProgress) {
         progress.objectReceive = 100;
-        progress.fileUpdate = Number.parseInt(fileUpdateProgress, 10);
+        progress.fileUpdate = Number(fileUpdateProgress);
       }
 
       const progressSum = Math.round(

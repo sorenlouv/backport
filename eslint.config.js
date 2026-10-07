@@ -33,7 +33,7 @@ export default [
   eslintPluginUnicorn.configs.recommended,
   {
     rules: {
-      'unicorn/prevent-abbreviations': 'off',
+      'unicorn/name-replacements': 'off',
       'unicorn/no-null': 'off',
       'unicorn/no-process-exit': 'off',
       'unicorn/no-array-callback-reference': 'off',
@@ -42,6 +42,28 @@ export default [
       'unicorn/no-nested-ternary': 'off',
       'unicorn/prefer-top-level-await': 'off',
       'unicorn/prefer-module': 'off',
+
+      // Naming and comment conventions this codebase deliberately doesn't follow
+      'unicorn/consistent-boolean-name': 'off', // e.g. `noConflicts`, `needsResolving`
+      'unicorn/no-non-function-verb-prefix': 'off', // e.g. `createPullRequestCalls`
+      'unicorn/no-asterisk-prefix-in-documentation-comments': 'off', // keep the standard ` * ` JSDoc prefix
+      'unicorn/single-line-block-comment-style': 'off', // allow one-line `/** … */` file headers
+      'unicorn/max-nested-calls': 'off', // zod schemas nest calls by design
+      'unicorn/prefer-ternary': 'off', // since v77 it also rewrites `if (x) return a; return b;` guard clauses
+      'unicorn/prefer-simple-condition-first': 'off', // conditions are ordered for readability
+      // Files are kebab-case; directories (e.g. `sourceCommit/`) are camelCase
+      'unicorn/filename-case': [
+        'error',
+        { case: 'kebabCase', checkDirectories: false },
+      ],
+    },
+  },
+
+  // Config files and test helpers configure the environment at import time
+  {
+    files: ['eslint.config.js', 'vitest.config*.ts', 'src/test/**/*.ts'],
+    rules: {
+      'unicorn/no-top-level-side-effects': 'off',
     },
   },
 
@@ -221,6 +243,8 @@ export default [
     },
     rules: {
       '@typescript-eslint/ban-ts-comment': 'off',
+      // Test helpers are parameterized for readability, even when every call passes the same value
+      'unicorn/no-unnecessary-parameters': 'off',
       // Allow process.env strictly in tests and vitest configs
       'no-restricted-syntax': 'off',
     },

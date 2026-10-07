@@ -15,15 +15,14 @@ process.on('uncaughtException', (err) => {
 });
 
 // this is the entrypoint when running from command line
-void backportRun({ processArgs, exitCodeOnFailure: true }).then(
-  (backportResponse) => {
+void backportRun({ processArgs, exitCodeOnFailure: true })
+  .then((backportResponse) => {
     if (!interactive || ls) {
       console.log(JSON.stringify(backportResponse));
     }
 
     process.exit(process.exitCode ?? 0);
-  },
-  () => {
+  })
+  .catch(() => {
     process.exit(process.exitCode ?? 1);
-  },
-);
+  });

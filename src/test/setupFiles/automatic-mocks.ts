@@ -13,6 +13,7 @@ vi.mock('find-up', () => {
 });
 
 // Store the real version before mocking, accessible via globalThis
+// eslint-disable-next-line unicorn/no-global-object-property-assignment -- read back by tests that need the unmocked version
 (globalThis as any).__UNMOCKED_PACKAGE_VERSION__ =
   packageVersionModule.getPackageVersion();
 

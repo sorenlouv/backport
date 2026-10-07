@@ -65,10 +65,12 @@ export async function setupRepo(options: ValidConfigOptions) {
   await addRemote(options, options.repoForkOwner);
 
   // add remote for non-fork repo (if the above is a fork)
-  if (options.repoForkOwner !== options.repoOwner) {
-    await deleteRemote(options, options.repoOwner);
-    await addRemote(options, options.repoOwner);
+  if (options.repoForkOwner === options.repoOwner) {
+    return;
   }
+
+  await deleteRemote(options, options.repoOwner);
+  await addRemote(options, options.repoOwner);
 }
 
 async function getIsRepoCloned(options: ValidConfigOptions): Promise<boolean> {

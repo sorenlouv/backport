@@ -113,15 +113,15 @@ export async function fetchCommitsForRebaseAndMergeStrategy(
     return hasSameCommittedDate && hasSameCommitMessages && hasSamePullNumber;
   });
 
-  if (didUseRebaseAndMergeStrategy) {
-    const commits = await Promise.all(
-      commitsInBaseBranch
-        .filter((c) => c?.node?.oid != null)
-        .map((c) =>
-          fetchCommitBySha({ ...options, sha: String(c!.node!.oid) }),
-        ),
-    );
-
-    return commits;
+  if (!didUseRebaseAndMergeStrategy) {
+    return;
   }
+
+  const commits = await Promise.all(
+    commitsInBaseBranch
+      .filter((c) => c?.node?.oid != null)
+      .map((c) => fetchCommitBySha({ ...options, sha: String(c!.node!.oid) })),
+  );
+
+  return commits;
 }

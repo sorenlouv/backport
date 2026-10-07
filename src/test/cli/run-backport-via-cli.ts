@@ -62,9 +62,9 @@ export async function runBackportViaCli(
 }
 
 const keyCodeMap = {
-  down: '\u001B\u005B\u0042',
-  up: '\u001B\u005B\u0041',
-  enter: '\u000D',
+  down: '\u{1B}[B',
+  up: '\u{1B}[A',
+  enter: '\r',
 };
 type KeyCode = keyof typeof keyCodeMap;
 
@@ -87,7 +87,7 @@ function getPromise(
     keepAlive,
   } = runBackportOptions;
 
-  return new Promise<{
+  const promise = new Promise<{
     output: string;
     code: number | null;
     keypress: (
@@ -110,7 +110,7 @@ function getPromise(
     );
 
     function formatChunk(data: string) {
-      return stripAnsi(data.toString()).trim();
+      return stripAnsi(data).trim();
     }
 
     function keypress(
@@ -122,14 +122,17 @@ function getPromise(
       return p;
     }
 
-    const onChunk = (chunk: string) => {
+    // No encoding is set on the streams, so chunks arrive as Buffers
+    const onChunk = (data: Buffer) => {
+      const chunk = data.toString();
       chunks += chunk;
-      const formattedChunk = formatChunk(chunk);
 
-      if (waitForString && formattedChunk.includes(waitForString)) {
-        postponeTimeout.cancel();
-        resolve({ output: formatChunk(chunks), code: null, keypress });
+      if (!waitForString || !formatChunk(chunk).includes(waitForString)) {
+        return;
       }
+
+      postponeTimeout.cancel();
+      resolve({ output: formatChunk(chunks), code: null, keypress });
     };
 
     proc.on('exit', (code) => {
@@ -145,13 +148,13 @@ function getPromise(
       }
     });
 
-    proc.stdout.on('data', (chunk: string) => {
+    proc.stdout.on('data', (chunk: Buffer) => {
       postponeTimeout();
       onChunk(chunk);
     });
 
     // ora (loading spinner) is redirected to stderr
-    proc.stderr.on('data', (chunk: string) => {
+    proc.stderr.on('data', (chunk: Buffer) => {
       postponeTimeout();
       if (showOra) {
         onChunk(chunk);
@@ -161,7 +164,10 @@ function getPromise(
     proc.on('error', (err) => {
       reject(`runBackportViaCli failed with: ${err}`);
     });
-  }).finally(() => {
+  });
+
+  // eslint-disable-next-line unicorn/prefer-await -- an async function would turn the synchronous `proc.killed` throw above into a rejection
+  return promise.finally(() => {
     if (keepAlive) {
       proc.removeAllListeners('exit');
       proc.stdout.removeAllListeners('data');

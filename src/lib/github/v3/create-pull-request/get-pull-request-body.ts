@@ -47,28 +47,32 @@ export function getPullRequestBody({
 
   const prDescription = (options.prDescription ?? defaultPrDescription)
 
+    // Dynamic values are passed via replacer functions so `$` sequences in them
+    // (e.g. `$&` or `$$` in a commit message) are inserted verbatim instead of
+    // being interpreted as replacement patterns.
+
     // replace defaultPrDescription
-    .replaceAll('{{defaultPrDescription}}', defaultPrDescription)
-    .replaceAll('{defaultPrDescription}', defaultPrDescription) // for backwards compatibility
+    .replaceAll('{{defaultPrDescription}}', () => defaultPrDescription)
+    .replaceAll('{defaultPrDescription}', () => defaultPrDescription) // for backwards compatibility
 
     // replace commitMessages
     .replaceAll(
       '{{commitMessages}}',
-      `{{{{raw}}}}${commitMessagesAsString}{{{{/raw}}}}`,
+      () => `{{{{raw}}}}${commitMessagesAsString}{{{{/raw}}}}`,
     )
 
     // replace commits
     .replaceAll('{{commits}}', '{{commitsAsJson}}')
-    .replaceAll('{commits}', commitsStringified) // for backwards compatibility
-    .replaceAll('{{commitsStringified}}', commitsStringified)
+    .replaceAll('{commits}', () => commitsStringified) // for backwards compatibility
+    .replaceAll('{{commitsStringified}}', () => commitsStringified)
     .replaceAll('{{commitsAsJson}}', '{{commits}}')
 
     // replace sourceBranch and targetBranch
-    .replaceAll('{{sourceBranch}}', sourceBranch)
-    .replaceAll('{{targetBranch}}', targetBranch)
+    .replaceAll('{{sourceBranch}}', () => sourceBranch)
+    .replaceAll('{{targetBranch}}', () => targetBranch)
 
     // replace package version
-    .replaceAll('{{PACKAGE_VERSION}}', getPackageVersion());
+    .replaceAll('{{PACKAGE_VERSION}}', () => getPackageVersion());
 
   let body: string;
   try {

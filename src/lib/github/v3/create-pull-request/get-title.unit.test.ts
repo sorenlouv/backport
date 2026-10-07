@@ -116,6 +116,23 @@ describe('getTitle', () => {
     ).not.toThrow();
   });
 
+  it('inserts commit messages containing `$` verbatim', () => {
+    const options = {} as ValidConfigOptions;
+    const commits = [
+      {
+        sourceBranch: 'main',
+        sourceCommit: {
+          sha: 'abcdefghi',
+          message: "Use $$ for PID, $& and $' in regex (#55)",
+        },
+      },
+    ] as Commit[];
+
+    expect(getTitle({ options, commits, targetBranch: '7.x' })).toEqual(
+      "[7.x] Use $$ for PID, $& and $' in regex (#55)",
+    );
+  });
+
   it('should return default description if handlebars compilation fails', () => {
     const compileError = new Error('Simulated compile error');
 

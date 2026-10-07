@@ -73,6 +73,16 @@ describe('getConfiguredTargetPRLabels', () => {
       });
       expect(labels).toEqual(['backported-from-master']);
     });
+
+    it('inserts branch names containing `$` verbatim', () => {
+      const labels = getConfiguredTargetPRLabels({
+        interactive: false,
+        commits,
+        targetPRLabels: ['backported-to-{{targetBranch}}'],
+        targetBranch: 'release-$$-$&',
+      });
+      expect(labels).toEqual(['backported-to-release-$$-$&']);
+    });
   });
 
   describe('static labels', () => {

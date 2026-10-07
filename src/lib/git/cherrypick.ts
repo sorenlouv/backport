@@ -55,8 +55,8 @@ export async function cherrypick({
     `cherry-pick`,
     ...(options.mainline == undefined
       ? []
-      : ['--mainline', `${options.mainline}`]),
-    ...(options.cherryPickRef === false ? [] : ['-x']),
+      : ['--mainline', String(options.mainline)]),
+    ...(options.cherryPickRef ? ['-x'] : []),
     ...(options.signoff ? ['--signoff'] : []),
     ...(strategyOption ? ['--strategy-option', strategyOption] : []),
     sha,

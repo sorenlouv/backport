@@ -19,17 +19,15 @@ export interface ExtractedOperation {
 /**
  * Recursively find all .ts files under a directory, excluding non-source directories.
  */
+const excludedDirectories = new Set(['node_modules', 'dist', 'generated']);
+
 function findTsFiles(dir: string): string[] {
   const results: string[] = [];
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+  const entries = readdirSync(dir, { withFileTypes: true });
+  for (const entry of entries) {
     const fullPath = join(dir, entry.name);
     if (entry.isDirectory()) {
-      if (
-        entry.name === 'node_modules' ||
-        entry.name === 'dist' ||
-        entry.name === 'generated'
-      )
-        continue;
+      if (excludedDirectories.has(entry.name)) continue;
       results.push(...findTsFiles(fullPath));
     } else if (entry.name.endsWith('.ts') && !entry.name.endsWith('.test.ts')) {
       results.push(fullPath);
@@ -104,8 +102,7 @@ function findReferencedFragments(node: ASTNode): Set<string> {
     if (n.kind === Kind.FRAGMENT_SPREAD) {
       names.add(n.name.value);
     }
-    for (const key of Object.keys(n)) {
-      const child = n[key];
+    for (const child of Object.values<any>(n)) {
       if (Array.isArray(child)) {
         for (const item of child) {
           visit(item);
@@ -137,10 +134,12 @@ export function resolveFragments(
       if (resolved.has(name)) continue;
       resolved.add(name);
       const fragSource = fragmentMap.get(name);
-      if (fragSource) {
-        combined += '\n' + fragSource;
-        resolve(fragSource);
+      if (!fragSource) {
+        continue;
       }
+
+      combined += '\n' + fragSource;
+      resolve(fragSource);
     }
   };
 

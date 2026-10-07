@@ -457,6 +457,7 @@ describe('deleteRemote', () => {
 
 describe('cherrypick', () => {
   const options = {
+    cherryPickRef: true,
     repoOwner: 'elastic',
     repoName: 'kibana',
   } as ValidConfigOptions;
@@ -1237,6 +1238,7 @@ describe('cherrypickAbort', () => {
 
 describe('cherrypick with strategyOption', () => {
   const options = {
+    cherryPickRef: true,
     repoOwner: 'elastic',
     repoName: 'kibana',
   } as ValidConfigOptions;

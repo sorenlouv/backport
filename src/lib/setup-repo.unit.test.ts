@@ -84,15 +84,16 @@ describe('setupRepo', () => {
           }) as unknown as ReturnType<typeof childProcess.spawnStream>,
       );
 
+      // Like a real child process stream, emit Buffers rather than strings
       setTimeout(() => {
-        onData('Receiving objects:   1%');
-        onData('Receiving objects:   10%');
-        onData('Receiving objects:   20%');
-        onData('Receiving objects:   100%');
-        onData('Updating files:   1%');
-        onData('Updating files:   10%');
-        onData('Updating files:   20%');
-        onData('Updating files:   100%');
+        onData(Buffer.from('Receiving objects:   1%'));
+        onData(Buffer.from('Receiving objects:   10%'));
+        onData(Buffer.from('Receiving objects:   20%'));
+        onData(Buffer.from('Receiving objects:   100%'));
+        onData(Buffer.from('Updating files:   1%'));
+        onData(Buffer.from('Updating files:   10%'));
+        onData(Buffer.from('Updating files:   20%'));
+        onData(Buffer.from('Updating files:   100%'));
         onClose(0);
       }, 50);
 

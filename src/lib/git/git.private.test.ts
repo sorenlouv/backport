@@ -583,23 +583,23 @@ describe('git.private', () => {
 
   describe('getGitProjectRootPath', () => {
     let sandboxPath: string;
-    let subDirectory: string;
+    let subdirectory: string;
 
     beforeEach(async () => {
       sandboxPath = getSandboxPath({
         filename: import.meta.filename,
         specname: 'getGitProjectRootPath',
       });
-      subDirectory = `${sandboxPath}/foo-dir`;
+      subdirectory = `${sandboxPath}/foo-dir`;
       await resetSandbox(sandboxPath);
       await gitInit(sandboxPath);
-      await fs.mkdir(subDirectory, { recursive: true });
+      await fs.mkdir(subdirectory, { recursive: true });
     });
 
     it('returns the root dir', async () => {
-      const rootPath = await getGitProjectRootPath(subDirectory);
+      const rootPath = await getGitProjectRootPath(subdirectory);
       expect(rootPath).toBe(sandboxPath);
-      expect(rootPath).not.toBe(subDirectory);
+      expect(rootPath).not.toBe(subdirectory);
     });
   });
 
@@ -751,7 +751,7 @@ async function createAndStageFile({
 }) {
   try {
     await fs.writeFile(path.join(cwd, filename), content);
-    await childProcess.spawnPromise('git', ['add', `${filename}`], cwd);
+    await childProcess.spawnPromise('git', ['add', filename], cwd);
   } catch (error) {
     console.log('"createAndStageFile" threw an error', {
       filename,
@@ -768,7 +768,7 @@ async function getCurrentSha(cwd: string) {
     ['rev-parse', 'HEAD'],
     cwd,
   );
-  return stdout.toString().trim();
+  return stdout.trim();
 }
 
 async function getCurrentBranchName(cwd: string) {
@@ -783,7 +783,7 @@ async function getMostRecentCommitMessage(cwd: string) {
       ['--no-pager', 'log', '-1', '--pretty=%B'],
       cwd,
     );
-    return stdout.toString().trim();
+    return stdout.trim();
   } catch (error) {
     console.log('"getMostRecentCommitMessage" threw an error', cwd);
     throw error;

@@ -197,6 +197,33 @@ describe('getPullRequestBody', () => {
           `);
       });
 
+      it('inserts commit messages containing `$` verbatim', () => {
+        const commits = [
+          {
+            sourceCommit: {
+              message: "Use $$ for PID, $& and $' in regex",
+              sha: 'mySha',
+            },
+            sourceBranch: 'main',
+          },
+        ] as Commit[];
+
+        const options = {
+          prDescription: '{{commitMessages}}\n{{commitsStringified}}',
+        } as ValidConfigOptions;
+
+        const body = getPullRequestBody({
+          options,
+          commits,
+          targetBranch: '7.x',
+        });
+
+        expect(body).toBe(
+          ` - Use $$ for PID, $& and $' in regex (mySha)\n` +
+            JSON.stringify(commits),
+        );
+      });
+
       it('handles curly brackets in commit message without error', () => {
         const commits = [
           {

@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/no-top-level-assignment-in-function -- `logger` is a module-level singleton (re)configured by `initLogger` */
 import winston, { format } from 'winston';
 import { getLogfilePath } from './env.js';
 

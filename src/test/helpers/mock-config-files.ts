@@ -16,5 +16,5 @@ export function mockConfigFiles({
     if (filepath.endsWith('.backport/config.json')) {
       return Promise.resolve(JSON.stringify(globalConfig));
     }
-  }) as typeof fs.readFile);
+  }) as unknown as typeof fs.readFile);
 }

@@ -191,7 +191,7 @@ ${manualBackportCommand}${questionsAndLinkToBackport}${packageVersionSection}`;
 
   const backportPRCommandMessage = didAllBackportsSucceed
     ? ''
-    : `${manualBackportCommand}`;
+    : manualBackportCommand;
 
   return `${header}${table}${autoMergeMessage}${backportPRCommandMessage}${questionsAndLinkToBackport}${packageVersionSection}`;
 }
