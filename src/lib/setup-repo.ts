@@ -3,12 +3,12 @@ import type { ValidConfigOptions } from '../options/options.js';
 import { BackportError } from './backport-error.js';
 import { getRepoPath } from './env.js';
 import {
-  addRemote,
   cloneRepo,
   deleteRemote,
   getGitProjectRootPath,
   getLocalSourceRepoPath,
   getRemoteUrl,
+  setRemote,
 } from './git/index.js';
 import { logger } from './logger.js';
 import { ora } from './ora.js';
@@ -43,7 +43,13 @@ export async function setupRepo(options: ValidConfigOptions) {
       await fs.rm(repoPath, { recursive: true, force: true });
 
       await cloneRepo(
-        { sourcePath, targetPath: repoPath },
+        {
+          sourcePath,
+          targetPath: repoPath,
+          // name the remote after the repo owner, so it is kept below (for a partial clone it is the remote that missing objects are fetched from)
+          remoteName: options.repoOwner,
+          filter: options.cloneFilter,
+        },
         (progress: number) => {
           spinner.text = `${progress}% ${spinnerCloneText}`;
         },
@@ -61,16 +67,14 @@ export async function setupRepo(options: ValidConfigOptions) {
   await deleteRemote(options, 'origin');
 
   // ensure remote are setup with latest githubToken
-  await deleteRemote(options, options.repoForkOwner);
-  await addRemote(options, options.repoForkOwner);
+  await setRemote(options, options.repoForkOwner);
 
   // add remote for non-fork repo (if the above is a fork)
   if (options.repoForkOwner === options.repoOwner) {
     return;
   }
 
-  await deleteRemote(options, options.repoOwner);
-  await addRemote(options, options.repoOwner);
+  await setRemote(options, options.repoOwner);
 }
 
 async function getIsRepoCloned(options: ValidConfigOptions): Promise<boolean> {

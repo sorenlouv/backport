@@ -126,6 +126,55 @@ describe('setupRepo', () => {
     });
   });
 
+  describe('clone options', () => {
+    const mockSpawnStream = () =>
+      vi.spyOn(childProcess, 'spawnStream').mockImplementation(
+        () =>
+          ({
+            on: (name: string, cb: (...args: any[]) => void) => {
+              if (name === 'close') {
+                cb(0);
+              }
+            },
+            stderr: { on: vi.fn() },
+          }) as unknown as ReturnType<typeof childProcess.spawnStream>,
+      );
+
+    const setup = (options: Partial<ValidConfigOptions>) =>
+      setupRepo({
+        repoName: 'kibana',
+        repoOwner: 'elastic',
+        gitHostname: 'github.com',
+        cwd: '/path/to/source/repo',
+        interactive: false,
+        ...options,
+      } as ValidConfigOptions);
+
+    beforeEach(() => {
+      vi.spyOn(gitModule, 'getLocalSourceRepoPath').mockResolvedValue(
+        undefined as any,
+      );
+    });
+
+    it('passes --filter to git clone', async () => {
+      const spawnStreamSpy = mockSpawnStream();
+      await setup({ cloneFilter: 'blob:none' });
+
+      const cmdArgs = spawnStreamSpy.mock.calls[0][1];
+      expect(cmdArgs).toEqual(
+        expect.arrayContaining(['--filter', 'blob:none']),
+      );
+    });
+
+    it('does not pass --filter by default', async () => {
+      const spawnStreamSpy = mockSpawnStream();
+      await setup({});
+
+      const cmdArgs = spawnStreamSpy.mock.calls[0][1];
+      expect(cmdArgs).not.toContain('--filter');
+    });
+  });
+
   describe('if repo is already cloned', () => {
     function mockGitProjectRootPath(value: string) {
       return spawnSpy.mockImplementationOnce(
@@ -165,7 +214,8 @@ describe('setupRepo', () => {
       expect(gitModule.cloneRepo).not.toHaveBeenCalled();
     });
 
-    it('should re-create remotes for both source repo and fork', () => {
+    // remotes must be updated in place: deleting them would also delete the config a partial clone needs to fetch missing objects
+    it('should update remotes for both source repo and fork', () => {
       expect(
         spawnSpy.mock.calls.map(
           ([cmd, cmdArgs, cwd]: [
@@ -188,19 +238,11 @@ describe('setupRepo', () => {
           cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
         },
         {
-          cmd: 'git remote rm sorenlouv',
+          cmd: 'git remote set-url sorenlouv https://x-access-token:myAccessToken@github.com/sorenlouv/kibana.git',
           cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
         },
         {
-          cmd: 'git remote add sorenlouv https://x-access-token:myAccessToken@github.com/sorenlouv/kibana.git',
-          cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
-        },
-        {
-          cmd: 'git remote rm elastic',
-          cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
-        },
-        {
-          cmd: 'git remote add elastic https://x-access-token:myAccessToken@github.com/elastic/kibana.git',
+          cmd: 'git remote set-url elastic https://x-access-token:myAccessToken@github.com/elastic/kibana.git',
           cwd: '/myHomeDir/.backport/repositories/elastic/kibana',
         },
       ]);
@@ -248,6 +290,8 @@ describe('setupRepo', () => {
         'https://x-access-token:myAccessToken@github.com/elastic/kibana.git',
         '/myHomeDir/.backport/repositories/elastic/kibana',
         '--progress',
+        '--origin',
+        'elastic',
       ]);
     });
   });
@@ -281,6 +325,8 @@ describe('setupRepo', () => {
         '/path/to/source/repo',
         '/myHomeDir/.backport/repositories/elastic/kibana',
         '--progress',
+        '--origin',
+        'elastic',
       ]);
     });
   });

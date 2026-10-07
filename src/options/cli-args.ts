@@ -111,6 +111,12 @@ function parseYargsOptions(processArgs: readonly string[]) {
       conflicts: ['noCherryPickRef'],
     })
 
+    .option('cloneFilter', {
+      description:
+        'Partial clone filter passed to `git clone --filter` (e.g. "blob:none")',
+      type: 'string',
+    })
+
     .option('conflictResolution', {
       description: 'Conflict resolution strategy. Defaults to "abort"',
       type: 'string',

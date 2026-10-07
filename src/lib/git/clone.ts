@@ -3,7 +3,17 @@ import { spawnStream } from '../child-process-promisified.js';
 import { logger } from '../logger.js';
 
 export async function cloneRepo(
-  { sourcePath, targetPath }: { sourcePath: string; targetPath: string },
+  {
+    sourcePath,
+    targetPath,
+    remoteName,
+    filter,
+  }: {
+    sourcePath: string;
+    targetPath: string;
+    remoteName: string;
+    filter?: string;
+  },
   onProgress: (progress: number) => void,
 ) {
   logger.info(`Cloning repo from ${sourcePath} to ${targetPath}`);
@@ -14,6 +24,9 @@ export async function cloneRepo(
       sourcePath,
       targetPath,
       '--progress',
+      '--origin',
+      remoteName,
+      ...(filter ? ['--filter', filter] : []),
     ]);
 
     const progress = {

@@ -3,6 +3,7 @@ export {
   getRemoteUrl,
   deleteRemote,
   addRemote,
+  setRemote,
   getRepoInfoFromGitRemotes,
   getRepoForkOwner,
   getGitProjectRootPath,
