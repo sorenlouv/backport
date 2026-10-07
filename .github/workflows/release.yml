@@ -10,7 +10,10 @@ name: release
 # The require-release-label check (a required status check on main) guarantees every
 # merged PR carries exactly one release:* label, so this never runs unlabeled.
 on:
-  pull_request:
+  # pull_request_target instead of pull_request, so PRs from forks are released too
+  # (pull_request runs for fork PRs get no secrets). This is safe because the job never
+  # checks out or runs PR code: it only reads the PR's labels and checks out `main`.
+  pull_request_target:
     types: [closed]
     branches: [main]
 
