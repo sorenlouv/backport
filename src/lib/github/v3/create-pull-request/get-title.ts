@@ -21,13 +21,15 @@ export function getTitle({
 
   const defaultPrTitle = '[{{targetBranch}}] {{commitMessages}}';
 
+  // Replacer functions insert the values verbatim, so `$` sequences in them
+  // (e.g. `$&` or `$$` in a commit message) aren't treated as replacement patterns
   const prTitle = (options.prTitle ?? defaultPrTitle)
     .replaceAll(
       '{{commitMessages}}',
-      `{{{{raw}}}}${commitMessages}{{{{/raw}}}}`,
+      () => `{{{{raw}}}}${commitMessages}{{{{/raw}}}}`,
     )
-    .replaceAll('{{targetBranch}}', targetBranch)
-    .replaceAll('{{sourceBranch}}', sourceBranch);
+    .replaceAll('{{targetBranch}}', () => targetBranch)
+    .replaceAll('{{sourceBranch}}', () => sourceBranch);
 
   try {
     const template = Handlebars.compile(prTitle, { noEscape: true });

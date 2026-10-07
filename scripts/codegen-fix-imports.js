@@ -23,7 +23,7 @@ for (const file of readdirSync(dir)) {
   if (!content.includes('@generated')) {
     content = content.replace(
       '/* eslint-disable */\n',
-      '/* eslint-disable */\n' + doNotEditHeader,
+      (match) => match + doNotEditHeader,
     );
   }
 

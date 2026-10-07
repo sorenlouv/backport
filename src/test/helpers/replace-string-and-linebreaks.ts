@@ -8,7 +8,7 @@ export function replaceStringAndLinebreaks({
   stringAfter: string;
 }) {
   const regex = [...stringBefore].join(String.raw`\s?`);
-  return haystack.replaceAll(new RegExp(regex, 'g'), stringAfter);
+  return haystack.replaceAll(new RegExp(regex, 'g'), () => stringAfter);
 }
 
 export function removeLinesBreaksInConflictingFiles(str: string) {

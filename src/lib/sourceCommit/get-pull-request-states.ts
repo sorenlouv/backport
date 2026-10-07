@@ -218,6 +218,7 @@ export function getTargetBranchFromLabel({
   if (result) {
     const [branchLabelMappingKey, branchLabelMappingValue] = result;
     const regex = new RegExp(branchLabelMappingKey);
+    // eslint-disable-next-line unicorn/no-unsafe-string-replacement -- `branchLabelMapping` values intentionally reference capture groups (e.g. `$1`)
     const targetBranch = label.replace(regex, branchLabelMappingValue);
 
     if (targetBranch) {

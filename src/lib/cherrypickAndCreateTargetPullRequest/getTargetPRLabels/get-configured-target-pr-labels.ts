@@ -37,14 +37,16 @@ export function getConfiguredTargetPRLabels({
       const regex = new RegExp(targetPullRequest.branchLabelMappingKey);
 
       return targetPRLabels.map((targetPRLabel) => {
+        // eslint-disable-next-line unicorn/no-unsafe-string-replacement -- `targetPRLabels` may intentionally reference capture groups (e.g. `$1`)
         return targetPullRequest.label?.replace(regex, targetPRLabel);
       });
     })
     .filter(filterNil)
     .map((label) => {
+      // Replacer functions insert branch names verbatim, even if they contain `$`
       return label
-        .replaceAll('{{targetBranch}}', targetBranch)
-        .replaceAll('{{sourceBranch}}', sourceBranch);
+        .replaceAll('{{targetBranch}}', () => targetBranch)
+        .replaceAll('{{sourceBranch}}', () => sourceBranch);
     });
 
   return labels;
