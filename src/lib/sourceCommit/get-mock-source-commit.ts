@@ -34,9 +34,6 @@ export function getMockSourceCommit({
     repoOwner?: string;
   }>;
 }): SourceCommitWithTargetPullRequestFragmentFragment {
-  const defaultTargetPullRequestTitle =
-    'DO NOT USE: Please specify a title in test!!!';
-
   const defaultSourceCommitSha = 'DO NOT USE: please specify a sha in test!!!';
 
   const baseMockCommit: SourceCommitWithTargetPullRequestFragmentFragment = {
@@ -56,10 +53,13 @@ export function getMockSourceCommit({
     return baseMockCommit;
   }
 
+  const defaultTargetPullRequestTitle =
+    'DO NOT USE: Please specify a title in test!!!';
+
   const remoteConfigHistory: RemoteConfigHistoryFragmentFragment['remoteConfigHistory'] =
-    sourceCommit.remoteConfig
-      ? {
-          edges: [
+    {
+      edges: sourceCommit.remoteConfig
+        ? [
             {
               remoteConfig: {
                 committedDate: sourceCommit.remoteConfig.committedDate,
@@ -75,9 +75,9 @@ export function getMockSourceCommit({
                 },
               },
             },
-          ],
-        }
-      : { edges: [] };
+          ]
+        : [],
+    };
 
   return {
     ...baseMockCommit,

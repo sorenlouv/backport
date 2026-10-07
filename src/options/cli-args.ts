@@ -254,7 +254,7 @@ function parseYargsOptions(processArgs: readonly string[]) {
         }
 
         // use specified mainline parent
-        if (Number.isInteger(mainline)) {
+        if (Number.isSafeInteger(mainline)) {
           return mainline as number;
         }
 

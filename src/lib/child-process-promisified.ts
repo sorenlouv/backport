@@ -50,35 +50,39 @@ export async function spawnPromise(
       // ensure that git commands return English error messages
       // eslint-disable-next-line no-restricted-syntax
       env: { ...process.env, LANG: 'C' },
-      ...(isInteractive ? { stdio: 'inherit' } : undefined),
+      ...(isInteractive && { stdio: 'inherit' }),
     });
     let stderr = '';
     let stdout = '';
 
     subprocess.stdout?.on('data', (data: string) => {
       stdout += data;
-      if (stdout.length > MAX_BUFFER_SIZE) {
-        subprocess.kill();
-        reject(
-          new BackportError({
-            code: 'buffer-overflow-exception',
-            message: `stdout exceeded ${MAX_BUFFER_SIZE} bytes for: "${fullCmd}"`,
-          }),
-        );
+      if (stdout.length <= MAX_BUFFER_SIZE) {
+        return;
       }
+
+      subprocess.kill();
+      reject(
+        new BackportError({
+          code: 'buffer-overflow-exception',
+          message: `stdout exceeded ${MAX_BUFFER_SIZE} bytes for: "${fullCmd}"`,
+        }),
+      );
     });
 
     subprocess.stderr?.on('data', (data: string) => {
       stderr += data;
-      if (stderr.length > MAX_BUFFER_SIZE) {
-        subprocess.kill();
-        reject(
-          new BackportError({
-            code: 'buffer-overflow-exception',
-            message: `stderr exceeded ${MAX_BUFFER_SIZE} bytes for: "${fullCmd}"`,
-          }),
-        );
+      if (stderr.length <= MAX_BUFFER_SIZE) {
+        return;
       }
+
+      subprocess.kill();
+      reject(
+        new BackportError({
+          code: 'buffer-overflow-exception',
+          message: `stderr exceeded ${MAX_BUFFER_SIZE} bytes for: "${fullCmd}"`,
+        }),
+      );
     });
 
     subprocess.on('close', (code) => {

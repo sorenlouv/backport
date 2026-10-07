@@ -98,11 +98,13 @@ export async function fetchPullRequestsBySearchQuery(options: {
 
   const commits = data?.search.nodes
     ?.map((pullRequestNode) => {
-      if (pullRequestNode?.__typename === 'PullRequest') {
-        const sourceCommit = pullRequestNode.mergeCommit;
-        if (sourceCommit) {
-          return parseSourceCommit({ options, sourceCommit });
-        }
+      if (pullRequestNode?.__typename !== 'PullRequest') {
+        return;
+      }
+
+      const sourceCommit = pullRequestNode.mergeCommit;
+      if (sourceCommit) {
+        return parseSourceCommit({ options, sourceCommit });
       }
     })
     .filter(filterNil);

@@ -31,8 +31,10 @@ for (const file of readdirSync(dir)) {
     /(from\s+['"])(\.\/[^'"]+)(?<!\.js)(['"])/g,
     '$1$2.js$3',
   );
-  if (updated !== content) {
-    writeFileSync(filePath, updated);
-    console.log(`Fixed imports in ${filePath}`);
+  if (updated === content) {
+    continue;
   }
+
+  writeFileSync(filePath, updated);
+  console.log(`Fixed imports in ${filePath}`);
 }

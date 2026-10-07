@@ -249,35 +249,35 @@ function throwForEmptyStringOptions(options: Record<string, unknown>) {
 export function getActiveOptionsFormatted(options: ValidConfigOptions) {
   const customOptions = [
     ['repo', `${options.repoOwner}/${options.repoName}`],
-    ['sourceBranch', `${options.sourceBranch}`],
+    ['sourceBranch', options.sourceBranch],
   ];
 
   if (options.pullNumber) {
-    customOptions.push(['pr', `${options.pullNumber}`]);
+    customOptions.push(['pr', String(options.pullNumber)]);
   }
 
   if (options.sha) {
-    customOptions.push(['sha', `${options.sha}`]);
+    customOptions.push(['sha', String(options.sha)]);
   }
 
   if (options.author) {
-    customOptions.push(['author', `${options.author}`]);
+    customOptions.push(['author', options.author]);
   }
 
-  if (options.autoMerge === true) {
-    customOptions.push(['autoMerge', `${options.autoMerge}`]);
+  if (options.autoMerge) {
+    customOptions.push(['autoMerge', String(options.autoMerge)]);
   }
 
   if (options.maxCount !== defaultConfigOptions.maxCount) {
-    customOptions.push(['maxCount', `${options.maxCount}`]);
+    customOptions.push(['maxCount', String(options.maxCount)]);
   }
 
   if (options.since) {
-    customOptions.push(['since', `${options.since}`]);
+    customOptions.push(['since', options.since]);
   }
 
   if (options.until) {
-    customOptions.push(['until', `${options.until}`]);
+    customOptions.push(['until', options.until]);
   }
 
   return (

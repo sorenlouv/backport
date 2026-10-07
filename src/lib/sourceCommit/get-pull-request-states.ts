@@ -146,16 +146,16 @@ function getCreatedTargetPullRequests(
         },
       );
 
+      if (didCommitMatch) {
+        return true;
+      }
+
       const titleIncludesMessage =
         targetPullRequest.title.includes(sourceCommitMessage);
 
       const titleIncludesNumber = targetPullRequest.title.includes(
         sourcePullRequest.number.toString(),
       );
-
-      if (didCommitMatch) {
-        return true;
-      }
 
       return titleIncludesMessage && titleIncludesNumber;
     })
@@ -185,16 +185,18 @@ function getTargetBranchesFromLabels(
     .filter(filterNil)
     .map((label) => {
       const res = getTargetBranchFromLabel({ branchLabelMapping, label });
-      if (res) {
-        const { branchLabelMappingKey, targetBranch } = res;
-        const isSourceBranch = targetBranch === sourcePullRequest.baseRefName;
-        return {
-          branch: targetBranch,
-          label,
-          branchLabelMappingKey,
-          isSourceBranch,
-        };
+      if (!res) {
+        return;
       }
+
+      const { branchLabelMappingKey, targetBranch } = res;
+      const isSourceBranch = targetBranch === sourcePullRequest.baseRefName;
+      return {
+        branch: targetBranch,
+        label,
+        branchLabelMappingKey,
+        isSourceBranch,
+      };
     })
     .filter(filterNil);
 
@@ -215,14 +217,16 @@ export function getTargetBranchFromLabel({
     return isMatch;
   });
 
-  if (result) {
-    const [branchLabelMappingKey, branchLabelMappingValue] = result;
-    const regex = new RegExp(branchLabelMappingKey);
-    // eslint-disable-next-line unicorn/no-unsafe-string-replacement -- `branchLabelMapping` values intentionally reference capture groups (e.g. `$1`)
-    const targetBranch = label.replace(regex, branchLabelMappingValue);
+  if (!result) {
+    return;
+  }
 
-    if (targetBranch) {
-      return { targetBranch, branchLabelMappingKey };
-    }
+  const [branchLabelMappingKey, branchLabelMappingValue] = result;
+  const regex = new RegExp(branchLabelMappingKey);
+  // eslint-disable-next-line unicorn/no-unsafe-string-replacement -- `branchLabelMapping` values intentionally reference capture groups (e.g. `$1`)
+  const targetBranch = label.replace(regex, branchLabelMappingValue);
+
+  if (targetBranch) {
+    return { targetBranch, branchLabelMappingKey };
   }
 }

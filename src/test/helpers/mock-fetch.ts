@@ -27,6 +27,7 @@ interface RegisteredMock extends MockConfig {
   consumed: boolean;
 }
 
+/* eslint-disable unicorn/no-top-level-assignment-in-function -- mock state is reset by `setupFetchMock`/`cleanupFetchMock` around each test */
 let mocks: RegisteredMock[] = [];
 let fetchSpy: ReturnType<typeof vi.spyOn> | null = null;
 
@@ -43,7 +44,7 @@ export function setupFetchMock() {
           typeof input === 'string'
             ? input
             : input instanceof URL
-              ? input.toString()
+              ? input.href
               : input.url;
         const method = init?.method ?? 'GET';
 
@@ -55,8 +56,7 @@ export function setupFetchMock() {
         }
 
         const mock = mocks.find((m) => {
-          if (m.consumed) return false;
-          if (!url.includes(m.url)) return false;
+          if (m.consumed || !url.includes(m.url)) return false;
           if (m.method && m.method.toUpperCase() !== method.toUpperCase())
             return false;
           if (m.bodyMatcher && !m.bodyMatcher(body)) return false;

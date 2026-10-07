@@ -78,6 +78,6 @@ export async function fetchExistingPullRequest({
 }
 
 function splitHead(prPayload: PullRequestPayload) {
-  const [repoForkOwner, head] = prPayload.head.split(':');
+  const [repoForkOwner, head] = prPayload.head.split(':', 2);
   return { repoForkOwner, head };
 }

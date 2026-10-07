@@ -33,7 +33,7 @@ describe('entrypoint cli', () => {
       waitForString: 'Or contact me directly',
     });
 
-    const [help] = output.split('https://twitter.com/sorenlouv');
+    const [help] = output.split('https://twitter.com/sorenlouv', 1);
 
     expect(help).toMatchInlineSnapshot(`
       "entrypoint.cli.ts [args]

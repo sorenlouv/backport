@@ -30,7 +30,7 @@ async function gitCommit({
       `-c`,
       `user.email="${commitAuthor.email}"`,
       'commit',
-      ...(message ? [`--message=${message}`] : ['--no-edit']),
+      message ? `--message=${message}` : '--no-edit',
       ...(options.noVerify ? ['--no-verify'] : []), // bypass pre-commit and commit-msg hooks
       ...(options.signoff ? ['--signoff'] : []),
     ],

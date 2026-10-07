@@ -72,7 +72,7 @@ export async function getRepoInfoFromGitRemotes({ cwd }: { cwd: string }) {
       .filter(filterNil);
 
     return uniq(remotes).map((remote) => {
-      const [repoOwner, repoName] = remote.split('/');
+      const [repoOwner, repoName] = remote.split('/', 2);
       return { repoOwner, repoName };
     });
   } catch (error) {

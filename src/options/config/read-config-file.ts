@@ -139,7 +139,7 @@ function parseUpstream(
   config: ConfigFileOptions,
 ) {
   if (upstream) {
-    const [repoOwner, repoName] = upstream.split('/');
+    const [repoOwner, repoName] = upstream.split('/', 2);
     return { repoOwner, repoName };
   }
 

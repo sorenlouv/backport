@@ -42,51 +42,28 @@ export default [
       'unicorn/no-nested-ternary': 'off',
       'unicorn/prefer-top-level-await': 'off',
       'unicorn/prefer-module': 'off',
+
+      // Naming and comment conventions this codebase deliberately doesn't follow
+      'unicorn/consistent-boolean-name': 'off', // e.g. `noConflicts`, `needsResolving`
+      'unicorn/no-non-function-verb-prefix': 'off', // e.g. `createPullRequestCalls`
+      'unicorn/no-asterisk-prefix-in-documentation-comments': 'off', // keep the standard ` * ` JSDoc prefix
+      'unicorn/single-line-block-comment-style': 'off', // allow one-line `/** … */` file headers
+      'unicorn/max-nested-calls': 'off', // zod schemas nest calls by design
+      'unicorn/prefer-ternary': 'off', // since v77 it also rewrites `if (x) return a; return b;` guard clauses
+      'unicorn/prefer-simple-condition-first': 'off', // conditions are ordered for readability
+      // Files are kebab-case; directories (e.g. `sourceCommit/`) are camelCase
+      'unicorn/filename-case': [
+        'error',
+        { case: 'kebabCase', checkDirectories: false },
+      ],
     },
   },
 
-  // Rules added to (or tightened in) unicorn's recommended preset between v65
-  // and v77 that existing code does not yet satisfy. Disabled so the plugin
-  // upgrade lands without code churn; adopt them incrementally and remove from
-  // this list as the violations are fixed.
+  // Config files and test helpers configure the environment at import time
   {
+    files: ['eslint.config.js', 'vitest.config*.ts', 'src/test/**/*.ts'],
     rules: {
-      'unicorn/consistent-boolean-name': 'off',
-      'unicorn/consistent-compound-words': 'off',
-      'unicorn/consistent-conditional-object-spread': 'off',
-      'unicorn/filename-case': 'off',
-      'unicorn/max-nested-calls': 'off',
-      'unicorn/no-asterisk-prefix-in-documentation-comments': 'off',
-      'unicorn/no-declarations-before-early-exit': 'off',
-      'unicorn/no-global-object-property-assignment': 'off',
-      'unicorn/no-non-function-verb-prefix': 'off',
-      'unicorn/no-top-level-assignment-in-function': 'off',
       'unicorn/no-top-level-side-effects': 'off',
-      'unicorn/no-unnecessary-boolean-comparison': 'off',
-      'unicorn/no-unnecessary-parameters': 'off',
-      'unicorn/no-unreadable-for-of-expression': 'off',
-      'unicorn/no-unsafe-string-replacement': 'off',
-      'unicorn/no-useless-coercion': 'off',
-      'unicorn/no-useless-template-literals': 'off',
-      'unicorn/prefer-await': 'off',
-      'unicorn/prefer-combined-guards': 'off',
-      'unicorn/prefer-continue': 'off',
-      'unicorn/prefer-early-return': 'off',
-      'unicorn/prefer-includes-over-repeated-comparisons': 'off',
-      'unicorn/prefer-literal-ascii': 'off',
-      'unicorn/prefer-minimal-ternary': 'off',
-      'unicorn/prefer-number-coercion': 'off',
-      'unicorn/prefer-number-is-safe-integer': 'off',
-      'unicorn/prefer-object-iterable-methods': 'off',
-      'unicorn/prefer-short-escape-sequences': 'off',
-      'unicorn/prefer-simple-condition-first': 'off',
-      'unicorn/prefer-smaller-scope': 'off',
-      'unicorn/prefer-split-limit': 'off',
-      'unicorn/prefer-ternary': 'off',
-      'unicorn/prefer-then-catch': 'off',
-      'unicorn/prefer-unicode-code-point-escapes': 'off',
-      'unicorn/prefer-url-href': 'off',
-      'unicorn/single-line-block-comment-style': 'off',
     },
   },
 
@@ -266,6 +243,8 @@ export default [
     },
     rules: {
       '@typescript-eslint/ban-ts-comment': 'off',
+      // Test helpers are parameterized for readability, even when every call passes the same value
+      'unicorn/no-unnecessary-parameters': 'off',
       // Allow process.env strictly in tests and vitest configs
       'no-restricted-syntax': 'off',
     },
