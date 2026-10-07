@@ -19,6 +19,7 @@ import {
   getRepoInfoFromGitRemotes,
   getRerereConfig,
   getStagedFiles,
+  setRemote,
 } from './index.js';
 
 beforeEach(() => {
@@ -1507,6 +1508,41 @@ describe('addRemote', () => {
       ],
       '/myHomeDir/.backport/repositories/elastic/kibana',
     );
+  });
+});
+
+describe('setRemote', () => {
+  const options = {
+    githubToken: 'myAccessToken',
+    repoOwner: 'elastic',
+    repoName: 'kibana',
+    gitHostname: 'github.com',
+  } as ValidConfigOptions;
+
+  it('updates the url of an existing remote', async () => {
+    const spy = vi
+      .spyOn(childProcess, 'spawnPromise')
+      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] });
+
+    await setRemote(options, 'elastic');
+
+    expect(spy.mock.calls.map(([, cmdArgs]) => cmdArgs.join(' '))).toEqual([
+      'remote set-url elastic https://x-access-token:myAccessToken@github.com/elastic/kibana.git',
+    ]);
+  });
+
+  it('adds the remote if it does not exist', async () => {
+    const spy = vi
+      .spyOn(childProcess, 'spawnPromise')
+      .mockRejectedValueOnce(new Error("error: No such remote 'elastic'"))
+      .mockResolvedValueOnce({ stderr: '', stdout: '', code: 0, cmdArgs: [] });
+
+    await setRemote(options, 'elastic');
+
+    expect(spy.mock.calls.map(([, cmdArgs]) => cmdArgs.join(' '))).toEqual([
+      'remote set-url elastic https://x-access-token:myAccessToken@github.com/elastic/kibana.git',
+      'remote add elastic https://x-access-token:myAccessToken@github.com/elastic/kibana.git',
+    ]);
   });
 });
 

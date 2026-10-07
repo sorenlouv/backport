@@ -436,7 +436,11 @@ describe('git.private', () => {
       ).rejects.toThrow();
 
       await cloneRepo(
-        { sourcePath: sourceRepo, targetPath: backportRepo },
+        {
+          sourcePath: sourceRepo,
+          targetPath: backportRepo,
+          remoteName: 'origin',
+        },
         () => null,
       );
 
@@ -450,6 +454,7 @@ describe('git.private', () => {
         {
           sourcePath: 'https://github.com/backport-org/backport-e2e.git',
           targetPath: backportRepo,
+          remoteName: 'origin',
         },
         onProgressSpy,
       );
@@ -463,6 +468,7 @@ describe('git.private', () => {
           {
             sourcePath: `${sandboxPath}/source-repo-incorrect`,
             targetPath: backportRepo,
+            remoteName: 'origin',
           },
           () => null,
         ),

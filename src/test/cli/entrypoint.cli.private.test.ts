@@ -54,6 +54,8 @@ describe('entrypoint cli', () => {
             --author                                        Show commits by a specific user       [string]
             --cherryPickRef                                 Append commit message with "(cherry picked
                                                             from commit...)                      [boolean]
+            --cloneFilter                                   Partial clone filter passed to \`git clone
+                                                            --filter\` (e.g. "blob:none")          [string]
             --conflictResolution                            Conflict resolution strategy. Defaults to
                                                             "abort"
                                                            [string] [choices: "abort", "commit", "theirs"]

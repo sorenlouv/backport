@@ -58,6 +58,25 @@ export async function addRemote(
   }
 }
 
+// Point the remote to the current url (incl. latest githubToken), or add it if it does not exist.
+// Updating the remote in place (instead of deleting and re-adding it) keeps the rest of its config,
+// e.g. the `promisor` settings that a partial clone (`cloneFilter`) needs to fetch missing objects
+export async function setRemote(
+  options: ValidConfigOptions,
+  remoteName: string,
+) {
+  try {
+    const cwd = getRepoPath(options);
+    await spawnPromise(
+      'git',
+      ['remote', 'set-url', remoteName, getRemoteUrl(options, remoteName)],
+      cwd,
+    );
+  } catch {
+    await addRemote(options, remoteName);
+  }
+}
+
 export async function getRepoInfoFromGitRemotes({ cwd }: { cwd: string }) {
   try {
     const { stdout } = await spawnPromise('git', ['remote', '--verbose'], cwd);

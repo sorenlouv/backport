@@ -6,12 +6,12 @@ export async function cloneRepo(
   {
     sourcePath,
     targetPath,
-    depth,
+    remoteName,
     filter,
   }: {
     sourcePath: string;
     targetPath: string;
-    depth?: number;
+    remoteName: string;
     filter?: string;
   },
   onProgress: (progress: number) => void,
@@ -24,7 +24,8 @@ export async function cloneRepo(
       sourcePath,
       targetPath,
       '--progress',
-      ...(depth ? ['--depth', `${depth}`] : []),
+      '--origin',
+      remoteName,
       ...(filter ? ['--filter', filter] : []),
     ]);
 

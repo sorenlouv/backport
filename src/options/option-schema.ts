@@ -61,7 +61,6 @@ export const configOptionsSchema = z.object({
   backportBranchName: z.string().optional(),
   branchLabelMapping: z.record(z.string(), z.string()).optional(),
   cherryPickRef: z.boolean().default(true),
-  cloneDepth: z.number().int().positive().optional(),
   cloneFilter: z.string().optional(),
   conflictResolution: z.enum(['abort', 'commit', 'theirs']).default('abort'),
   commitPaths: z.array(z.string()).default([]),
