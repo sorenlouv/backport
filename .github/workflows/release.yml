@@ -10,11 +10,11 @@ name: release
 # The require-release-label check (a required status check on main) guarantees every
 # merged PR carries exactly one release:* label, so this never runs unlabeled.
 on:
-  # pull_request_target instead of pull_request, so PRs from forks are released too
-  # (pull_request runs for fork PRs get no secrets). This is safe because the job never
-  # checks out or runs PR code: it only reads the PR's labels and checks out `main`.
-  pull_request_target:
-    types: [closed]
+  # Runs on push to main (i.e. when a PR is merged) instead of on the PR's `closed` event:
+  # pull_request runs for PRs from forks get no secrets, and npm trusted publishing does not
+  # work with pull_request_target. The version bump commit below has [skip ci], so it does
+  # not trigger another release.
+  push:
     branches: [main]
 
 # Queue releases instead of running them concurrently
@@ -24,20 +24,20 @@ concurrency:
 
 permissions:
   contents: read
+  pull-requests: read # read the labels of the merged PR
   id-token: write # npm trusted publishing (OIDC) + provenance
 
 jobs:
   release:
-    # Only release when the PR was actually merged, not merely closed
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Determine version bump from release label
         id: bump
         env:
-          # JSON array of the PR's label names, e.g. ["bug","release:patch"]
-          LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
+          GH_TOKEN: ${{ github.token }}
         run: |
+          # JSON array of the label names of the PR merged with this commit, e.g. ["bug","release:patch"]
+          LABELS=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/pulls" --jq '[.[0].labels[]?.name]')
           level=""
           for candidate in patch minor major; do
             if printf '%s' "$LABELS" | grep -q "\"release:$candidate\""; then
