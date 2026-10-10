@@ -68,6 +68,7 @@ function getConfigTemplate() {
   return `{
     // Create a GitHub token here: https://github.com/settings/tokens
     // Must have "Repo: Full control of private repositories"
+    // Alternatively, set BACKPORT_GITHUB_TOKEN and leave githubToken blank
     "githubToken": ""
   }`;
 }

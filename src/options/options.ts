@@ -13,7 +13,7 @@
 import chalk from 'chalk';
 import { ZodError } from 'zod';
 import { BackportError } from '../lib/backport-error.js';
-import { getGlobalConfigPath } from '../lib/env.js';
+import { getGithubTokenFromEnv, getGlobalConfigPath } from '../lib/env.js';
 import { getRepoOwnerAndNameFromGitRemotes } from '../lib/github/v4/get-repo-owner-and-name-from-git-remotes.js';
 import type { OptionsFromGithub } from '../lib/github/v4/getOptionsFromGithub/get-options-from-github.js';
 import { getOptionsFromGithub } from '../lib/github/v4/getOptionsFromGithub/get-options-from-github.js';
@@ -175,16 +175,20 @@ async function resolveRequiredOptions(combined: {
 }) {
   const { githubToken, repoName, repoOwner, globalConfigFile } = combined;
 
-  if (githubToken && repoName && repoOwner) {
-    return { githubToken, repoName, repoOwner };
+  const trimmedGithubToken =
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+    githubToken?.trim() || getGithubTokenFromEnv()?.trim();
+
+  if (trimmedGithubToken && repoName && repoOwner) {
+    return { githubToken: trimmedGithubToken, repoName, repoOwner };
   }
 
   // require github token
-  if (!githubToken) {
+  if (!trimmedGithubToken) {
     const globalConfigPath = getGlobalConfigPath(globalConfigFile);
     throw new BackportError({
       code: 'invalid-credentials-exception',
-      message: `Please update your config file: "${globalConfigPath}".\nIt must contain a valid "githubToken".\n\nRead more: ${GLOBAL_CONFIG_DOCS_LINK}`,
+      message: `Please set "BACKPORT_GITHUB_TOKEN" or update your config file: "${globalConfigPath}".\nIt must contain a valid "githubToken".\n\nRead more: ${GLOBAL_CONFIG_DOCS_LINK}`,
     });
   }
 
@@ -192,7 +196,7 @@ async function resolveRequiredOptions(combined: {
   const gitRemote = await getRepoOwnerAndNameFromGitRemotes({
     cwd: combined.cwd,
     githubApiBaseUrlV4: combined.githubApiBaseUrlV4,
-    githubToken,
+    githubToken: trimmedGithubToken,
   });
 
   if (!gitRemote.repoName || !gitRemote.repoOwner) {
@@ -203,7 +207,7 @@ async function resolveRequiredOptions(combined: {
   }
 
   return {
-    githubToken,
+    githubToken: trimmedGithubToken,
     repoName: gitRemote.repoName,
     repoOwner: gitRemote.repoOwner,
   };

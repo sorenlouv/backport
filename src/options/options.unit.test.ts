@@ -27,17 +27,216 @@ const defaultConfigs = {
 
 describe('getOptions', () => {
   afterEach(() => {
+    vi.unstubAllEnvs();
     vi.clearAllMocks();
     cleanupFetchMock();
   });
 
   beforeEach(() => {
+    vi.stubEnv('BACKPORT_GITHUB_TOKEN', '');
     setupFetchMock();
     mockConfigFiles(defaultConfigs);
     vi.spyOn(os, 'homedir').mockReturnValue('/myHomeDir');
     vi.spyOn(fs, 'mkdir').mockResolvedValue(undefined as any);
     vi.spyOn(fs, 'writeFile').mockResolvedValue();
     vi.spyOn(fs, 'chmod').mockResolvedValue();
+  });
+
+  describe('WHEN BACKPORT_GITHUB_TOKEN is set', () => {
+    beforeEach(() => {
+      mockGithubConfigOptions({});
+    });
+
+    it('SHOULD use it when githubToken is missing', async () => {
+      vi.stubEnv('BACKPORT_GITHUB_TOKEN', '  env-token  ');
+      mockConfigFiles({
+        projectConfig: defaultConfigs.projectConfig,
+        globalConfig: { githubToken: undefined },
+      });
+
+      const options = await getOptions({
+        optionsFromCliArgs: {},
+        optionsFromModule: {},
+      });
+      const configRequest = vi
+        .mocked(globalThis.fetch)
+        .mock.calls.find(
+          ([, init]) =>
+            JSON.parse(init?.body as string).operationName ===
+            'GithubConfigOptions',
+        );
+
+      expect(options.githubToken).toBe('env-token');
+      expect(configRequest?.[1]?.headers).toMatchObject({
+        Authorization: 'bearer env-token',
+      });
+      expect(logger.setGithubToken).toHaveBeenCalledWith('env-token');
+    });
+
+    it('SHOULD use it when githubToken is blank', async () => {
+      vi.stubEnv('BACKPORT_GITHUB_TOKEN', 'env-token');
+      mockConfigFiles({
+        projectConfig: defaultConfigs.projectConfig,
+        globalConfig: { githubToken: '   ' },
+      });
+
+      const options = await getOptions({
+        optionsFromCliArgs: {},
+        optionsFromModule: {},
+      });
+      const configRequest = vi
+        .mocked(globalThis.fetch)
+        .mock.calls.find(
+          ([, init]) =>
+            JSON.parse(init?.body as string).operationName ===
+            'GithubConfigOptions',
+        );
+
+      expect(options.githubToken).toBe('env-token');
+      expect(configRequest?.[1]?.headers).toMatchObject({
+        Authorization: 'bearer env-token',
+      });
+      expect(logger.setGithubToken).toHaveBeenCalledWith('env-token');
+    });
+
+    it('SHOULD treat a blank environment token as missing', async () => {
+      vi.stubEnv('BACKPORT_GITHUB_TOKEN', '   ');
+      mockConfigFiles({
+        projectConfig: defaultConfigs.projectConfig,
+        globalConfig: { githubToken: undefined },
+      });
+
+      await expect(
+        getOptions({
+          optionsFromCliArgs: {},
+          optionsFromModule: {},
+        }),
+      ).rejects.toThrow(
+        'Please set "BACKPORT_GITHUB_TOKEN" or update your config file: "/myHomeDir/.backport/config.json".\nIt must contain a valid "githubToken".',
+      );
+    });
+
+    it('SHOULD prefer githubToken from config', async () => {
+      vi.stubEnv('BACKPORT_GITHUB_TOKEN', 'env-token');
+      mockConfigFiles({
+        projectConfig: defaultConfigs.projectConfig,
+        globalConfig: { githubToken: '  config-token  ' },
+      });
+
+      const options = await getOptions({
+        optionsFromCliArgs: {},
+        optionsFromModule: {},
+      });
+      const configRequest = vi
+        .mocked(globalThis.fetch)
+        .mock.calls.find(
+          ([, init]) =>
+            JSON.parse(init?.body as string).operationName ===
+            'GithubConfigOptions',
+        );
+
+      expect(options.githubToken).toBe('config-token');
+      expect(configRequest?.[1]?.headers).toMatchObject({
+        Authorization: 'bearer config-token',
+      });
+      expect(logger.setGithubToken).toHaveBeenCalledWith('config-token');
+    });
+
+    it('SHOULD prefer githubToken from CLI', async () => {
+      vi.stubEnv('BACKPORT_GITHUB_TOKEN', 'env-token');
+
+      const options = await getOptions({
+        optionsFromCliArgs: { githubToken: '  cli-token  ' },
+        optionsFromModule: {},
+      });
+      const configRequest = vi
+        .mocked(globalThis.fetch)
+        .mock.calls.find(
+          ([, init]) =>
+            JSON.parse(init?.body as string).operationName ===
+            'GithubConfigOptions',
+        );
+
+      expect(options.githubToken).toBe('cli-token');
+      expect(configRequest?.[1]?.headers).toMatchObject({
+        Authorization: 'bearer cli-token',
+      });
+      expect(logger.setGithubToken).toHaveBeenCalledWith('cli-token');
+    });
+
+    it('SHOULD use it while resolving a repository from git remotes', async () => {
+      vi.stubEnv('BACKPORT_GITHUB_TOKEN', '  env-token  ');
+      mockConfigFiles({
+        projectConfig: {
+          ...defaultConfigs.projectConfig,
+          repoName: undefined,
+          repoOwner: undefined,
+        },
+        globalConfig: { githubToken: '   ' },
+      });
+      mockRepoOwnerAndName({
+        childRepoOwner: 'fork-owner',
+        parentRepoOwner: 'upstream-owner',
+        repoName: 'repo',
+      });
+      vi.spyOn(git, 'getRepoInfoFromGitRemotes').mockResolvedValue([
+        { repoName: 'repo', repoOwner: 'fork-owner' },
+      ]);
+
+      const options = await getOptions({
+        optionsFromCliArgs: {},
+        optionsFromModule: {},
+      });
+      const repoRequest = vi
+        .mocked(globalThis.fetch)
+        .mock.calls.find(
+          ([, init]) =>
+            JSON.parse(init?.body as string).operationName ===
+            'RepoOwnerAndName',
+        );
+
+      expect(options.githubToken).toBe('env-token');
+      expect(repoRequest?.[1]?.headers).toMatchObject({
+        Authorization: 'bearer env-token',
+      });
+    });
+
+    it('SHOULD prefer an explicit token while resolving a repository', async () => {
+      vi.stubEnv('BACKPORT_GITHUB_TOKEN', 'env-token');
+      mockConfigFiles({
+        projectConfig: {
+          ...defaultConfigs.projectConfig,
+          repoName: undefined,
+          repoOwner: undefined,
+        },
+        globalConfig: { githubToken: '  config-token  ' },
+      });
+      mockRepoOwnerAndName({
+        childRepoOwner: 'fork-owner',
+        parentRepoOwner: 'upstream-owner',
+        repoName: 'repo',
+      });
+      vi.spyOn(git, 'getRepoInfoFromGitRemotes').mockResolvedValue([
+        { repoName: 'repo', repoOwner: 'fork-owner' },
+      ]);
+
+      const options = await getOptions({
+        optionsFromCliArgs: {},
+        optionsFromModule: {},
+      });
+      const repoRequest = vi
+        .mocked(globalThis.fetch)
+        .mock.calls.find(
+          ([, init]) =>
+            JSON.parse(init?.body as string).operationName ===
+            'RepoOwnerAndName',
+        );
+
+      expect(options.githubToken).toBe('config-token');
+      expect(repoRequest?.[1]?.headers).toMatchObject({
+        Authorization: 'bearer config-token',
+      });
+    });
   });
 
   describe('should throw', () => {
@@ -57,7 +256,7 @@ describe('getOptions', () => {
           optionsFromModule: {},
         }),
       ).rejects.toThrow(
-        'Please update your config file: "/myHomeDir/.backport/config.json".\nIt must contain a valid "githubToken".',
+        'Please set "BACKPORT_GITHUB_TOKEN" or update your config file: "/myHomeDir/.backport/config.json".\nIt must contain a valid "githubToken".',
       );
     });
 
@@ -111,7 +310,7 @@ describe('getOptions', () => {
             optionsFromModule: { githubToken: '' },
           }),
         ).rejects.toThrow(
-          'Please update your config file: "/myHomeDir/.backport/config.json".\nIt must contain a valid "githubToken".',
+          'Please set "BACKPORT_GITHUB_TOKEN" or update your config file: "/myHomeDir/.backport/config.json".\nIt must contain a valid "githubToken".',
         );
       });
     });
