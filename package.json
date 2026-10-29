@@ -73,7 +73,7 @@
   },
   "dependencies": {
     "@graphql-typed-document-node/core": "^3.2.0",
-    "@inquirer/prompts": "8.7.3",
+    "@inquirer/prompts": "8.7.4",
     "@octokit/rest": "^22.0.1",
     "chalk": "^6.0.1",
     "dotenv": "^18.0.6",
